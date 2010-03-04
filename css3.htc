@@ -1,0 +1,900 @@
+<PUBLIC:ATTACH EVENT="onresize" FOR="element" ONEVENT="update()" />
+<PUBLIC:ATTACH EVENT="onmove" FOR="element" ONEVENT="update()" />
+<PUBLIC:ATTACH EVENT="onpropertychange" FOR="element" ONEVENT="propChanged()" />
+<PUBLIC:ATTACH EVENT="oncontentready" FOR="element" ONEVENT="init()" />
+<PUBLIC:ATTACH EVENT="ondetach" FOR="element" ONEVENT="cleanup()" />
+
+<PUBLIC:COMPONENT>
+
+    <script type="text/javascript">
+
+        var vmlns = 'css3vml',
+            active = false,
+            lastW, lastH, lastX, lastY,
+            renderers,
+            styleInfos,
+            ancestors;
+
+
+
+        function trim( str ) {
+            return str.replace( trim.re, '' );
+        }
+        trim.re = /^\s+|\s+$/g;
+
+
+
+        function merge( obj1 ) {
+            var i, len, p, objN, args = arguments;
+            for( i = 1, len = args.length; i < len; i++ ) {
+                objN = args[i];
+                for( p in objN ) {
+                    if( objN.hasOwnProperty( p ) ) {
+                        obj1[ p ] = objN[ p ];
+                    }
+                }
+            }
+            return obj1;
+        }
+
+
+        /**
+         * Wrapper for length style values
+         * @param val - the CSS string representing the length. It is assumed that this will already have
+         *              been validated as a valid length or percentage syntax.
+         */
+        function Length( val ) {
+            this.val = val;
+        }
+        Length.prototype = {
+            unitRE: /(px|em|ex|mm|cm|in|pt|pc|%)$/,
+
+            getNumber: function() {
+                return parseInt( this.val, 10 );
+            },
+
+            getUnit: function() {
+                var m = this.val.match( this.unitRE );
+                return ( m && m[0] ) || 'px';
+            },
+
+            isPercentage: function() {
+                return this.getUnit() === '%';
+            },
+
+            /**
+             * Resolve this length into a number of pixels.
+             * @param el - the context element, used to resolve font-relative values
+             * @param pct100 - the number of pixels that equal a 100% percentage. This can be either a number or a
+             *                 function which will be called to return the number.
+             */
+            pixels: function( el, pct100 ) {
+                var num = this.getNumber(),
+                    unit = this.getUnit();
+                switch( unit ) {
+                    case "px":
+                        return num;
+                    case "%":
+                        return num * ( typeof pct100 === 'function' ? pct100() : pct100 ) / 100;
+                    case "em":
+                        return num * parseInt( el.currentStyle.fontSize );
+                    case "ex":
+                        return num * parseInt( el.currentStyle.fontSize ) / 2;
+                    default:
+                        return num * Length.conversions[ unit ];
+                }
+            }
+        };
+        Length.conversions = (function() {
+            var units = [ 'mm', 'cm', 'in', 'pt', 'pc' ],
+                vals = {},
+                parent = element.parentNode,
+                i = 0, len = units.length, unit, el, s;
+            for( ; i < len; i++ ) {
+                unit = units[i];
+                el = document.createElement( 'length-calc' );
+                s = el.style;
+                s.position = 'absolute';
+                s.top = s.left = -1000;
+                s.width = '100' + unit;
+                parent.appendChild( el );
+                vals[ unit ] = el.offsetWidth / 100;
+                parent.removeChild( el );
+            }
+        })();
+
+
+
+
+        var styleBase = {
+            colorRE: /(#[0-9A-Fa-f]{3}|#[0-9A-Fa-f]{6})|rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
+            lengthRE: /[\-\+]?0|[\-\+]?\d+(px|em|ex|mm|cm|in|pt|pc)/,
+            percentRE: /[\-\+]?0|[\-\+]?\d+%/,
+            angleRE: /0|\-?\d+(deg|rad|grad)/,
+
+            getProps: function() {
+                if( this.changed() ) {
+                    this._props = this.parseCss( this._css = this.getCss() );
+                }
+                return this._props;
+            },
+
+            getCss: function() {
+                return this.element.currentStyle.getAttribute( this.cssProperty );
+            },
+
+            isActive: function() {
+                return !!this.getProps();
+            },
+
+            changed: function() {
+                return this._css !== this.getCss();
+            }
+        };
+
+
+
+        function BackgroundGradientStyleInfo( el ) {
+            this.element = el;
+        }
+        merge( BackgroundGradientStyleInfo.prototype, styleBase, {
+
+            cssProperty: 'background-gradient',
+
+            /*
+            [<point> || <angle>,]? <stop>, <stop> [, <stop>]*
+            point =
+            angle = 0 | <number>deg | <number>rad | <number>grad
+            stop = <color> [ <percentage> | <length> ]
+            */
+
+            /*parseRE: new RegExp(
+                '^\\s*((P\\s+A)|(A\\s+P)\\s*,\\s*)?(S)\\s*,\\s*(S)((\\s*,\\s*(S))*)?\\s*$'
+                    .replace( /P/g, '(top|bottom|right|left)' )
+            ),*/
+
+            bgPosRE: / /,
+            angleRE: / /,
+            stopRE: / /,
+
+            parseCss: function( css ) {
+                var p = null, m,
+                    parts = css && css.split( /\\s*,\\s*/ ),
+                    part, i, len;
+
+                if( parts ) {
+                    part = parts[0];
+                    i = 0;
+                    len = parts.length;
+
+                    if( len >= 2 ) {
+                        if( part.match(  ) ) {
+
+                        }
+
+                        for( ; i < len; i++ ) {
+
+                        }
+                    }
+
+                    for( ; i < len; i++ ) {
+                        part = parts[i];
+                        if( i === 0 && ( m = part.match( this.bgPosRE ) || part.match( this.angleRE ) ) ) {
+
+                        }
+                    }
+                }
+
+                return p;
+            }
+
+        } );
+
+
+
+
+        function BorderRadiusStyleInfo( el ) {
+            this.element = el;
+        }
+        merge( BorderRadiusStyleInfo.prototype, styleBase, {
+
+            cssProperty: 'border-radius',
+
+            parseRE: new RegExp(
+                '^G(\\/G)?$'.replace( /G/g, '\\s*(L)(\\s+(L))?(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, styleBase.lengthRE.source + '|' + styleBase.percentRE.source ) )
+            ),
+
+            parseCss: function( css ) {
+                var p = null, x, y, c,
+                    hasNonZero = false,
+                    m = css && css.match( this.parseRE );
+
+                function len( v ) {
+                    return new Length( v );
+                }
+
+                if( m ) {
+                    x = {
+                        tl: len( m[1] ),
+                        tr: len( m[4] || m[1] ),
+                        br: len( m[7] || m[1] ),
+                        bl: len( m[10] || m[4] || m[1] )
+                    };
+                    for( c in x ) {
+                        if( x.hasOwnProperty( c ) && x[c].getNumber() !== 0 ) {
+                            hasNonZero = true;
+                        }
+                    }
+
+                    if( m[12] ) {
+                        y = {
+                            tl: len( m[13] ),
+                            tr: len( m[16] || m[13] ),
+                            br: len( m[19] || m[13] ),
+                            bl: len( m[22] || m[16] || m[13] )
+                        };
+                        for( c in y ) {
+                            if( y.hasOwnProperty( c ) && y[c].getNumber() !== 0 ) {
+                                hasNonZero = true;
+                            }
+                        }
+                    } else {
+                        y = x;
+                    }
+
+                    // Treat all-zero values the same as no value
+                    if( hasNonZero ) {
+                        p = { x: x, y : y };
+                    }
+                }
+
+                return p;
+            },
+
+            getBoxPath: function( el, w, h ) {
+                var r, instructions, values, str = '', i,
+                    hw = w / 2, hh = h / 2,
+                    min = Math.min, max = Math.max, round = Math.round;
+
+                if( this.isActive() ) {
+                    r = this.getProps();
+                    instructions = [ 'm', 'qy', 'l', 'qx', 'l', 'qy', 'l', 'qx' ];
+
+                    // TODO: this math is too simple, needs to be changed to match the spec: instead of reducing each length to
+                    // 50%, only reduce values if adjacent corner ellipses would intersect, and reduce all corners proportionally
+                    values = [
+                        1 + ',' + round( min( r.y.tl.pixels(el, h), hh ) ),
+                        round( min( r.x.tl.pixels(el, w), hw ) ) + ',' + 1,
+                        round( max( w - r.x.tr.pixels(el, w), hw ) ) + ',' + 1,
+                        w + ',' + round( min( r.y.tr.pixels(el, h), hh ) ),
+                        w + ',' + round( max( h - r.y.br.pixels(el, h), hh ) ),
+                        round( max( w - r.x.br.pixels(el, w), hw ) ) + ',' + h,
+                        round( min( r.x.bl.pixels(el, w), hw ) ) + ',' + h,
+                        1 + ',' + round( max( h - r.y.bl.pixels(el, h), hh ) )
+                    ];
+
+                    for( i = 0; i < 8; i++ ) {
+                        str += instructions[i] + values[i]
+                    }
+                    str += ' x e';
+                } else {
+                    // simplified path for non-rounded box
+                    str = 'm 1,1 l ' + w + ',1 l ' + w + ',' + h + ' l 1,' + h + ' x e';
+                }
+                return str;
+            }
+
+        } );
+
+
+
+        function BorderImageStyleInfo( el ) {
+            this.element = el;
+        }
+        merge( BorderImageStyleInfo.prototype, styleBase, {
+
+            cssProperty: 'border-image',
+
+            parseRE: new RegExp(
+                '^\\s*url\\(\\s*([^\\s\\)]+)\\s*\\)\\s+N(\\s+N)?(\\s+N)?(\\s+N)?(\\s*\\/\\s*L(\\s+L)?(\\s+L)?(\\s+L)?)?RR\\s*$'
+                        .replace( /N/g, '(\\d+|' + styleBase.percentRE.source + ')' )
+                        .replace( /L/g, styleBase.lengthRE.source )
+                        .replace( /R/g, '(\\s+(stretch|round|repeat))?' )
+            ),
+
+            parseCss: function( css ) {
+                var cs = this.element.currentStyle,
+                    p = null,
+                    m = css && css.match( this.parseRE );
+
+                if( m ) {
+                    p = {
+                        src: m[1],
+
+                        slice: {
+                            t: m[2],
+                            r: m[4] || m[2],
+                            b: m[6] || m[2],
+                            l: m[8] || m[4] || m[2]
+                        },
+
+                        width: m[9] ? {
+                            t: new Length( m[10] ),
+                            r: new Length( m[12] || m[10] ),
+                            b: new Length( m[14] || m[10] ),
+                            l: new Length( m[16] || m[12] || m[10] )
+                        } : {
+                            t: parseInt( cs.borderTopWidth, 10 ),
+                            r: parseInt( cs.borderRightWidth, 10 ),
+                            b: parseInt( cs.borderBottomWidth, 10 ),
+                            l: parseInt( cs.borderLeftWidth, 10 )
+                        }
+                    }
+                }
+
+                return p;
+            }
+        } );
+
+
+        function BoxShadowStyleInfo( el ) {
+            this.element = el;
+        }
+        merge( BoxShadowStyleInfo.prototype, styleBase, {
+
+            cssProperty: 'box-shadow',
+
+            noneRE: /^\s*none\s*$/,
+            insetRE: /(inset)/,
+            lengthsRE: new RegExp( '\\s*(L)\\s+(L)(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, styleBase.lengthRE.source ) ),
+
+            parseCss: function( css ) {
+                var p = null, m;
+
+                if( css && !this.noneRE.test( css ) ) {
+                    p = {};
+
+                    // check for inset keyword
+                    css = css.replace( this.insetRE, '' );
+                    p.inset = !!RegExp.$1;
+
+                    // get the color
+                    css = css.replace( this.colorRE, '' );
+                    p.color = RegExp.$1;
+
+                    // all that's left should be lengths; map them to xOffset/yOffset/blurRadius/spreadRadius
+                    m = css.match( this.lengthsRE );
+                    if( m ) {
+                        p.xOffset = new Length( m[1] );
+                        p.yOffset = new Length( m[3] );
+                        p.blur = new Length( m[6] || '0' );
+                        p.spread = new Length( m[9] || '0' );
+                    } else {
+                        // Something unknown was present; give up.
+                        p = null;
+                    }
+                }
+
+                return p;
+            }
+        } );
+
+
+
+
+
+        function RootRenderer( el, styleInfos ) {
+            this.element = el;
+            this.styleInfos = styleInfos;
+        }
+        merge( RootRenderer.prototype, {
+
+            /**
+             * Get the element's offsets from its nearest positioned ancestor. More
+             * accurate than just using offsetTop/Left.
+             */
+            getOffsets: function() {
+                var el = this.element,
+                    o = { x: 0, y : 0 };
+                do {
+                    o.x += el.offsetLeft;
+                    o.y += el.offsetTop;
+                    el = el.offsetParent;
+                } while( el && el.currentStyle.position === 'static' );
+                return o;
+            },
+
+            isActive: function() {
+                var infos = this.styleInfos;
+                for( var i in infos ) {
+                    if( infos.hasOwnProperty( i ) && infos[ i ].isActive() ) {
+                        return true;
+                    }
+                }
+                return false;
+            },
+
+            updateVis: function() {
+                if( this.isActive() ) {
+                    var cs = this.element.currentStyle;
+                    this.getBox().style.display = ( cs.visibility === 'hidden' || cs.display === 'none' ) ? 'none' : '';
+                }
+            },
+
+            updatePos: function() {
+                if( this.isActive() ) {
+                    var el = this.element,
+                        s = this.getBox().style,
+                        x = 0, y = 0;
+
+                    // Get the element's offsets from its nearest positioned ancestor. More
+                    // accurate than just using offsetTop/Left.
+                    do {
+                        x += el.offsetLeft;
+                        y += el.offsetTop;
+                        el = el.offsetParent;
+                    } while( el && el.currentStyle.position === 'static' );
+
+                    s.left = x;
+                    s.top = y;
+                }
+            },
+
+            updateSize: function() {
+                if( this.isActive() ) {
+                    var el = this.element,
+                        s = this.getBox().style,
+                        i, len;
+
+                    s.width = el.offsetWidth;
+                    s.height = el.offsetHeight;
+                }
+            },
+
+            updateProps: function() {
+                // NO-OP, let individual renderers handle this
+            },
+
+            getBox: function() {
+                var box = this._box, el, s;
+                if( !box ) {
+                    el = this.element;
+                    box = this._box = document.createElement( 'css3-container' );
+                    s = box.style;
+
+                    s.position = 'absolute';
+                    s.zIndex = el.currentStyle.zIndex;
+
+                    el.parentNode.insertBefore( box, el );
+                }
+                return box;
+            },
+
+            destroy: function() {
+                var box = this._box;
+                if( box && box.parentNode ) {
+                    box.parentNode.removeChild( box );
+                }
+                delete this._box;
+            }
+
+        } );
+
+
+
+        function BackgroundAndBorderRenderer( el, styleInfos, parent ) {
+            this.element = el;
+            this.styleInfos = styleInfos;
+            this.parent = parent;
+        }
+        BackgroundAndBorderRenderer.prototype = {
+
+            zIndex: 200,
+
+            isActive: function() {
+                var si = this.styleInfos;
+                return si.borderImage.isActive() ||
+                       si.borderRadius.isActive() ||
+                       si.backgroundGradient.isActive() ||
+                       ( si.boxShadow.isActive() && si.boxShadow.getProps().inset );
+            },
+
+            updatePos: function() {
+                // NO-OP
+            },
+
+            updateVis: function() {
+                // NO-OP
+            },
+
+            updateSize: function() {
+                if( this.isActive() ) {
+                    this.drawBg();
+                    //this.drawBorder();
+                }
+            },
+
+            updateProps: function() {
+                var si = this.styleInfos;
+                if( si.borderImage.changed() || si.borderRadius.changed() || si.backgroundGradient.changed() ) {
+                    this.destroy();
+                    if( this.isActive() ) {
+                        this.updateSize();
+                    }
+                }
+            },
+
+            drawBg: function() {
+                var cont = this.getBox(),
+                    el = this.element,
+                    shape = this._bgShape,
+                    w = el.offsetWidth,
+                    h = el.offsetHeight,
+                    s, color, img;
+
+                if( !shape ) {
+                    shape = this._bgShape = document.createElement( vmlns + ':shape' );
+                    cont.appendChild( shape );
+                    shape.coordorigin = '1,1';
+                    shape.stroked = false;
+                    s = shape.style;
+                    s.position = 'absolute';
+                    s.left = s.top = 0;
+                    s.behavior = 'url(#default#VML)';
+                }
+
+                shape.coordsize = w + ',' + h;
+                shape.path = this.styleInfos.borderRadius.getBoxPath( this.element, w, h );
+                s = shape.style;
+                s.width = w;
+                s.height = h;
+
+                color = this.getBgColor();
+                if( color === 'transparent' ) {
+                    shape.filled = false;
+                } else {
+                    shape.filled = true;
+                    shape.fillcolor = color;
+                }
+
+                img = this.getBgImage();
+                if( img && img !== 'none' ) {
+                    
+                }
+            },
+
+            getBgColor: function() {
+                var el = this.element,
+                    rs = el.runtimeStyle,
+                    color;
+                rs.backgroundColor = '';
+                color = el.currentStyle.backgroundColor;
+                rs.backgroundColor = 'transparent';
+                return color;
+            },
+
+            getBgImage: function() {
+                var el = this.element,
+                    rs = el.runtimeStyle,
+                    img;
+                rs.backgroundImage = '';
+                img = el.currentStyle.backgroundImage;
+                rs.backgroundImage = 'none';
+                return img;
+            },
+
+            getBox: function() {
+                var box = this._box,
+                    infos = this.styleInfos,
+                    s;
+
+                if( !box ) {
+                    box = this._box = document.createElement( 'bg-and-border' );
+                    s = box.style;
+                    s.position = 'absolute';
+                    s.width = s.height = '100%';
+                    s.zIndex = this.zIndex;
+                    this.parent.getBox().appendChild( box );
+                }
+
+                return box;
+            },
+
+            destroy: function() {
+                var box = this._box;
+                if( box && box.parentNode ) {
+                    box.parentNode.removeChild( box );
+                }
+                delete this._box;
+                delete this._bgShape;
+                delete this._borderShape;
+            }
+
+        };
+
+
+
+        function BoxShadowRenderer( el, styleInfos, parent ) {
+            this.element = el;
+            this.styleInfos = styleInfos;
+            this.parent = parent;
+        }
+        merge( BoxShadowRenderer.prototype, {
+
+            outsetZIndex: 100,
+            insetZIndex: 300,
+
+            isActive: function() {
+                return this.styleInfos.boxShadow.isActive();
+            },
+
+            updatePos: function() {
+                // NO-OP
+            },
+
+            updateVis: function() {
+                // NO-OP
+            },
+
+            updateSize: function() {
+                if( this.isActive() ) {
+                    var box = this.getBox(),
+                        shape = box.firstChild,
+                        s,
+                        el = this.element,
+                        bs = this.styleInfos.boxShadow.getProps(),
+                        spread = bs.spread.pixels( el ),
+                        w = el.offsetWidth,
+                        h = el.offsetHeight;
+
+                    if( bs.inset ) {
+                        // if inset, the width does not include any element border
+                        s = el.currentStyle;
+                        w -= ( parseInt( s.borderLeftWidth ) || 0 ) + ( parseInt( s.borderRightWidth ) || 0 );
+                        h -= ( parseInt( s.borderTopWidth ) || 0 ) + ( parseInt( s.borderBottomWidth ) || 0 );
+
+                        // update width of inner element
+                        s = box.firstChild.style;
+                        s.width = w - spread * 2;
+                        s.height = h - spread * 2;
+                    } else {
+                        w += spread * 2;
+                        h += spread * 2;
+                    }
+
+                    s = shape.style;
+                    s.width = w;
+                    s.height = h;
+
+                    shape.coordsize = w + ',' + h;
+                    shape.path = this.styleInfos.borderRadius.getBoxPath( el, w, h );
+                }
+            },
+
+            updateProps: function() {
+                var si = this.styleInfos;
+                if( si.boxShadow.changed() || si.borderRadius.changed() ) {
+                    this.destroy();
+                    if( this.isActive() ) {
+                        this.updateSize();
+                    }
+                }
+            },
+
+            getBox: function() {
+                var box = this._box, s, ss, cs, bs, xOff, yOff, spread, blur, shape, el;
+                if( !box ) {
+                    el = this.element;
+                    box = this._box = document.createElement( 'box-shadow' );
+                    bs = this.styleInfos.boxShadow.getProps();
+                    xOff = bs.xOffset.pixels( el );
+                    yOff = bs.yOffset.pixels( el );
+                    blur = bs.blur.pixels( el );
+                    spread = bs.spread.pixels( el );
+
+                    //adjust to approximate the right blur in IE's filter's units
+                    //TODO this needs work to match the blur more exactly
+                    blur = Math.round( blur / 2 );
+                    /*if( blur % 2 ) {
+                        blur++;
+                    }*/
+
+                    s = box.style;
+                    s.position = 'absolute';
+
+                    shape = document.createElement( vmlns + ':shape' );
+                    box.appendChild( shape );
+                    shape.coordorigin = '1,1';
+                    ss = shape.style;
+                    ss.position = 'absolute';
+                    ss.width = ss.height = '100%';
+                    ss.behavior = 'url(#default#VML)';
+
+                    if( bs.inset ) {
+                        cs = this.element.currentStyle;
+                        s.overflow = 'hidden';
+                        s.left = parseInt( cs.borderLeftWidth, 10 ) || 0;
+                        s.top = parseInt( cs.borderTopWidth, 10 ) || 0;
+                        s.zIndex = this.insetZIndex;
+
+                        s = shape.style;
+                        s.position = 'absolute';
+
+                        //TODO handle wider border if needed due to very large offsets or spread
+                        s.left = xOff - 20 + spread - blur;
+                        s.top = yOff - 20 + spread - blur;
+                        s.border = '20px solid ' + bs.color;
+                    } else {
+                        s.left = xOff - blur - spread;
+                        s.top = yOff - blur - spread;
+                        s.zIndex = this.outsetZIndex;
+
+                        shape.filled = true;
+                        shape.fillcolor = bs.color;
+                    }
+
+                    // apply blur filter to the outer or inner element
+                    if( blur > 0 ) {
+                        ss.filter = 'progid:DXImageTransform.Microsoft.blur(pixelRadius=' + blur + ')';
+                    }
+
+                    this.parent.getBox().appendChild( box );
+                }
+                return box;
+            },
+
+            destroy: function() {
+                var box = this._box;
+                if( box && box.parentNode ) {
+                    box.parentNode.removeChild( box );
+                }
+                delete this._box;
+            }
+
+        } );
+
+
+
+
+
+
+
+        /**
+         * Update position and/or size as necessary. Both move and resize events call
+         * this rather than the updatePos/Size functions because sometimes, particularly
+         * during page load, one will fire but the other won't.
+         */
+        function update( force ) {
+            var el = element,
+                x = el.offsetLeft,
+                y = el.offsetTop,
+                w = el.offsetWidth,
+                h = el.offsetHeight,
+                i, len;
+
+            if( force || x !== lastX || y !== lastY ) {
+                for( i = 0, len = renderers.length; i < len; i++ ) {
+                    renderers[i].updatePos();
+                }
+                lastX = x;
+                lastY = y;
+            }
+            if( force || w !== lastW || h !== lastH ) {
+                for( i = 0, len = renderers.length; i < len; i++ ) {
+                    renderers[i].updateSize();
+                }
+                lastW = w;
+                lastH = h;
+            }
+        }
+
+        /**
+         * Handle property changes to trigger update when appropriate.
+         * TODO try to find a way to make this get triggered on style change from CSS hover/parent
+         * class change/etc. rather than only explicit element.style changes
+         */
+        function propChanged() {
+            var name = event.propertyName,
+                i, len;
+            if( name === 'style.display' || name === 'style.visibility' ) {
+                for( i = 0, len = renderers.length; i < len; i++ ) {
+                    renderers[i].updateVis();
+                }
+            }
+            else { //if( event.propertyName === 'style.boxShadow' ) {
+                for( i = 0, len = renderers.length; i < len; i++ ) {
+                    renderers[i].updateProps();
+                }
+            }
+        }
+
+
+        function ancestorPropChanged() {
+            var name = event.propertyName;
+            if( name === 'className' || name === 'id' ) {
+                propChanged();
+            }
+        }
+
+
+        function cleanup() {
+            var i, len;
+
+            // destroy any active renderers
+            for( i = 0, len = renderers.length; i < len; i++ ) {
+                renderers[i].destroy();
+            }
+            renderers = null;
+            styleInfos = null;
+
+            // remove any ancestor propertychange listeners
+            if( ancestors ) {
+                for( i = 0, len = ancestors.length; i < len; i++ ) {
+                    ancestors[i].detachEvent( 'onpropertychange', ancestorPropChanged );
+                }
+                ancestors = null;
+            }
+        }
+
+
+
+        function initAncestorPropChangeListeners() {
+            var watch = element.currentStyle.getAttribute( '-watch-ancestors' ),
+                i, a;
+            if( watch ) {
+                ancestors = [];
+                watch = parseInt( watch, 10 );
+                i = 0;
+                a = element.parentNode;
+                while( a && ( watch === 'NaN' || i++ < watch ) ) {
+                    ancestors.push( a );
+                    a.attachEvent( 'onpropertychange', ancestorPropChanged );
+                    a = a.parentNode;
+                }
+            }
+        }
+
+
+        /**
+         * Initialize
+         */
+        function init() {
+            // add vml namespace
+            if( document.namespaces && !document.namespaces[ vmlns ] ) {
+                document.namespaces.add( vmlns, 'urn:schemas-microsoft-com:vml' );
+            }
+
+            // force layout so move/resize events will fire
+            element.runtimeStyle.zoom = 1;
+
+            // force positioning so relative z-indexes are calculated correctly
+            // TODO is there a less invasive way to do this?
+            if( element.currentStyle.position === 'static' ) {
+                element.runtimeStyle.position = 'relative';
+            }
+
+            // Create the style infos and renderers
+            styleInfos = {
+                boxShadow: new BoxShadowStyleInfo( element ),
+                borderImage: new BorderImageStyleInfo( element ),
+                backgroundGradient: new BackgroundGradientStyleInfo( element ),
+                borderRadius: new BorderRadiusStyleInfo( element )
+            };
+
+            var rootRenderer = new RootRenderer( element, styleInfos );
+            renderers = [
+                rootRenderer,
+                new BoxShadowRenderer( element, styleInfos, rootRenderer ),
+                new BackgroundAndBorderRenderer( element, styleInfos, rootRenderer )
+                //new BorderImageRenderer( element, styleInfos, rootRenderer ),
+            ];
+
+            // Add property change listeners to ancestors if requested
+            initAncestorPropChangeListeners();
+
+            update();
+        }
+
+    </script>
+
+</PUBLIC:COMPONENT>
