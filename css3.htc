@@ -50,7 +50,7 @@
             unitRE: /(px|em|ex|mm|cm|in|pt|pc|%)$/,
 
             getNumber: function() {
-                return parseInt( this.val, 10 );
+                return parseFloat( this.val, 10 );
             },
 
             getUnit: function() {
@@ -108,8 +108,8 @@
 
         var styleBase = {
             colorRE: /(#[0-9A-Fa-f]{3}|#[0-9A-Fa-f]{6})|rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
-            lengthRE: /[\-\+]?0|[\-\+]?\d+(px|em|ex|mm|cm|in|pt|pc)/,
-            percentRE: /[\-\+]?0|[\-\+]?\d+%/,
+            lengthRE: /[\-\+]?0|[\-\+]?\d+\.?\d*(px|em|ex|mm|cm|in|pt|pc)/,
+            percentRE: /[\-\+]?0|[\-\+]?\d+\.?\d*%/,
             angleRE: /0|\-?\d+(deg|rad|grad)/,
 
             getProps: function() {
@@ -254,23 +254,50 @@
             getBoxPath: function( el, w, h ) {
                 var r, instructions, values, str = '', i,
                     hw = w / 2, hh = h / 2,
-                    min = Math.min, max = Math.max, round = Math.round;
+                    min = Math.min, max = Math.max, round = Math.round,
+                    tlX, tlY, trX, trY, brX, brY, blX, blY, f;
 
                 if( this.isActive() ) {
                     r = this.getProps();
                     instructions = [ 'm', 'qy', 'l', 'qx', 'l', 'qy', 'l', 'qx' ];
 
-                    // TODO: this math is too simple, needs to be changed to match the spec: instead of reducing each length to
-                    // 50%, only reduce values if adjacent corner ellipses would intersect, and reduce all corners proportionally
+                    tlX = r.x.tl.pixels( el, w );
+                    tlY = r.y.tl.pixels( el, h );
+                    trX = r.x.tr.pixels( el, w );
+                    trY = r.y.tr.pixels( el, h );
+                    brX = r.x.br.pixels( el, w );
+                    brY = r.y.br.pixels( el, h );
+                    blX = r.x.bl.pixels( el, w );
+                    blY = r.y.bl.pixels( el, h );
+
+                    // If any corner ellipses overlap, reduce them all by the appropriate factor. This formula
+                    // is taken straight from the CSS3 Backgrounds and Borders spec.
+                    f = Math.min(
+                        w / ( tlX + trX ),
+                        h / ( trY + brY ),
+                        w / ( blX + brX ),
+                        h / ( tlY + blY )
+                    );
+                    if( f < 1 ) {
+                        tlX *= f;
+                        tlY *= f;
+                        trX *= f;
+                        trY *= f;
+                        brX *= f;
+                        brY *= f;
+                        blX *= f;
+                        blY *= f;
+                    }
+
                     values = [
-                        1 + ',' + round( min( r.y.tl.pixels(el, h), hh ) ),
-                        round( min( r.x.tl.pixels(el, w), hw ) ) + ',' + 1,
-                        round( max( w - r.x.tr.pixels(el, w), hw ) ) + ',' + 1,
-                        w + ',' + round( min( r.y.tr.pixels(el, h), hh ) ),
-                        w + ',' + round( max( h - r.y.br.pixels(el, h), hh ) ),
-                        round( max( w - r.x.br.pixels(el, w), hw ) ) + ',' + h,
-                        round( min( r.x.bl.pixels(el, w), hw ) ) + ',' + h,
-                        1 + ',' + round( max( h - r.y.bl.pixels(el, h), hh ) )
+                        1 + ',' + round( tlY ),
+                        round( tlX ) + ',' + 1,
+                        round( w - trX ) + ',' + 1,
+                        w + ',' + round( trY ),
+                        w + ',' + round( h - brY ),
+                        round( w - brX ) + ',' + h,
+                        round( blX ) + ',' + h,
+                        1 + ',' + round( h - blY )
                     ];
 
                     for( i = 0; i < 8; i++ ) {
