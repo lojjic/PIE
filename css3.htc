@@ -253,8 +253,7 @@
 
             getBoxPath: function( el, w, h ) {
                 var r, instructions, values, str = '', i,
-                    hw = w / 2, hh = h / 2,
-                    min = Math.min, max = Math.max, round = Math.round,
+                    floor = Math.floor, ceil = Math.ceil,
                     tlX, tlY, trX, trY, brX, brY, blX, blY, f;
 
                 if( this.isActive() ) {
@@ -290,14 +289,14 @@
                     }
 
                     values = [
-                        1 + ',' + round( tlY ),
-                        round( tlX ) + ',' + 1,
-                        round( w - trX ) + ',' + 1,
-                        w + ',' + round( trY ),
-                        w + ',' + round( h - brY ),
-                        round( w - brX ) + ',' + h,
-                        round( blX ) + ',' + h,
-                        1 + ',' + round( h - blY )
+                        1 + ',' + floor( tlY ),
+                        floor( tlX ) + ',' + 1,
+                        ceil( w - trX ) + ',' + 1,
+                        w + ',' + floor( trY ),
+                        w + ',' + ceil( h - brY ),
+                        ceil( w - brX ) + ',' + h,
+                        floor( blX ) + ',' + h,
+                        1 + ',' + ceil( h - blY )
                     ];
 
                     for( i = 0; i < 8; i++ ) {
@@ -546,7 +545,7 @@
                 if( si.borderImage.changed() || si.borderRadius.changed() || si.backgroundGradient.changed() ) {
                     this.destroy();
                     if( this.isActive() ) {
-                        this.updateSize();
+                        this.drawBg();
                     }
                 }
             },
