@@ -516,6 +516,7 @@
         BackgroundAndBorderRenderer.prototype = {
 
             zIndex: 200,
+            cssUrlRE: /^\s*url\(\s*"?([^\s"]*)"?\s*\)\s*$/,
 
             isActive: function() {
                 var si = this.styleInfos;
@@ -535,7 +536,8 @@
 
             updateSize: function() {
                 if( this.isActive() ) {
-                    this.drawBg();
+                    this.drawBgColor();
+                    this.drawBgImage();
                     //this.drawBorder();
                 }
             },
@@ -545,28 +547,29 @@
                 if( si.borderImage.changed() || si.borderRadius.changed() || si.backgroundGradient.changed() ) {
                     this.destroy();
                     if( this.isActive() ) {
-                        this.drawBg();
+                        this.drawBgColor();
+                        this.drawBgImage();
                     }
                 }
             },
 
-            drawBg: function() {
+            drawBgColor: function() {
                 var cont = this.getBox(),
                     el = this.element,
-                    shape = this._bgShape,
+                    shape = this._bgColorShape,
                     w = el.offsetWidth,
                     h = el.offsetHeight,
-                    s, color, img;
+                    s, color;
 
                 if( !shape ) {
-                    shape = this._bgShape = document.createElement( vmlns + ':shape' );
+                    shape = this._bgColorShape = document.createElement( vmlns + ':shape' );
                     cont.appendChild( shape );
-                    shape.coordorigin = '1,1';
-                    shape.stroked = false;
                     s = shape.style;
                     s.position = 'absolute';
                     s.left = s.top = 0;
                     s.behavior = 'url(#default#VML)';
+                    shape.coordorigin = '1,1';
+                    shape.stroked = false;
                 }
 
                 shape.coordsize = w + ',' + h;
@@ -574,6 +577,7 @@
                 s = shape.style;
                 s.width = w;
                 s.height = h;
+                s.zIndex = 1;
 
                 color = this.getBgColor();
                 if( color === 'transparent' ) {
@@ -582,10 +586,94 @@
                     shape.filled = true;
                     shape.fillcolor = color;
                 }
+            },
+
+            drawBgImage: function() {
+                var cont = this.getBox(),
+                    el = this.element,
+                    shape = this._bgImageShape,
+                    w = el.offsetWidth,
+                    h = el.offsetHeight,
+                    s, img;
+
+                if( !shape ) {
+                    shape = this._bgImageShape = document.createElement( vmlns + ':shape' );
+                    shape.appendChild( shape.fill = document.createElement( vmlns + ':fill' ) );
+                    cont.appendChild( shape );
+                    s = shape.style;
+                    s.position = 'absolute';
+                    s.left = s.top = 0;
+                    s.behavior = 'url(#default#VML)';
+                    shape.coordorigin = '1,1';
+                    shape.stroked = false;
+                    shape.fill.type = 'tile';
+                    shape.fillcolor = 'none';
+                }
+
+                shape.coordsize = w + ',' + h;
+                shape.path = this.styleInfos.borderRadius.getBoxPath( this.element, w, h );
+                s = shape.style;
+                s.width = w;
+                s.height = h;
+                s.zIndex = 2;
 
                 img = this.getBgImage();
-                if( img && img !== 'none' ) {
-                    
+                if( img === 'none' ) {
+                    shape.filled = false;
+                } else {
+                    shape.filled = true;
+                    shape.fill.src = img;
+                    this.positionBgImage( shape );
+                }
+            },
+
+            positionBgImage: function( shape ) {
+                this.withImgSize( shape.fill.src, function( size ) {
+                    var fill = shape.fill,
+                        el = this.element,
+                        elW = el.offsetWidth,
+                        elH = el.offsetHeight,
+                        cs = el.currentStyle,
+                        repeat = cs.backgroundRepeat,
+                        posX = cs.backgroundPositionX,
+                        posY = cs.backgroundPositionY,
+                        pxX, pxY,
+                        clipT = 0, clipR = elW, clipB = elH, clipL = 0;
+
+                    // Positioning - find the pixel offset from the top/left and convert to a ratio
+                    posX = ( posX === 'left' ? '0' : posX === 'center' ? '50%' : posX === 'right' ? '100%' : posX );
+                    posY = ( posY === 'top' ? '0' : posY === 'center' ? '50%' : posY === 'bottom' ? '100%' : posY );
+                    pxX = new Length( posX ).pixels( el, elW - size.w );
+                    pxY = new Length( posY ).pixels( el, elH - size.h );
+                    fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
+
+                    // Repeating - clip the image shape
+                    if( repeat !== 'repeat' ) {
+                        if( repeat === 'repeat-x' || repeat === 'no-repeat' ) {
+                            clipT = pxY;
+                            clipB = pxY + size.h;
+                        }
+                        if( repeat === 'repeat-y' || repeat === 'no-repeat' ) {
+                            clipL = pxX;
+                            clipR = pxX + size.w;
+                        }
+                        shape.style.clip = 'rect(' + clipT + 'px,' + clipR + 'px,' + clipB + 'px,' + clipL + 'px)';
+                    }
+                } );
+            },
+
+            withImgSize: function( src, func ) {
+                var sizes = this._imgSizes || ( this._imgSizes = {} ),
+                    size = sizes[ src ], img;
+                if( size ) {
+                    func( size );
+                } else {
+                    img = new Image();
+                    img.onload = function() {
+                        size = sizes[ src ] = { w: img.width, h: img.height };
+                        func( size );
+                    };
+                    img.src = src;
                 }
             },
 
@@ -604,7 +692,7 @@
                     rs = el.runtimeStyle,
                     img;
                 rs.backgroundImage = '';
-                img = el.currentStyle.backgroundImage;
+                img = el.currentStyle.backgroundImage.replace( this.cssUrlRE, "$1" );
                 rs.backgroundImage = 'none';
                 return img;
             },
@@ -632,7 +720,8 @@
                     box.parentNode.removeChild( box );
                 }
                 delete this._box;
-                delete this._bgShape;
+                delete this._bgColorShape;
+                delete this._bgImageShape;
                 delete this._borderShape;
             }
 
