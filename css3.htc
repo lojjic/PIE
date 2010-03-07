@@ -752,8 +752,8 @@
                     stroke = shape.stroke;
                     stroke.weight = widths[ letter ] + 'px';
                     stroke.color = colors[ letter ];
-                    stroke.dashstyle = styles[ letter ] === 'dashed' ? '2 2' : styles[ letter ] === 'dotted' ? '1 1' : 'solid';
-                    stroke.linestyle = styles[ letter ] === 'double' && widths[ letter ] > 2 ? 'ThinThin' : 'Single'
+                    stroke.dashstyle = styles[ letter ] === 'dashed' ? '2 2' : styles[ letter ] === 'dotted' ? '0 1' : 'solid';
+                    stroke.linestyle = styles[ letter ] === 'double' && widths[ letter ] > 2 ? 'ThinThin' : 'Single';
                 }
             },
 
