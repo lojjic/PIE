@@ -260,6 +260,7 @@
                 if( !shrink ) {
                     shrink = 0;
                 }
+                shrink = floor( shrink );
 
                 if( this.isActive() ) {
                     r = this.getProps();
@@ -723,7 +724,7 @@
                     sides = [ 'Top', 'Right', 'Bottom', 'Left' ],
                     side, letter, wid,
                     widths = {}, styles = {}, colors = {},
-                    shape, s, i;
+                    shape, stroke, s, i;
 
                 el.runtimeStyle.borderColor = "";
                 for( i = 0; i < 4; i++ ) {
@@ -748,10 +749,11 @@
                     s.zIndex = 3;
                     shape.filled = false;
                     shape.stroked = widths[ letter ] > 0;
-                    shape.stroke.weight = widths[ letter ] + 'px';
-                    shape.stroke.color = colors[ letter ];
-                    shape.stroke.dashstyle = styles[ letter ] === 'dashed' ? '2 2' : styles[ letter ] === 'dotted' ? '1 1' : 'solid';
-                    shape.stroke.linestyle = styles[ letter ] === 'double' && widths[ letter ] > 2 ? 'ThinThin' : 'Single'
+                    stroke = shape.stroke;
+                    stroke.weight = widths[ letter ] + 'px';
+                    stroke.color = colors[ letter ];
+                    stroke.dashstyle = styles[ letter ] === 'dashed' ? '2 2' : styles[ letter ] === 'dotted' ? '1 1' : 'solid';
+                    stroke.linestyle = styles[ letter ] === 'double' && widths[ letter ] > 2 ? 'ThinThin' : 'Single'
                 }
             },
 
