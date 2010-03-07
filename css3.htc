@@ -251,14 +251,18 @@
                 return p;
             },
 
-            getBoxPath: function( el, w, h ) {
+            getBoxPath: function( el, w, h, shrink, side ) {
                 var r, instructions, values, str = '', i,
                     floor = Math.floor, ceil = Math.ceil,
+                    deg = 65535,
                     tlX, tlY, trX, trY, brX, brY, blX, blY, f;
+
+                if( !shrink ) {
+                    shrink = 0;
+                }
 
                 if( this.isActive() ) {
                     r = this.getProps();
-                    instructions = [ 'm', 'qy', 'l', 'qx', 'l', 'qy', 'l', 'qx' ];
 
                     tlX = r.x.tl.pixels( el, w );
                     tlY = r.y.tl.pixels( el, h );
@@ -288,24 +292,49 @@
                         blY *= f;
                     }
 
-                    values = [
-                        1 + ',' + floor( tlY ),
-                        floor( tlX ) + ',' + 1,
-                        ceil( w - trX ) + ',' + 1,
-                        w + ',' + floor( trY ),
-                        w + ',' + ceil( h - brY ),
-                        ceil( w - brX ) + ',' + h,
-                        floor( blX ) + ',' + h,
-                        1 + ',' + ceil( h - blY )
-                    ];
+                    if (side) {
+                        switch (side.charAt(0).toLowerCase()) {
+                            case 't':
+                                str = 'al' + floor( tlX ) + ',' + floor( tlY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( 135 * deg ) + ',' + ( -45 * deg ) +
+                                      'ae' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 90 * deg ) + ',' + ( -45 * deg );
+                                break;
+                            case 'r':
+                                str = 'al' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 45 * deg ) + ',' + ( -45 * deg ) +
+                                      'ae' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',0,' + ( -45 * deg );
+                                break;
+                            case 'b':
+                                str = 'al' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',' + ( -45 * deg ) + ',' + ( -45 * deg ) +
+                                      'ae' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -90 * deg ) + ',' + ( -45 * deg );
+                                break;
+                            case 'l':
+                                str = 'al' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -135 * deg ) + ',' + ( -45 * deg ) +
+                                      'ae' + floor( tlX ) + ',' + floor( blY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( -180 * deg ) + ',' + ( -45 * deg );
+                        }
+                    } else {
+                        instructions = [ 'm', 'qy', 'l', 'qx', 'l', 'qy', 'l', 'qx' ];
+                        values = [
+                            shrink + ',' + floor(tlY),
+                            floor(tlX) + ',' + shrink,
+                            ceil(w - trX) + ',' + shrink,
+                            ( w - shrink ) + ',' + floor(trY),
+                            ( w - shrink ) + ',' + ceil(h - brY),
+                            ceil(w - brX) + ',' + ( h - shrink ),
+                            floor(blX) + ',' + ( h - shrink ),
+                            shrink + ',' + ceil(h - blY)
+                        ];
 
-                    for( i = 0; i < 8; i++ ) {
-                        str += instructions[i] + values[i]
+                        for ( i = 0; i < 8; i++ ) {
+                            str += instructions[i] + values[i]
+                        }
+                        str += ' x e';
                     }
-                    str += ' x e';
                 } else {
                     // simplified path for non-rounded box
-                    str = 'm 1,1 l ' + w + ',1 l ' + w + ',' + h + ' l 1,' + h + ' x e';
+                    str = 'm' + shrink[3] + ',' + shrink[0] +
+                          'l' + ( w - shrink[1] ) + ',' + shrink[0] +
+                          'l' + ( w - shrink[1] ) + ',' + ( h - shrink[2] ) +
+                          'l' + shrink[3] + ',' + ( h - shrink[2] ) +
+                          'xe';
                 }
                 return str;
             }
@@ -517,6 +546,11 @@
 
             zIndex: 200,
             cssUrlRE: /^\s*url\(\s*"?([^\s"]*)"?\s*\)\s*$/,
+            borderWidths: {
+                thin: '1px',
+                medium: '3px',
+                thick: '5px'
+            },
 
             isActive: function() {
                 var si = this.styleInfos;
@@ -536,9 +570,7 @@
 
             updateSize: function() {
                 if( this.isActive() ) {
-                    this.drawBgColor();
-                    this.drawBgImage();
-                    //this.drawBorder();
+                    this.draw();
                 }
             },
 
@@ -547,10 +579,15 @@
                 if( si.borderImage.changed() || si.borderRadius.changed() || si.backgroundGradient.changed() ) {
                     this.destroy();
                     if( this.isActive() ) {
-                        this.drawBgColor();
-                        this.drawBgImage();
+                        this.draw();
                     }
                 }
+            },
+
+            draw: function() {
+                this.drawBgColor();
+                this.drawBgImage();
+                this.drawBorder();
             },
 
             drawBgColor: function() {
@@ -677,6 +714,47 @@
                 }
             },
 
+            drawBorder: function() {
+                var cont = this.getBox(),
+                    el = this.element,
+                    cs = el.currentStyle,
+                    w = el.offsetWidth,
+                    h = el.offsetHeight,
+                    sides = [ 'Top', 'Right', 'Bottom', 'Left' ],
+                    side, letter, wid,
+                    widths = {}, styles = {}, colors = {},
+                    shape, s, i;
+
+                el.runtimeStyle.borderColor = "";
+                for( i = 0; i < 4; i++ ) {
+                    side = sides[ i ];
+                    letter = side.charAt(0).toLowerCase();
+                    styles[ letter ] = cs[ 'border' + side + 'Style' ];
+                    colors[ letter ] = cs[ 'border' + side + 'Color' ];
+                    wid = cs[ 'border' + side + 'Width' ];
+                    widths[ letter ] = new Length( styles[ letter ] === 'none' ? '0' : ( this.borderWidths[ wid ] || wid ) ).pixels( el );
+                }
+                el.runtimeStyle.borderColor = 'transparent';
+
+                for( i = 0; i < 4; i++ ) {
+                    side = sides[ i ];
+                    letter = side.charAt(0).toLowerCase();
+                    shape = this.getShape( 'border' + letter, 'stroke' );
+                    shape.coordsize = w + ',' + h;
+                    shape.path = this.styleInfos.borderRadius.getBoxPath( this.element, w, h, widths[ letter ] / 2, letter );
+                    s = shape.style;
+                    s.width = w;
+                    s.height = h;
+                    s.zIndex = 3;
+                    shape.filled = false;
+                    shape.stroked = widths[ letter ] > 0;
+                    shape.stroke.weight = widths[ letter ] + 'px';
+                    shape.stroke.color = colors[ letter ];
+                    shape.stroke.dashstyle = styles[ letter ] === 'dashed' ? '2 2' : styles[ letter ] === 'dotted' ? '1 1' : 'solid';
+                    shape.stroke.linestyle = styles[ letter ] === 'double' && widths[ letter ] > 2 ? 'ThinThin' : 'Single'
+                }
+            },
+
             getBgColor: function() {
                 var el = this.element,
                     rs = el.runtimeStyle,
@@ -695,6 +773,26 @@
                 img = el.currentStyle.backgroundImage.replace( this.cssUrlRE, "$1" );
                 rs.backgroundImage = 'none';
                 return img;
+            },
+
+            getShape: function( name, subElName ) {
+                var shapes = this._shapes || ( this._shapes = {} ),
+                    shape = shapes[ name ],
+                    s;
+
+                if( !shape ) {
+                    shape = shapes[ name ] = this._borderShape = document.createElement( vmlns + ':shape' );
+                    if( subElName ) {
+                        shape.appendChild( shape[ subElName ] = document.createElement( vmlns + ':' + subElName ) );
+                    }
+                    this.getBox().appendChild( shape );
+                    s = shape.style;
+                    s.position = 'absolute';
+                    s.left = s.top = 0;
+                    s.behavior = 'url(#default#VML)';
+                    shape.coordorigin = '1,1';
+                }
+                return shape;
             },
 
             getBox: function() {
