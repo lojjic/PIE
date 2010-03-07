@@ -192,6 +192,64 @@
 
 
 
+        function BorderStyleInfo( el ) {
+            this.element = el;
+        }
+        merge( BorderStyleInfo.prototype, styleBase, {
+
+            sides: [ 'Top', 'Right', 'Bottom', 'Left' ],
+            namedWidths: {
+                thin: '1px',
+                medium: '3px',
+                thick: '5px'
+            },
+
+            parseCss: function( css ) {
+                var w = {},
+                    s = {},
+                    c = {},
+                    el = this.element,
+                    cs = el.currentStyle,
+                    rs = el.runtimeStyle,
+                    rtColor = rs.borderColor,
+                    i = 0,
+                    active = false,
+                    side, ltr, wid;
+
+                rs.borderColor = '';
+                for( ; i < 4; i++ ) {
+                    side = this.sides[ i ];
+                    ltr = side.charAt(0).toLowerCase();
+                    s[ ltr ] = cs[ 'border' + side + 'Style' ];
+                    c[ ltr ] = cs[ 'border' + side + 'Color' ];
+                    wid = cs[ 'border' + side + 'Width' ];
+                    wid = w[ ltr ] = new Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ wid ] || wid ) );
+                    if( s[ ltr ] !== 'none' || wid.pixels( this.element ) > 0 ) {
+                        active = true;
+                    }
+                }
+                rs.borderColor = rtColor;
+
+                return active ? { widths: w, styles: s, colors: c } : null;
+            },
+
+            getCss: function() {
+                var el = this.element,
+                    cs = el.currentStyle,
+                    rs = el.runtimeStyle,
+                    rtColor = rs.borderColor,
+                    css;
+
+                rs.borderColor = '';
+                css = cs.borderWidth + '|' + cs.borderStyle + '|' + cs.borderColor;
+                rs.borderColor = rtColor;
+                return css;
+            }
+
+        } );
+
+
+
 
         function BorderRadiusStyleInfo( el ) {
             this.element = el;
@@ -411,12 +469,16 @@
                     p = {};
 
                     // check for inset keyword
-                    css = css.replace( this.insetRE, '' );
-                    p.inset = !!RegExp.$1;
+                    if( this.insetRE.test( css ) ) {
+                        css = css.replace( this.insetRE, '' );
+                        p.inset = true;
+                    }
 
                     // get the color
-                    css = css.replace( this.colorRE, '' );
-                    p.color = RegExp.$1;
+                    if( this.colorRE.test( css ) ) {
+                        css = css.replace( this.colorRE, '' );
+                        p.color = RegExp.$1;
+                    }
 
                     // all that's left should be lengths; map them to xOffset/yOffset/blurRadius/spreadRadius
                     m = css.match( this.lengthsRE );
@@ -444,6 +506,10 @@
             this.styleInfos = styleInfos;
         }
         merge( RootRenderer.prototype, {
+
+            needsUpdate: function() {
+                return false;
+            },
 
             /**
              * Get the element's offsets from its nearest positioned ancestor. More
@@ -547,10 +613,10 @@
 
             zIndex: 200,
             cssUrlRE: /^\s*url\(\s*"?([^\s"]*)"?\s*\)\s*$/,
-            borderWidths: {
-                thin: '1px',
-                medium: '3px',
-                thick: '5px'
+
+            needsUpdate: function() {
+                var si = this.styleInfos;
+                return si.border.changed() //TODO || si.background.changed() || si.backgroundGradient.changed();
             },
 
             isActive: function() {
@@ -576,12 +642,9 @@
             },
 
             updateProps: function() {
-                var si = this.styleInfos;
-                if( si.borderImage.changed() || si.borderRadius.changed() || si.backgroundGradient.changed() ) {
-                    this.destroy();
-                    if( this.isActive() ) {
-                        this.draw();
-                    }
+                this.destroy();
+                if( this.isActive() ) {
+                    this.draw();
                 }
             },
 
@@ -594,22 +657,12 @@
             drawBgColor: function() {
                 var cont = this.getBox(),
                     el = this.element,
-                    shape = this._bgColorShape,
+                    shape = this.getShape( 'bgColor' ),
                     w = el.offsetWidth,
                     h = el.offsetHeight,
                     s, color;
 
-                if( !shape ) {
-                    shape = this._bgColorShape = document.createElement( vmlns + ':shape' );
-                    cont.appendChild( shape );
-                    s = shape.style;
-                    s.position = 'absolute';
-                    s.left = s.top = 0;
-                    s.behavior = 'url(#default#VML)';
-                    shape.coordorigin = '1,1';
-                    shape.stroked = false;
-                }
-
+                shape.stroked = false;
                 shape.coordsize = w + ',' + h;
                 shape.path = this.styleInfos.borderRadius.getBoxPath( this.element, w, h );
                 s = shape.style;
@@ -629,25 +682,14 @@
             drawBgImage: function() {
                 var cont = this.getBox(),
                     el = this.element,
-                    shape = this._bgImageShape,
+                    shape = this.getShape( 'bgImage', 'fill' ),
                     w = el.offsetWidth,
                     h = el.offsetHeight,
                     s, img;
 
-                if( !shape ) {
-                    shape = this._bgImageShape = document.createElement( vmlns + ':shape' );
-                    shape.appendChild( shape.fill = document.createElement( vmlns + ':fill' ) );
-                    cont.appendChild( shape );
-                    s = shape.style;
-                    s.position = 'absolute';
-                    s.left = s.top = 0;
-                    s.behavior = 'url(#default#VML)';
-                    shape.coordorigin = '1,1';
-                    shape.stroked = false;
-                    shape.fill.type = 'tile';
-                    shape.fillcolor = 'none';
-                }
-
+                shape.stroked = false;
+                shape.fill.type = 'tile';
+                shape.fillcolor = 'none';
                 shape.coordsize = w + ',' + h;
                 shape.path = this.styleInfos.borderRadius.getBoxPath( this.element, w, h );
                 s = shape.style;
@@ -672,6 +714,11 @@
                         elW = el.offsetWidth,
                         elH = el.offsetHeight,
                         cs = el.currentStyle,
+                        border = this.styleInfos.border.getProps(),
+                        bwT = border ? border.widths.t.pixels( el ) : 0,
+                        bwR = border ? border.widths.r.pixels( el ) : 0,
+                        bwB = border ? border.widths.b.pixels( el ) : 0,
+                        bwL = border ? border.widths.l.pixels( el ) : 0,
                         repeat = cs.backgroundRepeat,
                         posX = cs.backgroundPositionX,
                         posY = cs.backgroundPositionY,
@@ -681,8 +728,8 @@
                     // Positioning - find the pixel offset from the top/left and convert to a ratio
                     posX = ( posX === 'left' ? '0' : posX === 'center' ? '50%' : posX === 'right' ? '100%' : posX );
                     posY = ( posY === 'top' ? '0' : posY === 'center' ? '50%' : posY === 'bottom' ? '100%' : posY );
-                    pxX = new Length( posX ).pixels( el, elW - size.w );
-                    pxY = new Length( posY ).pixels( el, elH - size.h );
+                    pxX = new Length( posX ).pixels( el, elW - size.w - bwL - bwR ) + bwL;
+                    pxY = new Length( posY ).pixels( el, elH - size.h - bwT - bwB ) + bwT;
                     fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
 
                     // Repeating - clip the image shape
@@ -721,39 +768,37 @@
                     cs = el.currentStyle,
                     w = el.offsetWidth,
                     h = el.offsetHeight,
-                    sides = [ 'Top', 'Right', 'Bottom', 'Left' ],
-                    side, letter, wid,
-                    widths = {}, styles = {}, colors = {},
-                    shape, stroke, s, i;
+                    props = this.styleInfos.border.getProps(),
+                    styles, colors, widths,
+                    side, shape, stroke, bColor, bWidth, bStyle, s;
 
-                el.runtimeStyle.borderColor = "";
-                for( i = 0; i < 4; i++ ) {
-                    side = sides[ i ];
-                    letter = side.charAt(0).toLowerCase();
-                    styles[ letter ] = cs[ 'border' + side + 'Style' ];
-                    colors[ letter ] = cs[ 'border' + side + 'Color' ];
-                    wid = cs[ 'border' + side + 'Width' ];
-                    widths[ letter ] = new Length( styles[ letter ] === 'none' ? '0' : ( this.borderWidths[ wid ] || wid ) ).pixels( el );
-                }
-                el.runtimeStyle.borderColor = 'transparent';
-
-                for( i = 0; i < 4; i++ ) {
-                    side = sides[ i ];
-                    letter = side.charAt(0).toLowerCase();
-                    shape = this.getShape( 'border' + letter, 'stroke' );
-                    shape.coordsize = w + ',' + h;
-                    shape.path = this.styleInfos.borderRadius.getBoxPath( this.element, w, h, widths[ letter ] / 2, letter );
-                    s = shape.style;
-                    s.width = w;
-                    s.height = h;
-                    s.zIndex = 3;
-                    shape.filled = false;
-                    shape.stroked = widths[ letter ] > 0;
-                    stroke = shape.stroke;
-                    stroke.weight = widths[ letter ] + 'px';
-                    stroke.color = colors[ letter ];
-                    stroke.dashstyle = styles[ letter ] === 'dashed' ? '2 2' : styles[ letter ] === 'dotted' ? '0 1' : 'solid';
-                    stroke.linestyle = styles[ letter ] === 'double' && widths[ letter ] > 2 ? 'ThinThin' : 'Single';
+                if( props ) {
+                    styles = props.styles,
+                    colors = props.colors,
+                    widths = props.widths,
+                    
+                    el.runtimeStyle.borderColor = 'transparent';
+                    for( side in styles ) {
+                        if( styles.hasOwnProperty( side ) ) {
+                            bWidth = widths[ side ].pixels( el );
+                            bStyle = styles[ side ];
+                            bColor = colors[ side ];
+                            shape = this.getShape( 'border' + side, 'stroke' );
+                            shape.coordsize = w + ',' + h;
+                            shape.path = this.styleInfos.borderRadius.getBoxPath( this.element, w, h, bWidth / 2, side );
+                            s = shape.style;
+                            s.width = w;
+                            s.height = h;
+                            s.zIndex = 3;
+                            shape.filled = false;
+                            shape.stroked = bWidth > 0;
+                            stroke = shape.stroke;
+                            stroke.weight = bWidth + 'px';
+                            stroke.color = bColor;
+                            stroke.dashstyle = bStyle === 'dashed' ? '2 2' : bStyle === 'dotted' ? '0 1' : 'solid';
+                            stroke.linestyle = bStyle === 'double' && bWidth > 2 ? 'ThinThin' : 'Single';
+                        }
+                    }
                 }
             },
 
@@ -820,9 +865,7 @@
                     box.parentNode.removeChild( box );
                 }
                 delete this._box;
-                delete this._bgColorShape;
-                delete this._bgImageShape;
-                delete this._borderShape;
+                delete this._shapes;
             }
 
         };
@@ -838,6 +881,11 @@
 
             outsetZIndex: 100,
             insetZIndex: 300,
+
+            needsUpdate: function() {
+                var si = this.styleInfos;
+                return si.boxShadow.changed() || si.borderRadius.changed();
+            },
 
             isActive: function() {
                 return this.styleInfos.boxShadow.isActive();
@@ -887,12 +935,9 @@
             },
 
             updateProps: function() {
-                var si = this.styleInfos;
-                if( si.boxShadow.changed() || si.borderRadius.changed() ) {
-                    this.destroy();
-                    if( this.isActive() ) {
-                        this.updateSize();
-                    }
+                this.destroy();
+                if( this.isActive() ) {
+                    this.updateSize();
                 }
             },
 
@@ -1005,20 +1050,22 @@
 
         /**
          * Handle property changes to trigger update when appropriate.
-         * TODO try to find a way to make this get triggered on style change from CSS hover/parent
-         * class change/etc. rather than only explicit element.style changes
          */
         function propChanged() {
             var name = event.propertyName,
-                i, len;
+                i, len, toUpdate;
             if( name === 'style.display' || name === 'style.visibility' ) {
                 for( i = 0, len = renderers.length; i < len; i++ ) {
                     renderers[i].updateVis();
                 }
             }
             else { //if( event.propertyName === 'style.boxShadow' ) {
+                toUpdate = [];
                 for( i = 0, len = renderers.length; i < len; i++ ) {
-                    renderers[i].updateProps();
+                    toUpdate.push( renderers[i] );
+                }
+                for( i = 0, len = toUpdate.length; i < len; i++ ) {
+                    toUpdate[i].updateProps();
                 }
             }
         }
@@ -1090,10 +1137,11 @@
 
             // Create the style infos and renderers
             styleInfos = {
-                boxShadow: new BoxShadowStyleInfo( element ),
-                borderImage: new BorderImageStyleInfo( element ),
                 backgroundGradient: new BackgroundGradientStyleInfo( element ),
-                borderRadius: new BorderRadiusStyleInfo( element )
+                border: new BorderStyleInfo( element ),
+                borderImage: new BorderImageStyleInfo( element ),
+                borderRadius: new BorderRadiusStyleInfo( element ),
+                boxShadow: new BoxShadowStyleInfo( element )
             };
 
             var rootRenderer = new RootRenderer( element, styleInfos );
