@@ -336,10 +336,10 @@
                         src: m[1],
 
                         slice: {
-                            t: m[2],
-                            r: m[4] || m[2],
-                            b: m[6] || m[2],
-                            l: m[8] || m[4] || m[2]
+                            t: parseInt( m[2], 10 ),
+                            r: parseInt( m[4] || m[2], 10 ),
+                            b: parseInt( m[6] || m[2], 10 ),
+                            l: parseInt( m[8] || m[4] || m[2], 10 )
                         },
 
                         width: m[9] ? {
@@ -348,10 +348,10 @@
                             b: new Length( m[14] || m[10] ),
                             l: new Length( m[16] || m[12] || m[10] )
                         } : {
-                            t: parseInt( cs.borderTopWidth, 10 ),
-                            r: parseInt( cs.borderRightWidth, 10 ),
-                            b: parseInt( cs.borderBottomWidth, 10 ),
-                            l: parseInt( cs.borderLeftWidth, 10 )
+                            t: new Length( cs.borderTopWidth ),
+                            r: new Length( cs.borderRightWidth ),
+                            b: new Length( cs.borderBottomWidth ),
+                            l: new Length( cs.borderLeftWidth )
                         }
                     }
                 }
@@ -426,6 +426,21 @@
             },
 
             updateVis: function() {
+            },
+
+            withImgSize: function( src, func ) {
+                var sizes = this._imgSizes || ( this._imgSizes = {} ),
+                    size = sizes[ src ], img;
+                if( size ) {
+                    func( size );
+                } else {
+                    img = new Image();
+                    img.onload = function() {
+                        size = sizes[ src ] = { w: img.width, h: img.height };
+                        func( size );
+                    };
+                    img.src = src;
+                }
             },
 
             getBoxPath: function( shrink, side ) {
@@ -742,21 +757,6 @@
                 } );
             },
 
-            withImgSize: function( src, func ) {
-                var sizes = this._imgSizes || ( this._imgSizes = {} ),
-                    size = sizes[ src ], img;
-                if( size ) {
-                    func( size );
-                } else {
-                    img = new Image();
-                    img.onload = function() {
-                        size = sizes[ src ] = { w: img.width, h: img.height };
-                        func( size );
-                    };
-                    img.src = src;
-                }
-            },
-
             drawBorder: function() {
                 var cont = this.getBox(),
                     el = this.element,
@@ -846,7 +846,6 @@
                     box = this._box = document.createElement( 'bg-and-border' );
                     s = box.style;
                     s.position = 'absolute';
-                    s.width = s.height = '100%';
                     s.zIndex = this.zIndex;
                     this.parent.getBox().appendChild( box );
                 }
@@ -865,6 +864,136 @@
 
         } );
 
+
+
+        function BorderImageRenderer( el, styleInfos, parent ) {
+            this.element = el;
+            this.styleInfos = styleInfos;
+            this.parent = parent;
+        }
+        merge( BorderImageRenderer.prototype, rendererBase, {
+
+            zIndex: 400,
+            pieceNames: [ 't', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl', 'c' ],
+
+            needsUpdate: function() {
+                var si = this.styleInfos;
+                return si.borderImage.changed() || si.border.changed();
+            },
+
+            isActive: function() {
+                return this.styleInfos.borderImage.isActive();
+            },
+
+            updateSize: function() {
+                var props = this.styleInfos.borderImage.getProps(),
+                    box = this.getBox(), //make sure pieces are created
+                    el = this.element,
+                    p = this.pieces;
+
+                this.withImgSize( props.src, function( imgSize ) {
+                    var w = el.offsetWidth,
+                        h = el.offsetHeight,
+                        z = el.currentStyle.zIndex,
+
+                        t = p.t.style,
+                        tr = p.tr.style,
+                        r = p.r.style,
+                        br = p.br.style,
+                        b = p.b.style,
+                        bl = p.bl.style,
+                        l = p.l.style,
+                        tl = p.tl.style,
+                        c = p.c.style,
+
+                        slices = props.slice,
+                        widths = props.width,
+                        widthT = widths.t.pixels( el ),
+                        widthR = widths.r.pixels( el ),
+                        widthB = widths.b.pixels( el ),
+                        widthL = widths.l.pixels( el );
+
+                    tl.height = t.height = tr.height = widthT;
+                    tl.width = l.width = bl.width = widthL;
+                    tr.left = r.left = br.left = w - widthR;
+                    tr.width = r.width = br.width = widthR;
+                    br.top = b.top = bl.top = h - widthB;
+                    br.height = b.height = bl.height = widthB;
+                    t.left = b.left = c.left = widthL;
+                    t.width = b.width = c.width = w - widthL - widthR;
+                    l.top = r.top = c.top = widthT;
+                    l.height = r.height = c.height = h - widthT - widthB;
+
+
+                    // image croppings
+
+                    // corners
+                    p.tl.imagedata.cropBottom = p.t.imagedata.cropBottom = p.tr.imagedata.cropBottom = ( imgSize.h - slices.t ) / imgSize.h;
+                    p.tl.imagedata.cropRight = p.l.imagedata.cropRight = p.bl.imagedata.cropRight = ( imgSize.w - slices.l ) / imgSize.w;
+                    p.bl.imagedata.cropTop = p.b.imagedata.cropTop = p.br.imagedata.cropTop = ( imgSize.h - slices.b ) / imgSize.h;
+                    p.tr.imagedata.cropLeft = p.r.imagedata.cropLeft = p.br.imagedata.cropLeft = ( imgSize.w - slices.r ) / imgSize.w;
+
+                    // edges and center
+                    if( props.repeatLR === 'stretch' ) {
+                        p.l.imagedata.cropTop = p.r.imagedata.cropTop = p.c.imagedata.cropTop = slices.t / imgSize.h;
+                        p.l.imagedata.cropBottom = p.r.imagedata.cropBottom = p.c.imagedata.cropBottom = slices.b / imgSize.h;
+                    }
+                    if( props.repeatTB === 'stretch' ) {
+                        p.t.imagedata.cropLeft = p.b.imagedata.cropLeft = p.c.imagedata.cropLeft = slices.l / imgSize.w;
+                        p.t.imagedata.cropRight = p.b.imagedata.cropRight = p.c.imagedata.cropRight = slices.r / imgSize.w;
+                    }
+                } );
+            },
+
+            updateProps: function() {
+                this.destroy();
+                if( this.isActive() ) {
+                    this.updateSize();
+                }
+            },
+
+            getBox: function() {
+                var box = this._box, s, piece, i,
+                    pieceNames = this.pieceNames,
+                    len = pieceNames.length;
+
+                if( !box ) {
+                    box = this._box = document.createElement( 'border-image' );
+                    s = box.style;
+                    s.position = 'absolute';
+                    s.zIndex = this.zIndex;
+
+                    this.pieces = {};
+
+                    for( i = 0; i < len; i++ ) {
+                        piece = this.pieces[ pieceNames[i] ] = document.createElement( vmlns + ':rect' );
+                        piece.appendChild( document.createElement( vmlns + ':imagedata' ) );
+                        s = piece.style;
+                        s.behavior = 'url(#default#VML)';
+                        s.position = "absolute";
+                        s.top = s.left = 0;
+                        piece.coordorigin = '1,1';
+                        piece.imagedata.src = this.styleInfos.borderImage.getProps().src;
+                        piece.stroked = false;
+                        piece.filled = false;
+                        box.appendChild( piece );
+                    }
+
+                    this.parent.getBox().appendChild( box );
+                }
+
+                return box;
+            },
+
+            destroy: function() {
+                var box = this._box;
+                if( box && box.parentNode ) {
+                    box.parentNode.removeChild( box );
+                }
+                delete this._box;
+            }
+
+        } );
 
 
         function BoxShadowRenderer( el, styleInfos, parent ) {
@@ -1108,35 +1237,37 @@
          * Initialize
          */
         function init() {
+            var el = element;
+
             // add vml namespace
             if( document.namespaces && !document.namespaces[ vmlns ] ) {
                 document.namespaces.add( vmlns, 'urn:schemas-microsoft-com:vml' );
             }
 
             // force layout so move/resize events will fire
-            element.runtimeStyle.zoom = 1;
+            el.runtimeStyle.zoom = 1;
 
             // force positioning so relative z-indexes are calculated correctly
             // TODO is there a less invasive way to do this?
-            if( element.currentStyle.position === 'static' ) {
-                element.runtimeStyle.position = 'relative';
+            if( el.currentStyle.position === 'static' ) {
+                el.runtimeStyle.position = 'relative';
             }
 
             // Create the style infos and renderers
             styleInfos = {
-                backgroundGradient: new BackgroundGradientStyleInfo( element ),
-                border: new BorderStyleInfo( element ),
-                borderImage: new BorderImageStyleInfo( element ),
-                borderRadius: new BorderRadiusStyleInfo( element ),
-                boxShadow: new BoxShadowStyleInfo( element )
+                backgroundGradient: new BackgroundGradientStyleInfo( el ),
+                border: new BorderStyleInfo( el ),
+                borderImage: new BorderImageStyleInfo( el ),
+                borderRadius: new BorderRadiusStyleInfo( el ),
+                boxShadow: new BoxShadowStyleInfo( el )
             };
 
-            var rootRenderer = new RootRenderer( element, styleInfos );
+            var rootRenderer = new RootRenderer( el, styleInfos );
             renderers = [
                 rootRenderer,
-                new BoxShadowRenderer( element, styleInfos, rootRenderer ),
-                new BackgroundAndBorderRenderer( element, styleInfos, rootRenderer )
-                //new BorderImageRenderer( element, styleInfos, rootRenderer ),
+                new BoxShadowRenderer( el, styleInfos, rootRenderer ),
+                new BackgroundAndBorderRenderer( el, styleInfos, rootRenderer ),
+                new BorderImageRenderer( el, styleInfos, rootRenderer )
             ];
 
             // Add property change listeners to ancestors if requested
