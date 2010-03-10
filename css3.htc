@@ -389,10 +389,10 @@
                     }
                 } else {
                     // simplified path for non-rounded box
-                    str = 'm' + shrink[3] + ',' + shrink[0] +
-                          'l' + ( w - shrink[1] ) + ',' + shrink[0] +
-                          'l' + ( w - shrink[1] ) + ',' + ( h - shrink[2] ) +
-                          'l' + shrink[3] + ',' + ( h - shrink[2] ) +
+                    str = 'm' + shrink + ',' + shrink +
+                          'l' + ( w - shrink ) + ',' + shrink +
+                          'l' + ( w - shrink ) + ',' + ( h - shrink ) +
+                          'l' + shrink + ',' + ( h - shrink ) +
                           'xe';
                 }
                 return str;
