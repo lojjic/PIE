@@ -428,8 +428,11 @@
             updateVis: function() {
             },
 
-            getBoxPath: function( el, w, h, shrink, side ) {
+            getBoxPath: function( shrink, side ) {
                 var r, instructions, values, str = '', i,
+                    el = this.element,
+                    w = el.offsetWidth,
+                    h = el.offsetHeight,
                     radInfo = this.styleInfos.borderRadius,
                     floor = Math.floor, ceil = Math.ceil,
                     deg = 65535,
@@ -656,7 +659,7 @@
 
                 shape.stroked = false;
                 shape.coordsize = w + ',' + h;
-                shape.path = this.getBoxPath( this.element, w, h );
+                shape.path = this.getBoxPath();
                 s = shape.style;
                 s.width = w;
                 s.height = h;
@@ -683,7 +686,7 @@
                 shape.fill.type = 'tile';
                 shape.fillcolor = 'none';
                 shape.coordsize = w + ',' + h;
-                shape.path = this.getBoxPath( this.element, w, h );
+                shape.path = this.getBoxPath();
                 s = shape.style;
                 s.width = w;
                 s.height = h;
@@ -777,7 +780,7 @@
                             bColor = colors[ side ];
                             shape = this.getShape( 'border' + side, 'stroke' );
                             shape.coordsize = w + ',' + h;
-                            shape.path = this.getBoxPath( this.element, w, h, bWidth / 2, side );
+                            shape.path = this.getBoxPath( bWidth / 2, side );
                             s = shape.style;
                             s.width = w;
                             s.height = h;
@@ -914,7 +917,7 @@
                     s.height = h;
 
                     shape.coordsize = w + ',' + h;
-                    shape.path = this.getBoxPath( el, w, h );
+                    shape.path = this.getBoxPath();
                 }
             },
 
