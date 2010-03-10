@@ -307,97 +307,7 @@
                 }
 
                 return p;
-            },
-
-            getBoxPath: function( el, w, h, shrink, side ) {
-                var r, instructions, values, str = '', i,
-                    floor = Math.floor, ceil = Math.ceil,
-                    deg = 65535,
-                    tlX, tlY, trX, trY, brX, brY, blX, blY, f;
-
-                if( !shrink ) {
-                    shrink = 0;
-                }
-                shrink = floor( shrink );
-
-                if( this.isActive() ) {
-                    r = this.getProps();
-
-                    tlX = r.x.tl.pixels( el, w );
-                    tlY = r.y.tl.pixels( el, h );
-                    trX = r.x.tr.pixels( el, w );
-                    trY = r.y.tr.pixels( el, h );
-                    brX = r.x.br.pixels( el, w );
-                    brY = r.y.br.pixels( el, h );
-                    blX = r.x.bl.pixels( el, w );
-                    blY = r.y.bl.pixels( el, h );
-
-                    // If any corner ellipses overlap, reduce them all by the appropriate factor. This formula
-                    // is taken straight from the CSS3 Backgrounds and Borders spec.
-                    f = Math.min(
-                        w / ( tlX + trX ),
-                        h / ( trY + brY ),
-                        w / ( blX + brX ),
-                        h / ( tlY + blY )
-                    );
-                    if( f < 1 ) {
-                        tlX *= f;
-                        tlY *= f;
-                        trX *= f;
-                        trY *= f;
-                        brX *= f;
-                        brY *= f;
-                        blX *= f;
-                        blY *= f;
-                    }
-
-                    if (side) {
-                        switch (side.charAt(0).toLowerCase()) {
-                            case 't':
-                                str = 'al' + floor( tlX ) + ',' + floor( tlY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( 135 * deg ) + ',' + ( -45 * deg ) +
-                                      'ae' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 90 * deg ) + ',' + ( -45 * deg );
-                                break;
-                            case 'r':
-                                str = 'al' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 45 * deg ) + ',' + ( -45 * deg ) +
-                                      'ae' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',0,' + ( -45 * deg );
-                                break;
-                            case 'b':
-                                str = 'al' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',' + ( -45 * deg ) + ',' + ( -45 * deg ) +
-                                      'ae' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -90 * deg ) + ',' + ( -45 * deg );
-                                break;
-                            case 'l':
-                                str = 'al' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -135 * deg ) + ',' + ( -45 * deg ) +
-                                      'ae' + floor( tlX ) + ',' + floor( blY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( -180 * deg ) + ',' + ( -45 * deg );
-                        }
-                    } else {
-                        instructions = [ 'm', 'qy', 'l', 'qx', 'l', 'qy', 'l', 'qx' ];
-                        values = [
-                            shrink + ',' + floor(tlY),
-                            floor(tlX) + ',' + shrink,
-                            ceil(w - trX) + ',' + shrink,
-                            ( w - shrink ) + ',' + floor(trY),
-                            ( w - shrink ) + ',' + ceil(h - brY),
-                            ceil(w - brX) + ',' + ( h - shrink ),
-                            floor(blX) + ',' + ( h - shrink ),
-                            shrink + ',' + ceil(h - blY)
-                        ];
-
-                        for ( i = 0; i < 8; i++ ) {
-                            str += instructions[i] + values[i]
-                        }
-                        str += ' x e';
-                    }
-                } else {
-                    // simplified path for non-rounded box
-                    str = 'm' + shrink + ',' + shrink +
-                          'l' + ( w - shrink ) + ',' + shrink +
-                          'l' + ( w - shrink ) + ',' + ( h - shrink ) +
-                          'l' + shrink + ',' + ( h - shrink ) +
-                          'xe';
-                }
-                return str;
             }
-
         } );
 
 
@@ -500,31 +410,125 @@
 
 
 
-
-        function RootRenderer( el, styleInfos ) {
-            this.element = el;
-            this.styleInfos = styleInfos;
-        }
-        merge( RootRenderer.prototype, {
+        var rendererBase = {
 
             needsUpdate: function() {
                 return false;
             },
 
-            /**
-             * Get the element's offsets from its nearest positioned ancestor. More
-             * accurate than just using offsetTop/Left.
-             */
-            getOffsets: function() {
-                var el = this.element,
-                    o = { x: 0, y : 0 };
-                do {
-                    o.x += el.offsetLeft;
-                    o.y += el.offsetTop;
-                    el = el.offsetParent;
-                } while( el && el.currentStyle.position === 'static' );
-                return o;
+            updateProps: function() {
             },
+
+            updatePos: function() {
+            },
+
+            updateSize: function() {
+            },
+
+            updateVis: function() {
+            },
+
+            getBoxPath: function( el, w, h, shrink, side ) {
+                var r, instructions, values, str = '', i,
+                    radInfo = this.styleInfos.borderRadius,
+                    floor = Math.floor, ceil = Math.ceil,
+                    deg = 65535,
+                    tlX, tlY, trX, trY, brX, brY, blX, blY, f;
+
+                if( !shrink ) {
+                    shrink = 0;
+                }
+                shrink = floor( shrink );
+
+                if( radInfo.isActive() ) {
+                    r = radInfo.getProps();
+
+                    tlX = r.x.tl.pixels( el, w );
+                    tlY = r.y.tl.pixels( el, h );
+                    trX = r.x.tr.pixels( el, w );
+                    trY = r.y.tr.pixels( el, h );
+                    brX = r.x.br.pixels( el, w );
+                    brY = r.y.br.pixels( el, h );
+                    blX = r.x.bl.pixels( el, w );
+                    blY = r.y.bl.pixels( el, h );
+
+                    // If any corner ellipses overlap, reduce them all by the appropriate factor. This formula
+                    // is taken straight from the CSS3 Backgrounds and Borders spec.
+                    f = Math.min(
+                        w / ( tlX + trX ),
+                        h / ( trY + brY ),
+                        w / ( blX + brX ),
+                        h / ( tlY + blY )
+                    );
+                    if( f < 1 ) {
+                        tlX *= f;
+                        tlY *= f;
+                        trX *= f;
+                        trY *= f;
+                        brX *= f;
+                        brY *= f;
+                        blX *= f;
+                        blY *= f;
+                    }
+
+                    if (side) {
+                        switch (side.charAt(0).toLowerCase()) {
+                            case 't':
+                                str = 'al' + floor( tlX ) + ',' + floor( tlY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( 135 * deg ) + ',' + ( -45 * deg ) +
+                                      'ae' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 90 * deg ) + ',' + ( -45 * deg );
+                                break;
+                            case 'r':
+                                str = 'al' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 45 * deg ) + ',' + ( -45 * deg ) +
+                                      'ae' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',0,' + ( -45 * deg );
+                                break;
+                            case 'b':
+                                str = 'al' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',' + ( -45 * deg ) + ',' + ( -45 * deg ) +
+                                      'ae' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -90 * deg ) + ',' + ( -45 * deg );
+                                break;
+                            case 'l':
+                                str = 'al' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -135 * deg ) + ',' + ( -45 * deg ) +
+                                      'ae' + floor( tlX ) + ',' + floor( blY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( -180 * deg ) + ',' + ( -45 * deg );
+                        }
+                    } else {
+                        instructions = [ 'm', 'qy', 'l', 'qx', 'l', 'qy', 'l', 'qx' ];
+                        values = [
+                            shrink + ',' + floor(tlY),
+                            floor(tlX) + ',' + shrink,
+                            ceil(w - trX) + ',' + shrink,
+                            ( w - shrink ) + ',' + floor(trY),
+                            ( w - shrink ) + ',' + ceil(h - brY),
+                            ceil(w - brX) + ',' + ( h - shrink ),
+                            floor(blX) + ',' + ( h - shrink ),
+                            shrink + ',' + ceil(h - blY)
+                        ];
+
+                        for ( i = 0; i < 8; i++ ) {
+                            str += instructions[i] + values[i]
+                        }
+                        str += ' x e';
+                    }
+                } else {
+                    // simplified path for non-rounded box
+                    str = 'm' + shrink + ',' + shrink +
+                          'l' + ( w - shrink ) + ',' + shrink +
+                          'l' + ( w - shrink ) + ',' + ( h - shrink ) +
+                          'l' + shrink + ',' + ( h - shrink ) +
+                          'xe';
+                }
+                return str;
+            }
+
+
+        };
+
+
+
+
+        function RootRenderer( el, styleInfos ) {
+            this.element = el;
+            this.styleInfos = styleInfos;
+        }
+        merge( RootRenderer.prototype, rendererBase, {
 
             isActive: function() {
                 var infos = this.styleInfos;
@@ -573,10 +577,6 @@
                 }
             },
 
-            updateProps: function() {
-                // NO-OP, let individual renderers handle this
-            },
-
             getBox: function() {
                 var box = this._box, el, s;
                 if( !box ) {
@@ -609,7 +609,7 @@
             this.styleInfos = styleInfos;
             this.parent = parent;
         }
-        BackgroundAndBorderRenderer.prototype = {
+        merge( BackgroundAndBorderRenderer.prototype, rendererBase, {
 
             zIndex: 200,
             cssUrlRE: /^\s*url\(\s*"?([^\s"]*)"?\s*\)\s*$/,
@@ -625,14 +625,6 @@
                        si.borderRadius.isActive() ||
                        si.backgroundGradient.isActive() ||
                        ( si.boxShadow.isActive() && si.boxShadow.getProps().inset );
-            },
-
-            updatePos: function() {
-                // NO-OP
-            },
-
-            updateVis: function() {
-                // NO-OP
             },
 
             updateSize: function() {
@@ -664,7 +656,7 @@
 
                 shape.stroked = false;
                 shape.coordsize = w + ',' + h;
-                shape.path = this.styleInfos.borderRadius.getBoxPath( this.element, w, h );
+                shape.path = this.getBoxPath( this.element, w, h );
                 s = shape.style;
                 s.width = w;
                 s.height = h;
@@ -691,7 +683,7 @@
                 shape.fill.type = 'tile';
                 shape.fillcolor = 'none';
                 shape.coordsize = w + ',' + h;
-                shape.path = this.styleInfos.borderRadius.getBoxPath( this.element, w, h );
+                shape.path = this.getBoxPath( this.element, w, h );
                 s = shape.style;
                 s.width = w;
                 s.height = h;
@@ -785,7 +777,7 @@
                             bColor = colors[ side ];
                             shape = this.getShape( 'border' + side, 'stroke' );
                             shape.coordsize = w + ',' + h;
-                            shape.path = this.styleInfos.borderRadius.getBoxPath( this.element, w, h, bWidth / 2, side );
+                            shape.path = this.getBoxPath( this.element, w, h, bWidth / 2, side );
                             s = shape.style;
                             s.width = w;
                             s.height = h;
@@ -868,7 +860,7 @@
                 delete this._shapes;
             }
 
-        };
+        } );
 
 
 
@@ -877,7 +869,7 @@
             this.styleInfos = styleInfos;
             this.parent = parent;
         }
-        merge( BoxShadowRenderer.prototype, {
+        merge( BoxShadowRenderer.prototype, rendererBase, {
 
             outsetZIndex: 100,
             insetZIndex: 300,
@@ -889,14 +881,6 @@
 
             isActive: function() {
                 return this.styleInfos.boxShadow.isActive();
-            },
-
-            updatePos: function() {
-                // NO-OP
-            },
-
-            updateVis: function() {
-                // NO-OP
             },
 
             updateSize: function() {
@@ -930,7 +914,7 @@
                     s.height = h;
 
                     shape.coordsize = w + ',' + h;
-                    shape.path = this.styleInfos.borderRadius.getBoxPath( el, w, h );
+                    shape.path = this.getBoxPath( el, w, h );
                 }
             },
 
