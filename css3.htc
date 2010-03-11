@@ -319,6 +319,7 @@
 
             cssProperty: 'border-image',
 
+            //TODO this needs to be reworked to allow the components to appear in arbitrary order
             parseRE: new RegExp(
                 '^\\s*url\\(\\s*([^\\s\\)]+)\\s*\\)\\s+N(\\s+N)?(\\s+N)?(\\s+N)?(\\s*\\/\\s*L(\\s+L)?(\\s+L)?(\\s+L)?)?RR\\s*$'
                         .replace( /N/g, '(\\d+|' + styleBase.percentRE.source + ')' )
@@ -352,6 +353,11 @@
                             r: new Length( cs.borderRightWidth ),
                             b: new Length( cs.borderBottomWidth ),
                             l: new Length( cs.borderLeftWidth )
+                        },
+
+                        repeat: {
+                            h: m[18] || 'stretch',
+                            v: m[20] || m[18] || 'stretch'
                         }
                     }
                 }
@@ -886,63 +892,65 @@
             },
 
             updateSize: function() {
-                var props = this.styleInfos.borderImage.getProps(),
-                    box = this.getBox(), //make sure pieces are created
-                    el = this.element,
-                    p = this.pieces;
+                if( this.isActive() ) {
+                    var props = this.styleInfos.borderImage.getProps(),
+                        box = this.getBox(), //make sure pieces are created
+                        el = this.element,
+                        p = this.pieces;
 
-                this.withImgSize( props.src, function( imgSize ) {
-                    var w = el.offsetWidth,
-                        h = el.offsetHeight,
-                        z = el.currentStyle.zIndex,
+                    this.withImgSize( props.src, function( imgSize ) {
+                        var w = el.offsetWidth,
+                            h = el.offsetHeight,
+                            z = el.currentStyle.zIndex,
 
-                        t = p.t.style,
-                        tr = p.tr.style,
-                        r = p.r.style,
-                        br = p.br.style,
-                        b = p.b.style,
-                        bl = p.bl.style,
-                        l = p.l.style,
-                        tl = p.tl.style,
-                        c = p.c.style,
+                            t = p.t.style,
+                            tr = p.tr.style,
+                            r = p.r.style,
+                            br = p.br.style,
+                            b = p.b.style,
+                            bl = p.bl.style,
+                            l = p.l.style,
+                            tl = p.tl.style,
+                            c = p.c.style,
 
-                        slices = props.slice,
-                        widths = props.width,
-                        widthT = widths.t.pixels( el ),
-                        widthR = widths.r.pixels( el ),
-                        widthB = widths.b.pixels( el ),
-                        widthL = widths.l.pixels( el );
+                            slices = props.slice,
+                            widths = props.width,
+                            widthT = widths.t.pixels( el ),
+                            widthR = widths.r.pixels( el ),
+                            widthB = widths.b.pixels( el ),
+                            widthL = widths.l.pixels( el );
 
-                    tl.height = t.height = tr.height = widthT;
-                    tl.width = l.width = bl.width = widthL;
-                    tr.left = r.left = br.left = w - widthR;
-                    tr.width = r.width = br.width = widthR;
-                    br.top = b.top = bl.top = h - widthB;
-                    br.height = b.height = bl.height = widthB;
-                    t.left = b.left = c.left = widthL;
-                    t.width = b.width = c.width = w - widthL - widthR;
-                    l.top = r.top = c.top = widthT;
-                    l.height = r.height = c.height = h - widthT - widthB;
+                        tl.height = t.height = tr.height = widthT;
+                        tl.width = l.width = bl.width = widthL;
+                        tr.left = r.left = br.left = w - widthR;
+                        tr.width = r.width = br.width = widthR;
+                        br.top = b.top = bl.top = h - widthB;
+                        br.height = b.height = bl.height = widthB;
+                        t.left = b.left = c.left = widthL;
+                        t.width = b.width = c.width = w - widthL - widthR;
+                        l.top = r.top = c.top = widthT;
+                        l.height = r.height = c.height = h - widthT - widthB;
 
 
-                    // image croppings
+                        // image croppings
 
-                    // corners
-                    p.tl.imagedata.cropBottom = p.t.imagedata.cropBottom = p.tr.imagedata.cropBottom = ( imgSize.h - slices.t ) / imgSize.h;
-                    p.tl.imagedata.cropRight = p.l.imagedata.cropRight = p.bl.imagedata.cropRight = ( imgSize.w - slices.l ) / imgSize.w;
-                    p.bl.imagedata.cropTop = p.b.imagedata.cropTop = p.br.imagedata.cropTop = ( imgSize.h - slices.b ) / imgSize.h;
-                    p.tr.imagedata.cropLeft = p.r.imagedata.cropLeft = p.br.imagedata.cropLeft = ( imgSize.w - slices.r ) / imgSize.w;
+                        // corners
+                        p.tl.imagedata.cropBottom = p.t.imagedata.cropBottom = p.tr.imagedata.cropBottom = ( imgSize.h - slices.t ) / imgSize.h;
+                        p.tl.imagedata.cropRight = p.l.imagedata.cropRight = p.bl.imagedata.cropRight = ( imgSize.w - slices.l ) / imgSize.w;
+                        p.bl.imagedata.cropTop = p.b.imagedata.cropTop = p.br.imagedata.cropTop = ( imgSize.h - slices.b ) / imgSize.h;
+                        p.tr.imagedata.cropLeft = p.r.imagedata.cropLeft = p.br.imagedata.cropLeft = ( imgSize.w - slices.r ) / imgSize.w;
 
-                    // edges and center
-                    if( props.repeatLR === 'stretch' ) {
-                        p.l.imagedata.cropTop = p.r.imagedata.cropTop = p.c.imagedata.cropTop = slices.t / imgSize.h;
-                        p.l.imagedata.cropBottom = p.r.imagedata.cropBottom = p.c.imagedata.cropBottom = slices.b / imgSize.h;
-                    }
-                    if( props.repeatTB === 'stretch' ) {
-                        p.t.imagedata.cropLeft = p.b.imagedata.cropLeft = p.c.imagedata.cropLeft = slices.l / imgSize.w;
-                        p.t.imagedata.cropRight = p.b.imagedata.cropRight = p.c.imagedata.cropRight = slices.r / imgSize.w;
-                    }
-                } );
+                        // edges and center
+                        if( props.repeat.v === 'stretch' ) {
+                            p.l.imagedata.cropTop = p.r.imagedata.cropTop = p.c.imagedata.cropTop = slices.t / imgSize.h;
+                            p.l.imagedata.cropBottom = p.r.imagedata.cropBottom = p.c.imagedata.cropBottom = slices.b / imgSize.h;
+                        }
+                        if( props.repeat.h === 'stretch' ) {
+                            p.t.imagedata.cropLeft = p.b.imagedata.cropLeft = p.c.imagedata.cropLeft = slices.l / imgSize.w;
+                            p.t.imagedata.cropRight = p.b.imagedata.cropRight = p.c.imagedata.cropRight = slices.r / imgSize.w;
+                        }
+                    } );
+                }
             },
 
             updateProps: function() {
