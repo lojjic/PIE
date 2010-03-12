@@ -11,1138 +11,1162 @@
             lastW, lastH, lastX, lastY,
             renderers,
             styleInfos,
-            ancestors;
+            ancestors,
+            Pie = window.Pie;
 
 
-        function createVmlElement( tag ) {
-            /* To create a VML element, it must be created by a document which has the VML
-               namespace set. Unfortunately, if you try to add the namespace programatically
-               into the main document, you will get an "Unspecified error" when trying to
-               access document.namespaces before the document is finished loading. To get
-               around this, we create a DocumentFragment, which in IE land is apparently a
-               full-fledged Document. It allows adding namespaces immediately, so we add the
-               namespace there and then have it create the VML element. */
-            var vmlDoc = window._vmlCreatorDoc;
-            if( !vmlDoc ) {
-                vmlDoc = window._vmlCreatorDoc = element.document.createDocumentFragment();
-                vmlDoc.namespaces.add( vmlns, 'urn:schemas-microsoft-com:vml' );
-            }
-            return vmlDoc.createElement( tag );
-        }
-
-
-        function merge( obj1 ) {
-            var i, len, p, objN, args = arguments;
-            for( i = 1, len = args.length; i < len; i++ ) {
-                objN = args[i];
-                for( p in objN ) {
-                    if( objN.hasOwnProperty( p ) ) {
-                        obj1[ p ] = objN[ p ];
-                    }
-                }
-            }
-            return obj1;
-        }
-
-
-        /**
-         * Wrapper for length style values
-         * @param val - the CSS string representing the length. It is assumed that this will already have
-         *              been validated as a valid length or percentage syntax.
-         */
-        function Length( val ) {
-            this.val = val;
-        }
-        Length.prototype = {
-            unitRE: /(px|em|ex|mm|cm|in|pt|pc|%)$/,
-
-            getNumber: function() {
-                return parseFloat( this.val, 10 );
-            },
-
-            getUnit: function() {
-                var m = this.val.match( this.unitRE );
-                return ( m && m[0] ) || 'px';
-            },
-
-            isPercentage: function() {
-                return this.getUnit() === '%';
-            },
+        if( !Pie ) {
+            Pie = window.Pie = {};
 
             /**
-             * Resolve this length into a number of pixels.
-             * @param el - the context element, used to resolve font-relative values
-             * @param pct100 - the number of pixels that equal a 100% percentage. This can be either a number or a
-             *                 function which will be called to return the number.
+             * To create a VML element, it must be created by a Document which has the VML
+             * namespace set. Unfortunately, if you try to add the namespace programatically
+             * into the main document, you will get an "Unspecified error" when trying to
+             * access document.namespaces before the document is finished loading. To get
+             * around this, we create a DocumentFragment, which in IE land is apparently a
+             * full-fledged Document. It allows adding namespaces immediately, so we add the
+             * namespace there and then have it create the VML element.
              */
-            pixels: function( el, pct100 ) {
-                var num = this.getNumber(),
-                    unit = this.getUnit();
-                switch( unit ) {
-                    case "px":
-                        return num;
-                    case "%":
-                        return num * ( typeof pct100 === 'function' ? pct100() : pct100 ) / 100;
-                    case "em":
-                        return num * parseInt( el.currentStyle.fontSize );
-                    case "ex":
-                        return num * parseInt( el.currentStyle.fontSize ) / 2;
-                    default:
-                        return num * Length.conversions[ unit ];
+            Pie.createVmlElement = function( tag ) {
+                var vmlDoc = Pie._vmlCreatorDoc;
+                if( !vmlDoc ) {
+                    vmlDoc = Pie._vmlCreatorDoc = element.document.createDocumentFragment();
+                    vmlDoc.namespaces.add( vmlns, 'urn:schemas-microsoft-com:vml' );
                 }
-            }
-        };
-        Length.conversions = (function() {
-            var units = [ 'mm', 'cm', 'in', 'pt', 'pc' ],
-                vals = {},
-                parent = element.parentNode,
-                i = 0, len = units.length, unit, el, s;
-            for( ; i < len; i++ ) {
-                unit = units[i];
-                el = element.document.createElement( 'length-calc' );
-                s = el.style;
-                s.position = 'absolute';
-                s.top = s.left = -1000;
-                s.width = '100' + unit;
-                parent.appendChild( el );
-                vals[ unit ] = el.offsetWidth / 100;
-                parent.removeChild( el );
-            }
-        })();
+                return vmlDoc.createElement( vmlns + ':' + tag );
+            };
 
 
-
-
-        var styleBase = {
-            colorRE: /(#[0-9A-Fa-f]{3}|#[0-9A-Fa-f]{6})|rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
-            lengthRE: /[\-\+]?0|[\-\+]?\d+\.?\d*(px|em|ex|mm|cm|in|pt|pc)/,
-            percentRE: /[\-\+]?0|[\-\+]?\d+\.?\d*%/,
-            angleRE: /0|\-?\d+(deg|rad|grad)/,
-
-            getProps: function() {
-                if( this.changed() ) {
-                    this._props = this.parseCss( this._css = this.getCss() );
+            Pie.merge = function( obj1 ) {
+                var i, len, p, objN, args = arguments;
+                for( i = 1, len = args.length; i < len; i++ ) {
+                    objN = args[i];
+                    for( p in objN ) {
+                        if( objN.hasOwnProperty( p ) ) {
+                            obj1[ p ] = objN[ p ];
+                        }
+                    }
                 }
-                return this._props;
-            },
+                return obj1;
+            };
 
-            getCss: function() {
-                return this.element.currentStyle.getAttribute( this.cssProperty );
-            },
+            /**
+             * Wrapper for length style values
+             * @param val - the CSS string representing the length. It is assumed that this will already have
+             *              been validated as a valid length or percentage syntax.
+             */
+            Pie.Length = ( function() {
+                function Length( val ) {
+                    this.val = val;
+                }
+                Length.prototype = {
+                    unitRE: /(px|em|ex|mm|cm|in|pt|pc|%)$/,
 
-            isActive: function() {
-                return !!this.getProps();
-            },
+                    getNumber: function() {
+                        return parseFloat( this.val, 10 );
+                    },
 
-            changed: function() {
-                return this._css !== this.getCss();
-            }
-        };
+                    getUnit: function() {
+                        var m = this.val.match( this.unitRE );
+                        return ( m && m[0] ) || 'px';
+                    },
+
+                    isPercentage: function() {
+                        return this.getUnit() === '%';
+                    },
+
+                    /**
+                     * Resolve this length into a number of pixels.
+                     * @param el - the context element, used to resolve font-relative values
+                     * @param pct100 - the number of pixels that equal a 100% percentage. This can be either a number or a
+                     *                 function which will be called to return the number.
+                     */
+                    pixels: function( el, pct100 ) {
+                        var num = this.getNumber(),
+                            unit = this.getUnit();
+                        switch( unit ) {
+                            case "px":
+                                return num;
+                            case "%":
+                                return num * ( typeof pct100 === 'function' ? pct100() : pct100 ) / 100;
+                            case "em":
+                                return num * parseInt( el.currentStyle.fontSize );
+                            case "ex":
+                                return num * parseInt( el.currentStyle.fontSize ) / 2;
+                            default:
+                                return num * Length.conversions[ unit ];
+                        }
+                    }
+                };
+
+                Length.conversions = (function() {
+                    var units = [ 'mm', 'cm', 'in', 'pt', 'pc' ],
+                        vals = {},
+                        parent = element.parentNode,
+                        i = 0, len = units.length, unit, el, s;
+                    for( ; i < len; i++ ) {
+                        unit = units[i];
+                        el = element.document.createElement( 'length-calc' );
+                        s = el.style;
+                        s.position = 'absolute';
+                        s.top = s.left = -1000;
+                        s.width = '100' + unit;
+                        parent.appendChild( el );
+                        vals[ unit ] = el.offsetWidth / 100;
+                        parent.removeChild( el );
+                    }
+                    return vals;
+                })();
+
+                return Length;
+            } )();
+
+
+            Pie.styleBase = {
+                colorRE: /(#[0-9A-Fa-f]{3}|#[0-9A-Fa-f]{6})|rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
+                lengthRE: /[\-\+]?0|[\-\+]?\d+\.?\d*(px|em|ex|mm|cm|in|pt|pc)/,
+                percentRE: /[\-\+]?0|[\-\+]?\d+\.?\d*%/,
+                angleRE: /0|\-?\d+(deg|rad|grad)/,
+
+                getProps: function() {
+                    if( this.changed() ) {
+                        this._props = this.parseCss( this._css = this.getCss() );
+                    }
+                    return this._props;
+                },
+
+                getCss: function() {
+                    return this.element.currentStyle.getAttribute( this.cssProperty );
+                },
+
+                isActive: function() {
+                    return !!this.getProps();
+                },
+
+                changed: function() {
+                    return this._css !== this.getCss();
+                }
+            };
 
 
 
-        function BackgroundGradientStyleInfo( el ) {
-            this.element = el;
-        }
-        merge( BackgroundGradientStyleInfo.prototype, styleBase, {
+            Pie.BackgroundGradientStyleInfo = function( el ) {
+                this.element = el;
+            };
+            Pie.merge( Pie.BackgroundGradientStyleInfo.prototype, Pie.styleBase, {
 
-            cssProperty: 'background-gradient',
+                cssProperty: 'background-gradient',
 
-            /*
-            [<point> || <angle>,]? <stop>, <stop> [, <stop>]*
-            point =
-            angle = 0 | <number>deg | <number>rad | <number>grad
-            stop = <color> [ <percentage> | <length> ]
-            */
+                /*
+                [<point> || <angle>,]? <stop>, <stop> [, <stop>]*
+                point =
+                angle = 0 | <number>deg | <number>rad | <number>grad
+                stop = <color> [ <percentage> | <length> ]
+                */
 
-            /*parseRE: new RegExp(
-                '^\\s*((P\\s+A)|(A\\s+P)\\s*,\\s*)?(S)\\s*,\\s*(S)((\\s*,\\s*(S))*)?\\s*$'
-                    .replace( /P/g, '(top|bottom|right|left)' )
-            ),*/
+                /*parseRE: new RegExp(
+                    '^\\s*((P\\s+A)|(A\\s+P)\\s*,\\s*)?(S)\\s*,\\s*(S)((\\s*,\\s*(S))*)?\\s*$'
+                        .replace( /P/g, '(top|bottom|right|left)' )
+                ),*/
 
-            bgPosRE: / /,
-            angleRE: / /,
-            stopRE: / /,
+                bgPosRE: / /,
+                angleRE: / /,
+                stopRE: / /,
 
-            parseCss: function( css ) {
-                var p = null, m,
-                    parts = css && css.split( /\\s*,\\s*/ ),
-                    part, i, len;
+                parseCss: function( css ) {
+                    var p = null, m,
+                        parts = css && css.split( /\\s*,\\s*/ ),
+                        part, i, len;
 
-                if( parts ) {
-                    part = parts[0];
-                    i = 0;
-                    len = parts.length;
+                    if( parts ) {
+                        part = parts[0];
+                        i = 0;
+                        len = parts.length;
 
-                    if( len >= 2 ) {
-                        if( part.match(  ) ) {
+                        if( len >= 2 ) {
+                            if( part.match(  ) ) {
 
+                            }
+
+                            for( ; i < len; i++ ) {
+
+                            }
                         }
 
                         for( ; i < len; i++ ) {
+                            part = parts[i];
+                            if( i === 0 && ( m = part.match( this.bgPosRE ) || part.match( this.angleRE ) ) ) {
 
+                            }
                         }
                     }
 
-                    for( ; i < len; i++ ) {
-                        part = parts[i];
-                        if( i === 0 && ( m = part.match( this.bgPosRE ) || part.match( this.angleRE ) ) ) {
+                    return p;
+                }
 
+            } );
+
+
+
+            Pie.BorderStyleInfo = function( el ) {
+                this.element = el;
+            };
+            Pie.merge( Pie.BorderStyleInfo.prototype, Pie.styleBase, {
+
+                sides: [ 'Top', 'Right', 'Bottom', 'Left' ],
+                namedWidths: {
+                    thin: '1px',
+                    medium: '3px',
+                    thick: '5px'
+                },
+
+                parseCss: function( css ) {
+                    var w = {},
+                        s = {},
+                        c = {},
+                        el = this.element,
+                        cs = el.currentStyle,
+                        rs = el.runtimeStyle,
+                        rtColor = rs.borderColor,
+                        i = 0,
+                        active = false,
+                        side, ltr, wid;
+
+                    rs.borderColor = '';
+                    for( ; i < 4; i++ ) {
+                        side = this.sides[ i ];
+                        ltr = side.charAt(0).toLowerCase();
+                        s[ ltr ] = cs[ 'border' + side + 'Style' ];
+                        c[ ltr ] = cs[ 'border' + side + 'Color' ];
+                        wid = cs[ 'border' + side + 'Width' ];
+                        wid = w[ ltr ] = new Pie.Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ wid ] || wid ) );
+                        if( s[ ltr ] !== 'none' || wid.pixels( this.element ) > 0 ) {
+                            active = true;
                         }
                     }
+                    rs.borderColor = rtColor;
+
+                    return active ? { widths: w, styles: s, colors: c } : null;
+                },
+
+                getCss: function() {
+                    var el = this.element,
+                        cs = el.currentStyle,
+                        rs = el.runtimeStyle,
+                        rtColor = rs.borderColor,
+                        css;
+
+                    rs.borderColor = '';
+                    css = cs.borderWidth + '|' + cs.borderStyle + '|' + cs.borderColor;
+                    rs.borderColor = rtColor;
+                    return css;
                 }
 
-                return p;
-            }
-
-        } );
-
-
-
-        function BorderStyleInfo( el ) {
-            this.element = el;
-        }
-        merge( BorderStyleInfo.prototype, styleBase, {
-
-            sides: [ 'Top', 'Right', 'Bottom', 'Left' ],
-            namedWidths: {
-                thin: '1px',
-                medium: '3px',
-                thick: '5px'
-            },
-
-            parseCss: function( css ) {
-                var w = {},
-                    s = {},
-                    c = {},
-                    el = this.element,
-                    cs = el.currentStyle,
-                    rs = el.runtimeStyle,
-                    rtColor = rs.borderColor,
-                    i = 0,
-                    active = false,
-                    side, ltr, wid;
-
-                rs.borderColor = '';
-                for( ; i < 4; i++ ) {
-                    side = this.sides[ i ];
-                    ltr = side.charAt(0).toLowerCase();
-                    s[ ltr ] = cs[ 'border' + side + 'Style' ];
-                    c[ ltr ] = cs[ 'border' + side + 'Color' ];
-                    wid = cs[ 'border' + side + 'Width' ];
-                    wid = w[ ltr ] = new Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ wid ] || wid ) );
-                    if( s[ ltr ] !== 'none' || wid.pixels( this.element ) > 0 ) {
-                        active = true;
-                    }
-                }
-                rs.borderColor = rtColor;
-
-                return active ? { widths: w, styles: s, colors: c } : null;
-            },
-
-            getCss: function() {
-                var el = this.element,
-                    cs = el.currentStyle,
-                    rs = el.runtimeStyle,
-                    rtColor = rs.borderColor,
-                    css;
-
-                rs.borderColor = '';
-                css = cs.borderWidth + '|' + cs.borderStyle + '|' + cs.borderColor;
-                rs.borderColor = rtColor;
-                return css;
-            }
-
-        } );
+            } );
 
 
 
 
-        function BorderRadiusStyleInfo( el ) {
-            this.element = el;
-        }
-        merge( BorderRadiusStyleInfo.prototype, styleBase, {
+            Pie.BorderRadiusStyleInfo = function( el ) {
+                this.element = el;
+            };
+            Pie.merge( Pie.BorderRadiusStyleInfo.prototype, Pie.styleBase, {
 
-            cssProperty: 'border-radius',
+                cssProperty: 'border-radius',
 
-            parseRE: new RegExp(
-                '^G(\\/G)?$'.replace( /G/g, '\\s*(L)(\\s+(L))?(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, styleBase.lengthRE.source + '|' + styleBase.percentRE.source ) )
-            ),
+                parseRE: new RegExp(
+                    '^G(\\/G)?$'.replace( /G/g, '\\s*(L)(\\s+(L))?(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, Pie.styleBase.lengthRE.source + '|' + Pie.styleBase.percentRE.source ) )
+                ),
 
-            parseCss: function( css ) {
-                var p = null, x, y, c,
-                    hasNonZero = false,
-                    m = css && css.match( this.parseRE );
+                parseCss: function( css ) {
+                    var p = null, x, y, c,
+                        hasNonZero = false,
+                        m = css && css.match( this.parseRE );
 
-                function len( v ) {
-                    return new Length( v );
-                }
-
-                if( m ) {
-                    x = {
-                        tl: len( m[1] ),
-                        tr: len( m[4] || m[1] ),
-                        br: len( m[7] || m[1] ),
-                        bl: len( m[10] || m[4] || m[1] )
-                    };
-                    for( c in x ) {
-                        if( x.hasOwnProperty( c ) && x[c].getNumber() !== 0 ) {
-                            hasNonZero = true;
-                        }
+                    function len( v ) {
+                        return new Pie.Length( v );
                     }
 
-                    if( m[12] ) {
-                        y = {
-                            tl: len( m[13] ),
-                            tr: len( m[16] || m[13] ),
-                            br: len( m[19] || m[13] ),
-                            bl: len( m[22] || m[16] || m[13] )
+                    if( m ) {
+                        x = {
+                            tl: len( m[1] ),
+                            tr: len( m[4] || m[1] ),
+                            br: len( m[7] || m[1] ),
+                            bl: len( m[10] || m[4] || m[1] )
                         };
-                        for( c in y ) {
-                            if( y.hasOwnProperty( c ) && y[c].getNumber() !== 0 ) {
+                        for( c in x ) {
+                            if( x.hasOwnProperty( c ) && x[c].getNumber() !== 0 ) {
                                 hasNonZero = true;
                             }
                         }
-                    } else {
-                        y = x;
-                    }
 
-                    // Treat all-zero values the same as no value
-                    if( hasNonZero ) {
-                        p = { x: x, y : y };
-                    }
-                }
+                        if( m[12] ) {
+                            y = {
+                                tl: len( m[13] ),
+                                tr: len( m[16] || m[13] ),
+                                br: len( m[19] || m[13] ),
+                                bl: len( m[22] || m[16] || m[13] )
+                            };
+                            for( c in y ) {
+                                if( y.hasOwnProperty( c ) && y[c].getNumber() !== 0 ) {
+                                    hasNonZero = true;
+                                }
+                            }
+                        } else {
+                            y = x;
+                        }
 
-                return p;
-            }
-        } );
-
-
-
-        function BorderImageStyleInfo( el ) {
-            this.element = el;
-        }
-        merge( BorderImageStyleInfo.prototype, styleBase, {
-
-            cssProperty: 'border-image',
-
-            //TODO this needs to be reworked to allow the components to appear in arbitrary order
-            parseRE: new RegExp(
-                '^\\s*url\\(\\s*([^\\s\\)]+)\\s*\\)\\s+N(\\s+N)?(\\s+N)?(\\s+N)?(\\s*\\/\\s*L(\\s+L)?(\\s+L)?(\\s+L)?)?RR\\s*$'
-                        .replace( /N/g, '(\\d+|' + styleBase.percentRE.source + ')' )
-                        .replace( /L/g, styleBase.lengthRE.source )
-                        .replace( /R/g, '(\\s+(stretch|round|repeat))?' )
-            ),
-
-            parseCss: function( css ) {
-                var cs = this.element.currentStyle,
-                    p = null,
-                    m = css && css.match( this.parseRE );
-
-                if( m ) {
-                    p = {
-                        src: m[1],
-
-                        slice: {
-                            t: parseInt( m[2], 10 ),
-                            r: parseInt( m[4] || m[2], 10 ),
-                            b: parseInt( m[6] || m[2], 10 ),
-                            l: parseInt( m[8] || m[4] || m[2], 10 )
-                        },
-
-                        width: m[9] ? {
-                            t: new Length( m[10] ),
-                            r: new Length( m[12] || m[10] ),
-                            b: new Length( m[14] || m[10] ),
-                            l: new Length( m[16] || m[12] || m[10] )
-                        } : {
-                            t: new Length( cs.borderTopWidth ),
-                            r: new Length( cs.borderRightWidth ),
-                            b: new Length( cs.borderBottomWidth ),
-                            l: new Length( cs.borderLeftWidth )
-                        },
-
-                        repeat: {
-                            h: m[18] || 'stretch',
-                            v: m[20] || m[18] || 'stretch'
+                        // Treat all-zero values the same as no value
+                        if( hasNonZero ) {
+                            p = { x: x, y : y };
                         }
                     }
+
+                    return p;
                 }
-
-                return p;
-            }
-        } );
+            } );
 
 
-        function BoxShadowStyleInfo( el ) {
-            this.element = el;
-        }
-        merge( BoxShadowStyleInfo.prototype, styleBase, {
 
-            cssProperty: 'box-shadow',
+            Pie.BorderImageStyleInfo = function( el ) {
+                this.element = el;
+            };
+            Pie.merge( Pie.BorderImageStyleInfo.prototype, Pie.styleBase, {
 
-            noneRE: /^\s*none\s*$/,
-            insetRE: /(inset)/,
-            lengthsRE: new RegExp( '\\s*(L)\\s+(L)(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, styleBase.lengthRE.source ) ),
+                cssProperty: 'border-image',
 
-            parseCss: function( css ) {
-                var p = null, m;
+                //TODO this needs to be reworked to allow the components to appear in arbitrary order
+                parseRE: new RegExp(
+                    '^\\s*url\\(\\s*([^\\s\\)]+)\\s*\\)\\s+N(\\s+N)?(\\s+N)?(\\s+N)?(\\s*\\/\\s*L(\\s+L)?(\\s+L)?(\\s+L)?)?RR\\s*$'
+                            .replace( /N/g, '(\\d+|' + Pie.styleBase.percentRE.source + ')' )
+                            .replace( /L/g, Pie.styleBase.lengthRE.source )
+                            .replace( /R/g, '(\\s+(stretch|round|repeat))?' )
+                ),
 
-                if( css && !this.noneRE.test( css ) ) {
-                    p = {};
+                parseCss: function( css ) {
+                    var cs = this.element.currentStyle,
+                        p = null,
+                        Length = Pie.Length,
+                        m = css && css.match( this.parseRE );
 
-                    // check for inset keyword
-                    if( this.insetRE.test( css ) ) {
-                        css = css.replace( this.insetRE, '' );
-                        p.inset = true;
-                    }
-
-                    // get the color
-                    if( this.colorRE.test( css ) ) {
-                        css = css.replace( this.colorRE, '' );
-                        p.color = RegExp.$1;
-                    }
-
-                    // all that's left should be lengths; map them to xOffset/yOffset/blurRadius/spreadRadius
-                    m = css.match( this.lengthsRE );
                     if( m ) {
-                        p.xOffset = new Length( m[1] );
-                        p.yOffset = new Length( m[3] );
-                        p.blur = new Length( m[6] || '0' );
-                        p.spread = new Length( m[9] || '0' );
-                    } else {
-                        // Something unknown was present; give up.
-                        p = null;
+                        p = {
+                            src: m[1],
+
+                            slice: {
+                                t: parseInt( m[2], 10 ),
+                                r: parseInt( m[4] || m[2], 10 ),
+                                b: parseInt( m[6] || m[2], 10 ),
+                                l: parseInt( m[8] || m[4] || m[2], 10 )
+                            },
+
+                            width: m[9] ? {
+                                t: new Length( m[10] ),
+                                r: new Length( m[12] || m[10] ),
+                                b: new Length( m[14] || m[10] ),
+                                l: new Length( m[16] || m[12] || m[10] )
+                            } : {
+                                t: new Length( cs.borderTopWidth ),
+                                r: new Length( cs.borderRightWidth ),
+                                b: new Length( cs.borderBottomWidth ),
+                                l: new Length( cs.borderLeftWidth )
+                            },
+
+                            repeat: {
+                                h: m[18] || 'stretch',
+                                v: m[20] || m[18] || 'stretch'
+                            }
+                        }
                     }
+
+                    return p;
                 }
-
-                return p;
-            }
-        } );
+            } );
 
 
+            Pie.BoxShadowStyleInfo = function( el ) {
+                this.element = el;
+            };
+            Pie.merge( Pie.BoxShadowStyleInfo.prototype, Pie.styleBase, {
+
+                cssProperty: 'box-shadow',
+
+                noneRE: /^\s*none\s*$/,
+                insetRE: /(inset)/,
+                lengthsRE: new RegExp( '\\s*(L)\\s+(L)(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, Pie.styleBase.lengthRE.source ) ),
+
+                parseCss: function( css ) {
+                    var p = null, m,
+                        Length = Pie.Length;
+
+                    if( css && !this.noneRE.test( css ) ) {
+                        p = {};
+
+                        // check for inset keyword
+                        if( this.insetRE.test( css ) ) {
+                            css = css.replace( this.insetRE, '' );
+                            p.inset = true;
+                        }
+
+                        // get the color
+                        if( this.colorRE.test( css ) ) {
+                            css = css.replace( this.colorRE, '' );
+                            p.color = RegExp.$1;
+                        }
+
+                        // all that's left should be lengths; map them to xOffset/yOffset/blurRadius/spreadRadius
+                        m = css.match( this.lengthsRE );
+                        if( m ) {
+                            p.xOffset = new Length( m[1] );
+                            p.yOffset = new Length( m[3] );
+                            p.blur = new Length( m[6] || '0' );
+                            p.spread = new Length( m[9] || '0' );
+                        } else {
+                            // Something unknown was present; give up.
+                            p = null;
+                        }
+                    }
+
+                    return p;
+                }
+            } );
 
 
-        var rendererBase = {
 
-            needsUpdate: function() {
-                return false;
-            },
 
-            updateProps: function() {
-            },
+            Pie.rendererBase = {
 
-            updatePos: function() {
-            },
+                needsUpdate: function() {
+                    return false;
+                },
 
-            updateSize: function() {
-            },
+                updateProps: function() {
+                },
 
-            updateVis: function() {
-            },
+                updatePos: function() {
+                },
 
-            withImgSize: function( src, func ) {
-                var sizes = this._imgSizes || ( this._imgSizes = {} ),
-                    size = sizes[ src ], img;
-                if( size ) {
-                    func( size );
-                } else {
-                    img = new Image();
-                    img.onload = function() {
-                        size = sizes[ src ] = { w: img.width, h: img.height };
+                updateSize: function() {
+                },
+
+                updateVis: function() {
+                },
+
+                withImgSize: function( src, func ) {
+                    var sizes = this._imgSizes || ( this._imgSizes = {} ),
+                        size = sizes[ src ], img;
+                    if( size ) {
                         func( size );
-                    };
-                    img.src = src;
-                }
-            },
-
-            getBoxPath: function( shrink, side ) {
-                var r, instructions, values, str = '', i,
-                    el = this.element,
-                    w = el.offsetWidth,
-                    h = el.offsetHeight,
-                    radInfo = this.styleInfos.borderRadius,
-                    floor = Math.floor, ceil = Math.ceil,
-                    deg = 65535,
-                    tlX, tlY, trX, trY, brX, brY, blX, blY, f;
-
-                if( !shrink ) {
-                    shrink = 0;
-                }
-                shrink = floor( shrink );
-
-                if( radInfo.isActive() ) {
-                    r = radInfo.getProps();
-
-                    tlX = r.x.tl.pixels( el, w );
-                    tlY = r.y.tl.pixels( el, h );
-                    trX = r.x.tr.pixels( el, w );
-                    trY = r.y.tr.pixels( el, h );
-                    brX = r.x.br.pixels( el, w );
-                    brY = r.y.br.pixels( el, h );
-                    blX = r.x.bl.pixels( el, w );
-                    blY = r.y.bl.pixels( el, h );
-
-                    // If any corner ellipses overlap, reduce them all by the appropriate factor. This formula
-                    // is taken straight from the CSS3 Backgrounds and Borders spec.
-                    f = Math.min(
-                        w / ( tlX + trX ),
-                        h / ( trY + brY ),
-                        w / ( blX + brX ),
-                        h / ( tlY + blY )
-                    );
-                    if( f < 1 ) {
-                        tlX *= f;
-                        tlY *= f;
-                        trX *= f;
-                        trY *= f;
-                        brX *= f;
-                        brY *= f;
-                        blX *= f;
-                        blY *= f;
-                    }
-
-                    if (side) {
-                        switch (side.charAt(0).toLowerCase()) {
-                            case 't':
-                                str = 'al' + floor( tlX ) + ',' + floor( tlY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( 135 * deg ) + ',' + ( -45 * deg ) +
-                                      'ae' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 90 * deg ) + ',' + ( -45 * deg );
-                                break;
-                            case 'r':
-                                str = 'al' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 45 * deg ) + ',' + ( -45 * deg ) +
-                                      'ae' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',0,' + ( -45 * deg );
-                                break;
-                            case 'b':
-                                str = 'al' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',' + ( -45 * deg ) + ',' + ( -45 * deg ) +
-                                      'ae' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -90 * deg ) + ',' + ( -45 * deg );
-                                break;
-                            case 'l':
-                                str = 'al' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -135 * deg ) + ',' + ( -45 * deg ) +
-                                      'ae' + floor( tlX ) + ',' + floor( blY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( -180 * deg ) + ',' + ( -45 * deg );
-                        }
                     } else {
-                        instructions = [ 'm', 'qy', 'l', 'qx', 'l', 'qy', 'l', 'qx' ];
-                        values = [
-                            shrink + ',' + floor(tlY),
-                            floor(tlX) + ',' + shrink,
-                            ceil(w - trX) + ',' + shrink,
-                            ( w - shrink ) + ',' + floor(trY),
-                            ( w - shrink ) + ',' + ceil(h - brY),
-                            ceil(w - brX) + ',' + ( h - shrink ),
-                            floor(blX) + ',' + ( h - shrink ),
-                            shrink + ',' + ceil(h - blY)
-                        ];
-
-                        for ( i = 0; i < 8; i++ ) {
-                            str += instructions[i] + values[i]
-                        }
-                        str += ' x e';
+                        img = new Image();
+                        img.onload = function() {
+                            size = sizes[ src ] = { w: img.width, h: img.height };
+                            func( size );
+                        };
+                        img.src = src;
                     }
-                } else {
-                    // simplified path for non-rounded box
-                    str = 'm' + shrink + ',' + shrink +
-                          'l' + ( w - shrink ) + ',' + shrink +
-                          'l' + ( w - shrink ) + ',' + ( h - shrink ) +
-                          'l' + shrink + ',' + ( h - shrink ) +
-                          'xe';
-                }
-                return str;
-            }
+                },
 
-
-        };
-
-
-
-
-        function RootRenderer( el, styleInfos ) {
-            this.element = el;
-            this.styleInfos = styleInfos;
-        }
-        merge( RootRenderer.prototype, rendererBase, {
-
-            isActive: function() {
-                var infos = this.styleInfos;
-                for( var i in infos ) {
-                    if( infos.hasOwnProperty( i ) && infos[ i ].isActive() ) {
-                        return true;
-                    }
-                }
-                return false;
-            },
-
-            updateVis: function() {
-                if( this.isActive() ) {
-                    var cs = this.element.currentStyle;
-                    this.getBox().style.display = ( cs.visibility === 'hidden' || cs.display === 'none' ) ? 'none' : '';
-                }
-            },
-
-            updatePos: function() {
-                if( this.isActive() ) {
-                    var el = this.element,
-                        s = this.getBox().style,
-                        x = 0, y = 0;
-
-                    // Get the element's offsets from its nearest positioned ancestor. More
-                    // accurate than just using offsetTop/Left.
-                    do {
-                        x += el.offsetLeft;
-                        y += el.offsetTop;
-                        el = el.offsetParent;
-                    } while( el && el.currentStyle.position === 'static' );
-
-                    s.left = x;
-                    s.top = y;
-                }
-            },
-
-            updateSize: function() {
-                if( this.isActive() ) {
-                    var el = this.element,
-                        s = this.getBox().style,
-                        i, len;
-
-                    s.width = el.offsetWidth;
-                    s.height = el.offsetHeight;
-                }
-            },
-
-            getBox: function() {
-                var box = this._box, el, s;
-                if( !box ) {
-                    el = this.element;
-                    box = this._box = el.document.createElement( 'css3-container' );
-                    s = box.style;
-
-                    s.position = 'absolute';
-                    s.zIndex = el.currentStyle.zIndex;
-
-                    el.parentNode.insertBefore( box, el );
-                }
-                return box;
-            },
-
-            destroy: function() {
-                var box = this._box;
-                if( box && box.parentNode ) {
-                    box.parentNode.removeChild( box );
-                }
-                delete this._box;
-            }
-
-        } );
-
-
-
-        function BackgroundAndBorderRenderer( el, styleInfos, parent ) {
-            this.element = el;
-            this.styleInfos = styleInfos;
-            this.parent = parent;
-        }
-        merge( BackgroundAndBorderRenderer.prototype, rendererBase, {
-
-            zIndex: 200,
-            cssUrlRE: /^\s*url\(\s*"?([^\s"]*)"?\s*\)\s*$/,
-
-            needsUpdate: function() {
-                var si = this.styleInfos;
-                return si.border.changed() //TODO || si.background.changed() || si.backgroundGradient.changed();
-            },
-
-            isActive: function() {
-                var si = this.styleInfos;
-                return si.borderImage.isActive() ||
-                       si.borderRadius.isActive() ||
-                       si.backgroundGradient.isActive() ||
-                       ( si.boxShadow.isActive() && si.boxShadow.getProps().inset );
-            },
-
-            updateSize: function() {
-                if( this.isActive() ) {
-                    this.draw();
-                }
-            },
-
-            updateProps: function() {
-                this.destroy();
-                if( this.isActive() ) {
-                    this.draw();
-                }
-            },
-
-            draw: function() {
-                this.drawBgColor();
-                this.drawBgImage();
-                this.drawBorder();
-            },
-
-            drawBgColor: function() {
-                var cont = this.getBox(),
-                    el = this.element,
-                    shape = this.getShape( 'bgColor' ),
-                    w = el.offsetWidth,
-                    h = el.offsetHeight,
-                    s, color;
-
-                shape.stroked = false;
-                shape.coordsize = w + ',' + h;
-                shape.path = this.getBoxPath();
-                s = shape.style;
-                s.width = w;
-                s.height = h;
-                s.zIndex = 1;
-
-                color = this.getBgColor();
-                if( color === 'transparent' ) {
-                    shape.filled = false;
-                } else {
-                    shape.filled = true;
-                    shape.fillcolor = color;
-                }
-            },
-
-            drawBgImage: function() {
-                var cont = this.getBox(),
-                    el = this.element,
-                    shape = this.getShape( 'bgImage', 'fill' ),
-                    w = el.offsetWidth,
-                    h = el.offsetHeight,
-                    s, img;
-
-                shape.stroked = false;
-                shape.fill.type = 'tile';
-                shape.fillcolor = 'none';
-                shape.coordsize = w + ',' + h;
-                shape.path = this.getBoxPath();
-                s = shape.style;
-                s.width = w;
-                s.height = h;
-                s.zIndex = 2;
-
-                img = this.getBgImage();
-                if( img === 'none' ) {
-                    shape.filled = false;
-                } else {
-                    shape.filled = true;
-                    shape.fill.src = img;
-                    this.positionBgImage( shape );
-                }
-            },
-
-            positionBgImage: function( shape ) {
-                this.withImgSize( shape.fill.src, function( size ) {
-                    var fill = shape.fill,
+                getBoxPath: function( shrink, side ) {
+                    var r, instructions, values, str = '', i,
                         el = this.element,
-                        elW = el.offsetWidth,
-                        elH = el.offsetHeight,
-                        cs = el.currentStyle,
-                        border = this.styleInfos.border.getProps(),
-                        bwT = border ? border.widths.t.pixels( el ) : 0,
-                        bwR = border ? border.widths.r.pixels( el ) : 0,
-                        bwB = border ? border.widths.b.pixels( el ) : 0,
-                        bwL = border ? border.widths.l.pixels( el ) : 0,
-                        repeat = cs.backgroundRepeat,
-                        posX = cs.backgroundPositionX,
-                        posY = cs.backgroundPositionY,
-                        pxX, pxY,
-                        clipT = 0, clipR = elW, clipB = elH, clipL = 0;
-
-                    // Positioning - find the pixel offset from the top/left and convert to a ratio
-                    posX = ( posX === 'left' ? '0' : posX === 'center' ? '50%' : posX === 'right' ? '100%' : posX );
-                    posY = ( posY === 'top' ? '0' : posY === 'center' ? '50%' : posY === 'bottom' ? '100%' : posY );
-                    pxX = new Length( posX ).pixels( el, elW - size.w - bwL - bwR ) + bwL;
-                    pxY = new Length( posY ).pixels( el, elH - size.h - bwT - bwB ) + bwT;
-                    fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
-
-                    // Repeating - clip the image shape
-                    if( repeat !== 'repeat' ) {
-                        if( repeat === 'repeat-x' || repeat === 'no-repeat' ) {
-                            clipT = pxY;
-                            clipB = pxY + size.h;
-                        }
-                        if( repeat === 'repeat-y' || repeat === 'no-repeat' ) {
-                            clipL = pxX;
-                            clipR = pxX + size.w;
-                        }
-                        shape.style.clip = 'rect(' + clipT + 'px,' + clipR + 'px,' + clipB + 'px,' + clipL + 'px)';
-                    }
-                } );
-            },
-
-            drawBorder: function() {
-                var cont = this.getBox(),
-                    el = this.element,
-                    cs = el.currentStyle,
-                    w = el.offsetWidth,
-                    h = el.offsetHeight,
-                    props = this.styleInfos.border.getProps(),
-                    styles, colors, widths,
-                    side, shape, stroke, bColor, bWidth, bStyle, s;
-
-                if( props ) {
-                    styles = props.styles,
-                    colors = props.colors,
-                    widths = props.widths,
-                    
-                    el.runtimeStyle.borderColor = 'transparent';
-                    for( side in styles ) {
-                        if( styles.hasOwnProperty( side ) ) {
-                            bWidth = widths[ side ].pixels( el );
-                            bStyle = styles[ side ];
-                            bColor = colors[ side ];
-                            shape = this.getShape( 'border' + side, 'stroke' );
-                            shape.coordsize = w + ',' + h;
-                            shape.path = this.getBoxPath( bWidth / 2, side );
-                            s = shape.style;
-                            s.width = w;
-                            s.height = h;
-                            s.zIndex = 3;
-                            shape.filled = false;
-                            shape.stroked = bWidth > 0;
-                            stroke = shape.stroke;
-                            stroke.weight = bWidth + 'px';
-                            stroke.color = bColor;
-                            stroke.dashstyle = bStyle === 'dashed' ? '2 2' : bStyle === 'dotted' ? '0 1' : 'solid';
-                            stroke.linestyle = bStyle === 'double' && bWidth > 2 ? 'ThinThin' : 'Single';
-                        }
-                    }
-                }
-            },
-
-            getBgColor: function() {
-                var el = this.element,
-                    rs = el.runtimeStyle,
-                    color;
-                rs.backgroundColor = '';
-                color = el.currentStyle.backgroundColor;
-                rs.backgroundColor = 'transparent';
-                return color;
-            },
-
-            getBgImage: function() {
-                var el = this.element,
-                    rs = el.runtimeStyle,
-                    img;
-                rs.backgroundImage = '';
-                img = el.currentStyle.backgroundImage.replace( this.cssUrlRE, "$1" );
-                rs.backgroundImage = 'none';
-                return img;
-            },
-
-            getShape: function( name, subElName ) {
-                var shapes = this._shapes || ( this._shapes = {} ),
-                    shape = shapes[ name ],
-                    s;
-
-                if( !shape ) {
-                    shape = shapes[ name ] = this._borderShape = createVmlElement( vmlns + ':shape' );
-                    if( subElName ) {
-                        shape.appendChild( shape[ subElName ] = createVmlElement( vmlns + ':' + subElName ) );
-                    }
-                    this.getBox().appendChild( shape );
-                    s = shape.style;
-                    s.position = 'absolute';
-                    s.left = s.top = 0;
-                    s.behavior = 'url(#default#VML)';
-                    shape.coordorigin = '1,1';
-                }
-                return shape;
-            },
-
-            getBox: function() {
-                var box = this._box,
-                    infos = this.styleInfos,
-                    s;
-
-                if( !box ) {
-                    box = this._box = this.element.document.createElement( 'bg-and-border' );
-                    s = box.style;
-                    s.position = 'absolute';
-                    s.zIndex = this.zIndex;
-                    this.parent.getBox().appendChild( box );
-                }
-
-                return box;
-            },
-
-            destroy: function() {
-                var box = this._box;
-                if( box && box.parentNode ) {
-                    box.parentNode.removeChild( box );
-                }
-                delete this._box;
-                delete this._shapes;
-            }
-
-        } );
-
-
-
-        function BorderImageRenderer( el, styleInfos, parent ) {
-            this.element = el;
-            this.styleInfos = styleInfos;
-            this.parent = parent;
-        }
-        merge( BorderImageRenderer.prototype, rendererBase, {
-
-            zIndex: 400,
-            pieceNames: [ 't', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl', 'c' ],
-
-            needsUpdate: function() {
-                var si = this.styleInfos;
-                return si.borderImage.changed() || si.border.changed();
-            },
-
-            isActive: function() {
-                return this.styleInfos.borderImage.isActive();
-            },
-
-            updateSize: function() {
-                if( this.isActive() ) {
-                    var props = this.styleInfos.borderImage.getProps(),
-                        box = this.getBox(), //make sure pieces are created
-                        el = this.element,
-                        p = this.pieces;
-
-                    this.withImgSize( props.src, function( imgSize ) {
-                        var w = el.offsetWidth,
-                            h = el.offsetHeight,
-                            z = el.currentStyle.zIndex,
-
-                            t = p.t.style,
-                            tr = p.tr.style,
-                            r = p.r.style,
-                            br = p.br.style,
-                            b = p.b.style,
-                            bl = p.bl.style,
-                            l = p.l.style,
-                            tl = p.tl.style,
-                            c = p.c.style,
-
-                            slices = props.slice,
-                            widths = props.width,
-                            widthT = widths.t.pixels( el ),
-                            widthR = widths.r.pixels( el ),
-                            widthB = widths.b.pixels( el ),
-                            widthL = widths.l.pixels( el );
-
-                        tl.height = t.height = tr.height = widthT;
-                        tl.width = l.width = bl.width = widthL;
-                        tr.left = r.left = br.left = w - widthR;
-                        tr.width = r.width = br.width = widthR;
-                        br.top = b.top = bl.top = h - widthB;
-                        br.height = b.height = bl.height = widthB;
-                        t.left = b.left = c.left = widthL;
-                        t.width = b.width = c.width = w - widthL - widthR;
-                        l.top = r.top = c.top = widthT;
-                        l.height = r.height = c.height = h - widthT - widthB;
-
-
-                        // image croppings
-
-                        // corners
-                        p.tl.imagedata.cropBottom = p.t.imagedata.cropBottom = p.tr.imagedata.cropBottom = ( imgSize.h - slices.t ) / imgSize.h;
-                        p.tl.imagedata.cropRight = p.l.imagedata.cropRight = p.bl.imagedata.cropRight = ( imgSize.w - slices.l ) / imgSize.w;
-                        p.bl.imagedata.cropTop = p.b.imagedata.cropTop = p.br.imagedata.cropTop = ( imgSize.h - slices.b ) / imgSize.h;
-                        p.tr.imagedata.cropLeft = p.r.imagedata.cropLeft = p.br.imagedata.cropLeft = ( imgSize.w - slices.r ) / imgSize.w;
-
-                        // edges and center
-                        if( props.repeat.v === 'stretch' ) {
-                            p.l.imagedata.cropTop = p.r.imagedata.cropTop = p.c.imagedata.cropTop = slices.t / imgSize.h;
-                            p.l.imagedata.cropBottom = p.r.imagedata.cropBottom = p.c.imagedata.cropBottom = slices.b / imgSize.h;
-                        }
-                        if( props.repeat.h === 'stretch' ) {
-                            p.t.imagedata.cropLeft = p.b.imagedata.cropLeft = p.c.imagedata.cropLeft = slices.l / imgSize.w;
-                            p.t.imagedata.cropRight = p.b.imagedata.cropRight = p.c.imagedata.cropRight = slices.r / imgSize.w;
-                        }
-                    } );
-                }
-            },
-
-            updateProps: function() {
-                this.destroy();
-                if( this.isActive() ) {
-                    this.updateSize();
-                }
-            },
-
-            getBox: function() {
-                var box = this._box, s, piece, i,
-                    pieceNames = this.pieceNames,
-                    len = pieceNames.length;
-
-                if( !box ) {
-                    box = this._box = this.element.document.createElement( 'border-image' );
-                    s = box.style;
-                    s.position = 'absolute';
-                    s.zIndex = this.zIndex;
-
-                    this.pieces = {};
-
-                    for( i = 0; i < len; i++ ) {
-                        piece = this.pieces[ pieceNames[i] ] = createVmlElement( vmlns + ':rect' );
-                        piece.appendChild( createVmlElement( vmlns + ':imagedata' ) );
-                        s = piece.style;
-                        s.behavior = 'url(#default#VML)';
-                        s.position = "absolute";
-                        s.top = s.left = 0;
-                        piece.coordorigin = '1,1';
-                        piece.imagedata.src = this.styleInfos.borderImage.getProps().src;
-                        piece.stroked = false;
-                        piece.filled = false;
-                        box.appendChild( piece );
-                    }
-
-                    this.parent.getBox().appendChild( box );
-                }
-
-                return box;
-            },
-
-            destroy: function() {
-                var box = this._box;
-                if( box && box.parentNode ) {
-                    box.parentNode.removeChild( box );
-                }
-                delete this._box;
-            }
-
-        } );
-
-
-        function BoxShadowRenderer( el, styleInfos, parent ) {
-            this.element = el;
-            this.styleInfos = styleInfos;
-            this.parent = parent;
-        }
-        merge( BoxShadowRenderer.prototype, rendererBase, {
-
-            outsetZIndex: 100,
-            insetZIndex: 300,
-
-            needsUpdate: function() {
-                var si = this.styleInfos;
-                return si.boxShadow.changed() || si.borderRadius.changed();
-            },
-
-            isActive: function() {
-                return this.styleInfos.boxShadow.isActive();
-            },
-
-            updateSize: function() {
-                if( this.isActive() ) {
-                    var box = this.getBox(),
-                        shape = box.firstChild,
-                        s,
-                        el = this.element,
-                        bs = this.styleInfos.boxShadow.getProps(),
-                        spread = bs.spread.pixels( el ),
                         w = el.offsetWidth,
-                        h = el.offsetHeight;
+                        h = el.offsetHeight,
+                        radInfo = this.styleInfos.borderRadius,
+                        floor = Math.floor, ceil = Math.ceil,
+                        deg = 65535,
+                        tlX, tlY, trX, trY, brX, brY, blX, blY, f;
 
-                    if( bs.inset ) {
-                        // if inset, the width does not include any element border
-                        s = el.currentStyle;
-                        w -= ( parseInt( s.borderLeftWidth ) || 0 ) + ( parseInt( s.borderRightWidth ) || 0 );
-                        h -= ( parseInt( s.borderTopWidth ) || 0 ) + ( parseInt( s.borderBottomWidth ) || 0 );
-
-                        // update width of inner element
-                        s = box.firstChild.style;
-                        s.width = w - spread * 2;
-                        s.height = h - spread * 2;
-                    } else {
-                        w += spread * 2;
-                        h += spread * 2;
+                    if( !shrink ) {
+                        shrink = 0;
                     }
+                    shrink = floor( shrink );
 
+                    if( radInfo.isActive() ) {
+                        r = radInfo.getProps();
+
+                        tlX = r.x.tl.pixels( el, w );
+                        tlY = r.y.tl.pixels( el, h );
+                        trX = r.x.tr.pixels( el, w );
+                        trY = r.y.tr.pixels( el, h );
+                        brX = r.x.br.pixels( el, w );
+                        brY = r.y.br.pixels( el, h );
+                        blX = r.x.bl.pixels( el, w );
+                        blY = r.y.bl.pixels( el, h );
+
+                        // If any corner ellipses overlap, reduce them all by the appropriate factor. This formula
+                        // is taken straight from the CSS3 Backgrounds and Borders spec.
+                        f = Math.min(
+                            w / ( tlX + trX ),
+                            h / ( trY + brY ),
+                            w / ( blX + brX ),
+                            h / ( tlY + blY )
+                        );
+                        if( f < 1 ) {
+                            tlX *= f;
+                            tlY *= f;
+                            trX *= f;
+                            trY *= f;
+                            brX *= f;
+                            brY *= f;
+                            blX *= f;
+                            blY *= f;
+                        }
+
+                        if (side) {
+                            switch (side.charAt(0).toLowerCase()) {
+                                case 't':
+                                    str = 'al' + floor( tlX ) + ',' + floor( tlY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( 135 * deg ) + ',' + ( -45 * deg ) +
+                                          'ae' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 90 * deg ) + ',' + ( -45 * deg );
+                                    break;
+                                case 'r':
+                                    str = 'al' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 45 * deg ) + ',' + ( -45 * deg ) +
+                                          'ae' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',0,' + ( -45 * deg );
+                                    break;
+                                case 'b':
+                                    str = 'al' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',' + ( -45 * deg ) + ',' + ( -45 * deg ) +
+                                          'ae' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -90 * deg ) + ',' + ( -45 * deg );
+                                    break;
+                                case 'l':
+                                    str = 'al' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -135 * deg ) + ',' + ( -45 * deg ) +
+                                          'ae' + floor( tlX ) + ',' + floor( blY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( -180 * deg ) + ',' + ( -45 * deg );
+                            }
+                        } else {
+                            instructions = [ 'm', 'qy', 'l', 'qx', 'l', 'qy', 'l', 'qx' ];
+                            values = [
+                                shrink + ',' + floor(tlY),
+                                floor(tlX) + ',' + shrink,
+                                ceil(w - trX) + ',' + shrink,
+                                ( w - shrink ) + ',' + floor(trY),
+                                ( w - shrink ) + ',' + ceil(h - brY),
+                                ceil(w - brX) + ',' + ( h - shrink ),
+                                floor(blX) + ',' + ( h - shrink ),
+                                shrink + ',' + ceil(h - blY)
+                            ];
+
+                            for ( i = 0; i < 8; i++ ) {
+                                str += instructions[i] + values[i]
+                            }
+                            str += ' x e';
+                        }
+                    } else {
+                        // simplified path for non-rounded box
+                        str = 'm' + shrink + ',' + shrink +
+                              'l' + ( w - shrink ) + ',' + shrink +
+                              'l' + ( w - shrink ) + ',' + ( h - shrink ) +
+                              'l' + shrink + ',' + ( h - shrink ) +
+                              'xe';
+                    }
+                    return str;
+                }
+            };
+
+
+
+
+            Pie.RootRenderer = function( el, styleInfos ) {
+                this.element = el;
+                this.styleInfos = styleInfos;
+            };
+            Pie.merge( Pie.RootRenderer.prototype, Pie.rendererBase, {
+
+                isActive: function() {
+                    var infos = this.styleInfos;
+                    for( var i in infos ) {
+                        if( infos.hasOwnProperty( i ) && infos[ i ].isActive() ) {
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+
+                updateVis: function() {
+                    if( this.isActive() ) {
+                        var cs = this.element.currentStyle;
+                        this.getBox().style.display = ( cs.visibility === 'hidden' || cs.display === 'none' ) ? 'none' : '';
+                    }
+                },
+
+                updatePos: function() {
+                    if( this.isActive() ) {
+                        var el = this.element,
+                            s = this.getBox().style,
+                            x = 0, y = 0;
+
+                        // Get the element's offsets from its nearest positioned ancestor. More
+                        // accurate than just using offsetTop/Left.
+                        do {
+                            x += el.offsetLeft;
+                            y += el.offsetTop;
+                            el = el.offsetParent;
+                        } while( el && el.currentStyle.position === 'static' );
+
+                        s.left = x;
+                        s.top = y;
+                    }
+                },
+
+                updateSize: function() {
+                    if( this.isActive() ) {
+                        var el = this.element,
+                            s = this.getBox().style,
+                            i, len;
+
+                        s.width = el.offsetWidth;
+                        s.height = el.offsetHeight;
+                    }
+                },
+
+                getBox: function() {
+                    var box = this._box, el, s;
+                    if( !box ) {
+                        el = this.element;
+                        box = this._box = el.document.createElement( 'css3-container' );
+                        s = box.style;
+
+                        s.position = 'absolute';
+                        s.zIndex = el.currentStyle.zIndex;
+
+                        el.parentNode.insertBefore( box, el );
+                    }
+                    return box;
+                },
+
+                destroy: function() {
+                    var box = this._box;
+                    if( box && box.parentNode ) {
+                        box.parentNode.removeChild( box );
+                    }
+                    delete this._box;
+                }
+
+            } );
+
+
+
+            Pie.BackgroundAndBorderRenderer = function( el, styleInfos, parent ) {
+                this.element = el;
+                this.styleInfos = styleInfos;
+                this.parent = parent;
+            };
+            Pie.merge( Pie.BackgroundAndBorderRenderer.prototype, Pie.rendererBase, {
+
+                zIndex: 200,
+                cssUrlRE: /^\s*url\(\s*"?([^\s"]*)"?\s*\)\s*$/,
+
+                needsUpdate: function() {
+                    var si = this.styleInfos;
+                    return si.border.changed() //TODO || si.background.changed() || si.backgroundGradient.changed();
+                },
+
+                isActive: function() {
+                    var si = this.styleInfos;
+                    return si.borderImage.isActive() ||
+                           si.borderRadius.isActive() ||
+                           si.backgroundGradient.isActive() ||
+                           ( si.boxShadow.isActive() && si.boxShadow.getProps().inset );
+                },
+
+                updateSize: function() {
+                    if( this.isActive() ) {
+                        this.draw();
+                    }
+                },
+
+                updateProps: function() {
+                    this.destroy();
+                    if( this.isActive() ) {
+                        this.draw();
+                    }
+                },
+
+                draw: function() {
+                    this.drawBgColor();
+                    this.drawBgImage();
+                    this.drawBorder();
+                },
+
+                drawBgColor: function() {
+                    var cont = this.getBox(),
+                        el = this.element,
+                        shape = this.getShape( 'bgColor' ),
+                        w = el.offsetWidth,
+                        h = el.offsetHeight,
+                        s, color;
+
+                    shape.stroked = false;
+                    shape.coordsize = w + ',' + h;
+                    shape.path = this.getBoxPath();
                     s = shape.style;
                     s.width = w;
                     s.height = h;
+                    s.zIndex = 1;
 
+                    color = this.getBgColor();
+                    if( color === 'transparent' ) {
+                        shape.filled = false;
+                    } else {
+                        shape.filled = true;
+                        shape.fillcolor = color;
+                    }
+                },
+
+                drawBgImage: function() {
+                    var cont = this.getBox(),
+                        el = this.element,
+                        shape = this.getShape( 'bgImage', 'fill' ),
+                        w = el.offsetWidth,
+                        h = el.offsetHeight,
+                        s, img;
+
+                    shape.stroked = false;
+                    shape.fill.type = 'tile';
+                    shape.fillcolor = 'none';
                     shape.coordsize = w + ',' + h;
                     shape.path = this.getBoxPath();
-                }
-            },
+                    s = shape.style;
+                    s.width = w;
+                    s.height = h;
+                    s.zIndex = 2;
 
-            updateProps: function() {
-                this.destroy();
-                if( this.isActive() ) {
-                    this.updateSize();
-                }
-            },
+                    img = this.getBgImage();
+                    if( img === 'none' ) {
+                        shape.filled = false;
+                    } else {
+                        shape.filled = true;
+                        shape.fill.src = img;
+                        this.positionBgImage( shape );
+                    }
+                },
 
-            getBox: function() {
-                var box = this._box, s, ss, cs, bs, xOff, yOff, spread, blur, shape, el;
-                if( !box ) {
-                    el = this.element;
-                    box = this._box = el.document.createElement( 'box-shadow' );
-                    bs = this.styleInfos.boxShadow.getProps();
-                    xOff = bs.xOffset.pixels( el );
-                    yOff = bs.yOffset.pixels( el );
-                    blur = bs.blur.pixels( el );
-                    spread = bs.spread.pixels( el );
+                positionBgImage: function( shape ) {
+                    this.withImgSize( shape.fill.src, function( size ) {
+                        var fill = shape.fill,
+                            el = this.element,
+                            elW = el.offsetWidth,
+                            elH = el.offsetHeight,
+                            cs = el.currentStyle,
+                            border = this.styleInfos.border.getProps(),
+                            bwT = border ? border.widths.t.pixels( el ) : 0,
+                            bwR = border ? border.widths.r.pixels( el ) : 0,
+                            bwB = border ? border.widths.b.pixels( el ) : 0,
+                            bwL = border ? border.widths.l.pixels( el ) : 0,
+                            repeat = cs.backgroundRepeat,
+                            posX = cs.backgroundPositionX,
+                            posY = cs.backgroundPositionY,
+                            pxX, pxY,
+                            clipT = 0, clipR = elW, clipB = elH, clipL = 0;
 
-                    //adjust to approximate the right blur in IE's filter's units
-                    //TODO this needs work to match the blur more exactly
-                    blur = Math.round( blur / 2 );
-                    /*if( blur % 2 ) {
-                        blur++;
-                    }*/
+                        // Positioning - find the pixel offset from the top/left and convert to a ratio
+                        posX = ( posX === 'left' ? '0' : posX === 'center' ? '50%' : posX === 'right' ? '100%' : posX );
+                        posY = ( posY === 'top' ? '0' : posY === 'center' ? '50%' : posY === 'bottom' ? '100%' : posY );
+                        pxX = new Pie.Length( posX ).pixels( el, elW - size.w - bwL - bwR ) + bwL;
+                        pxY = new Pie.Length( posY ).pixels( el, elH - size.h - bwT - bwB ) + bwT;
+                        fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
 
-                    s = box.style;
-                    s.position = 'absolute';
+                        // Repeating - clip the image shape
+                        if( repeat !== 'repeat' ) {
+                            if( repeat === 'repeat-x' || repeat === 'no-repeat' ) {
+                                clipT = pxY;
+                                clipB = pxY + size.h;
+                            }
+                            if( repeat === 'repeat-y' || repeat === 'no-repeat' ) {
+                                clipL = pxX;
+                                clipR = pxX + size.w;
+                            }
+                            shape.style.clip = 'rect(' + clipT + 'px,' + clipR + 'px,' + clipB + 'px,' + clipL + 'px)';
+                        }
+                    } );
+                },
 
-                    shape = createVmlElement( vmlns + ':shape' );
-                    box.appendChild( shape );
-                    shape.coordorigin = '1,1';
-                    ss = shape.style;
-                    ss.position = 'absolute';
-                    ss.width = ss.height = '100%';
-                    ss.behavior = 'url(#default#VML)';
+                drawBorder: function() {
+                    var cont = this.getBox(),
+                        el = this.element,
+                        cs = el.currentStyle,
+                        w = el.offsetWidth,
+                        h = el.offsetHeight,
+                        props = this.styleInfos.border.getProps(),
+                        styles, colors, widths,
+                        side, shape, stroke, bColor, bWidth, bStyle, s;
 
-                    if( bs.inset ) {
-                        cs = this.element.currentStyle;
-                        s.overflow = 'hidden';
-                        s.left = parseInt( cs.borderLeftWidth, 10 ) || 0;
-                        s.top = parseInt( cs.borderTopWidth, 10 ) || 0;
-                        s.zIndex = this.insetZIndex;
+                    if( props ) {
+                        styles = props.styles,
+                        colors = props.colors,
+                        widths = props.widths,
 
+                        el.runtimeStyle.borderColor = 'transparent';
+                        for( side in styles ) {
+                            if( styles.hasOwnProperty( side ) ) {
+                                bWidth = widths[ side ].pixels( el );
+                                bStyle = styles[ side ];
+                                bColor = colors[ side ];
+                                shape = this.getShape( 'border' + side, 'stroke' );
+                                shape.coordsize = w + ',' + h;
+                                shape.path = this.getBoxPath( bWidth / 2, side );
+                                s = shape.style;
+                                s.width = w;
+                                s.height = h;
+                                s.zIndex = 3;
+                                shape.filled = false;
+                                shape.stroked = bWidth > 0;
+                                stroke = shape.stroke;
+                                stroke.weight = bWidth + 'px';
+                                stroke.color = bColor;
+                                stroke.dashstyle = bStyle === 'dashed' ? '2 2' : bStyle === 'dotted' ? '0 1' : 'solid';
+                                stroke.linestyle = bStyle === 'double' && bWidth > 2 ? 'ThinThin' : 'Single';
+                            }
+                        }
+                    }
+                },
+
+                getBgColor: function() {
+                    var el = this.element,
+                        rs = el.runtimeStyle,
+                        color;
+                    rs.backgroundColor = '';
+                    color = el.currentStyle.backgroundColor;
+                    rs.backgroundColor = 'transparent';
+                    return color;
+                },
+
+                getBgImage: function() {
+                    var el = this.element,
+                        rs = el.runtimeStyle,
+                        img;
+                    rs.backgroundImage = '';
+                    img = el.currentStyle.backgroundImage.replace( this.cssUrlRE, "$1" );
+                    rs.backgroundImage = 'none';
+                    return img;
+                },
+
+                getShape: function( name, subElName ) {
+                    var shapes = this._shapes || ( this._shapes = {} ),
+                        shape = shapes[ name ],
+                        s;
+
+                    if( !shape ) {
+                        shape = shapes[ name ] = this._borderShape = Pie.createVmlElement( 'shape' );
+                        if( subElName ) {
+                            shape.appendChild( shape[ subElName ] = Pie.createVmlElement( subElName ) );
+                        }
+                        this.getBox().appendChild( shape );
                         s = shape.style;
                         s.position = 'absolute';
+                        s.left = s.top = 0;
+                        s.behavior = 'url(#default#VML)';
+                        shape.coordorigin = '1,1';
+                    }
+                    return shape;
+                },
 
-                        //TODO handle wider border if needed due to very large offsets or spread
-                        s.left = xOff - 20 + spread - blur;
-                        s.top = yOff - 20 + spread - blur;
-                        s.border = '20px solid ' + bs.color;
-                    } else {
-                        s.left = xOff - blur - spread;
-                        s.top = yOff - blur - spread;
-                        s.zIndex = this.outsetZIndex;
+                getBox: function() {
+                    var box = this._box,
+                        infos = this.styleInfos,
+                        s;
 
-                        shape.filled = true;
-                        shape.fillcolor = bs.color;
+                    if( !box ) {
+                        box = this._box = this.element.document.createElement( 'bg-and-border' );
+                        s = box.style;
+                        s.position = 'absolute';
+                        s.zIndex = this.zIndex;
+                        this.parent.getBox().appendChild( box );
                     }
 
-                    // apply blur filter to the outer or inner element
-                    if( blur > 0 ) {
-                        ss.filter = 'progid:DXImageTransform.Microsoft.blur(pixelRadius=' + blur + ')';
+                    return box;
+                },
+
+                destroy: function() {
+                    var box = this._box;
+                    if( box && box.parentNode ) {
+                        box.parentNode.removeChild( box );
+                    }
+                    delete this._box;
+                    delete this._shapes;
+                }
+
+            } );
+
+
+
+            Pie.BorderImageRenderer = function( el, styleInfos, parent ) {
+                this.element = el;
+                this.styleInfos = styleInfos;
+                this.parent = parent;
+            };
+            Pie.merge( Pie.BorderImageRenderer.prototype, Pie.rendererBase, {
+
+                zIndex: 400,
+                pieceNames: [ 't', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl', 'c' ],
+
+                needsUpdate: function() {
+                    var si = this.styleInfos;
+                    return si.borderImage.changed() || si.border.changed();
+                },
+
+                isActive: function() {
+                    return this.styleInfos.borderImage.isActive();
+                },
+
+                updateSize: function() {
+                    if( this.isActive() ) {
+                        var props = this.styleInfos.borderImage.getProps(),
+                            box = this.getBox(), //make sure pieces are created
+                            el = this.element,
+                            p = this.pieces;
+
+                        this.withImgSize( props.src, function( imgSize ) {
+                            var w = el.offsetWidth,
+                                h = el.offsetHeight,
+                                z = el.currentStyle.zIndex,
+
+                                t = p.t.style,
+                                tr = p.tr.style,
+                                r = p.r.style,
+                                br = p.br.style,
+                                b = p.b.style,
+                                bl = p.bl.style,
+                                l = p.l.style,
+                                tl = p.tl.style,
+                                c = p.c.style,
+
+                                slices = props.slice,
+                                widths = props.width,
+                                widthT = widths.t.pixels( el ),
+                                widthR = widths.r.pixels( el ),
+                                widthB = widths.b.pixels( el ),
+                                widthL = widths.l.pixels( el );
+
+                            tl.height = t.height = tr.height = widthT;
+                            tl.width = l.width = bl.width = widthL;
+                            tr.left = r.left = br.left = w - widthR;
+                            tr.width = r.width = br.width = widthR;
+                            br.top = b.top = bl.top = h - widthB;
+                            br.height = b.height = bl.height = widthB;
+                            t.left = b.left = c.left = widthL;
+                            t.width = b.width = c.width = w - widthL - widthR;
+                            l.top = r.top = c.top = widthT;
+                            l.height = r.height = c.height = h - widthT - widthB;
+
+
+                            // image croppings
+
+                            // corners
+                            p.tl.imagedata.cropBottom = p.t.imagedata.cropBottom = p.tr.imagedata.cropBottom = ( imgSize.h - slices.t ) / imgSize.h;
+                            p.tl.imagedata.cropRight = p.l.imagedata.cropRight = p.bl.imagedata.cropRight = ( imgSize.w - slices.l ) / imgSize.w;
+                            p.bl.imagedata.cropTop = p.b.imagedata.cropTop = p.br.imagedata.cropTop = ( imgSize.h - slices.b ) / imgSize.h;
+                            p.tr.imagedata.cropLeft = p.r.imagedata.cropLeft = p.br.imagedata.cropLeft = ( imgSize.w - slices.r ) / imgSize.w;
+
+                            // edges and center
+                            if( props.repeat.v === 'stretch' ) {
+                                p.l.imagedata.cropTop = p.r.imagedata.cropTop = p.c.imagedata.cropTop = slices.t / imgSize.h;
+                                p.l.imagedata.cropBottom = p.r.imagedata.cropBottom = p.c.imagedata.cropBottom = slices.b / imgSize.h;
+                            }
+                            if( props.repeat.h === 'stretch' ) {
+                                p.t.imagedata.cropLeft = p.b.imagedata.cropLeft = p.c.imagedata.cropLeft = slices.l / imgSize.w;
+                                p.t.imagedata.cropRight = p.b.imagedata.cropRight = p.c.imagedata.cropRight = slices.r / imgSize.w;
+                            }
+                        } );
+                    }
+                },
+
+                updateProps: function() {
+                    this.destroy();
+                    if( this.isActive() ) {
+                        this.updateSize();
+                    }
+                },
+
+                getBox: function() {
+                    var box = this._box, s, piece, i,
+                        pieceNames = this.pieceNames,
+                        len = pieceNames.length;
+
+                    if( !box ) {
+                        box = this._box = this.element.document.createElement( 'border-image' );
+                        s = box.style;
+                        s.position = 'absolute';
+                        s.zIndex = this.zIndex;
+
+                        this.pieces = {};
+
+                        for( i = 0; i < len; i++ ) {
+                            piece = this.pieces[ pieceNames[i] ] = Pie.createVmlElement( 'rect' );
+                            piece.appendChild( Pie.createVmlElement( 'imagedata' ) );
+                            s = piece.style;
+                            s.behavior = 'url(#default#VML)';
+                            s.position = "absolute";
+                            s.top = s.left = 0;
+                            piece.coordorigin = '1,1';
+                            piece.imagedata.src = this.styleInfos.borderImage.getProps().src;
+                            piece.stroked = false;
+                            piece.filled = false;
+                            box.appendChild( piece );
+                        }
+
+                        this.parent.getBox().appendChild( box );
                     }
 
-                    this.parent.getBox().appendChild( box );
-                }
-                return box;
-            },
+                    return box;
+                },
 
-            destroy: function() {
-                var box = this._box;
-                if( box && box.parentNode ) {
-                    box.parentNode.removeChild( box );
+                destroy: function() {
+                    var box = this._box;
+                    if( box && box.parentNode ) {
+                        box.parentNode.removeChild( box );
+                    }
+                    delete this._box;
                 }
-                delete this._box;
-            }
 
-        } );
+            } );
+
+
+            Pie.BoxShadowRenderer = function( el, styleInfos, parent ) {
+                this.element = el;
+                this.styleInfos = styleInfos;
+                this.parent = parent;
+            };
+            Pie.merge( Pie.BoxShadowRenderer.prototype, Pie.rendererBase, {
+
+                outsetZIndex: 100,
+                insetZIndex: 300,
+
+                needsUpdate: function() {
+                    var si = this.styleInfos;
+                    return si.boxShadow.changed() || si.borderRadius.changed();
+                },
+
+                isActive: function() {
+                    return this.styleInfos.boxShadow.isActive();
+                },
+
+                updateSize: function() {
+                    if( this.isActive() ) {
+                        var box = this.getBox(),
+                            shape = box.firstChild,
+                            s,
+                            el = this.element,
+                            bs = this.styleInfos.boxShadow.getProps(),
+                            spread = bs.spread.pixels( el ),
+                            w = el.offsetWidth,
+                            h = el.offsetHeight;
+
+                        if( bs.inset ) {
+                            // if inset, the width does not include any element border
+                            s = el.currentStyle;
+                            w -= ( parseInt( s.borderLeftWidth ) || 0 ) + ( parseInt( s.borderRightWidth ) || 0 );
+                            h -= ( parseInt( s.borderTopWidth ) || 0 ) + ( parseInt( s.borderBottomWidth ) || 0 );
+
+                            // update width of inner element
+                            s = box.firstChild.style;
+                            s.width = w - spread * 2;
+                            s.height = h - spread * 2;
+                        } else {
+                            w += spread * 2;
+                            h += spread * 2;
+                        }
+
+                        s = shape.style;
+                        s.width = w;
+                        s.height = h;
+
+                        shape.coordsize = w + ',' + h;
+                        shape.path = this.getBoxPath();
+                    }
+                },
+
+                updateProps: function() {
+                    this.destroy();
+                    if( this.isActive() ) {
+                        this.updateSize();
+                    }
+                },
+
+                getBox: function() {
+                    var box = this._box, s, ss, cs, bs, xOff, yOff, spread, blur, shape, el;
+                    if( !box ) {
+                        el = this.element;
+                        box = this._box = el.document.createElement( 'box-shadow' );
+                        bs = this.styleInfos.boxShadow.getProps();
+                        xOff = bs.xOffset.pixels( el );
+                        yOff = bs.yOffset.pixels( el );
+                        blur = bs.blur.pixels( el );
+                        spread = bs.spread.pixels( el );
+
+                        //adjust to approximate the right blur in IE's filter's units
+                        //TODO this needs work to match the blur more exactly
+                        blur = Math.round( blur / 2 );
+                        /*if( blur % 2 ) {
+                            blur++;
+                        }*/
+
+                        s = box.style;
+                        s.position = 'absolute';
+
+                        shape = Pie.createVmlElement( 'shape' );
+                        box.appendChild( shape );
+                        shape.coordorigin = '1,1';
+                        ss = shape.style;
+                        ss.position = 'absolute';
+                        ss.width = ss.height = '100%';
+                        ss.behavior = 'url(#default#VML)';
+
+                        if( bs.inset ) {
+                            cs = this.element.currentStyle;
+                            s.overflow = 'hidden';
+                            s.left = parseInt( cs.borderLeftWidth, 10 ) || 0;
+                            s.top = parseInt( cs.borderTopWidth, 10 ) || 0;
+                            s.zIndex = this.insetZIndex;
+
+                            s = shape.style;
+                            s.position = 'absolute';
+
+                            //TODO handle wider border if needed due to very large offsets or spread
+                            s.left = xOff - 20 + spread - blur;
+                            s.top = yOff - 20 + spread - blur;
+                            s.border = '20px solid ' + bs.color;
+                        } else {
+                            s.left = xOff - blur - spread;
+                            s.top = yOff - blur - spread;
+                            s.zIndex = this.outsetZIndex;
+
+                            shape.filled = true;
+                            shape.fillcolor = bs.color;
+                        }
+
+                        // apply blur filter to the outer or inner element
+                        if( blur > 0 ) {
+                            ss.filter = 'progid:DXImageTransform.Microsoft.blur(pixelRadius=' + blur + ')';
+                        }
+
+                        this.parent.getBox().appendChild( box );
+                    }
+                    return box;
+                },
+
+                destroy: function() {
+                    var box = this._box;
+                    if( box && box.parentNode ) {
+                        box.parentNode.removeChild( box );
+                    }
+                    delete this._box;
+                }
+
+            } )
+
+        } // if( !Pie )
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1265,19 +1289,19 @@
 
             // Create the style infos and renderers
             styleInfos = {
-                backgroundGradient: new BackgroundGradientStyleInfo( el ),
-                border: new BorderStyleInfo( el ),
-                borderImage: new BorderImageStyleInfo( el ),
-                borderRadius: new BorderRadiusStyleInfo( el ),
-                boxShadow: new BoxShadowStyleInfo( el )
+                backgroundGradient: new Pie.BackgroundGradientStyleInfo( el ),
+                border: new Pie.BorderStyleInfo( el ),
+                borderImage: new Pie.BorderImageStyleInfo( el ),
+                borderRadius: new Pie.BorderRadiusStyleInfo( el ),
+                boxShadow: new Pie.BoxShadowStyleInfo( el )
             };
 
-            var rootRenderer = new RootRenderer( el, styleInfos );
+            var rootRenderer = new Pie.RootRenderer( el, styleInfos );
             renderers = [
                 rootRenderer,
-                new BoxShadowRenderer( el, styleInfos, rootRenderer ),
-                new BackgroundAndBorderRenderer( el, styleInfos, rootRenderer ),
-                new BorderImageRenderer( el, styleInfos, rootRenderer )
+                new Pie.BoxShadowRenderer( el, styleInfos, rootRenderer ),
+                new Pie.BackgroundAndBorderRenderer( el, styleInfos, rootRenderer ),
+                new Pie.BorderImageRenderer( el, styleInfos, rootRenderer )
             ];
 
             // Add property change listeners to ancestors if requested
