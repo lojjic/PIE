@@ -15,7 +15,12 @@
 
 
         if( !PIE ) {
-            PIE = window.PIE = {};
+            PIE = window.PIE = {
+                //CSS_PREFIX: '-pie-',
+                CSS_PREFIX: '',
+                //PROP_PREFIX: 'Pie'
+                PROP_PREFIX: ''
+            };
 
             /**
              * To create a VML element, it must be created by a Document which has the VML
@@ -184,7 +189,7 @@
             };
             PIE.merge( PIE.BackgroundGradientStyleInfo.prototype, PIE.styleBase, {
 
-                cssProperty: 'background-gradient',
+                cssProperty: PIE.CSS_PREFIX + 'background-gradient',
 
                 /*
                 [<point> || <angle>,]? <stop>, <stop> [, <stop>]*
@@ -301,7 +306,7 @@
             };
             PIE.merge( PIE.BorderRadiusStyleInfo.prototype, PIE.styleBase, {
 
-                cssProperty: 'border-radius',
+                cssProperty: PIE.CSS_PREFIX + 'border-radius',
 
                 parseRE: new RegExp(
                     '^G(\\/G)?$'.replace( /G/g, '\\s*(L)(\\s+(L))?(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, PIE.styleBase.lengthRE.source + '|' + PIE.styleBase.percentRE.source ) )
@@ -362,7 +367,7 @@
             };
             PIE.merge( PIE.BorderImageStyleInfo.prototype, PIE.styleBase, {
 
-                cssProperty: 'border-image',
+                cssProperty: PIE.CSS_PREFIX + 'border-image',
 
                 //TODO this needs to be reworked to allow the components to appear in arbitrary order
                 parseRE: new RegExp(
@@ -418,7 +423,7 @@
             };
             PIE.merge( PIE.BoxShadowStyleInfo.prototype, PIE.styleBase, {
 
-                cssProperty: 'box-shadow',
+                cssProperty: PIE.CSS_PREFIX + 'box-shadow',
 
                 noneRE: /^\s*none\s*$/,
                 insetRE: /(inset)/,
