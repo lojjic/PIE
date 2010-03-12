@@ -84,12 +84,20 @@
                     unitRE: /(px|em|ex|mm|cm|in|pt|pc|%)$/,
 
                     getNumber: function() {
-                        return parseFloat( this.val, 10 );
+                        var num = this._number;
+                        if( num === undefined ) {
+                            num = this._number = parseFloat( this.val, 10 );
+                        }
+                        return num;
                     },
 
                     getUnit: function() {
-                        var m = this.val.match( this.unitRE );
-                        return ( m && m[0] ) || 'px';
+                        var unit = this._unit, m;
+                        if( !unit ) {
+                            m = this.val.match( this.unitRE );
+                            unit = this._unit = ( m && m[0] ) || 'px';
+                        }
+                        return unit;
                     },
 
                     isPercentage: function() {
