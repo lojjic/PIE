@@ -50,6 +50,27 @@
                 return obj1;
             };
 
+
+            /**
+             * Execute a callback function, passing it the dimensions of a given image once
+             * they are known.
+             */
+            PIE.withImageSize = function( src, func, ctx ) {
+                var sizes = PIE._imgSizes || ( PIE._imgSizes = {} ),
+                    size = sizes[ src ], img;
+                if( size ) {
+                    func.call( ctx, size );
+                } else {
+                    img = new Image();
+                    img.onload = function() {
+                        size = sizes[ src ] = { w: img.width, h: img.height };
+                        func.call( ctx, size );
+                    };
+                    img.src = src;
+                }
+            };
+
+
             /**
              * Wrapper for length style values
              * @param val - the CSS string representing the length. It is assumed that this will already have
@@ -452,21 +473,6 @@
                 updateVis: function() {
                 },
 
-                withImgSize: function( src, func, ctx ) {
-                    var sizes = this._imgSizes || ( this._imgSizes = {} ),
-                        size = sizes[ src ], img;
-                    if( size ) {
-                        func.call( ctx, size );
-                    } else {
-                        img = new Image();
-                        img.onload = function() {
-                            size = sizes[ src ] = { w: img.width, h: img.height };
-                            func.call( ctx, size );
-                        };
-                        img.src = src;
-                    }
-                },
-
                 getBoxPath: function( shrink, side ) {
                     var r, instructions, values, str = '', i,
                         el = this.element,
@@ -740,7 +746,7 @@
                 },
 
                 positionBgImage: function( shape ) {
-                    this.withImgSize( shape.fill.src, function( size ) {
+                    PIE.withImageSize( shape.fill.src, function( size ) {
                         var fill = shape.fill,
                             el = this.element,
                             elW = el.offsetWidth,
@@ -914,7 +920,7 @@
                             el = this.element,
                             p = this.pieces;
 
-                        this.withImgSize( props.src, function( imgSize ) {
+                        PIE.withImageSize( props.src, function( imgSize ) {
                             var w = el.offsetWidth,
                                 h = el.offsetHeight,
                                 z = el.currentStyle.zIndex,
