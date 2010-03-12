@@ -11,11 +11,11 @@
             renderers,
             styleInfos,
             ancestors,
-            Pie = window.Pie;
+            PIE = window.PIE;
 
 
-        if( !Pie ) {
-            Pie = window.Pie = {};
+        if( !PIE ) {
+            PIE = window.PIE = {};
 
             /**
              * To create a VML element, it must be created by a Document which has the VML
@@ -26,18 +26,18 @@
              * full-fledged Document. It allows adding namespaces immediately, so we add the
              * namespace there and then have it create the VML element.
              */
-            Pie.createVmlElement = function( tag ) {
+            PIE.createVmlElement = function( tag ) {
                 var vmlPrefix = 'css3vml',
-                    vmlDoc = Pie._vmlCreatorDoc;
+                    vmlDoc = PIE._vmlCreatorDoc;
                 if( !vmlDoc ) {
-                    vmlDoc = Pie._vmlCreatorDoc = element.document.createDocumentFragment();
+                    vmlDoc = PIE._vmlCreatorDoc = element.document.createDocumentFragment();
                     vmlDoc.namespaces.add( vmlPrefix, 'urn:schemas-microsoft-com:vml' );
                 }
                 return vmlDoc.createElement( vmlPrefix + ':' + tag );
             };
 
 
-            Pie.merge = function( obj1 ) {
+            PIE.merge = function( obj1 ) {
                 var i, len, p, objN, args = arguments;
                 for( i = 1, len = args.length; i < len; i++ ) {
                     objN = args[i];
@@ -55,7 +55,7 @@
              * @param val - the CSS string representing the length. It is assumed that this will already have
              *              been validated as a valid length or percentage syntax.
              */
-            Pie.Length = ( function() {
+            PIE.Length = ( function() {
                 function Length( val ) {
                     this.val = val;
                 }
@@ -122,7 +122,7 @@
             } )();
 
 
-            Pie.styleBase = {
+            PIE.styleBase = {
                 colorRE: /(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})|rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
                 lengthRE: /[\-\+]?0|[\-\+]?\d+\.?\d*(px|em|ex|mm|cm|in|pt|pc)/,
                 percentRE: /[\-\+]?0|[\-\+]?\d+\.?\d*%/,
@@ -150,10 +150,10 @@
 
 
 
-            Pie.BackgroundGradientStyleInfo = function( el ) {
+            PIE.BackgroundGradientStyleInfo = function( el ) {
                 this.element = el;
             };
-            Pie.merge( Pie.BackgroundGradientStyleInfo.prototype, Pie.styleBase, {
+            PIE.merge( PIE.BackgroundGradientStyleInfo.prototype, PIE.styleBase, {
 
                 cssProperty: 'background-gradient',
 
@@ -208,10 +208,10 @@
 
 
 
-            Pie.BorderStyleInfo = function( el ) {
+            PIE.BorderStyleInfo = function( el ) {
                 this.element = el;
             };
-            Pie.merge( Pie.BorderStyleInfo.prototype, Pie.styleBase, {
+            PIE.merge( PIE.BorderStyleInfo.prototype, PIE.styleBase, {
 
                 sides: [ 'Top', 'Right', 'Bottom', 'Left' ],
                 namedWidths: {
@@ -239,7 +239,7 @@
                         s[ ltr ] = cs[ 'border' + side + 'Style' ];
                         c[ ltr ] = cs[ 'border' + side + 'Color' ];
                         wid = cs[ 'border' + side + 'Width' ];
-                        wid = w[ ltr ] = new Pie.Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ wid ] || wid ) );
+                        wid = w[ ltr ] = new PIE.Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ wid ] || wid ) );
                         if( s[ ltr ] !== 'none' || wid.pixels( this.element ) > 0 ) {
                             active = true;
                         }
@@ -267,15 +267,15 @@
 
 
 
-            Pie.BorderRadiusStyleInfo = function( el ) {
+            PIE.BorderRadiusStyleInfo = function( el ) {
                 this.element = el;
             };
-            Pie.merge( Pie.BorderRadiusStyleInfo.prototype, Pie.styleBase, {
+            PIE.merge( PIE.BorderRadiusStyleInfo.prototype, PIE.styleBase, {
 
                 cssProperty: 'border-radius',
 
                 parseRE: new RegExp(
-                    '^G(\\/G)?$'.replace( /G/g, '\\s*(L)(\\s+(L))?(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, Pie.styleBase.lengthRE.source + '|' + Pie.styleBase.percentRE.source ) )
+                    '^G(\\/G)?$'.replace( /G/g, '\\s*(L)(\\s+(L))?(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, PIE.styleBase.lengthRE.source + '|' + PIE.styleBase.percentRE.source ) )
                 ),
 
                 parseCss: function( css ) {
@@ -284,7 +284,7 @@
                         m = css && css.match( this.parseRE );
 
                     function len( v ) {
-                        return new Pie.Length( v );
+                        return new PIE.Length( v );
                     }
 
                     if( m ) {
@@ -328,25 +328,25 @@
 
 
 
-            Pie.BorderImageStyleInfo = function( el ) {
+            PIE.BorderImageStyleInfo = function( el ) {
                 this.element = el;
             };
-            Pie.merge( Pie.BorderImageStyleInfo.prototype, Pie.styleBase, {
+            PIE.merge( PIE.BorderImageStyleInfo.prototype, PIE.styleBase, {
 
                 cssProperty: 'border-image',
 
                 //TODO this needs to be reworked to allow the components to appear in arbitrary order
                 parseRE: new RegExp(
                     '^\\s*url\\(\\s*([^\\s\\)]+)\\s*\\)\\s+N(\\s+N)?(\\s+N)?(\\s+N)?(\\s*\\/\\s*L(\\s+L)?(\\s+L)?(\\s+L)?)?RR\\s*$'
-                            .replace( /N/g, '(\\d+|' + Pie.styleBase.percentRE.source + ')' )
-                            .replace( /L/g, Pie.styleBase.lengthRE.source )
+                            .replace( /N/g, '(\\d+|' + PIE.styleBase.percentRE.source + ')' )
+                            .replace( /L/g, PIE.styleBase.lengthRE.source )
                             .replace( /R/g, '(\\s+(stretch|round|repeat))?' )
                 ),
 
                 parseCss: function( css ) {
                     var cs = this.element.currentStyle,
                         p = null,
-                        Length = Pie.Length,
+                        Length = PIE.Length,
                         m = css && css.match( this.parseRE );
 
                     if( m ) {
@@ -384,20 +384,20 @@
             } );
 
 
-            Pie.BoxShadowStyleInfo = function( el ) {
+            PIE.BoxShadowStyleInfo = function( el ) {
                 this.element = el;
             };
-            Pie.merge( Pie.BoxShadowStyleInfo.prototype, Pie.styleBase, {
+            PIE.merge( PIE.BoxShadowStyleInfo.prototype, PIE.styleBase, {
 
                 cssProperty: 'box-shadow',
 
                 noneRE: /^\s*none\s*$/,
                 insetRE: /(inset)/,
-                lengthsRE: new RegExp( '\\s*(L)\\s+(L)(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, Pie.styleBase.lengthRE.source ) ),
+                lengthsRE: new RegExp( '\\s*(L)\\s+(L)(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, PIE.styleBase.lengthRE.source ) ),
 
                 parseCss: function( css ) {
                     var p = null, m,
-                        Length = Pie.Length;
+                        Length = PIE.Length;
 
                     if( css && !this.noneRE.test( css ) ) {
                         p = {};
@@ -434,7 +434,7 @@
 
 
 
-            Pie.rendererBase = {
+            PIE.rendererBase = {
 
                 needsUpdate: function() {
                     return false;
@@ -564,11 +564,11 @@
 
 
 
-            Pie.RootRenderer = function( el, styleInfos ) {
+            PIE.RootRenderer = function( el, styleInfos ) {
                 this.element = el;
                 this.styleInfos = styleInfos;
             };
-            Pie.merge( Pie.RootRenderer.prototype, Pie.rendererBase, {
+            PIE.merge( PIE.RootRenderer.prototype, PIE.rendererBase, {
 
                 isActive: function() {
                     var infos = this.styleInfos;
@@ -644,12 +644,12 @@
 
 
 
-            Pie.BackgroundAndBorderRenderer = function( el, styleInfos, parent ) {
+            PIE.BackgroundAndBorderRenderer = function( el, styleInfos, parent ) {
                 this.element = el;
                 this.styleInfos = styleInfos;
                 this.parent = parent;
             };
-            Pie.merge( Pie.BackgroundAndBorderRenderer.prototype, Pie.rendererBase, {
+            PIE.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.rendererBase, {
 
                 zIndex: 200,
                 cssUrlRE: /^\s*url\(\s*"?([^\s"]*)"?\s*\)\s*$/,
@@ -760,8 +760,8 @@
                         // Positioning - find the pixel offset from the top/left and convert to a ratio
                         posX = ( posX === 'left' ? '0' : posX === 'center' ? '50%' : posX === 'right' ? '100%' : posX );
                         posY = ( posY === 'top' ? '0' : posY === 'center' ? '50%' : posY === 'bottom' ? '100%' : posY );
-                        pxX = new Pie.Length( posX ).pixels( el, elW - size.w - bwL - bwR ) + bwL;
-                        pxY = new Pie.Length( posY ).pixels( el, elH - size.h - bwT - bwB ) + bwT;
+                        pxX = new PIE.Length( posX ).pixels( el, elW - size.w - bwL - bwR ) + bwL;
+                        pxY = new PIE.Length( posY ).pixels( el, elH - size.h - bwT - bwB ) + bwT;
                         fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
 
                         // Repeating - clip the image shape
@@ -845,9 +845,9 @@
                         s;
 
                     if( !shape ) {
-                        shape = shapes[ name ] = this._borderShape = Pie.createVmlElement( 'shape' );
+                        shape = shapes[ name ] = this._borderShape = PIE.createVmlElement( 'shape' );
                         if( subElName ) {
-                            shape.appendChild( shape[ subElName ] = Pie.createVmlElement( subElName ) );
+                            shape.appendChild( shape[ subElName ] = PIE.createVmlElement( subElName ) );
                         }
                         this.getBox().appendChild( shape );
                         s = shape.style;
@@ -888,12 +888,12 @@
 
 
 
-            Pie.BorderImageRenderer = function( el, styleInfos, parent ) {
+            PIE.BorderImageRenderer = function( el, styleInfos, parent ) {
                 this.element = el;
                 this.styleInfos = styleInfos;
                 this.parent = parent;
             };
-            Pie.merge( Pie.BorderImageRenderer.prototype, Pie.rendererBase, {
+            PIE.merge( PIE.BorderImageRenderer.prototype, PIE.rendererBase, {
 
                 zIndex: 400,
                 pieceNames: [ 't', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl', 'c' ],
@@ -990,8 +990,8 @@
                         this.pieces = {};
 
                         for( i = 0; i < len; i++ ) {
-                            piece = this.pieces[ pieceNames[i] ] = Pie.createVmlElement( 'rect' );
-                            piece.appendChild( Pie.createVmlElement( 'imagedata' ) );
+                            piece = this.pieces[ pieceNames[i] ] = PIE.createVmlElement( 'rect' );
+                            piece.appendChild( PIE.createVmlElement( 'imagedata' ) );
                             s = piece.style;
                             s.behavior = 'url(#default#VML)';
                             s.position = "absolute";
@@ -1020,12 +1020,12 @@
             } );
 
 
-            Pie.BoxShadowRenderer = function( el, styleInfos, parent ) {
+            PIE.BoxShadowRenderer = function( el, styleInfos, parent ) {
                 this.element = el;
                 this.styleInfos = styleInfos;
                 this.parent = parent;
             };
-            Pie.merge( Pie.BoxShadowRenderer.prototype, Pie.rendererBase, {
+            PIE.merge( PIE.BoxShadowRenderer.prototype, PIE.rendererBase, {
 
                 outsetZIndex: 100,
                 insetZIndex: 300,
@@ -1102,7 +1102,7 @@
                         s = box.style;
                         s.position = 'absolute';
 
-                        shape = Pie.createVmlElement( 'shape' );
+                        shape = PIE.createVmlElement( 'shape' );
                         box.appendChild( shape );
                         shape.coordorigin = '1,1';
                         shape.stroked = false;
@@ -1154,7 +1154,7 @@
 
             } )
 
-        } // if( !Pie )
+        } // if( !PIE )
 
 
 
@@ -1290,19 +1290,19 @@
 
             // Create the style infos and renderers
             styleInfos = {
-                backgroundGradient: new Pie.BackgroundGradientStyleInfo( el ),
-                border: new Pie.BorderStyleInfo( el ),
-                borderImage: new Pie.BorderImageStyleInfo( el ),
-                borderRadius: new Pie.BorderRadiusStyleInfo( el ),
-                boxShadow: new Pie.BoxShadowStyleInfo( el )
+                backgroundGradient: new PIE.BackgroundGradientStyleInfo( el ),
+                border: new PIE.BorderStyleInfo( el ),
+                borderImage: new PIE.BorderImageStyleInfo( el ),
+                borderRadius: new PIE.BorderRadiusStyleInfo( el ),
+                boxShadow: new PIE.BoxShadowStyleInfo( el )
             };
 
-            var rootRenderer = new Pie.RootRenderer( el, styleInfos );
+            var rootRenderer = new PIE.RootRenderer( el, styleInfos );
             renderers = [
                 rootRenderer,
-                new Pie.BoxShadowRenderer( el, styleInfos, rootRenderer ),
-                new Pie.BackgroundAndBorderRenderer( el, styleInfos, rootRenderer ),
-                new Pie.BorderImageRenderer( el, styleInfos, rootRenderer )
+                new PIE.BoxShadowRenderer( el, styleInfos, rootRenderer ),
+                new PIE.BackgroundAndBorderRenderer( el, styleInfos, rootRenderer ),
+                new PIE.BorderImageRenderer( el, styleInfos, rootRenderer )
             ];
 
             // Add property change listeners to ancestors if requested
