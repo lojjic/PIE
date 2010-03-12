@@ -7,8 +7,7 @@
 
     <script type="text/javascript">
 
-        var vmlns = 'css3vml',
-            lastW, lastH, lastX, lastY,
+        var lastW, lastH, lastX, lastY,
             renderers,
             styleInfos,
             ancestors,
@@ -28,12 +27,13 @@
              * namespace there and then have it create the VML element.
              */
             Pie.createVmlElement = function( tag ) {
-                var vmlDoc = Pie._vmlCreatorDoc;
+                var vmlPrefix = 'css3vml',
+                    vmlDoc = Pie._vmlCreatorDoc;
                 if( !vmlDoc ) {
                     vmlDoc = Pie._vmlCreatorDoc = element.document.createDocumentFragment();
-                    vmlDoc.namespaces.add( vmlns, 'urn:schemas-microsoft-com:vml' );
+                    vmlDoc.namespaces.add( vmlPrefix, 'urn:schemas-microsoft-com:vml' );
                 }
-                return vmlDoc.createElement( vmlns + ':' + tag );
+                return vmlDoc.createElement( vmlPrefix + ':' + tag );
             };
 
 
@@ -123,7 +123,7 @@
 
 
             Pie.styleBase = {
-                colorRE: /(#[0-9A-Fa-f]{3}|#[0-9A-Fa-f]{6})|rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
+                colorRE: /(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})|rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
                 lengthRE: /[\-\+]?0|[\-\+]?\d+\.?\d*(px|em|ex|mm|cm|in|pt|pc)/,
                 percentRE: /[\-\+]?0|[\-\+]?\d+\.?\d*%/,
                 angleRE: /0|\-?\d+(deg|rad|grad)/,
@@ -1105,6 +1105,7 @@
                         shape = Pie.createVmlElement( 'shape' );
                         box.appendChild( shape );
                         shape.coordorigin = '1,1';
+                        shape.stroked = false;
                         ss = shape.style;
                         ss.position = 'absolute';
                         ss.width = ss.height = '100%';
