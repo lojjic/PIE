@@ -86,7 +86,7 @@
                     getNumber: function() {
                         var num = this._number;
                         if( num === undefined ) {
-                            num = this._number = parseFloat( this.val, 10 );
+                            num = this._number = parseFloat( this.val );
                         }
                         return num;
                     },
@@ -119,9 +119,9 @@
                             case "%":
                                 return num * ( typeof pct100 === 'function' ? pct100() : pct100 ) / 100;
                             case "em":
-                                return num * parseInt( el.currentStyle.fontSize );
+                                return num * parseInt( el.currentStyle.fontSize, 10 );
                             case "ex":
-                                return num * parseInt( el.currentStyle.fontSize ) / 2;
+                                return num * parseInt( el.currentStyle.fontSize, 10 ) / 2;
                             default:
                                 return num * Length.conversions[ unit ];
                         }
@@ -405,7 +405,7 @@
                                 h: m[18] || 'stretch',
                                 v: m[20] || m[18] || 'stretch'
                             }
-                        }
+                        };
                     }
 
                     return p;
@@ -559,7 +559,7 @@
                             ];
 
                             for ( i = 0; i < 8; i++ ) {
-                                str += instructions[i] + values[i]
+                                str += instructions[i] + values[i];
                             }
                             str += ' x e';
                         }
@@ -670,7 +670,7 @@
 
                 needsUpdate: function() {
                     var si = this.styleInfos;
-                    return si.border.changed() //TODO || si.background.changed() || si.backgroundGradient.changed();
+                    return si.border.changed(); //TODO || si.background.changed() || si.backgroundGradient.changed();
                 },
 
                 isActive: function() {
@@ -804,9 +804,9 @@
                         side, shape, stroke, bColor, bWidth, bStyle, s;
 
                     if( props ) {
-                        styles = props.styles,
-                        colors = props.colors,
-                        widths = props.widths,
+                        styles = props.styles;
+                        colors = props.colors;
+                        widths = props.widths;
 
                         el.runtimeStyle.borderColor = 'transparent';
                         for( side in styles ) {
@@ -1067,8 +1067,8 @@
                         if( bs.inset ) {
                             // if inset, the width does not include any element border
                             s = el.currentStyle;
-                            w -= ( parseInt( s.borderLeftWidth ) || 0 ) + ( parseInt( s.borderRightWidth ) || 0 );
-                            h -= ( parseInt( s.borderTopWidth ) || 0 ) + ( parseInt( s.borderBottomWidth ) || 0 );
+                            w -= ( parseInt( s.borderLeftWidth, 10 ) || 0 ) + ( parseInt( s.borderRightWidth, 10 ) || 0 );
+                            h -= ( parseInt( s.borderTopWidth, 10 ) || 0 ) + ( parseInt( s.borderBottomWidth, 10 ) || 0 );
 
                             // update width of inner element
                             s = box.firstChild.style;
@@ -1166,7 +1166,7 @@
                     delete this._box;
                 }
 
-            } )
+            } );
 
         } // if( !PIE )
 
