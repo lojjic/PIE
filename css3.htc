@@ -452,16 +452,16 @@
                 updateVis: function() {
                 },
 
-                withImgSize: function( src, func ) {
+                withImgSize: function( src, func, ctx ) {
                     var sizes = this._imgSizes || ( this._imgSizes = {} ),
                         size = sizes[ src ], img;
                     if( size ) {
-                        func( size );
+                        func.call( ctx, size );
                     } else {
                         img = new Image();
                         img.onload = function() {
                             size = sizes[ src ] = { w: img.width, h: img.height };
-                            func( size );
+                            func.call( ctx, size );
                         };
                         img.src = src;
                     }
@@ -776,7 +776,7 @@
                             }
                             shape.style.clip = 'rect(' + clipT + 'px,' + clipR + 'px,' + clipB + 'px,' + clipL + 'px)';
                         }
-                    } );
+                    }, this );
                 },
 
                 drawBorder: function() {
@@ -965,7 +965,7 @@
                                 p.t.imagedata.cropLeft = p.b.imagedata.cropLeft = p.c.imagedata.cropLeft = slices.l / imgSize.w;
                                 p.t.imagedata.cropRight = p.b.imagedata.cropRight = p.c.imagedata.cropRight = slices.r / imgSize.w;
                             }
-                        } );
+                        }, this );
                     }
                 },
 
