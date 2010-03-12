@@ -1,27 +1,34 @@
-<PUBLIC:ATTACH EVENT="onresize" FOR="element" ONEVENT="update()" />
-<PUBLIC:ATTACH EVENT="onmove" FOR="element" ONEVENT="update()" />
-<PUBLIC:ATTACH EVENT="onpropertychange" FOR="element" ONEVENT="propChanged()" />
-<PUBLIC:ATTACH EVENT="oncontentready" FOR="element" ONEVENT="init()" />
-<PUBLIC:ATTACH EVENT="ondetach" FOR="element" ONEVENT="cleanup()" />
-
-<PUBLIC:COMPONENT>
+<PUBLIC:COMPONENT lightWeight="true">
+    <PUBLIC:ATTACH EVENT="onresize" FOR="element" ONEVENT="update()" />
+    <PUBLIC:ATTACH EVENT="onmove" FOR="element" ONEVENT="update()" />
+    <PUBLIC:ATTACH EVENT="onpropertychange" FOR="element" ONEVENT="propChanged()" />
+    <PUBLIC:ATTACH EVENT="oncontentready" FOR="element" ONEVENT="init()" />
+    <PUBLIC:ATTACH EVENT="ondetach" FOR="element" ONEVENT="cleanup()" />
 
     <script type="text/javascript">
 
         var vmlns = 'css3vml',
-            active = false,
             lastW, lastH, lastX, lastY,
             renderers,
             styleInfos,
             ancestors;
 
 
-
-        function trim( str ) {
-            return str.replace( trim.re, '' );
+        function createVmlElement( tag ) {
+            /* To create a VML element, it must be created by a document which has the VML
+               namespace set. Unfortunately, if you try to add the namespace programatically
+               into the main document, you will get an "Unspecified error" when trying to
+               access document.namespaces before the document is finished loading. To get
+               around this, we create a DocumentFragment, which in IE land is apparently a
+               full-fledged Document. It allows adding namespaces immediately, so we add the
+               namespace there and then have it create the VML element. */
+            var vmlDoc = window._vmlCreatorDoc;
+            if( !vmlDoc ) {
+                vmlDoc = window._vmlCreatorDoc = element.document.createDocumentFragment();
+                vmlDoc.namespaces.add( vmlns, 'urn:schemas-microsoft-com:vml' );
+            }
+            return vmlDoc.createElement( tag );
         }
-        trim.re = /^\s+|\s+$/g;
-
 
 
         function merge( obj1 ) {
@@ -92,7 +99,7 @@
                 i = 0, len = units.length, unit, el, s;
             for( ; i < len; i++ ) {
                 unit = units[i];
-                el = document.createElement( 'length-calc' );
+                el = element.document.createElement( 'length-calc' );
                 s = el.style;
                 s.position = 'absolute';
                 s.top = s.left = -1000;
@@ -605,7 +612,7 @@
                 var box = this._box, el, s;
                 if( !box ) {
                     el = this.element;
-                    box = this._box = document.createElement( 'css3-container' );
+                    box = this._box = el.document.createElement( 'css3-container' );
                     s = box.style;
 
                     s.position = 'absolute';
@@ -829,9 +836,9 @@
                     s;
 
                 if( !shape ) {
-                    shape = shapes[ name ] = this._borderShape = document.createElement( vmlns + ':shape' );
+                    shape = shapes[ name ] = this._borderShape = createVmlElement( vmlns + ':shape' );
                     if( subElName ) {
-                        shape.appendChild( shape[ subElName ] = document.createElement( vmlns + ':' + subElName ) );
+                        shape.appendChild( shape[ subElName ] = createVmlElement( vmlns + ':' + subElName ) );
                     }
                     this.getBox().appendChild( shape );
                     s = shape.style;
@@ -849,7 +856,7 @@
                     s;
 
                 if( !box ) {
-                    box = this._box = document.createElement( 'bg-and-border' );
+                    box = this._box = this.element.document.createElement( 'bg-and-border' );
                     s = box.style;
                     s.position = 'absolute';
                     s.zIndex = this.zIndex;
@@ -966,7 +973,7 @@
                     len = pieceNames.length;
 
                 if( !box ) {
-                    box = this._box = document.createElement( 'border-image' );
+                    box = this._box = this.element.document.createElement( 'border-image' );
                     s = box.style;
                     s.position = 'absolute';
                     s.zIndex = this.zIndex;
@@ -974,8 +981,8 @@
                     this.pieces = {};
 
                     for( i = 0; i < len; i++ ) {
-                        piece = this.pieces[ pieceNames[i] ] = document.createElement( vmlns + ':rect' );
-                        piece.appendChild( document.createElement( vmlns + ':imagedata' ) );
+                        piece = this.pieces[ pieceNames[i] ] = createVmlElement( vmlns + ':rect' );
+                        piece.appendChild( createVmlElement( vmlns + ':imagedata' ) );
                         s = piece.style;
                         s.behavior = 'url(#default#VML)';
                         s.position = "absolute";
@@ -1069,7 +1076,7 @@
                 var box = this._box, s, ss, cs, bs, xOff, yOff, spread, blur, shape, el;
                 if( !box ) {
                     el = this.element;
-                    box = this._box = document.createElement( 'box-shadow' );
+                    box = this._box = el.document.createElement( 'box-shadow' );
                     bs = this.styleInfos.boxShadow.getProps();
                     xOff = bs.xOffset.pixels( el );
                     yOff = bs.yOffset.pixels( el );
@@ -1086,7 +1093,7 @@
                     s = box.style;
                     s.position = 'absolute';
 
-                    shape = document.createElement( vmlns + ':shape' );
+                    shape = createVmlElement( vmlns + ':shape' );
                     box.appendChild( shape );
                     shape.coordorigin = '1,1';
                     ss = shape.style;
@@ -1246,11 +1253,6 @@
          */
         function init() {
             var el = element;
-
-            // add vml namespace
-            if( document.namespaces && !document.namespaces[ vmlns ] ) {
-                document.namespaces.add( vmlns, 'urn:schemas-microsoft-com:vml' );
-            }
 
             // force layout so move/resize events will fire
             el.runtimeStyle.zoom = 1;
