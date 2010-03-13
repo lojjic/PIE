@@ -612,19 +612,21 @@
                 updatePos: function() {
                     if( this.isActive() ) {
                         var el = this.element,
+                            par = el,
                             s = this.getBox().style,
                             x = 0, y = 0;
 
                         // Get the element's offsets from its nearest positioned ancestor. More
                         // accurate than just using offsetTop/Left.
                         do {
-                            x += el.offsetLeft;
-                            y += el.offsetTop;
-                            el = el.offsetParent;
-                        } while( el && el.currentStyle.position === 'static' );
+                            x += par.offsetLeft;
+                            y += par.offsetTop;
+                            par = par.offsetParent;
+                        } while( par && par.currentStyle.position === 'static' );
 
                         s.left = x;
                         s.top = y;
+                        s.zIndex = el.currentStyle.position === 'static' ? -1 : el.currentStyle.zIndex;
                     }
                 },
 
@@ -647,7 +649,6 @@
                         s = box.style;
 
                         s.position = 'absolute';
-                        s.zIndex = el.currentStyle.zIndex;
 
                         el.parentNode.insertBefore( box, el );
                     }
@@ -1303,12 +1304,6 @@
 
             // force layout so move/resize events will fire
             el.runtimeStyle.zoom = 1;
-
-            // force positioning so relative z-indexes are calculated correctly
-            // TODO is there a less invasive way to do this?
-            if( el.currentStyle.position === 'static' ) {
-                el.runtimeStyle.position = 'relative';
-            }
 
             // Create the style infos and renderers
             styleInfos = {
