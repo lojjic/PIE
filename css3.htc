@@ -16,10 +16,8 @@
 
         if( !PIE ) {
             PIE = window.PIE = {
-                //CSS_PREFIX: '-pie-',
-                CSS_PREFIX: '',
-                //PROP_PREFIX: 'Pie'
-                PROP_PREFIX: ''
+                CSS_PREFIX: '-pie-',
+                STYLE_PREFIX: 'Pie'
             };
 
             /**
@@ -170,7 +168,8 @@
                 },
 
                 getCss: function() {
-                    return this.element.currentStyle.getAttribute( this.cssProperty );
+                    return this.element.style[ this.styleProperty ] ||
+                           this.element.currentStyle.getAttribute( this.cssProperty );
                 },
 
                 isActive: function() {
@@ -190,6 +189,7 @@
             PIE.merge( PIE.BackgroundGradientStyleInfo.prototype, PIE.styleBase, {
 
                 cssProperty: PIE.CSS_PREFIX + 'background-gradient',
+                styleProperty: PIE.STYLE_PREFIX + 'BackgroundGradient',
 
                 /*
                 [<point> || <angle>,]? <stop>, <stop> [, <stop>]*
@@ -307,6 +307,7 @@
             PIE.merge( PIE.BorderRadiusStyleInfo.prototype, PIE.styleBase, {
 
                 cssProperty: PIE.CSS_PREFIX + 'border-radius',
+                styleProperty: PIE.STYLE_PREFIX + 'BorderRadius',
 
                 parseRE: new RegExp(
                     '^G(\\/G)?$'.replace( /G/g, '\\s*(L)(\\s+(L))?(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, PIE.styleBase.lengthRE.source + '|' + PIE.styleBase.percentRE.source ) )
@@ -368,6 +369,7 @@
             PIE.merge( PIE.BorderImageStyleInfo.prototype, PIE.styleBase, {
 
                 cssProperty: PIE.CSS_PREFIX + 'border-image',
+                styleProperty: PIE.STYLE_PREFIX + 'BorderImage',
 
                 //TODO this needs to be reworked to allow the components to appear in arbitrary order
                 parseRE: new RegExp(
@@ -424,6 +426,7 @@
             PIE.merge( PIE.BoxShadowStyleInfo.prototype, PIE.styleBase, {
 
                 cssProperty: PIE.CSS_PREFIX + 'box-shadow',
+                styleProperty: PIE.STYLE_PREFIX + 'BoxShadow',
 
                 noneRE: /^\s*none\s*$/,
                 insetRE: /(inset)/,
@@ -1276,7 +1279,7 @@
 
 
         function initAncestorPropChangeListeners() {
-            var watch = element.currentStyle.getAttribute( '-watch-ancestors' ),
+            var watch = element.currentStyle.getAttribute( PIE.CSS_PREFIX + 'watch-ancestors' ),
                 i, a;
             if( watch ) {
                 ancestors = [];
