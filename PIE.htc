@@ -264,23 +264,41 @@
                         rtColor = rs.borderColor,
                         i = 0,
                         active = false,
-                        side, ltr, wid;
+                        colorsSame = true, stylesSame = true, widthsSame = true,
+                        style, color, width, lastStyle, lastColor, lastWidth, side, ltr;
 
                     rs.borderColor = '';
                     for( ; i < 4; i++ ) {
                         side = this.sides[ i ];
                         ltr = side.charAt(0).toLowerCase();
-                        s[ ltr ] = cs[ 'border' + side + 'Style' ];
-                        c[ ltr ] = cs[ 'border' + side + 'Color' ];
-                        wid = cs[ 'border' + side + 'Width' ];
-                        wid = w[ ltr ] = new PIE.Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ wid ] || wid ) );
-                        if( s[ ltr ] !== 'none' || wid.pixels( this.element ) > 0 ) {
+                        style = s[ ltr ] = cs[ 'border' + side + 'Style' ];
+                        color = c[ ltr ] = cs[ 'border' + side + 'Color' ];
+                        width = cs[ 'border' + side + 'Width' ];
+
+                        if( i > 0 ) {
+                            if( style !== lastStyle ) { stylesSame = false; }
+                            if( color !== lastColor ) { colorsSame = false; }
+                            if( width !== lastWidth ) { widthsSame = false; }
+                        }
+                        lastStyle = style;
+                        lastColor = color;
+                        lastWidth = width;
+
+                        width = w[ ltr ] = new PIE.Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ width ] || width ) );
+                        if( s[ ltr ] !== 'none' || width.pixels( this.element ) > 0 ) {
                             active = true;
                         }
                     }
                     rs.borderColor = rtColor;
 
-                    return active ? { widths: w, styles: s, colors: c } : null;
+                    return active ? { 
+                        widths: w,
+                        styles: s,
+                        colors: c,
+                        widthsSame: widthsSame,
+                        colorsSame: colorsSame,
+                        stylesSame: stylesSame
+                    } : null;
                 },
 
                 getCss: function() {
@@ -489,7 +507,57 @@
                 updateVis: function() {
                 },
 
-                getBoxPath: function( shrink, side ) {
+                getRadiiPixels: function( radii ) {
+                    var el = this.element,
+                        w = el.offsetWidth,
+                        h = el.offsetHeight,
+                        tlX, tlY, trX, trY, brX, brY, blX, blY, f;
+
+                    tlX = radii.x.tl.pixels( el, w );
+                    tlY = radii.y.tl.pixels( el, h );
+                    trX = radii.x.tr.pixels( el, w );
+                    trY = radii.y.tr.pixels( el, h );
+                    brX = radii.x.br.pixels( el, w );
+                    brY = radii.y.br.pixels( el, h );
+                    blX = radii.x.bl.pixels( el, w );
+                    blY = radii.y.bl.pixels( el, h );
+
+                    // If any corner ellipses overlap, reduce them all by the appropriate factor. This formula
+                    // is taken straight from the CSS3 Backgrounds and Borders spec.
+                    f = Math.min(
+                        w / ( tlX + trX ),
+                        h / ( trY + brY ),
+                        w / ( blX + brX ),
+                        h / ( tlY + blY )
+                    );
+                    if( f < 1 ) {
+                        tlX *= f;
+                        tlY *= f;
+                        trX *= f;
+                        trY *= f;
+                        brX *= f;
+                        brY *= f;
+                        blX *= f;
+                        blY *= f;
+                    }
+
+                    return {
+                        x: {
+                            tl: tlX,
+                            tr: trX,
+                            br: brX,
+                            bl: blX
+                        },
+                        y: {
+                            tl: tlY,
+                            tr: trY,
+                            br: brY,
+                            bl: blY
+                        }
+                    }
+                },
+
+                getBoxPath: function( shrink ) {
                     var r, instructions, values, str = '', i,
                         el = this.element,
                         w = el.offsetWidth,
@@ -497,80 +565,38 @@
                         radInfo = this.styleInfos.borderRadius,
                         floor = Math.floor, ceil = Math.ceil,
                         deg = 65535,
-                        tlX, tlY, trX, trY, brX, brY, blX, blY, f;
+                        tlX, tlY, trX, trY, brX, brY, blX, blY;
 
-                    if( !shrink ) {
-                        shrink = 0;
-                    }
-                    shrink = floor( shrink );
+                    shrink = floor( shrink || 0 );
 
                     if( radInfo.isActive() ) {
-                        r = radInfo.getProps();
+                        r = this.getRadiiPixels( radInfo.getProps() );
 
-                        tlX = r.x.tl.pixels( el, w );
-                        tlY = r.y.tl.pixels( el, h );
-                        trX = r.x.tr.pixels( el, w );
-                        trY = r.y.tr.pixels( el, h );
-                        brX = r.x.br.pixels( el, w );
-                        brY = r.y.br.pixels( el, h );
-                        blX = r.x.bl.pixels( el, w );
-                        blY = r.y.bl.pixels( el, h );
+                        tlX = r.x.tl;
+                        tlY = r.y.tl;
+                        trX = r.x.tr;
+                        trY = r.y.tr;
+                        brX = r.x.br;
+                        brY = r.y.br;
+                        blX = r.x.bl;
+                        blY = r.y.bl;
 
-                        // If any corner ellipses overlap, reduce them all by the appropriate factor. This formula
-                        // is taken straight from the CSS3 Backgrounds and Borders spec.
-                        f = Math.min(
-                            w / ( tlX + trX ),
-                            h / ( trY + brY ),
-                            w / ( blX + brX ),
-                            h / ( tlY + blY )
-                        );
-                        if( f < 1 ) {
-                            tlX *= f;
-                            tlY *= f;
-                            trX *= f;
-                            trY *= f;
-                            brX *= f;
-                            brY *= f;
-                            blX *= f;
-                            blY *= f;
+                        instructions = [ 'm', 'qy', 'l', 'qx', 'l', 'qy', 'l', 'qx' ];
+                        values = [
+                            shrink + ',' + floor(tlY),
+                            floor(tlX) + ',' + shrink,
+                            ceil(w - trX) + ',' + shrink,
+                            ( w - shrink ) + ',' + floor(trY),
+                            ( w - shrink ) + ',' + ceil(h - brY),
+                            ceil(w - brX) + ',' + ( h - shrink ),
+                            floor(blX) + ',' + ( h - shrink ),
+                            shrink + ',' + ceil(h - blY)
+                        ];
+
+                        for ( i = 0; i < 8; i++ ) {
+                            str += instructions[i] + values[i];
                         }
-
-                        if (side) {
-                            switch (side.charAt(0).toLowerCase()) {
-                                case 't':
-                                    str = 'al' + floor( tlX ) + ',' + floor( tlY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( 135 * deg ) + ',' + ( -45 * deg ) +
-                                          'ae' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 90 * deg ) + ',' + ( -45 * deg );
-                                    break;
-                                case 'r':
-                                    str = 'al' + ceil( w - trX ) + ',' + floor( trY ) + ',' + ( floor( trX ) - shrink ) + ',' + ( floor( trY ) - shrink ) + ',' + ( 45 * deg ) + ',' + ( -45 * deg ) +
-                                          'ae' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',0,' + ( -45 * deg );
-                                    break;
-                                case 'b':
-                                    str = 'al' + ceil( w - brX ) + ',' + ceil( h - brY ) + ',' + ( floor( brX ) - shrink ) + ',' + ( floor( brY ) - shrink ) + ',' + ( -45 * deg ) + ',' + ( -45 * deg ) +
-                                          'ae' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -90 * deg ) + ',' + ( -45 * deg );
-                                    break;
-                                case 'l':
-                                    str = 'al' + floor( blX ) + ',' + ceil( h - blY ) + ',' + ( floor( blX ) - shrink ) + ',' + ( floor( blY ) - shrink ) + ',' + ( -135 * deg ) + ',' + ( -45 * deg ) +
-                                          'ae' + floor( tlX ) + ',' + floor( blY ) + ',' + ( floor( tlX ) - shrink ) + ',' + ( floor( tlY ) - shrink ) + ',' + ( -180 * deg ) + ',' + ( -45 * deg );
-                            }
-                        } else {
-                            instructions = [ 'm', 'qy', 'l', 'qx', 'l', 'qy', 'l', 'qx' ];
-                            values = [
-                                shrink + ',' + floor(tlY),
-                                floor(tlX) + ',' + shrink,
-                                ceil(w - trX) + ',' + shrink,
-                                ( w - shrink ) + ',' + floor(trY),
-                                ( w - shrink ) + ',' + ceil(h - brY),
-                                ceil(w - brX) + ',' + ( h - shrink ),
-                                floor(blX) + ',' + ( h - shrink ),
-                                shrink + ',' + ceil(h - blY)
-                            ];
-
-                            for ( i = 0; i < 8; i++ ) {
-                                str += instructions[i] + values[i];
-                            }
-                            str += ' x e';
-                        }
+                        str += ' x e';
                     } else {
                         // simplified path for non-rounded box
                         str = 'm' + shrink + ',' + shrink +
@@ -818,28 +844,272 @@
                         widths = props.widths;
 
                         el.runtimeStyle.borderColor = 'transparent';
-                        for( side in styles ) {
-                            if( styles.hasOwnProperty( side ) ) {
-                                bWidth = widths[ side ].pixels( el );
-                                bStyle = styles[ side ];
-                                bColor = colors[ side ];
-                                shape = this.getShape( 'border' + side, 'stroke' );
-                                shape.coordsize = w + ',' + h;
-                                shape.path = this.getBoxPath( bWidth / 2, side );
-                                s = shape.style;
-                                s.width = w;
-                                s.height = h;
-                                s.zIndex = 3;
-                                shape.filled = false;
-                                shape.stroked = bWidth > 0;
+
+                        var segments = this.getBorderSegments();
+                        for( var i=0; i<segments.length; i++) {
+                            var seg = segments[i];
+                            shape = this.getShape( 'borderPiece' + i, seg.stroke ? 'stroke' : 'fill' );
+                            shape.coordsize = w + ',' + h;
+                            shape.path = seg.path;
+                            s = shape.style;
+                            s.width = w;
+                            s.height = h;
+                            s.zIndex = 3;
+
+                            shape.filled = !!seg.fill;
+                            shape.stroked = !!seg.stroke;
+                            if( seg.stroke ) {
                                 stroke = shape.stroke;
-                                stroke.weight = bWidth + 'px';
-                                stroke.color = bColor;
-                                stroke.dashstyle = bStyle === 'dashed' ? '2 2' : bStyle === 'dotted' ? '0 1' : 'solid';
-                                stroke.linestyle = bStyle === 'double' && bWidth > 2 ? 'ThinThin' : 'Single';
+                                stroke.weight = seg.weight + 'px';
+                                stroke.color = seg.color;
+                                stroke.dashstyle = seg.stroke === 'dashed' ? '2 2' : seg.stroke === 'dotted' ? '1 1' : 'solid';
+                                stroke.linestyle = seg.stroke === 'double' && seg.weight > 2 ? 'ThinThin' : 'Single';
+                            } else {
+                                shape.fill.color = seg.fill;
                             }
                         }
                     }
+                },
+
+                getBorderSegments: function() {
+                    var el = this.element,
+                        elW, elH,
+                        borderInfo = this.styleInfos.border,
+                        segments = [],
+                        deg = 65535,
+                        floor, ceil, wT, wR, wB, wL,
+                        borderProps, radiusInfo, radii, widths, styles, colors;
+
+                    if( borderInfo.isActive() ) {
+                        borderProps = borderInfo.getProps();
+
+                        widths = borderProps.widths;
+                        styles = borderProps.styles;
+                        colors = borderProps.colors;
+
+                        if( borderProps.widthsSame && borderProps.stylesSame && borderProps.colorsSame ) {
+                            // shortcut for identical border on all sides - only need 1 stroked shape
+                            wT = widths.t.pixels( el );
+                            segments.push( {
+                                path: this.getBoxPath( wT / 2 ),
+                                stroke: styles.t,
+                                color: colors.t,
+                                weight: wT
+                            } );
+                        }
+                        else {
+                            elW = el.offsetWidth;
+                            elH = el.offsetHeight;
+
+                            wT = widths.t.pixels( el );
+                            wR = widths.r.pixels( el );
+                            wB = widths.b.pixels( el );
+                            wL = widths.l.pixels( el );
+                            var pxWidths = {
+                                t: wT,
+                                r: wR,
+                                b: wB,
+                                l: wL
+                            };
+
+                            radiusInfo = this.styleInfos.borderRadius;
+                            if( radiusInfo.isActive() ) {
+                                radii = this.getRadiiPixels( radiusInfo.getProps() );
+                            }
+
+                            floor = Math.floor;
+                            ceil = Math.ceil;
+
+                            function ellipse( corner, shrinkX, shrinkY ) {
+                                var rx = radii.x[ corner ],
+                                    ry = radii.y[ corner ],
+                                    isRight = corner.charAt( 1 ) === 'r',
+                                    isBottom = corner.charAt( 0 ) === 'b';
+                                return ( rx > 0 && ry > 0 ) ?
+                                            ( isRight ? ceil( elW - rx ) : floor( rx ) ) + ',' + // center x
+                                            ( isBottom ? ceil( elH - ry ) : floor( ry ) ) + ',' + // center y
+                                            ( floor( rx ) - shrinkX ) + ',' + // width
+                                            ( floor( ry ) - shrinkY ) // height
+                                        : '';
+                            }
+
+                            function isDashed( side ) {
+                                return styles[ side ] === 'dashed' || styles[ side ] === 'dotted';
+                            }
+                            function isDouble( side ) {
+                                return styles[ side ] === 'double' && widths[ side ].pixels( el ) > 2;
+                            }
+
+
+                            // TODO there is a lot that is similar between these next 4 sections; find a way to
+                            // abstract the differences to reduce the code size.
+
+                            // top
+                            if( wT > 0 && styles.t !== 'none' ) {
+                                if( isDashed( 't' ) ) {
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'tl', wL, wT ) + ',' + 135*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'tl', 0, 0 ) + ',' + 90*deg + ',' + 45*deg,
+                                        fill: colors.t
+                                    } );
+                                    segments.push( {
+                                        path: 'm' + floor( radii.x.tl ) + ',' + ceil( wT/2 ) +
+                                              'l' + ceil( elW - radii.x.tr ) + ',' + ceil( wT/2 ),
+                                        stroke: styles.t,
+                                        weight: wT,
+                                        color: colors.t
+                                    } );
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'tr', wR, wT ) + ',' + 90*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'tr', 0, 0 ) + ',' + 45*deg + ',' + 45*deg,
+                                        fill: colors.t
+                                    } );
+                                }
+                                else {
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'tl', wL, wT ) + ',' + 135*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'tr', wR, wT ) + ',' + 90*deg + ',' + -45*deg +
+
+                                              ( isDouble( 't' ) ?
+                                                      'ae' + ellipse( 'tr', wR - floor( wR / 3 ), wT - floor( wT / 3 ) ) + ',' + 45*deg + ',' + 45*deg +
+                                                      'ae' + ellipse( 'tl', wL - floor( wL / 3 ), wT - floor( wT / 3 ) ) + ',' + 90*deg + ',' + 45*deg +
+                                                      'x al' + ellipse( 'tl', floor( wL / 3 ), floor( wT / 3 ) ) + ',' + 135*deg + ',' + -45*deg +
+                                                      'ae' + ellipse( 'tr', floor( wR / 3 ), floor( wT / 3 ) ) + ',' + 90*deg + ',' + -45*deg
+                                                  : '' ) +
+
+                                              'ae' + ellipse( 'tr', 0, 0 ) + ',' + 45*deg + ',' + 45*deg +
+                                              'ae' + ellipse( 'tl', 0, 0 ) + ',' + 90*deg + ',' + 45*deg + 'x',
+                                        fill: colors.t
+                                    } );
+                                }
+                            }
+
+
+                            // right
+                            if( wT > 0 && styles.r !== 'none' ) {
+                                if( isDashed( 'r' ) ) {
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'tr', wR, wT ) + ',' + 45*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'tr', 0, 0 ) + ',' + 0*deg + ',' + 45*deg,
+                                        fill: colors.r
+                                    } );
+                                    segments.push( {
+                                        path: 'm' + ceil( elW - wR/2 ) + ',' + floor( radii.y.tr ) +
+                                              'l' + ceil( elW - wR/2 ) + ',' + ceil( elH - radii.y.br ),
+                                        stroke: styles.r,
+                                        weight: wR,
+                                        color: colors.r
+                                    } );
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'br', wR, wB ) + ',' + 0*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'br', 0, 0 ) + ',' + -45*deg + ',' + 45*deg,
+                                        fill: colors.r
+                                    } );
+                                }
+                                else {
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'tr', wR, wT ) + ',' + 45*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'br', wR, wB ) + ',' + 0*deg + ',' + -45*deg +
+
+                                              ( isDouble( 'r' ) ?
+                                                      'ae' + ellipse( 'br', wR - floor( wR / 3 ), wB - floor( wB / 3 ) ) + ',' + -45*deg + ',' + 45*deg +
+                                                      'ae' + ellipse( 'tr', wR - floor( wR / 3 ), wT - floor( wT / 3 ) ) + ',' + 0*deg + ',' + 45*deg +
+                                                      'x al' + ellipse( 'tr', floor( wR / 3 ), floor( wT / 3 ) ) + ',' + 45*deg + ',' + -45*deg +
+                                                      'ae' + ellipse( 'br', floor( wR / 3 ), floor( wB / 3 ) ) + ',' + 0*deg + ',' + -45*deg
+                                                  : '' ) +
+
+                                              'ae' + ellipse( 'br', 0, 0 ) + ',' + -45*deg + ',' + 45*deg +
+                                              'ae' + ellipse( 'tr', 0, 0 ) + ',' + 0*deg + ',' + 45*deg + 'x',
+                                        fill: colors.r
+                                    } );
+                                }
+                            }
+
+
+                            // bottom
+                            if( wB > 0 && styles.b !== 'none' ) {
+                                if( isDashed( 'b' ) ) {
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'br', wR, wB ) + ',' + -45*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'br', 0, 0 ) + ',' + -90*deg + ',' + 45*deg,
+                                        fill: colors.b
+                                    } );
+                                    segments.push( {
+                                        path: 'm' + ceil( elW - radii.x.br ) + ',' + floor( elH - wB/2 ) +
+                                              'l' + floor( radii.x.bl ) + ',' + floor( elH - wB/2 ),
+                                        stroke: styles.b,
+                                        weight: wB,
+                                        color: colors.b
+                                    } );
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'bl', wR, wB ) + ',' + -90*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'bl', 0, 0 ) + ',' + -135*deg + ',' + 45*deg,
+                                        fill: colors.b
+                                    } );
+                                }
+                                else {
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'br', wR, wB ) + ',' + -45*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'bl', wL, wB ) + ',' + -90*deg + ',' + -45*deg +
+
+                                              ( isDouble( 'b' ) ?
+                                                      'ae' + ellipse( 'bl', wL - floor( wL / 3 ), wB - floor( wB / 3 ) ) + ',' + -135*deg + ',' + 45*deg +
+                                                      'ae' + ellipse( 'br', wR - floor( wR / 3 ), wB - floor( wB / 3 ) ) + ',' + -90*deg + ',' + 45*deg +
+                                                      'x al' + ellipse( 'br', floor( wR / 3 ), floor( wB / 3 ) ) + ',' + -45*deg + ',' + -45*deg +
+                                                      'ae' + ellipse( 'bl', floor( wL / 3 ), floor( wB / 3 ) ) + ',' + -90*deg + ',' + -45*deg
+                                                  : '' ) +
+
+                                              'ae' + ellipse( 'bl', 0, 0 ) + ',' + -135*deg + ',' + 45*deg +
+                                              'ae' + ellipse( 'br', 0, 0 ) + ',' + -90*deg + ',' + 45*deg + 'x',
+                                        fill: colors.b
+                                    } );
+                                }
+                            }
+
+
+                            // left
+                            if( wL > 0 && styles.l !== 'none' ) {
+                                if( isDashed( 'l' ) ) {
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'bl', wL, wB ) + ',' + -135*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'bl', 0, 0 ) + ',' + -180*deg + ',' + 45*deg,
+                                        fill: colors.l
+                                    } );
+                                    segments.push( {
+                                        path: 'm' + floor( wL/2 ) + ',' + ceil( elH - radii.y.bl ) +
+                                              'l' + floor( wL/2 ) + ',' + floor( radii.y.tl ),
+                                        stroke: styles.l,
+                                        weight: wL,
+                                        color: colors.l
+                                    } );
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'tl', wL, wT ) + ',' + -180*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'tl', 0, 0 ) + ',' + -225*deg + ',' + 45*deg,
+                                        fill: colors.l
+                                    } );
+                                }
+                                else {
+                                    segments.push( {
+                                        path: 'al' + ellipse( 'bl', wL, wB ) + ',' + -135*deg + ',' + -45*deg +
+                                              'ae' + ellipse( 'tl', wL, wT ) + ',' + -180*deg + ',' + -45*deg +
+
+                                              ( isDouble( 'l' ) ?
+                                                      'ae' + ellipse( 'tl', wL - floor( wL / 3 ), wT - floor( wT / 3 ) ) + ',' + -225*deg + ',' + 45*deg +
+                                                      'ae' + ellipse( 'bl', wL - floor( wL / 3 ), wB - floor( wB / 3 ) ) + ',' + -180*deg + ',' + 45*deg +
+                                                      'x al' + ellipse( 'bl', floor( wL / 3 ), floor( wB / 3 ) ) + ',' + -135*deg + ',' + -45*deg +
+                                                      'ae' + ellipse( 'tl', floor( wL / 3 ), floor( wT / 3 ) ) + ',' + -180*deg + ',' + -45*deg
+                                                  : '' ) +
+
+                                              'ae' + ellipse( 'tl', 0, 0 ) + ',' + -225*deg + ',' + 45*deg +
+                                              'ae' + ellipse( 'bl', 0, 0 ) + ',' + -180*deg + ',' + 45*deg + 'x',
+                                        fill: colors.l
+                                    } );
+                                }
+                            }
+                        }
+                    }
+
+                    return segments;
                 },
 
                 getBgColor: function() {
