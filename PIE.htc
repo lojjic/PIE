@@ -744,7 +744,7 @@
                         s, color;
 
                     shape.stroked = false;
-                    shape.coordsize = w + ',' + h;
+                    shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
                     shape.path = this.getBoxPath();
                     s = shape.style;
                     s.width = w;
@@ -771,7 +771,7 @@
                     shape.stroked = false;
                     shape.fill.type = 'tile';
                     shape.fillcolor = 'none';
-                    shape.coordsize = w + ',' + h;
+                    shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
                     shape.path = this.getBoxPath();
                     s = shape.style;
                     s.width = w;
@@ -849,7 +849,7 @@
                         for( var i=0; i<segments.length; i++) {
                             var seg = segments[i];
                             shape = this.getShape( 'borderPiece' + i, seg.stroke ? 'stroke' : 'fill' );
-                            shape.coordsize = w + ',' + h;
+                            shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
                             shape.path = seg.path;
                             s = shape.style;
                             s.width = w;
@@ -1147,7 +1147,6 @@
                         s.position = 'absolute';
                         s.left = s.top = 0;
                         s.behavior = 'url(#default#VML)';
-                        shape.coordorigin = '1,1';
                     }
                     return shape;
                 },
@@ -1289,7 +1288,6 @@
                             s.behavior = 'url(#default#VML)';
                             s.position = "absolute";
                             s.top = s.left = 0;
-                            piece.coordorigin = '1,1';
                             piece.imagedata.src = this.styleInfos.borderImage.getProps().src;
                             piece.stroked = false;
                             piece.filled = false;
@@ -1362,7 +1360,7 @@
                         s.width = w;
                         s.height = h;
 
-                        shape.coordsize = w + ',' + h;
+                        shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
                         shape.path = this.getBoxPath();
                     }
                 },
@@ -1397,7 +1395,6 @@
 
                         shape = PIE.createVmlElement( 'shape' );
                         box.appendChild( shape );
-                        shape.coordorigin = '1,1';
                         shape.stroked = false;
                         ss = shape.style;
                         ss.position = 'absolute';
