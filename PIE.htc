@@ -936,179 +936,72 @@
                                         : '';
                             }
 
-                            function isDashed( side ) {
-                                return styles[ side ] === 'dashed' || styles[ side ] === 'dotted';
-                            }
-                            function isDouble( side ) {
-                                return styles[ side ] === 'double' && widths[ side ].pixels( el ) > 2;
-                            }
 
+                            function addSide( side, sideBefore, sideAfter, cornerBefore, cornerAfter, baseAngle ) {
+                                var vert = side === 'l' || side === 'r',
+                                    beforeX, beforeY, afterX, afterY;
 
-                            // TODO there is a lot that is similar between these next 4 sections; find a way to
-                            // abstract the differences to reduce the code size.
+                                if( pxWidths[ side ] > 0 && styles[ side ] !== 'none' ) {
+                                    beforeX = pxWidths[ vert ? side : sideBefore ];
+                                    beforeY = pxWidths[ vert ? sideBefore : side ];
+                                    afterX = pxWidths[ vert ? side : sideAfter ];
+                                    afterY = pxWidths[ vert ? sideAfter : side ];
+                                    
+                                    if( styles[ side ] === 'dashed' || styles[ side ] === 'dotted' ) {
+                                        segments.push( {
+                                            path: 'al' + curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0 ) +
+                                                  'ae' + curve( cornerBefore, 0, 0, baseAngle, 1 ),
+                                            fill: colors[ side ]
+                                        } );
+                                        segments.push( {
+                                            path: (
+                                                side === 't' ?
+                                                    'm' + floor( radii.x.tl ) + ',' + ceil( wT/2 ) +
+                                                    'l' + ceil( elW - radii.x.tr ) + ',' + ceil( wT/2 ) :
+                                                side === 'r' ?
+                                                    'm' + ceil( elW - wR/2 ) + ',' + floor( radii.y.tr ) +
+                                                    'l' + ceil( elW - wR/2 ) + ',' + ceil( elH - radii.y.br ) :
+                                                side === 'b' ?
+                                                    'm' + ceil( elW - radii.x.br ) + ',' + floor( elH - wB/2 ) +
+                                                    'l' + floor( radii.x.bl ) + ',' + floor( elH - wB/2 ) :
+                                                // side === 'l'
+                                                    'm' + floor( wL/2 ) + ',' + ceil( elH - radii.y.bl ) +
+                                                    'l' + floor( wL/2 ) + ',' + floor( radii.y.tl )
+                                            ),
+                                            stroke: styles[ side ],
+                                            weight: pxWidths[ side ],
+                                            color: colors[ side ]
+                                        } );
+                                        segments.push( {
+                                            path: 'al' + curve( cornerAfter, afterX, afterY, baseAngle, 0 ) +
+                                                  'ae' + curve( cornerAfter, 0, 0, baseAngle - 45, 1 ),
+                                            fill: colors[ side ]
+                                        } );
+                                    }
+                                    else {
+                                        segments.push( {
+                                            path: 'al' + curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0 ) +
+                                                  'ae' + curve( cornerAfter, afterX, afterY, baseAngle, 0 ) +
 
-                            // top
-                            if( wT > 0 && styles.t !== 'none' ) {
-                                if( isDashed( 't' ) ) {
-                                    segments.push( {
-                                        path: 'al' + curve( 'tl', wL, wT, 135, 0 ) +
-                                              'ae' + curve( 'tl', 0, 0, 90, 1 ),
-                                        fill: colors.t
-                                    } );
-                                    segments.push( {
-                                        path: 'm' + floor( radii.x.tl ) + ',' + ceil( wT/2 ) +
-                                              'l' + ceil( elW - radii.x.tr ) + ',' + ceil( wT/2 ),
-                                        stroke: styles.t,
-                                        weight: wT,
-                                        color: colors.t
-                                    } );
-                                    segments.push( {
-                                        path: 'al' + curve( 'tr', wR, wT, 90, 0 ) +
-                                              'ae' + curve( 'tr', 0, 0, 45, 1 ),
-                                        fill: colors.t
-                                    } );
-                                }
-                                else {
-                                    segments.push( {
-                                        path: 'al' + curve( 'tl', wL, wT, 135, 0 ) +
-                                              'ae' + curve( 'tr', wR, wT, 90, 0 ) +
+                                                  ( styles[ side ] === 'double' && pxWidths[ side ] > 2 ?
+                                                          'ae' + curve( cornerAfter, afterX - floor( afterX / 3 ), afterY - floor( afterY / 3 ), baseAngle - 45, 1 ) +
+                                                          'ae' + curve( cornerBefore, beforeX - floor( beforeX / 3 ), beforeY - floor( beforeY / 3 ), baseAngle, 1 ) +
+                                                          'x al' + curve( cornerBefore, floor( beforeX / 3 ), floor( beforeY / 3 ), baseAngle + 45, 0 ) +
+                                                          'ae' + curve( cornerAfter, floor( afterX / 3 ), floor( afterY / 3 ), baseAngle, 0 )
+                                                      : '' ) +
 
-                                              ( isDouble( 't' ) ?
-                                                      'ae' + curve( 'tr', wR - floor( wR / 3 ), wT - floor( wT / 3 ), 45, 1 ) +
-                                                      'ae' + curve( 'tl', wL - floor( wL / 3 ), wT - floor( wT / 3 ), 90, 1 ) +
-                                                      'x al' + curve( 'tl', floor( wL / 3 ), floor( wT / 3 ), 135, 0 ) +
-                                                      'ae' + curve( 'tr', floor( wR / 3 ), floor( wT / 3 ), 90, 0 )
-                                                  : '' ) +
-
-                                              'ae' + curve( 'tr', 0, 0, 45, 1 ) +
-                                              'ae' + curve( 'tl', 0, 0, 90, 1 ),
-                                        fill: colors.t
-                                    } );
-                                }
-                            }
-
-
-                            // right
-                            if( wT > 0 && styles.r !== 'none' ) {
-                                if( isDashed( 'r' ) ) {
-                                    segments.push( {
-                                        path: 'al' + curve( 'tr', wR, wT, 45, 0 ) +
-                                              'ae' + curve( 'tr', 0, 0, 0, 1 ),
-                                        fill: colors.r
-                                    } );
-                                    segments.push( {
-                                        path: 'm' + ceil( elW - wR/2 ) + ',' + floor( radii.y.tr ) +
-                                              'l' + ceil( elW - wR/2 ) + ',' + ceil( elH - radii.y.br ),
-                                        stroke: styles.r,
-                                        weight: wR,
-                                        color: colors.r
-                                    } );
-                                    segments.push( {
-                                        path: 'al' + curve( 'br', wR, wB, 0, 0 ) +
-                                              'ae' + curve( 'br', 0, 0, -45, 1 ),
-                                        fill: colors.r
-                                    } );
-                                }
-                                else {
-                                    segments.push( {
-                                        path: 'al' + curve( 'tr', wR, wT, 45, 0 ) +
-                                              'ae' + curve( 'br', wR, wB, 0, 0 ) +
-
-                                              ( isDouble( 'r' ) ?
-                                                      'ae' + curve( 'br', wR - floor( wR / 3 ), wB - floor( wB / 3 ), -45, 1 ) +
-                                                      'ae' + curve( 'tr', wR - floor( wR / 3 ), wT - floor( wT / 3 ), 0, 1 ) +
-                                                      'x al' + curve( 'tr', floor( wR / 3 ), floor( wT / 3 ), 45, 0 ) +
-                                                      'ae' + curve( 'br', floor( wR / 3 ), floor( wB / 3 ), 0, 0 )
-                                                  : '' ) +
-
-                                              'ae' + curve( 'br', 0, 0, -45, 1 ) +
-                                              'ae' + curve( 'tr', 0, 0, 0, 1 ),
-                                        fill: colors.r
-                                    } );
+                                                  'ae' + curve( cornerAfter, 0, 0, baseAngle - 45, 1 ) +
+                                                  'ae' + curve( cornerBefore, 0, 0, baseAngle, 1 ),
+                                            fill: colors[ side ]
+                                        } );
+                                    }
                                 }
                             }
 
-
-                            // bottom
-                            if( wB > 0 && styles.b !== 'none' ) {
-                                if( isDashed( 'b' ) ) {
-                                    segments.push( {
-                                        path: 'al' + curve( 'br', wR, wB, -45, 0 ) +
-                                              'ae' + curve( 'br', 0, 0, -90, 1 ),
-                                        fill: colors.b
-                                    } );
-                                    segments.push( {
-                                        path: 'm' + ceil( elW - radii.x.br ) + ',' + floor( elH - wB/2 ) +
-                                              'l' + floor( radii.x.bl ) + ',' + floor( elH - wB/2 ),
-                                        stroke: styles.b,
-                                        weight: wB,
-                                        color: colors.b
-                                    } );
-                                    segments.push( {
-                                        path: 'al' + curve( 'bl', wL, wB, -90, 0 ) +
-                                              'ae' + curve( 'bl', 0, 0, -135, 1 ),
-                                        fill: colors.b
-                                    } );
-                                }
-                                else {
-                                    segments.push( {
-                                        path: 'al' + curve( 'br', wR, wB, -45, 0 ) +
-                                              'ae' + curve( 'bl', wL, wB, -90, 0 ) +
-
-                                              ( isDouble( 'b' ) ?
-                                                      'ae' + curve( 'bl', wL - floor( wL / 3 ), wB - floor( wB / 3 ), -135, 1 ) +
-                                                      'ae' + curve( 'br', wR - floor( wR / 3 ), wB - floor( wB / 3 ), -90, 1 ) +
-                                                      'x al' + curve( 'br', floor( wR / 3 ), floor( wB / 3 ), -45, 0 ) +
-                                                      'ae' + curve( 'bl', floor( wL / 3 ), floor( wB / 3 ), -90, 0 )
-                                                  : '' ) +
-
-                                              'ae' + curve( 'bl', 0, 0, -135, 1 ) +
-                                              'ae' + curve( 'br', 0, 0, -90, 1 ),
-                                        fill: colors.b
-                                    } );
-                                }
-                            }
-
-
-                            // left
-                            if( wL > 0 && styles.l !== 'none' ) {
-                                if( isDashed( 'l' ) ) {
-                                    segments.push( {
-                                        path: 'al' + curve( 'bl', wL, wB, -135, 0 ) +
-                                              'ae' + curve( 'bl', 0, 0, -180, 1 ),
-                                        fill: colors.l
-                                    } );
-                                    segments.push( {
-                                        path: 'm' + floor( wL/2 ) + ',' + ceil( elH - radii.y.bl ) +
-                                              'l' + floor( wL/2 ) + ',' + floor( radii.y.tl ),
-                                        stroke: styles.l,
-                                        weight: wL,
-                                        color: colors.l
-                                    } );
-                                    segments.push( {
-                                        path: 'al' + curve( 'tl', wL, wT, -180, 0 ) +
-                                              'ae' + curve( 'tl', 0, 0, -225, 1 ),
-                                        fill: colors.l
-                                    } );
-                                }
-                                else {
-                                    segments.push( {
-                                        path: 'al' + curve( 'bl', wL, wB, -135, 0 ) +
-                                              'ae' + curve( 'tl', wL, wT, -180, 0 ) +
-
-                                              ( isDouble( 'l' ) ?
-                                                      'ae' + curve( 'tl', wL - floor( wL / 3 ), wT - floor( wT / 3 ), -225, 1 ) +
-                                                      'ae' + curve( 'bl', wL - floor( wL / 3 ), wB - floor( wB / 3 ), -180, 1 ) +
-                                                      'x al' + curve( 'bl', floor( wL / 3 ), floor( wB / 3 ), -135, 0 ) +
-                                                      'ae' + curve( 'tl', floor( wL / 3 ), floor( wT / 3 ), -180, 0 )
-                                                  : '' ) +
-
-                                              'ae' + curve( 'tl', 0, 0, -225, 1 ) +
-                                              'ae' + curve( 'bl', 0, 0, -180, 1 ),
-                                        fill: colors.l
-                                    } );
-                                }
-                            }
+                            addSide( 't', 'l', 'r', 'tl', 'tr', 90 );
+                            addSide( 'r', 't', 'b', 'tr', 'br', 0 );
+                            addSide( 'b', 'r', 'l', 'br', 'bl', -90 );
+                            addSide( 'l', 'b', 't', 'bl', 'tl', -180 );
                         }
                     }
 
