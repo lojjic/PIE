@@ -1257,7 +1257,7 @@
                         s.width = w;
                         s.height = h;
 
-                        shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
+                        shape.coordsize = ( w + 2 ) + ',' + ( h + 2 ); //shrink by 1 extra pixel
                         shape.path = this.getBoxPath();
                     }
                 },
@@ -1270,7 +1270,7 @@
                 },
 
                 getBox: function() {
-                    var box = this._box, s, ss, cs, bs, xOff, yOff, spread, blur, shape, el;
+                    var box = this._box, s, ss, cs, bs, xOff, yOff, spread, blur, halfBlur, shape, el, filter;
                     if( !box ) {
                         el = this.element;
                         box = this._box = el.document.createElement( 'box-shadow' );
@@ -1280,12 +1280,9 @@
                         blur = bs.blur.pixels( el );
                         spread = bs.spread.pixels( el );
 
-                        //adjust to approximate the right blur in IE's filter's units
-                        //TODO this needs work to match the blur more exactly
-                        blur = Math.round( blur / 2 );
-                        /*if( blur % 2 ) {
-                            blur++;
-                        }*/
+                        // Adjust the blur value so it's always an even number
+                        halfBlur = Math.ceil( blur / 2 );
+                        blur = halfBlur * 2;
 
                         s = box.style;
                         s.position = 'absolute';
@@ -1321,9 +1318,11 @@
                             shape.fillcolor = bs.color;
                         }
 
-                        // apply blur filter to the outer or inner element
+                        // Apply blur filter to the outer or inner element. Applying the blur filter twice with
+                        // half the pixel value gives a shadow nearly identical to other browsers.
                         if( blur > 0 ) {
-                            ss.filter = 'progid:DXImageTransform.Microsoft.blur(pixelRadius=' + blur + ')';
+                            filter = 'progid:DXImageTransform.Microsoft.blur(pixelRadius=' + halfBlur + ')';
+                            ss.filter = filter + ' ' + filter;
                         }
 
                         this.parent.getBox().appendChild( box );
