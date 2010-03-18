@@ -737,53 +737,46 @@
                 },
 
                 drawBgColor: function() {
-                    var cont = this.getBox(),
-                        el = this.element,
-                        shape = this.getShape( 'bgColor' ),
-                        w = el.offsetWidth,
-                        h = el.offsetHeight,
-                        s, color;
+                    var color = this.getBgColor(),
+                        cont, el, shape, w, h, s;
 
-                    shape.stroked = false;
-                    shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
-                    shape.path = this.getBoxPath();
-                    s = shape.style;
-                    s.width = w;
-                    s.height = h;
-                    s.zIndex = 1;
-
-                    color = this.getBgColor();
-                    if( color === 'transparent' ) {
-                        shape.filled = false;
-                    } else {
-                        shape.filled = true;
+                    if( color !== 'transparent' ) {
+                        cont = this.getBox();
+                        el = this.element;
+                        shape = this.getShape( 'bgColor' );
+                        w = el.offsetWidth;
+                        h = el.offsetHeight;
+                        shape.stroked = false;
+                        shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
+                        shape.path = this.getBoxPath();
+                        s = shape.style;
+                        s.width = w;
+                        s.height = h;
+                        s.zIndex = 1;
                         shape.fillcolor = color;
                     }
                 },
 
                 drawBgImage: function() {
-                    var cont = this.getBox(),
+                    var img = this.getBgImage(),
+                        cont, el, shape, w, h, s;
+
+                    if( img !== 'none' ) {
                         el = this.element,
                         shape = this.getShape( 'bgImage', 'fill' ),
                         w = el.offsetWidth,
                         h = el.offsetHeight,
                         s, img;
 
-                    shape.stroked = false;
-                    shape.fill.type = 'tile';
-                    shape.fillcolor = 'none';
-                    shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
-                    shape.path = this.getBoxPath();
-                    s = shape.style;
-                    s.width = w;
-                    s.height = h;
-                    s.zIndex = 2;
-
-                    img = this.getBgImage();
-                    if( img === 'none' ) {
-                        shape.filled = false;
-                    } else {
-                        shape.filled = true;
+                        shape.stroked = false;
+                        shape.fill.type = 'tile';
+                        shape.fillcolor = 'none';
+                        shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
+                        shape.path = this.getBoxPath();
+                        s = shape.style;
+                        s.width = w;
+                        s.height = h;
+                        s.zIndex = 2;
                         shape.fill.src = img;
                         this.positionBgImage( shape );
                     }
@@ -1035,7 +1028,7 @@
                         s;
 
                     if( !shape ) {
-                        shape = shapes[ name ] = this._borderShape = PIE.createVmlElement( 'shape' );
+                        shape = shapes[ name ] = PIE.createVmlElement( 'shape' );
                         if( subElName ) {
                             shape.appendChild( shape[ subElName ] = PIE.createVmlElement( subElName ) );
                         }
