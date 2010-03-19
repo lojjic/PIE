@@ -1,0 +1,52 @@
+                                         ============================
+                                         ======      PIE       ======
+                                         ============================
+
+                                                 Mmmmmm, pie.
+
+
+CSS Level 3 brings with it some incredibly powerful styling features.  Rounded corners, soft drop shadows, gradient
+fills, and so on.  These are the kinds of elements our designer friends love to use because they make for attractive
+sites, but are difficult and time-consuming to implement, involving complex sprite images, extra non-semantic markup,
+large JavaScript libraries, and other lovely hacks.
+
+CSS3 promises to do away with all that!  But as we all know, due to Internet Explorer's lack of support for any of
+these features, we must be patient and refrain from using them, and make do with the same old tedious techniques for
+the foreseeable future.
+
+Or must we?
+
+PIE stands for Progressive Internet Explorer.  It is an IE attached behavior which, when applied to an element, allows
+IE to recognize and display a number of CSS3 properties.  Consider, if you will, the following CSS:
+
+    #myElement {
+        background: #EEE;
+        padding: 2em;
+        -moz-border-radius: 1em;
+        -webkit-border-radius: 1em;
+        border-radius: 1em;
+    }
+
+This results in a box with nicely rounded corners in any of today's modern browsers, except of course for IE 6, 7, or 8,
+which all display a square box.  However, add the following single rule to that CSS:
+
+    #myElement {
+        ...
+        behavior: url(PIE.htc);
+    }
+
+Now the exact same rounded corners appear in IE!  That's all there is to it.  No, really, I mean it.
+
+PIE currently has full or partial support for the following CSS3 features:
+
+    * border-radius
+    * box-shadow
+    * border-image
+
+The following features are under active development and should be available soon:
+
+    * multiple backgrounds
+    * multiple box-shadows
+    * linear and radial gradients as background fills
+
+And after that, who knows, there's plenty of cool stuff we could do!
