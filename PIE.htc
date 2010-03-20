@@ -325,8 +325,8 @@
             };
             PIE.merge( PIE.BorderRadiusStyleInfo.prototype, PIE.styleBase, {
 
-                cssProperty: PIE.CSS_PREFIX + 'border-radius',
-                styleProperty: PIE.STYLE_PREFIX + 'BorderRadius',
+                cssProperty: 'border-radius',
+                styleProperty: 'borderRadius',
 
                 parseRE: new RegExp(
                     '^G(\\/G)?$'.replace( /G/g, '\\s*(L)(\\s+(L))?(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, PIE.styleBase.lengthRE.source + '|' + PIE.styleBase.percentRE.source ) )
