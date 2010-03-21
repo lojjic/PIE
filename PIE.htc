@@ -21,6 +21,14 @@
                 STYLE_PREFIX: 'Pie'
             };
 
+            // Detect IE6
+            if( !window.XMLHttpRequest ) {
+                PIE.isIE6 = true;
+
+                // IE6 can't access properties with leading dash, but can without it.
+                PIE.CSS_PREFIX = PIE.CSS_PREFIX.replace( /^-/, '' );
+            }
+
             /**
              * To create a VML element, it must be created by a Document which has the VML
              * namespace set. Unfortunately, if you try to add the namespace programatically
@@ -1017,7 +1025,7 @@
                         colors = props.colors;
                         widths = props.widths;
 
-                        el.runtimeStyle.borderColor = 'transparent';
+                        this.hideBorder();
 
                         var segments = this.getBorderSegments();
                         for( var i=0; i<segments.length; i++) {
@@ -1042,6 +1050,34 @@
                                 shape.fill.color = seg.fill;
                             }
                         }
+                    }
+                },
+
+                /**
+                 * Hide the actual border of the element. In IE7 and up we can just set its color to transparent;
+                 * however IE6 does not support transparent borders so we have to get tricky with it.
+                 */
+                hideBorder: function() {
+                    var el = this.element;
+                    if( PIE.isIE6 ) {
+                        // Wrap all the element's children in a custom element, set the element to visiblity:hidden,
+                        // and set the wrapper element to visiblity:visible. This hides the outer element's decorations
+                        // (background and border) but displays all the contents.
+                        // TODO find a better way to do this that doesn't mess up the DOM parent-child relationship,
+                        // as this can interfere with other author scripts which add/modify/delete children. Look into
+                        // using a compositor filter which masks the border.
+                        if( el.childNodes.length !== 1 || el.firstChild.tagName !== 'ie6-mask' ) {
+                            var cont = this.element.document.createElement( 'ie6-mask' );
+                            cont.style.visibility = 'visible';
+                            cont.style.zoom = 1;
+                            while( el.firstChild ) {
+                                cont.appendChild( el.firstChild );
+                            }
+                            el.appendChild( cont );
+                            el.runtimeStyle.visibility = 'hidden';
+                        }
+                    } else {
+                        el.runtimeStyle.borderColor = 'transparent';
                     }
                 },
 
