@@ -732,8 +732,8 @@
                 getBoxPath: function( shrink ) {
                     var r, instructions, values, str = '', i,
                         el = this.element,
-                        w = el.offsetWidth,
-                        h = el.offsetHeight,
+                        w = el.offsetWidth - 1,
+                        h = el.offsetHeight - 1,
                         radInfo = this.styleInfos.borderRadius,
                         floor = Math.floor, ceil = Math.ceil,
                         deg = 65535,
@@ -918,7 +918,7 @@
                         w = el.offsetWidth;
                         h = el.offsetHeight;
                         shape.stroked = false;
-                        shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
+                        shape.coordsize = w + ',' + h;
                         shape.path = this.getBoxPath();
                         s = shape.style;
                         s.width = w;
@@ -949,7 +949,7 @@
                                 shape.stroked = false;
                                 shape.fill.type = 'tile';
                                 shape.fillcolor = 'none';
-                                shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
+                                shape.coordsize = w + ',' + h;
                                 shape.path = this.getBoxPath();
                                 s = shape.style;
                                 s.width = w;
@@ -1023,7 +1023,7 @@
                         for( var i=0; i<segments.length; i++) {
                             var seg = segments[i];
                             shape = this.getShape( 'borderPiece' + i, seg.stroke ? 'stroke' : 'fill' );
-                            shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
+                            shape.coordsize = w + ',' + h;
                             shape.path = seg.path;
                             s = shape.style;
                             s.width = w;
@@ -1072,8 +1072,8 @@
                             } );
                         }
                         else {
-                            elW = el.offsetWidth;
-                            elH = el.offsetHeight;
+                            elW = el.offsetWidth - 1;
+                            elH = el.offsetHeight - 1;
 
                             wT = widths.t.pixels( el );
                             wR = widths.r.pixels( el );
@@ -1391,7 +1391,7 @@
                         s.width = w;
                         s.height = h;
 
-                        shape.coordsize = ( w + 2 ) + ',' + ( h + 2 ); //shrink by 1 extra pixel
+                        shape.coordsize = ( w + 1 ) + ',' + ( h + 1 ); //shrink the rendered shadow by 1 extra pixel
                         shape.path = this.getBoxPath();
                     }
                 },
