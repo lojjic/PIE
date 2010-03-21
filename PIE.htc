@@ -160,6 +160,7 @@
                 lengthRE: /[\-\+]?0|[\-\+]?\d+\.?\d*(px|em|ex|mm|cm|in|pt|pc)/,
                 percentRE: /[\-\+]?0|[\-\+]?\d+\.?\d*%/,
                 angleRE: /0|\-?\d+(deg|rad|grad)/,
+                urlRE: /^url\(\s*['"]?([^\s\)"]*)['"]?\s*\)$/,
 
                 getProps: function() {
                     if( this.changed() ) {
@@ -207,7 +208,8 @@
                 bgPosRE: / /,
                 angleRE: / /,
                 stopRE: / /,
-                urlExtractRE: /^\s*url\(\s*"?([^\s"]*)"?\s*\)\s*$/,
+
+                bgLayerRE: / /,
 
                 /**
                  * For background styles, we support the -pie-background property but fall back to the standard
@@ -215,6 +217,34 @@
                  * parses the standard properties and if it sees something it doesn't know how to parse, for example
                  * multiple values or gradient definitions, it will throw that away and not make it available through
                  * currentStyle.
+                 *
+                 * Format of return object:
+                 * {
+                 *     color: 'red',
+                 *     images: [
+                 *         {
+                 *             type: 'image',
+                 *             url: 'image.png',
+                 *             repeat: 'no-repeat',
+                 *             position: {
+                 *                 x: new PIE.Length( '50%' ),
+                 *                 y: new PIE.Length( '50%' )
+                 *             }
+                 *         },
+                 *         {
+                 *             type: 'linear-gradient',
+                 *             position: {
+                 *                 x: new PIE.Length( '50%' ),
+                 *                 y: new PIE.Length( '50%' )
+                 *             },
+                 *             angle: 45,
+                 *             stops: [
+                 *                 { color: 'blue', distance: new Length( '0' ) },
+                 *                 { color: 'blue', distance: new Length( '100%' ) }
+                 *             ]
+                 *         }
+                 *     ]
+                 * }
                  * @param css
                  */
                 parseCss: function( css ) {
@@ -223,71 +253,142 @@
                         rs = el.runtimeStyle,
                         posX, posY,
                         rsImage, rsColor,
-                        p = null;
+                        layer, i, len, parenCount,
+                        props = null;
 
-                    if( el.style[ this.styleProperty ] || cs[ this.cssProperty ] ) {
-                        var m,
-                            parts = css && css.split( /\\s*,\\s*/ ),
-                            part, i, len;
+                    // If the CSS3-specific -pie-background property is present, parse it
+                    if( this.getCss3() ) {
+                        // Split the string into layer parts. Can't just use .split() because commas may also
+                        // appear within nested values (e.g. gradients); instead walk through the string tracking
+                        // the levels of parentheses and looking for commas at the top level.
+                        parenCount = 0;
+                        for( i = 0; i < len; i++ ) {
+                            switch( css.charAt( i ) ) {
+                                case '(':
+                                    parenCount++;
+                                    break;
+                                case ')':
+                                    parenCount--;
+                                    break;
+                                case ',':
+                                    if( parenCount === 0 ) {
+                                        layer = css.substring( 0, i );
+                                        css = css.substring( i );
+                                        i = 0;
 
-                        if( parts ) {
-                            part = parts[0];
-                            i = 0;
-                            len = parts.length;
-
-                            if( len >= 2 ) {
-                                if( part.match(  ) ) {
-
-                                }
-
-                                for( ; i < len; i++ ) {
-
-                                }
-                            }
-
-                            for( ; i < len; i++ ) {
-                                part = parts[i];
-                                if( i === 0 && ( m = part.match( this.bgPosRE ) || part.match( this.angleRE ) ) ) {
-
-                                }
+                                        // Now we have a layer part and can parse it into values
+                                    }
                             }
                         }
-                    } else {
-                        // Reset any runtimeStyle background overrides we might have set elsewhere
-                        rsImage = rs.backgroundImage;
-                        rsColor = rs.backgroundColor;
-                        rs.backgroundImage = rs.backgroundColor = '';
 
-                        // If using the standard property, let IE give us the values rather than parsing
-                        posX = cs.backgroundPositionX;
-                        posY = cs.backgroundPositionY;
-                        posX = new PIE.Length( posX === 'left' ? '0' : posX === 'center' ? '50%' : posX === 'right' ? '100%' : posX );
-                        posY = new PIE.Length( posY === 'top' ? '0' : posY === 'center' ? '50%' : posY === 'bottom' ? '100%' : posY );
-
-                        p = [ {
-                            color: cs.backgroundColor,
-                            image: cs.backgroundImage.replace( this.urlExtractRE, "$1" ),
-                            repeat: cs.backgroundRepeat,
-                            position: {
-                                x: posX,
-                                y: posY
-                            }
-                        } ];
-
-                        rs.backgroundImage = rsImage;
-                        rs.backgroundColor = rsColor;
+                        /* XXX TESTING
+                        return {
+                            color: '#EEE',
+                            images: [
+                                {
+                                    url: 'border.png',
+                                    repeat: 'no-repeat',
+                                    position: {
+                                        x: new PIE.Length( '0' ),
+                                        y: new PIE.Length( '0' )
+                                    }
+                                },
+                                {
+                                    url: 'border.png',
+                                    repeat: 'no-repeat',
+                                    position: {
+                                        x: new PIE.Length( '100%' ),
+                                        y: new PIE.Length( '0' )
+                                    }
+                                },
+                                {
+                                    url: 'border.png',
+                                    repeat: 'no-repeat',
+                                    position: {
+                                        x: new PIE.Length( '100%' ),
+                                        y: new PIE.Length( '100%' )
+                                    }
+                                },
+                                {
+                                    url: 'border.png',
+                                    repeat: 'no-repeat',
+                                    position: {
+                                        x: new PIE.Length( '0' ),
+                                        y: new PIE.Length( '100%' )
+                                    }
+                                }
+                            ]
+                        }*/
                     }
 
-                    return p;
+                    // Otherwise, use the standard background properties; let IE give us the values rather than parsing them
+                    else {
+                        this.withActualBg( function() {
+                            posX = cs.backgroundPositionX;
+                            posY = cs.backgroundPositionY;
+                            posX = new PIE.Length( posX === 'left' ? '0' : posX === 'center' ? '50%' : posX === 'right' ? '100%' : posX );
+                            posY = new PIE.Length( posY === 'top' ? '0' : posY === 'center' ? '50%' : posY === 'bottom' ? '100%' : posY );
+
+                            props = {
+                                color: cs.backgroundColor,
+                                images: [ {
+                                    url: cs.backgroundImage.replace( this.urlRE, "$1" ),
+                                    repeat: cs.backgroundRepeat,
+                                    position: {
+                                        x: posX,
+                                        y: posY
+                                    }
+                                } ]
+                            };
+                        } );
+                    }
+
+                    return props;
+                },
+
+                /**
+                 * Execute a function with the actual background styles (not overridden with runtimeStyle
+                 * properties set by the renderers) available via currentStyle.
+                 * @param fn
+                 */
+                withActualBg: function( fn ) {
+                    var rs = this.element.runtimeStyle,
+                        rsImage = rs.backgroundImage,
+                        rsColor = rs.backgroundColor,
+                        ret;
+
+                    rs.backgroundImage = rs.backgroundColor = '';
+
+                    ret = fn.call( this );
+
+                    rs.backgroundImage = rsImage;
+                    rs.backgroundColor = rsColor;
+
+                    return ret;
                 },
 
                 getCss: function() {
-                    var el = this.element,
-                        cs = el.currentStyle,
-                        s = el.style;
-                    return s[ this.styleProperty ] ||
-                           cs[ this.cssProperty ] ||
-                           cs.backgroundColor + ' ' + cs.backgroundImage + ' ' + cs.backgroundRepeat + ' ' + cs.backgroundPositionX + ' ' + cs.backgroundPositionY;
+                    var cs = this.element.currentStyle;
+                    return this.getCss3() ||
+                           this.withActualBg( function() {
+                               return cs.backgroundColor + ' ' + cs.backgroundImage + ' ' + cs.backgroundRepeat + ' ' +
+                               cs.backgroundPositionX + ' ' + cs.backgroundPositionY;
+                           } );
+                },
+
+                getCss3: function() {
+                    var el = this.element;
+                    return el.style[ this.styleProperty ] || el.currentStyle.getAttribute( this.cssProperty );
+                },
+
+                /**
+                 * The isActive logic is slightly different, because getProps() always returns an object
+                 * even if it is just falling back to the native background properties.  But we only want
+                 * to report is as being "active" if the -pie-background override property is present and
+                 * parses successfully.
+                 */
+                isActive: function() {
+                    return this.getCss3() && !!this.getProps();
                 }
 
             } );
@@ -559,6 +660,25 @@
                 updateVis: function() {
                 },
 
+                getShape: function( name, subElName ) {
+                    var shapes = this._shapes || ( this._shapes = {} ),
+                        shape = shapes[ name ],
+                        s;
+
+                    if( !shape ) {
+                        shape = shapes[ name ] = PIE.createVmlElement( 'shape' );
+                        if( subElName ) {
+                            shape.appendChild( shape[ subElName ] = PIE.createVmlElement( subElName ) );
+                        }
+                        this.getBox().appendChild( shape );
+                        s = shape.style;
+                        s.position = 'absolute';
+                        s.left = s.top = 0;
+                        s.behavior = 'url(#default#VML)';
+                    }
+                    return shape;
+                },
+
                 getRadiiPixels: function( radii ) {
                     var el = this.element,
                         w = el.offsetWidth,
@@ -763,7 +883,7 @@
                     var si = this.styleInfos;
                     return si.borderImage.isActive() ||
                            si.borderRadius.isActive() ||
-                           //si.backgroundGradient.isActive() ||
+                           si.background.isActive() ||
                            ( si.boxShadow.isActive() && si.boxShadow.getProps().inset );
                 },
 
@@ -782,13 +902,13 @@
 
                 draw: function() {
                     this.drawBgColor();
-                    this.drawBgImage();
+                    this.drawBgImages();
                     this.drawBorder();
                 },
 
                 drawBgColor: function() {
                     var props = this.styleInfos.background.getProps(),
-                        color = props && props[0] && props[0].color,
+                        color = props && props.color,
                         cont, el, shape, w, h, s;
 
                     if( color && color !== 'transparent' ) {
@@ -810,35 +930,41 @@
                     }
                 },
 
-                drawBgImage: function() {
+                drawBgImages: function() {
                     var props = this.styleInfos.background.getProps(),
-                        img = props && props[0] && props[0].image,
-                        cont, el, shape, w, h, s;
+                        images = props && props.images,
+                        img, cont, el, shape, w, h, s, i;
 
-                    if( img && img !== 'none' ) {
-                        el = this.element,
-                        shape = this.getShape( 'bgImage', 'fill' ),
-                        w = el.offsetWidth,
-                        h = el.offsetHeight,
-                        s, img;
+                    if( images ) {
+                        i = images.length;
+                        while( i-- ) {
+                            img = images[i].url;
+                            if( img && img !== 'none' ) {
+                                el = this.element,
+                                shape = this.getShape( 'bgImage' + i, 'fill' ),
+                                w = el.offsetWidth,
+                                h = el.offsetHeight,
+                                s, img;
 
-                        shape.stroked = false;
-                        shape.fill.type = 'tile';
-                        shape.fillcolor = 'none';
-                        shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
-                        shape.path = this.getBoxPath();
-                        s = shape.style;
-                        s.width = w;
-                        s.height = h;
-                        s.zIndex = 2;
-                        shape.fill.src = img;
-                        this.positionBgImage( shape );
+                                shape.stroked = false;
+                                shape.fill.type = 'tile';
+                                shape.fillcolor = 'none';
+                                shape.coordsize = ( w + 1 ) + ',' + ( h + 1 );
+                                shape.path = this.getBoxPath();
+                                s = shape.style;
+                                s.width = w;
+                                s.height = h;
+                                s.zIndex = 2;
+                                shape.fill.src = img;
+                                this.positionBgImage( shape, i );
 
-                        el.runtimeStyle.backgroundImage = 'none';
+                                el.runtimeStyle.backgroundImage = 'none';
+                            }
+                        }
                     }
                 },
 
-                positionBgImage: function( shape ) {
+                positionBgImage: function( shape, index ) {
                     PIE.withImageSize( shape.fill.src, function( size ) {
                         var fill = shape.fill,
                             el = this.element,
@@ -846,7 +972,7 @@
                             elH = el.offsetHeight,
                             cs = el.currentStyle,
                             si = this.styleInfos,
-                            bg = si.background.getProps()[0],
+                            bg = si.background.getProps().images[ index ],
                             border = si.border.getProps(),
                             bwT = border ? border.widths.t.pixels( el ) : 0,
                             bwR = border ? border.widths.r.pixels( el ) : 0,
@@ -1054,25 +1180,6 @@
                     }
 
                     return segments;
-                },
-
-                getShape: function( name, subElName ) {
-                    var shapes = this._shapes || ( this._shapes = {} ),
-                        shape = shapes[ name ],
-                        s;
-
-                    if( !shape ) {
-                        shape = shapes[ name ] = PIE.createVmlElement( 'shape' );
-                        if( subElName ) {
-                            shape.appendChild( shape[ subElName ] = PIE.createVmlElement( subElName ) );
-                        }
-                        this.getBox().appendChild( shape );
-                        s = shape.style;
-                        s.position = 'absolute';
-                        s.left = s.top = 0;
-                        s.behavior = 'url(#default#VML)';
-                    }
-                    return shape;
                 },
 
                 getBox: function() {
