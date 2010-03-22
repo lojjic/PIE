@@ -163,8 +163,44 @@
             } )();
 
 
+            /**
+             * Abstraction for colors. Allows detection of rgba values.
+             * @param el
+             */
+            PIE.Color = (function() {
+                function Color( val ) {
+                    this.val = val;
+                }
+                Color.rgbaRE = /\s*rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d+|\d*\.\d+)\s*\)\s*/;
+                Color.prototype = {
+                    parse: function() {
+                        if( !this._color ) {
+                            var v = this.val,
+                                m = v.match( Color.rgbaRE );
+                            if( m ) {
+                                this._color = 'rgb(' + m[1] + ',' + m[2] + ',' + m[3] + ')';
+                                this._alpha = parseFloat( m[4] );
+                            } else {
+                                this._color = v;
+                                this._alpha = 1;
+                            }
+                        }
+                    },
+                    value: function() {
+                        this.parse();
+                        return this._color;
+                    },
+                    alpha: function() {
+                        this.parse();
+                        return this._alpha;
+                    }
+                };
+                return Color;
+            })();
+
+
             PIE.styleBase = {
-                colorRE: /(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})|rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
+                colorRE: /(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})|rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(\s*,\s*(\d+|\d*\.\d+))?\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
                 lengthRE: /[\-\+]?0|[\-\+]?\d+\.?\d*(px|em|ex|mm|cm|in|pt|pc)/,
                 percentRE: /[\-\+]?0|[\-\+]?\d+\.?\d*%/,
                 angleRE: /0|\-?\d+(deg|rad|grad)/,
@@ -338,7 +374,7 @@
                             posY = new PIE.Length( posY === 'top' ? '0' : posY === 'center' ? '50%' : posY === 'bottom' ? '100%' : posY );
 
                             props = {
-                                color: cs.backgroundColor,
+                                color: new PIE.Color( cs.backgroundColor ),
                                 images: [ {
                                     url: cs.backgroundImage.replace( this.urlRE, "$1" ),
                                     repeat: cs.backgroundRepeat,
@@ -433,7 +469,7 @@
                         side = this.sides[ i ];
                         ltr = side.charAt(0).toLowerCase();
                         style = s[ ltr ] = cs[ 'border' + side + 'Style' ];
-                        color = c[ ltr ] = cs[ 'border' + side + 'Color' ];
+                        color = cs[ 'border' + side + 'Color' ];
                         width = cs[ 'border' + side + 'Width' ];
 
                         if( i > 0 ) {
@@ -444,6 +480,8 @@
                         lastStyle = style;
                         lastColor = color;
                         lastWidth = width;
+
+                        c[ ltr ] = new PIE.Color( color );
 
                         width = w[ ltr ] = new PIE.Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ width ] || width ) );
                         if( s[ ltr ] !== 'none' || width.pixels( this.element ) > 0 ) {
@@ -625,9 +663,12 @@
                         }
 
                         // get the color
-                        if( this.colorRE.test( css ) ) {
+                        m = css.match( this.colorRE );
+                        if( m ) {
                             css = css.replace( this.colorRE, '' );
-                            p.color = RegExp.$1;
+                            p.color = new PIE.Color( m[0] );
+                        } else {
+                            p.color = new PIE.Color( this.element.currentStyle.color );
                         }
 
                         // all that's left should be lengths; map them to xOffset/yOffset/blurRadius/spreadRadius
@@ -916,13 +957,13 @@
 
                 drawBgColor: function() {
                     var props = this.styleInfos.background.getProps(),
-                        color = props && props.color,
-                        cont, el, shape, w, h, s;
+                        color = props && props.color && props.color.value(),
+                        cont, el, shape, w, h, s, alpha;
 
                     if( color && color !== 'transparent' ) {
                         cont = this.getBox();
                         el = this.element;
-                        shape = this.getShape( 'bgColor' );
+                        shape = this.getShape( 'bgColor', 'fill' );
                         w = el.offsetWidth;
                         h = el.offsetHeight;
                         shape.stroked = false;
@@ -932,7 +973,12 @@
                         s.width = w;
                         s.height = h;
                         s.zIndex = 1;
-                        shape.fillcolor = color;
+                        shape.fill.color = color;
+
+                        alpha = props.color.alpha();
+                        if( alpha < 1 ) {
+                            shape.fill.opacity = alpha;
+                        }
 
                         el.runtimeStyle.backgroundColor = 'transparent';
                     }
@@ -1043,11 +1089,11 @@
                             if( seg.stroke ) {
                                 stroke = shape.stroke;
                                 stroke.weight = seg.weight + 'px';
-                                stroke.color = seg.color;
+                                stroke.color = seg.color.value();
                                 stroke.dashstyle = seg.stroke === 'dashed' ? '2 2' : seg.stroke === 'dotted' ? '1 1' : 'solid';
                                 stroke.linestyle = seg.stroke === 'double' && seg.weight > 2 ? 'ThinThin' : 'Single';
                             } else {
-                                shape.fill.color = seg.fill;
+                                shape.fill.color = seg.fill.value();
                             }
                         }
                     }
@@ -1440,7 +1486,7 @@
                 },
 
                 getBox: function() {
-                    var box = this._box, s, ss, cs, bs, xOff, yOff, spread, blur, halfBlur, shape, el, filter;
+                    var box = this._box, s, ss, cs, bs, xOff, yOff, spread, blur, halfBlur, shape, el, filter, alpha;
                     if( !box ) {
                         el = this.element;
                         box = this._box = el.document.createElement( 'box-shadow' );
@@ -1457,13 +1503,9 @@
                         s = box.style;
                         s.position = 'absolute';
 
-                        shape = PIE.createVmlElement( 'shape' );
-                        box.appendChild( shape );
-                        shape.stroked = false;
+                        shape = this.getShape( 'shadow', 'fill' );
                         ss = shape.style;
-                        ss.position = 'absolute';
-                        ss.width = ss.height = '100%';
-                        ss.behavior = 'url(#default#VML)';
+                        shape.stroked = false;
 
                         if( bs.inset ) {
                             cs = this.element.currentStyle;
@@ -1478,14 +1520,19 @@
                             //TODO handle wider border if needed due to very large offsets or spread
                             s.left = xOff - 20 + spread - blur;
                             s.top = yOff - 20 + spread - blur;
-                            s.border = '20px solid ' + bs.color;
+                            s.border = '20px solid ' + bs.color.value();
                         } else {
                             s.left = xOff - blur - spread;
                             s.top = yOff - blur - spread;
                             s.zIndex = this.outsetZIndex;
 
                             shape.filled = true;
-                            shape.fillcolor = bs.color;
+                            shape.fillcolor = bs.color.value();
+
+                            alpha = bs.color.alpha();
+                            if( alpha < 1 ) {
+                                shape.fill.opacity = alpha;
+                            }
                         }
 
                         // Apply blur filter to the outer or inner element. Applying the blur filter twice with
@@ -1506,6 +1553,7 @@
                         box.parentNode.removeChild( box );
                     }
                     delete this._box;
+                    delete this._shapes;
                 }
 
             } );
