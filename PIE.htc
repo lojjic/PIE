@@ -1585,26 +1585,28 @@
          * during page load, one will fire but the other won't.
          */
         function update( force ) {
-            var el = element,
-                x = el.offsetLeft,
-                y = el.offsetTop,
-                w = el.offsetWidth,
-                h = el.offsetHeight,
-                i, len;
+            if( renderers ) {
+                var el = element,
+                    x = el.offsetLeft,
+                    y = el.offsetTop,
+                    w = el.offsetWidth,
+                    h = el.offsetHeight,
+                    i, len;
 
-            if( force || x !== lastX || y !== lastY ) {
-                for( i = 0, len = renderers.length; i < len; i++ ) {
-                    renderers[i].updatePos();
+                if( force || x !== lastX || y !== lastY ) {
+                    for( i = 0, len = renderers.length; i < len; i++ ) {
+                        renderers[i].updatePos();
+                    }
+                    lastX = x;
+                    lastY = y;
                 }
-                lastX = x;
-                lastY = y;
-            }
-            if( force || w !== lastW || h !== lastH ) {
-                for( i = 0, len = renderers.length; i < len; i++ ) {
-                    renderers[i].updateSize();
+                if( force || w !== lastW || h !== lastH ) {
+                    for( i = 0, len = renderers.length; i < len; i++ ) {
+                        renderers[i].updateSize();
+                    }
+                    lastW = w;
+                    lastH = h;
                 }
-                lastW = w;
-                lastH = h;
             }
         }
 
@@ -1612,20 +1614,22 @@
          * Handle property changes to trigger update when appropriate.
          */
         function propChanged() {
-            var name = event.propertyName,
-                i, len, toUpdate;
-            if( name === 'style.display' || name === 'style.visibility' ) {
-                for( i = 0, len = renderers.length; i < len; i++ ) {
-                    renderers[i].updateVis();
+            if( renderers ) {
+                var name = event.propertyName,
+                    i, len, toUpdate;
+                if( name === 'style.display' || name === 'style.visibility' ) {
+                    for( i = 0, len = renderers.length; i < len; i++ ) {
+                        renderers[i].updateVis();
+                    }
                 }
-            }
-            else { //if( event.propertyName === 'style.boxShadow' ) {
-                toUpdate = [];
-                for( i = 0, len = renderers.length; i < len; i++ ) {
-                    toUpdate.push( renderers[i] );
-                }
-                for( i = 0, len = toUpdate.length; i < len; i++ ) {
-                    toUpdate[i].updateProps();
+                else { //if( event.propertyName === 'style.boxShadow' ) {
+                    toUpdate = [];
+                    for( i = 0, len = renderers.length; i < len; i++ ) {
+                        toUpdate.push( renderers[i] );
+                    }
+                    for( i = 0, len = toUpdate.length; i < len; i++ ) {
+                        toUpdate[i].updateProps();
+                    }
                 }
             }
         }
