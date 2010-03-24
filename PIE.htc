@@ -860,16 +860,26 @@
                     if( this.isActive() ) {
                         var el = this.element,
                             par = el,
+                            docEl,
+                            elRect, parRect,
                             s = this.getBox().style,
                             x = 0, y = 0;
 
-                        // Get the element's offsets from its nearest positioned ancestor. More
-                        // accurate than just using offsetTop/Left.
+                        // Get the element's offsets from its nearest positioned ancestor. Uses
+                        // getBoundingClientRect for accuracy and speed.
                         do {
-                            x += par.offsetLeft;
-                            y += par.offsetTop;
                             par = par.offsetParent;
                         } while( par && par.currentStyle.position === 'static' );
+                        elRect = el.getBoundingClientRect();
+                        if( par ) {
+                            parRect = par.getBoundingClientRect();
+                            x = elRect.left - parRect.left;
+                            y = elRect.top - parRect.top;
+                        } else {
+                            docEl = el.document.documentElement;
+                            x = elRect.left + docEl.scrollLeft - docEl.clientLeft;
+                            y = elRect.top + docEl.scrollTop - docEl.clientTop;
+                        }
 
                         s.left = x;
                         s.top = y;
