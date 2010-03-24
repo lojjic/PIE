@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Tests for z-index</title>
+
+    <style type="text/css">
+
+        html {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: url(background2.gif);
+            padding: 20px 50% 20px 0;
+        }
+
+        .test {
+            behavior: url(../PIE.htc);
+            padding: 20px;
+            margin: 0 20px 20px;
+            background: #EEE;
+            -moz-border-radius: 1em;
+            border-radius: 1em;
+            -moz-box-shadow: 0 0 10px;
+            -pie-box-shadow: 0 0 10px;
+            white-space: nowrap;
+        }
+
+        .wrapper {
+            padding: 20px 0;
+            margin: 0 20px 20px;
+            background: url(background1.gif);
+            border: 1px solid;
+        }
+
+        .clearer {
+            clear: both;
+        }
+
+        #test1 {
+            position: static;
+        }
+        #test2 {
+            position: relative;
+        }
+        #test3 {
+            position: absolute;
+            top: 20px;
+            right: 0;
+        }
+
+        #test4 {
+            position: static;
+            float: left;
+        }
+        #test5 {
+            position: relative;
+            float: left;
+            clear: left;
+        }
+
+        #test6 {
+            position: static;
+            z-index: 1;
+        }
+        #test7 {
+            position: relative;
+            z-index: 1;
+        }
+        #test8 {
+            position: absolute;
+            top: 100px;
+            right: 0;
+            z-index: 1;
+        }
+
+        #test9 {
+            position: static;
+        }
+        #test10 {
+            position: relative;
+        }
+        #test11 {
+            position: absolute;
+            top: 180px;
+            right: 0;
+        }
+
+        #test12 {
+            position: static;
+            z-index: 1;
+        }
+        #test13 {
+            position: relative;
+            z-index: 1;
+        }
+        #test14 {
+            position: absolute;
+            top: 320px;
+            right: 0;
+            z-index: 1;
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+
+    <div class="test" id="test1">position:static, no z-index</div>
+    <div class="test" id="test2">position:relative, no z-index</div>
+    <div class="test" id="test3">position:absolute, no z-index</div>
+
+    <div class="test" id="test4">float:left, position:static, no z-index</div>
+    <div class="test" id="test5">float:left, position:relative, no z-index</div>
+
+    <div class="clearer"></div>
+
+    <div class="test" id="test6">position: static, z-index: 1</div>
+    <div class="test" id="test7">position: relative, z-index: 1</div>
+    <div class="test" id="test8">position: absolute, z-index: 1</div>
+
+    <div id="test9" class="wrapper"><div class="test">Nested within position: static, no z-index</div></div>
+    <div id="test10" class="wrapper"><div class="test">Nested within position: relative, no z-index</div></div>
+    <div id="test11" class="wrapper"><div class="test">Nested within position: absolute, no z-index</div></div>
+
+    <div id="test12" class="wrapper"><div class="test">Nested within position: static, z-index: 1</div></div>
+    <div id="test13" class="wrapper"><div class="test">Nested within position: relative, z-index: 1</div></div>
+    <div id="test14" class="wrapper"><div class="test">Nested within position: absolute, z-index: 1</div></div>
+
+</body>
+</html>
