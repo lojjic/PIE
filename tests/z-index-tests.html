@@ -86,20 +86,29 @@
             top: 180px;
             right: 0;
         }
+        #test9 {
+            position: static;
+            zoom: 1;
+        }
 
-        #test12 {
+        #test13 {
             position: static;
             z-index: 1;
         }
-        #test13 {
+        #test14 {
             position: relative;
             z-index: 1;
         }
-        #test14 {
+        #test15 {
             position: absolute;
             top: 320px;
             right: 0;
             z-index: 1;
+        }
+        #test16 {
+            position: static;
+            z-index: 1;
+            zoom: 1;
         }
 
 
@@ -125,10 +134,12 @@
     <div id="test9" class="wrapper"><div class="test">Nested within position: static, no z-index</div></div>
     <div id="test10" class="wrapper"><div class="test">Nested within position: relative, no z-index</div></div>
     <div id="test11" class="wrapper"><div class="test">Nested within position: absolute, no z-index</div></div>
+    <div id="test12" class="wrapper"><div class="test">Nested within position: static, no z-index, hasLayout</div></div>
 
-    <div id="test12" class="wrapper"><div class="test">Nested within position: static, z-index: 1</div></div>
-    <div id="test13" class="wrapper"><div class="test">Nested within position: relative, z-index: 1</div></div>
-    <div id="test14" class="wrapper"><div class="test">Nested within position: absolute, z-index: 1</div></div>
+    <div id="test13" class="wrapper"><div class="test">Nested within position: static, z-index: 1</div></div>
+    <div id="test14" class="wrapper"><div class="test">Nested within position: relative, z-index: 1</div></div>
+    <div id="test15" class="wrapper"><div class="test">Nested within position: absolute, z-index: 1</div></div>
+    <div id="test16" class="wrapper"><div class="test">Nested within position: static, z-index: 1, hasLayout</div></div>
 
 </body>
 </html>
