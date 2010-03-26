@@ -201,7 +201,7 @@
 
             PIE.styleBase = {
                 colorRE: /(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})|rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(\s*,\s*(\d+|\d*\.\d+))?\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
-                lengthRE: /[\-\+]?0|[\-\+]?\d+\.?\d*(px|em|ex|mm|cm|in|pt|pc)/,
+                lengthRE: /[\-\+]?0|[\-\+]?\d*\.?\d*(px|em|ex|mm|cm|in|pt|pc)/,
                 percentRE: /[\-\+]?0|[\-\+]?\d+\.?\d*%/,
                 angleRE: /0|\-?\d+(deg|rad|grad)/,
                 urlRE: /^url\(\s*['"]?([^\s\)"]*)['"]?\s*\)$/,
