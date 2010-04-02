@@ -196,6 +196,32 @@
 
 
             /**
+             * Wrapper for angle values; handles conversion to degrees from all allowed angle units
+             * @param val
+             */
+            PIE.Angle = function( val ) {
+                this.val = val;
+            };
+            PIE.Angle.prototype = {
+                unitRE: /(deg|rad|grad|turn)$/,
+
+                getUnit: function() {
+                    return this._unit || ( this._unit = this.val.match( this.unitRE )[1] );
+                },
+
+                degrees: function() {
+                    var deg = this._deg, u, n;
+                    if( !deg ) {
+                        u = this.getUnit();
+                        n = parseFloat( this.val, 10 );
+                        deg = this._deg = ( u === 'deg' ? n : u === 'rad' ? n / Math.PI * 180 : u === 'grad' ? n / 400 * 360 : u === 'turn' ? n * 360 : 0 );
+                    }
+                    return deg;
+                }
+            };
+
+
+            /**
              * Abstraction for colors. Allows detection of rgba values.
              * @param el
              */
@@ -233,10 +259,11 @@
 
             PIE.styleBase = {
                 colorRE: /(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})|rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(\s*,\s*(\d+|\d*\.\d+))?\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
-                lengthRE: /[\-\+]?0|[\-\+]?\d*\.?\d*(px|em|ex|mm|cm|in|pt|pc)/,
-                percentRE: /[\-\+]?0|[\-\+]?\d+\.?\d*%/,
-                angleRE: /0|\-?\d+(deg|rad|grad)/,
+                lengthRE: /[\-\+]?\d*\.?\d*(px|em|ex|mm|cm|in|pt|pc)|[\-\+]?0/,
+                percentRE: /[\-\+]?\d+\.?\d*%|[\-\+]?0/,
+                angleRE: /[\-\+]?\d+(deg|rad|grad|turn)|[\-\+]?0/,
                 urlRE: /^url\(\s*['"]?([^\s\)"]*)['"]?\s*\)$/,
+                trimRE: /^\s*|\s*$/g,
 
                 getProps: function() {
                     if( this.changed() ) {
@@ -256,6 +283,10 @@
 
                 changed: function() {
                     return this._css !== this.getCss();
+                },
+
+                trim: function( str ) {
+                    return str.replace( this.trimRE, '' );
                 }
             };
 
@@ -269,23 +300,10 @@
                 cssProperty: PIE.CSS_PREFIX + 'background',
                 styleProperty: PIE.STYLE_PREFIX + 'Background',
 
-                /*
-                [<point> || <angle>,]? <stop>, <stop> [, <stop>]*
-                point =
-                angle = 0 | <number>deg | <number>rad | <number>grad
-                stop = <color> [ <percentage> | <length> ]
-                */
-
                 /*parseRE: new RegExp(
                     '^\\s*((P\\s+A)|(A\\s+P)\\s*,\\s*)?(S)\\s*,\\s*(S)((\\s*,\\s*(S))*)?\\s*$'
                         .replace( /P/g, '(top|bottom|right|left)' )
                 ),*/
-
-                bgPosRE: / /,
-                angleRE: / /,
-                stopRE: / /,
-
-                bgLayerRE: / /,
 
                 /**
                  * For background styles, we support the -pie-background property but fall back to the standard
@@ -333,8 +351,8 @@
                     var el = this.element,
                         cs = el.currentStyle,
                         rs = el.runtimeStyle,
-                        layer, i, len, parenCount,
-                        props = null;
+                        layers, i, j, len, parenCount, m,
+                        props = null, angle, position;
 
                     /* XXX TESTING
                     return {
@@ -403,13 +421,14 @@
                     };
                     */
 
-
                     // If the CSS3-specific -pie-background property is present, parse it
                     if( this.getCss3() ) {
                         // Split the string into layer parts. Can't just use .split() because commas may also
                         // appear within nested values (e.g. gradients); instead walk through the string tracking
                         // the levels of parentheses and looking for commas at the top level.
                         parenCount = 0;
+                        layers = [];
+                        props = { images: [] };
                         for( i = 0; i < len; i++ ) {
                             switch( css.charAt( i ) ) {
                                 case '(':
@@ -420,12 +439,88 @@
                                     break;
                                 case ',':
                                     if( parenCount === 0 ) {
-                                        layer = css.substring( 0, i );
+                                        layers.push( css.substring( 0, i ) );
                                         css = css.substring( i );
                                         i = 0;
-
-                                        // Now we have a layer part and can parse it into values
                                     }
+                            }
+                        }
+                        layers.push(css); //leftover
+
+
+                        for( i = layers.length - 1; i >= 0; i-- ) {
+                            css = layers[i];
+
+                            // linear-gradient: only accepted as standalone (without position/repeat/etc.) for now
+                            /*
+                                linear-gradient syntax:
+                                linear-gradient( [<point> || <angle>,]? <stop>, <stop> [, <stop>]* )
+                                point =
+                                angle = 0 | <number>deg | <number>rad | <number>grad
+                                stop = <color> [ <percentage> | <length> ]
+                            */
+                            if( m = css.match( /\s*linear-gradient\(\s*([^\)]+)\s*/ ) ) {
+                                var image = { type: 'linear-gradient', stops: [] };
+                                var parts = this.trim( m[1] ).split( /\s*,\s*/ );
+
+                                for( j = 0, len = parts.length; j < len; j++ ) {
+                                    var part = parts[j];
+                                    if( m = part.match( this.colorRE ) ) {
+                                        // contains color; must be a color-stop. extract the color and check the remainder for an offset
+                                        var stop = { color: new PIE.Color( m[0] ) };
+                                        part = this.trim( part.replace( m[0], '' ) );
+                                        if( part ) {
+                                            if( this.lengthRE.test( part ) || this.percentRE.test( part ) ) {
+                                                stop.offset = new PIE.Length( part );
+                                            } else {
+                                                // non-length in stop
+                                                return null;
+                                            }
+                                        }
+                                        image.stops.push( stop );
+                                    }
+                                    else if( j === 0 ) {
+                                        // position/angle can only appear in the first position
+                                        if( m = part.match( this.angleRE ) ) { //TODO doesn't handle '0' well
+                                            angle = new PIE.Angle( m[0] );
+                                            part = this.trim( part.replace( m[0], '' ) );
+                                        }
+                                        /*
+                                        if( part && new RegExp( '^(left|right|top|bottom|center|' + this.lengthRE.source + '|' + this.percentRE.source + '){1,4}$' ).test( part ) ) { //basic validation
+                                            position = { x: {}, y: {} };
+                                            var posParts = part.split( /\s+/ );
+
+                                            // if >2 values then it is two sets of keyword-offset pairs; the keywords are required.
+                                            if( posParts.length > 2 ) {
+                                                // TODO...
+                                                if( posParts[0] === 'top' || posParts[1] === 'bottom' ) { //vertical pos first
+
+                                                }
+                                            }
+
+                                            part = null;
+                                        }
+                                        */
+
+                                        // if anything was left over, or we didn't get either angle or position, fail
+                                        if( ( !angle && !position ) || !!part ) {
+                                            return null;
+                                        }
+                                        image.angle = angle;
+                                        //image.position = position;
+                                    }
+                                    else {
+                                        // encountered something unrecognized; fail!
+                                        return null;
+                                    }
+                                }
+
+                                // make sure we got at least 2 color stops
+                                if( image.stops.length < 2 ) {
+                                    return null;
+                                }
+
+                                props.images.push( image );
                             }
                         }
                     }
@@ -1159,9 +1254,8 @@
                         endCornerX, endCornerY,
                         vmlAngle, vmlGradientLength, vmlColors,
                         deltaX, deltaY, lineLength,
-                        stop, stopPx, lastStopPx = -Infinity, stopPct,
-                        vmlOffsetPct,
-                        p, i;
+                        stopPx, vmlOffsetPct,
+                        p, i, j, before, after;
 
                     /**
                      * Find the point along a given line (defined by a starting point and an angle), at which
@@ -1174,26 +1268,57 @@
                      * @return [ x, y ]
                      */
                     function perpendicularIntersect( x1, y1, angle, x2, y2 ) {
-                        // General approach: determine the Ax+By=C formula for each line (the slope of the second
-                        // line is the negative inverse of the first) and then solve for where both formulas have
-                        // the same x/y values.
-                        var a1 = Math.tan( -angle * PI / 180 ),
-                            c1 = a1 * x1 - y1,
-                            a2 = -1 / a1,
-                            c2 = a2 * x2 - y2,
-                            d = a2 - a1,
-                            endX = ( c2 - c1 ) / d,
-                            endY = ( a1 * c2 - a2 * c1 ) / d;
-                        return [ endX, endY ];
+                        // Handle straight vertical and horizontal angles, for performance and to avoid
+                        // divide-by-zero errors.
+                        if( angle === 0 || angle === 180 ) {
+                            return [ x2, y1 ];
+                        }
+                        else if( angle === 90 || angle === 270 ) {
+                            return [ x1, y2 ];
+                        }
+                        else {
+                            // General approach: determine the Ax+By=C formula for each line (the slope of the second
+                            // line is the negative inverse of the first) and then solve for where both formulas have
+                            // the same x/y values.
+                            var a1 = Math.tan( -angle * PI / 180 ),
+                                c1 = a1 * x1 - y1,
+                                a2 = -1 / a1,
+                                c2 = a2 * x2 - y2,
+                                d = a2 - a1,
+                                endX = ( c2 - c1 ) / d,
+                                endY = ( a1 * c2 - a2 * c1 ) / d;
+                            return [ endX, endY ];
+                        }
                     }
 
                     // Find the "start" and "end" corners; these are the corners furthest along the gradient line.
                     // This is used below to find the start/end positions of the CSS3 gradient-line, and also in finding
                     // the total length of the VML rendered gradient-line corner to corner.
-                    startCornerX = ( angle >= 90 && angle < 270 ) ? w : 0;
-                    startCornerY = angle < 180 ? h : 0;
-                    endCornerX = w - startCornerX;
-                    endCornerY = h - startCornerY;
+                    function findCorners() {
+                        startCornerX = ( angle >= 90 && angle < 270 ) ? w : 0;
+                        startCornerY = angle < 180 ? h : 0;
+                        endCornerX = w - startCornerX;
+                        endCornerY = h - startCornerY;
+                    }
+
+                    // Normalize the angle to a value between [0, 360)
+                    function normalizeAngle() {
+                        if( angle < 0 ) {
+                            angle += 360;
+                        }
+                        angle = angle % 360;
+                    }
+
+                    // Find the distance between two points
+                    function distance( p1, p2 ) {
+                        var dx = p2[0] - p1[0],
+                            dy = p2[1] - p1[1];
+                        return Math.abs(
+                            dx === 0 ? dy :
+                            dy === 0 ? dx :
+                            Math.sqrt( dx * dx + dy * dy )
+                        );
+                    }
 
                     // Find the start and end points of the gradient
                     if( startPos ) {
@@ -1203,11 +1328,10 @@
                         startY = startY.ref.pixels( el, w ) + startY.val.pixels( el, w );
                     }
                     if( angle ) {
-                        // Normalize to a value between [0, 360)
-                        if( angle < 0 ) {
-                            angle += 360;
-                        }
-                        angle = angle % 360;
+                        angle = angle.degrees();
+
+                        normalizeAngle();
+                        findCorners();
 
                         // If no start position was specified, then choose a corner as the starting point.
                         if( !startPos ) {
@@ -1217,21 +1341,9 @@
 
                         // Find the end position by extending a perpendicular line from the gradient-line which
                         // intersects the corner opposite from the starting corner.
-                        if( angle === 0 || angle === 180 ) {
-                            // shortcut for horizontal - also avoids divide-by-zero error
-                            endX = endCornerX;
-                            endY = startY;
-                        }
-                        else if( angle === 90 || angle === 270 ) {
-                            // shortcut for vertical
-                            endX = startX;
-                            endY = endCornerY;
-                        }
-                        else {
-                            p = perpendicularIntersect( startX, startY, angle, endCornerX, endCornerY );
-                            endX = p[0];
-                            endY = p[1];
-                        }
+                        p = perpendicularIntersect( startX, startY, angle, endCornerX, endCornerY );
+                        endX = p[0];
+                        endY = p[1];
                     }
                     else if( startPos ) {
                         // Start position but no angle specified: find the end point by rotating 180deg around the center
@@ -1245,6 +1357,12 @@
                     }
                     deltaX = endX - startX;
                     deltaY = endY - startY;
+
+                    if( angle === undefined ) {
+                        angle = -Math.atan2( deltaY, deltaX ) / PI * 180;
+                        normalizeAngle();
+                        findCorners();
+                    }
 
 
                     // In VML land, the angle of the rendered gradient depends on the aspect ratio of the shape's
@@ -1263,31 +1381,51 @@
                     // For each, we find its pixel offset along the gradient-line; if the offset of a stop is less
                     // than that of its predecessor we increase it to be equal. We then map that pixel offset to a
                     // percentage along the VML gradient-line, which runs from shape corner to corner.
-                    lineLength = Math.sqrt( deltaX * deltaX + deltaY * deltaY );
-                    vmlGradientLength = -Math.cos(
-                            Math.atan2( endCornerX - startCornerX, endCornerY - startCornerY ) +
-                            ( angle * PI / 180 )
-                        ) * Math.sqrt( w * w + h * h );
+                    lineLength = distance( [ startX, startY ], [ endX, endY ] );
+                    /*vmlGradientLength = Math.abs(
+                            Math.cos(
+                                Math.atan2( endCornerX - startCornerX, endCornerY - startCornerY ) +
+                                ( angle * PI / 180 )
+                            ) *
+                            Math.sqrt( w * w + h * h )
+                        );*/
+                    vmlGradientLength = distance( [ startCornerX, startCornerY ], perpendicularIntersect( startCornerX, startCornerY, angle, endCornerX, endCornerY ) );
                     vmlColors = [];
-                    p = perpendicularIntersect( startX, startY, angle, startCornerX, startCornerY );
-                    vmlOffsetPct = Math.sqrt( ( startX - p[0] ) * ( startX - p[0] ) + ( startY - p[1] ) * ( startY - p[1] ) ) / vmlGradientLength * 100;
+                    vmlOffsetPct = distance( [ startX, startY ], perpendicularIntersect( startX, startY, angle, startCornerX, startCornerY ) ) / vmlGradientLength * 100;
+
+                    // Find the pixel offsets along the CSS3 gradient-line for each stop.
+                    stopPx = [];
                     for( i = 0; i < stopCount; i++ ) {
-                        stop = stops[i];
-                        stopPx = Math.max( stop.offset.pixels( el, lineLength ), lastStopPx );
-                        lastStopPx = stopPx;
-                        stopPct = vmlOffsetPct + ( stopPx / vmlGradientLength * 100 );
-                        vmlColors.push( stopPct + '% ' + stop.color.value() );
+                        stopPx.push( stops[i].offset ? stops[i].offset.pixels( el, lineLength ) :
+                                     i === 0 ? 0 : i === stopCount - 1 ? lineLength : null );
+                    }
+                    // Fill in gaps with evenly-spaced offsets
+                    for( i = 1; i < stopCount; i++ ) {
+                        if( stopPx[ i ] === null ) {
+                            before = stopPx[ i - 1 ];
+                            j = i;
+                            do {
+                                after = stopPx[ ++j ];
+                            } while( after === null );
+                            stopPx[ i ] = before + ( after - before ) / ( j - i + 1 );
+                        }
+                        // Make sure each stop's offset is no less than the one before it
+                        stopPx[ i ] = Math.max( stopPx[ i ], stopPx[ i - 1 ] );
+                    }
+
+                    // Convert to percentage along the VML gradient line and add to the VML 'colors' value
+                    for( i = 0; i < stopCount; i++ ) {
+                        vmlColors.push(
+                            ( vmlOffsetPct + ( stopPx[ i ] / vmlGradientLength * 100 ) ) + '% ' + stops[i].color.value()
+                        );
                     }
 
                     // Now, finally, we're ready to render the gradient fill. Set the start and end colors to
                     // the first and last stop colors; this just sets outer bounds for the gradient.
                     fill.angle = vmlAngle;
                     fill.type = 'gradient';
-                    fill.color = stops[0].color.value();
-                    fill.color2 = stops[stopCount - 1].color.value();
+                    fill.method = 'sigma';
                     fill.colors.value = vmlColors.join( ',' );
-
-                    log(vmlColors.join( ',' ));
                 },
 
                 drawBorder: function() {
