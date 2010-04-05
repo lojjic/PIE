@@ -191,8 +191,98 @@
                     return vals;
                 })();
 
+                Length.ZERO = new Length( '0' );
+
                 return Length;
             } )();
+
+
+            /**
+             * Wrapper for a CSS3 bg-position value. Takes up to 2 position keywords and 2 lengths/percentages.
+             * @param tokens
+             */
+            PIE.BgPosition = function( tokens ) {
+                this.tokens = tokens;
+            };
+            PIE.BgPosition.prototype = {
+                /**
+                 * Normalize the values into the form:
+                 * [ xOffsetSide, xOffsetLength, yOffsetSide, yOffsetLength ]
+                 * where: xOffsetSide is either 'left' or 'right',
+                 *        yOffsetSide is either 'top' or 'bottom',
+                 *        and x/yOffsetLength are both PIE.Length objects.
+                 */
+                getValues: function() {
+                    if( !this._values ) {
+                        var tokens = this.tokens,
+                            len = tokens.length,
+                            ident_left = 'left',
+                            ident_top = 'top',
+                            ident_center = 'center',
+                            ident_right = 'right',
+                            ident_bottom = 'bottom',
+                            length_zero = PIE.Length.ZERO,
+                            length_fifty = new PIE.Length( '50%' ),
+                            type, value,
+                            vert_idents = { top: 1, center: 1, bottom: 1 },
+                            horiz_idents = { left: 1, center: 1, right: 1 },
+                            vals = [ ident_left, length_zero, ident_top, length_zero ];
+
+                        // If only one value, the second is assumed to be 'center'
+                        if( len === 1 ) {
+                            tokens.push( { type: 'IDENT', value: 'center' } );
+                            len++;
+                        }
+
+                        // Two values - CSS2
+                        if( len === 2 ) {
+                            // If both idents, they can appear in either order, so switch them if needed
+                            if( tokens[0].type === 'IDENT' && tokens[1].type === 'IDENT' &&
+                                tokens[0].value in vert_idents && tokens[1].value in horiz_idents ) {
+                                tokens.push( tokens.shift() );
+                            }
+                            if( tokens[0].type === 'IDENT' ) {
+                                vals[0] = tokens[0].value;
+                            }
+                            else if( tokens[0].type === 'LENGTH' || tokens[0].type === 'PERCENT' ) {
+                                vals[1] = new PIE.Length( tokens[0].value );
+                            }
+                            if( tokens[1].type === 'IDENT' ) {
+                                vals[2] = tokens[1].value;
+                            }
+                            else if( tokens[1].type === 'LENGTH' || tokens[1].type === 'PERCENT' ) {
+                                vals[3] = new PIE.Length( tokens[1].value );
+                            }
+                        }
+
+                        // Three or four values - CSS3
+                        else {
+                            // TODO
+                        }
+                        
+                        this._values = vals;
+                    }
+                    return this._values;
+                },
+
+                /**
+                 * Find the coordinates of the background image from the upper-left corner of the background area
+                 * @param {Element} el
+                 * @param {Number} width - the width for percentages (background area width minus image width)
+                 * @param {Number} height - the height for percentages (background area height minus image height)
+                 * @return {Object} { x: Number, y: Number }
+                 */
+                coords: function( el, width, height ) {
+                    var vals = this.getValues(),
+                        pxX = vals[1].pixels( el, width ),
+                        pxY = vals[3].pixels( el, height );
+
+                    return {
+                        x: Math.round( vals[0] === 'right' ? width - pxX : pxX ),
+                        y: Math.round( vals[2] === 'bottom' ? height - pxY : pxY )
+                    };
+                }
+            };
 
 
             /**
@@ -257,6 +347,204 @@
             })();
 
 
+            PIE.Tokenizer = (function() {
+
+                var TYPE_IDENT = 'IDENT',
+                    TYPE_NUMBER = 'NUMBER',
+                    TYPE_LENGTH = 'LENGTH',
+                    TYPE_ANGLE = 'ANGLE',
+                    TYPE_PERCENT = 'PERCENT',
+                    TYPE_DIMEN = 'DIMEN',
+                    TYPE_COLOR = 'COLOR',
+                    TYPE_STRING = 'STRING',
+                    TYPE_URL = 'URL',
+                    TYPE_FUNCTION = 'FUNCTION',
+                    TYPE_OPERATOR = 'OPERATOR',
+                    TYPE_CHARACTER = 'CHAR';
+
+
+                function Tokenizer( css ) {
+                    this.css = css;
+                    this.ch = 0;
+                    this.tokens = [];
+                    this.tokenIndex = 0;
+                }
+                Tokenizer.prototype = {
+                    whitespace: /\s/,
+                    number: /^[\+\-]?(\d*\.)?\d+/,
+                    url: /^url\(\s*("([^"]*)"|'([^']*)'|([!#$%&*-~]*))\s*\)/i,
+                    ident: /^\-?[_a-z][\w-]*/i,
+                    string: /^("([^"]*)"|'([^']*)')/,
+                    operator: /^[\/,]/,
+                    hash: /^#[\w]+/,
+                    hashColor: /^#([\da-f]{6}|[\da-f]{3})/i,
+
+                    unitTypes: {
+                        px: TYPE_LENGTH, em: TYPE_LENGTH, ex: TYPE_LENGTH, mm: TYPE_LENGTH,
+                        cm: TYPE_LENGTH, 'in': TYPE_LENGTH, pt: TYPE_LENGTH, pc: TYPE_LENGTH,
+                        deg: TYPE_ANGLE, rad: TYPE_ANGLE, grad: TYPE_ANGLE
+                    },
+
+                    colorNames: {
+                        aqua:1, black:1, blue:1, fuchsia:1, gray:1, green:1, lime:1, maroon:1,
+                        navy:1, olive:1, purple:1, red:1, silver:1, teal:1, white:1, yellow: 1,
+                        currentColor: 1
+                    },
+
+                    colorFunctions: {
+                        rgb: 1, rgba: 1, hsl: 1, hsla: 1
+                    },
+
+                    next: function() {
+                        var css, ch, match, type, val, next,
+                            me = this;
+
+                        // In case we previously backed up, return the stored token in the next slot
+                        if( this.tokenIndex < this.tokens.length ) {
+                            return this.tokens[ this.tokenIndex++ ];
+                        }
+
+                        // Move past leading whitespace characters
+                        while( this.whitespace.test( this.css.charAt( this.ch ) ) ) {
+                            this.ch++;
+                        }
+                        if( this.ch >= this.css.length ) {
+                            return null;
+                        }
+
+                        function newToken( type, value ) {
+                            var tok = { type: type, value: value };
+                            me.tokens.push( tok );
+                            me.tokenIndex++;
+                            return tok;
+                        }
+
+                        css = this.css.substring( this.ch );
+                        ch = css.charAt( 0 );
+                        switch( ch ) {
+                            case '#':
+                                if( match = css.match( this.hashColor ) ) {
+                                    this.ch += match[0].length;
+                                    return newToken( TYPE_COLOR, match[0] );
+                                }
+                                break;
+
+                            case '"':
+                            case "'":
+                                if( match = css.match( this.string ) ) {
+                                    this.ch += match[0].length;
+                                    return newToken( TYPE_STRING, match[2] || match[3] || '' );
+                                }
+                                break;
+
+                            case "/":
+                            case ",":
+                                this.ch++;
+                                return newToken( TYPE_OPERATOR, ch );
+
+                            case 'u':
+                                if( match = css.match( this.url ) ) {
+                                    this.ch += match[0].length;
+                                    return newToken( TYPE_URL, match[2] || match[3] || match[4] || '' );
+                                }
+                        }
+
+                        // Numbers and values starting with numbers
+                        if( match = css.match( this.number ) ) {
+                            val = match[0];
+                            this.ch += val.length;
+
+                            // Check if it is followed by a unit
+                            if( css.charAt( val.length ) === '%' ) {
+                                this.ch++;
+                                return newToken( TYPE_PERCENT, val + '%' );
+                            }
+                            if( match = css.substring( val.length ).match( this.ident ) ) {
+                                val += match[0];
+                                this.ch += match[0].length;
+                                return newToken( this.unitTypes[ match[0].toLowerCase() ] || TYPE_DIMEN, val );
+                            }
+
+                            // Plain ol' number
+                            return newToken( TYPE_NUMBER, val );
+                        }
+
+                        // Identifiers
+                        if( match = css.match( this.ident ) ) {
+                            val = match[0];
+                            this.ch += val.length;
+
+                            // Named colors
+                            if( val.toLowerCase() in this.colorNames ) {
+                                return newToken( TYPE_COLOR, val );
+                            }
+
+                            // Functions
+                            if( css.charAt( val.length ) === '(' ) {
+                                this.ch++;
+
+                                // Color values in function format: rgb, rgba, hsl, hsla
+                                if( val.toLowerCase() in this.colorFunctions ) {
+                                    if( ( next = this.next() ) && ( next.type === TYPE_NUMBER || ( val.charAt(0) === 'r' && next.type === TYPE_PERCENT ) ) &&
+                                        ( next = this.next() ) && next.value === ',' &&
+                                        ( next = this.next() ) && ( next.type === TYPE_NUMBER || next.type === TYPE_PERCENT ) &&
+                                        ( next = this.next() ) && next.value === ',' &&
+                                        ( next = this.next() ) && ( next.type === TYPE_NUMBER || next.type === TYPE_PERCENT ) &&
+                                        ( val === 'rgb' || val === 'hsa' || (
+                                            ( next = this.next() ) && next.value === ',' &&
+                                            ( next = this.next() ) && next.type === TYPE_NUMBER )
+                                        ) &&
+                                        ( next = this.next() ) && next.value === ')' ) {
+                                        return newToken( TYPE_COLOR, css.substring( 0, this.ch ) );
+                                    }
+                                    return null;
+                                }
+
+                                return newToken( TYPE_FUNCTION, val + '(' );
+                            }
+
+                            // Other identifier
+                            return newToken( TYPE_IDENT, val );
+                        }
+
+                        // Standalone character
+                        this.ch++;
+                        return newToken( TYPE_CHARACTER, ch );
+                    },
+
+                    prev: function() {
+                        return this.tokens[ this.tokenIndex-- - 2 ];
+                    },
+
+                    all: function() {
+                        while( this.next() ) {}
+                        return this.tokens;
+                    },
+
+                    /**
+                     * Return a list of tokens until the given function returns true. The final token
+                     * will be included in the list.
+                     * @param {Function} func
+                     * @param {Boolean} require - if true, then if the end of the CSS string is reached
+                     *        before the test function returns true, null will be returned instead of the
+                     *        tokens that have been found so far.
+                     */
+                    until: function( func, require ) {
+                        var list = [], t, hit;
+                        while( t = this.next() ) {
+                            list.push( t );
+                            if( func( t ) ) {
+                                hit = true;
+                                break;
+                            }
+                        }
+                        return require && !hit ? null : list;
+                    }
+                };
+
+                return Tokenizer;
+            })();
+
             PIE.styleBase = {
                 colorRE: /(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})|rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(\s*,\s*(\d+|\d*\.\d+))?\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
                 lengthRE: /[\-\+]?\d*\.?\d*(px|em|ex|mm|cm|in|pt|pc)|[\-\+]?0/,
@@ -300,10 +588,10 @@
                 cssProperty: PIE.CSS_PREFIX + 'background',
                 styleProperty: PIE.STYLE_PREFIX + 'Background',
 
-                /*parseRE: new RegExp(
-                    '^\\s*((P\\s+A)|(A\\s+P)\\s*,\\s*)?(S)\\s*,\\s*(S)((\\s*,\\s*(S))*)?\\s*$'
-                        .replace( /P/g, '(top|bottom|right|left)' )
-                ),*/
+                attachIdents: { scroll:1, fixed:1, local:1 },
+                repeatIdents: { 'repeat-x':1, 'repeat-y':1, 'repeat':1, 'no-repeat':1 },
+                originIdents: { 'padding-box':1, 'border-box':1, 'content-box':1 },
+                positionIdents: { top:1, right:1, bottom:1, left:1, center:1 },
 
                 /**
                  * For background styles, we support the -pie-background property but fall back to the standard
@@ -320,24 +608,12 @@
                  *             type: 'image',
                  *             url: 'image.png',
                  *             repeat: 'no-repeat',
-                 *             position: {
-                 *                 x: new PIE.Length( '50%' ),
-                 *                 y: new PIE.Length( '50%' )
-                 *             }
+                 *             position: new PIE.BgPosition(...)
                  *         },
                  *         {
                  *             type: 'linear-gradient',
-                 *             position: {
-                 *                 x: {
-                 *                     ref: new PIE.Length( '100%' ), // will be 0 for left, 100% for right
-                 *                     val: new PIE.Length( '50%' ) // if ref is right, will be -1 times specified value
-                 *                 }
-                 *                 y: {
-                 *                     ref: new PIE.Length( '100%' ), // will be 0 for top, 100% for bottom
-                 *                     val: new PIE.Length( '50%' ) // if ref is bottom, will be -1 times specified value
-                 *                 }
-                 *             },
-                 *             angle: 45,
+                 *             gradientStart: new PIE.BgPosition(...),
+                 *             angle: new PIE.Angle( '45deg' ),
                  *             stops: [
                  *                 { color: new PIE.Color('blue'), offset: new Length( '0' ) },
                  *                 { color: new PIE.Color('red'), offset: new Length( '100%' ) }
@@ -351,177 +627,132 @@
                     var el = this.element,
                         cs = el.currentStyle,
                         rs = el.runtimeStyle,
-                        layers, i, j, len, parenCount, m,
-                        props = null, angle, position;
+                        tokenizer, token, image,
+                        tokType, tokVal,
+                        positionIdents = this.positionIdents,
+                        gradient, stop,
+                        props = null;
 
-                    /* XXX TESTING
-                    return {
-                        color: '#EEE',
-                        images: [
-                            {
-                                url: 'border.png',
-                                repeat: 'no-repeat',
-                                position: {
-                                    x: new PIE.Length( '0' ),
-                                    y: new PIE.Length( '0' )
-                                }
-                            },
-                            {
-                                url: 'border.png',
-                                repeat: 'no-repeat',
-                                position: {
-                                    x: new PIE.Length( '100%' ),
-                                    y: new PIE.Length( '0' )
-                                }
-                            },
-                            {
-                                url: 'border.png',
-                                repeat: 'no-repeat',
-                                position: {
-                                    x: new PIE.Length( '100%' ),
-                                    y: new PIE.Length( '100%' )
-                                }
-                            },
-                            {
-                                url: 'border.png',
-                                repeat: 'no-repeat',
-                                position: {
-                                    x: new PIE.Length( '0' ),
-                                    y: new PIE.Length( '100%' )
-                                }
-                            }
-                        ]
+                    function isBgPosToken( token ) {
+                        return token.type === 'LENGTH' || token.type === 'PERCENT' || token.type === 'NUMBER' ||
+                               ( token.type === 'IDENT' && token.value in positionIdents );
                     }
-
-                    return {
-                        //color: new PIE.Color( '#EEE' ),
-                        images: [
-                            {
-                                type: 'linear-gradient',
-                                position: {
-                                    x: {
-                                        ref: new PIE.Length('0'),
-                                        val: new PIE.Length('0')
-                                    },
-                                    y: {
-                                        ref: new PIE.Length('0'),
-                                        val: new PIE.Length('0')
-                                    }
-                                },
-                                angle: 45,
-                                stops: [
-                                    { color: new PIE.Color('green'), offset: new PIE.Length( '0' ) },
-                                    { color: new PIE.Color('yellow'), offset: new PIE.Length( '5%' ) },
-                                    { color: new PIE.Color('purple'), offset: new PIE.Length( '5%' ) },
-                                    { color: new PIE.Color('blue'), offset: new PIE.Length( '10em' ) },
-                                    { color: new PIE.Color('red'), offset: new PIE.Length( '100%' ) }
-                                ]
-                            }
-                        ]
-                    };
-                    */
 
                     // If the CSS3-specific -pie-background property is present, parse it
                     if( this.getCss3() ) {
-                        // Split the string into layer parts. Can't just use .split() because commas may also
-                        // appear within nested values (e.g. gradients); instead walk through the string tracking
-                        // the levels of parentheses and looking for commas at the top level.
-                        parenCount = 0;
-                        layers = [];
+                        tokenizer = new PIE.Tokenizer( css );
                         props = { images: [] };
-                        for( i = 0; i < len; i++ ) {
-                            switch( css.charAt( i ) ) {
-                                case '(':
-                                    parenCount++;
-                                    break;
-                                case ')':
-                                    parenCount--;
-                                    break;
-                                case ',':
-                                    if( parenCount === 0 ) {
-                                        layers.push( css.substring( 0, i ) );
-                                        css = css.substring( i );
-                                        i = 0;
+                        image = {};
+                        
+                        while( token = tokenizer.next() ) {
+                            tokType = token.type;
+                            tokVal = token.value;
+
+                            if( !image.type && tokType === 'FUNCTION' && tokVal === 'linear-gradient(' ) {
+                                gradient = { stops: [], type: 'linear-gradient' };
+                                stop = {};
+                                while( token = tokenizer.next() ) {
+                                    tokType = token.type;
+                                    tokVal = token.value;
+
+                                    // If we reached the end of the function and had at least 2 stops, flush the info
+                                    if( tokType === 'CHAR' && tokVal === ')' ) {
+                                        if( stop.color ) {
+                                            gradient.stops.push( stop );
+                                        }
+                                        if( gradient.stops.length > 1 ) {
+                                            PIE.merge( image, gradient );
+                                        }
+                                        break;
                                     }
-                            }
-                        }
-                        layers.push(css); //leftover
 
-
-                        for( i = layers.length - 1; i >= 0; i-- ) {
-                            css = layers[i];
-
-                            // linear-gradient: only accepted as standalone (without position/repeat/etc.) for now
-                            /*
-                                linear-gradient syntax:
-                                linear-gradient( [<point> || <angle>,]? <stop>, <stop> [, <stop>]* )
-                                point =
-                                angle = 0 | <number>deg | <number>rad | <number>grad
-                                stop = <color> [ <percentage> | <length> ]
-                            */
-                            if( m = css.match( /\s*linear-gradient\(\s*([^\)]+)\s*/ ) ) {
-                                var image = { type: 'linear-gradient', stops: [] };
-                                var parts = this.trim( m[1] ).split( /\s*,\s*/ );
-
-                                for( j = 0, len = parts.length; j < len; j++ ) {
-                                    var part = parts[j];
-                                    if( m = part.match( this.colorRE ) ) {
-                                        // contains color; must be a color-stop. extract the color and check the remainder for an offset
-                                        var stop = { color: new PIE.Color( m[0] ) };
-                                        part = this.trim( part.replace( m[0], '' ) );
-                                        if( part ) {
-                                            if( this.lengthRE.test( part ) || this.percentRE.test( part ) ) {
-                                                stop.offset = new PIE.Length( part );
-                                            } else {
-                                                // non-length in stop
-                                                return null;
+                                    // Color stop - must start with color
+                                    if( tokType === 'COLOR' ) {
+                                        // if we already have an angle/position, make sure that the previous token was a comma
+                                        if( gradient.angle || gradient.gradientStart ) {
+                                            token = tokenizer.prev();
+                                            if( token.type !== 'OPERATOR' ) {
+                                                break; //fail
                                             }
+                                            tokenizer.next();
                                         }
-                                        image.stops.push( stop );
+
+                                        stop = {
+                                            color: new PIE.Color( tokVal )
+                                        };
+                                        // check for offset following color
+                                        token = tokenizer.next();
+                                        if( token.type === 'LENGTH' || token.type === 'PERCENT' || token.type === 'NUMBER' ) {
+                                            stop.offset = new PIE.Length( token.value );
+                                        } else {
+                                            tokenizer.prev();
+                                        }
                                     }
-                                    else if( j === 0 ) {
-                                        // position/angle can only appear in the first position
-                                        if( m = part.match( this.angleRE ) ) { //TODO doesn't handle '0' well
-                                            angle = new PIE.Angle( m[0] );
-                                            part = this.trim( part.replace( m[0], '' ) );
+                                    // Angle - can only appear in first spot
+                                    else if( tokType === 'ANGLE' && !gradient.angle && !stop.color && !gradient.stops.length ) {
+                                        gradient.angle = new PIE.Angle( token.value );
+                                    }
+                                    else if( isBgPosToken( token ) && !gradient.gradientStart && !stop.color && !gradient.stops.length ) {
+                                        tokenizer.prev();
+                                        gradient.gradientStart = new PIE.BgPosition(
+                                            tokenizer.until( function( t ) {
+                                                return !isBgPosToken( t );
+                                            }, false ).slice( 0, -1 )
+                                        );
+                                        tokenizer.prev();
+                                    }
+                                    else if( tokType === 'OPERATOR' && tokVal === ',' ) {
+                                        if( stop.color ) {
+                                            gradient.stops.push( stop );
+                                            stop = {};
                                         }
-                                        /*
-                                        if( part && new RegExp( '^(left|right|top|bottom|center|' + this.lengthRE.source + '|' + this.percentRE.source + '){1,4}$' ).test( part ) ) { //basic validation
-                                            position = { x: {}, y: {} };
-                                            var posParts = part.split( /\s+/ );
-
-                                            // if >2 values then it is two sets of keyword-offset pairs; the keywords are required.
-                                            if( posParts.length > 2 ) {
-                                                // TODO...
-                                                if( posParts[0] === 'top' || posParts[1] === 'bottom' ) { //vertical pos first
-
-                                                }
-                                            }
-
-                                            part = null;
-                                        }
-                                        */
-
-                                        // if anything was left over, or we didn't get either angle or position, fail
-                                        if( ( !angle && !position ) || !!part ) {
-                                            return null;
-                                        }
-                                        image.angle = angle;
-                                        //image.position = position;
                                     }
                                     else {
-                                        // encountered something unrecognized; fail!
-                                        return null;
+                                        // Found something we didn't recognize; fail without adding image
+                                        break;
                                     }
                                 }
-
-                                // make sure we got at least 2 color stops
-                                if( image.stops.length < 2 ) {
-                                    return null;
-                                }
-
-                                props.images.push( image );
                             }
+                            else if( !image.type && tokType === 'URL' ) {
+                                image.url = tokVal;
+                                image.type = 'image';
+                            }
+                            else if( isBgPosToken( token ) ) {
+                                tokenizer.prev();
+                                image.position = new PIE.BgPosition(
+                                    tokenizer.until( function( t ) {
+                                        return !isBgPosToken( t );
+                                    }, false ).slice( 0, -1 )
+                                );
+                                tokenizer.prev();
+                            }
+                            else if( tokType === 'IDENT' ) {
+                                if( tokVal in this.repeatIdents ) {
+                                    image.repeat = tokVal;
+                                }
+                                // TODO attachment, origin
+                            }
+                            else if( tokType === 'COLOR' && !props.color ) {
+                                props.color = new PIE.Color( tokVal );
+                            }
+                            else if( tokType === 'OPERATOR' ) {
+                                /* TODO bg-size
+                                if( tokVal === '/' ) {
+                                }*/
+                                if( tokVal === ',' && image.type ) {
+                                    props.images.push( image );
+                                    image = {};
+                                }
+                            }
+                            else {
+                                // Found something unrecognized; chuck everything
+                                return null;
+                            }
+                        }
+
+                        // leftovers
+                        if( image.type ) {
+                            props.images.push( image );
                         }
                     }
 
@@ -533,9 +764,6 @@
                                 img = cs.backgroundImage,
                                 color = cs.backgroundColor;
 
-                            posX = new PIE.Length( posX === 'left' ? '0' : posX === 'center' ? '50%' : posX === 'right' ? '100%' : posX );
-                            posY = new PIE.Length( posY === 'top' ? '0' : posY === 'center' ? '50%' : posY === 'bottom' ? '100%' : posY );
-
                             props = {};
                             if( color !== 'transparent' ) {
                                 props.color = new PIE.Color( color )
@@ -545,10 +773,7 @@
                                     type: 'image',
                                     url: img.replace( this.urlRE, "$1" ),
                                     repeat: cs.backgroundRepeat,
-                                    position: {
-                                        x: posX,
-                                        y: posY
-                                    }
+                                    position: new PIE.BgPosition( new PIE.Tokenizer( posX + ' ' + posY ).all() )
                                 } ];
                             }
                         } );
@@ -1207,20 +1432,21 @@
                             elH = el.offsetHeight,
                             cs = el.currentStyle,
                             si = this.styleInfos,
-                            bg = si.background.getProps().images[ index ],
                             border = si.border.getProps(),
                             bw = border && border.widths,
                             bwT = bw ? bw.t.pixels( el ) : 0,
                             bwR = bw ? bw.r.pixels( el ) : 0,
                             bwB = bw ? bw.b.pixels( el ) : 0,
                             bwL = bw ? bw.l.pixels( el ) : 0,
+                            bg = si.background.getProps().images[ index ],
+                            bgPos = bg.position.coords( el, elW - size.w - bwL - bwR, elH - size.h - bwT - bwB ),
                             repeat = bg.repeat,
                             pxX, pxY,
                             clipT = 0, clipR = elW, clipB = elH, clipL = 0;
 
                         // Positioning - find the pixel offset from the top/left and convert to a ratio
-                        pxX = bg.position.x.pixels( el, elW - size.w - bwL - bwR ) + bwL;
-                        pxY = bg.position.y.pixels( el, elH - size.h - bwT - bwB ) + bwT;
+                        pxX = bgPos.x + bwL;
+                        pxY = bgPos.y + bwT;
                         fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
 
                         // Repeating - clip the image shape
@@ -1244,7 +1470,7 @@
                         h = el.offsetHeight,
                         fill = shape.fill,
                         angle = info.angle,
-                        startPos = info.position,
+                        startPos = info.gradientStart,
                         stops = info.stops,
                         stopCount = stops.length,
                         PI = Math.PI,
@@ -1322,10 +1548,9 @@
 
                     // Find the start and end points of the gradient
                     if( startPos ) {
+                        startPos = startPos.coords( el, w, h );
                         startX = startPos.x;
                         startY = startPos.y;
-                        startX = startX.ref.pixels( el, w ) + startX.val.pixels( el, w );
-                        startY = startY.ref.pixels( el, w ) + startY.val.pixels( el, w );
                     }
                     if( angle ) {
                         angle = angle.degrees();
