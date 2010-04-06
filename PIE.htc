@@ -242,13 +242,21 @@
                                 tokens.push( tokens.shift() );
                             }
                             if( tokens[0].type === 'IDENT' ) {
-                                vals[0] = tokens[0].value;
+                                if( tokens[0].value === 'center' ) {
+                                    vals[1] = length_fifty;
+                                } else {
+                                    vals[0] = tokens[0].value;
+                                }
                             }
                             else if( tokens[0].type === 'LENGTH' || tokens[0].type === 'PERCENT' ) {
                                 vals[1] = new PIE.Length( tokens[0].value );
                             }
                             if( tokens[1].type === 'IDENT' ) {
-                                vals[2] = tokens[1].value;
+                                if( tokens[1].value === 'center' ) {
+                                    vals[3] = length_fifty;
+                                } else {
+                                    vals[2] = tokens[1].value;
+                                }
                             }
                             else if( tokens[1].type === 'LENGTH' || tokens[1].type === 'PERCENT' ) {
                                 vals[3] = new PIE.Length( tokens[1].value );
@@ -1650,6 +1658,8 @@
                     fill.angle = vmlAngle;
                     fill.type = 'gradient';
                     fill.method = 'sigma';
+                    fill.color = stops[0].color.value();
+                    fill.color2 = stops[stopCount - 1].color.value();
                     fill.colors.value = vmlColors.join( ',' );
                 },
 
