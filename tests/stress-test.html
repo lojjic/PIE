@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title></title>
+
+    <script type="text/javascript">
+        function toggleClass( el, cls ) {
+            var re = new RegExp( '\\b' + cls + '\\b' );
+            if( re.test( el.className ) ) {
+                el.className = el.className.replace( re, '' );
+            } else {
+                el.className += ' ' + cls;
+            }
+        }
+
+        function log( txt ) {
+            var el = log._el;
+            if(!el) {
+                el =log._el = document.createElement( 'div' );
+                el.style.position = 'absolute';
+                el.style.bottom = '1em';
+                el.style.right = '1em';
+                el.style.width = '200px';
+                el.style.height = '100px';
+                el.style.overflow = 'auto';
+                el.style.background = '#FFF';
+                el.style.border = '1px solid #EEE';
+                el.style.fontSize = '9px';
+                document.body.appendChild( el );
+            }
+            var item = document.createElement( 'div' );
+            item.appendChild( document.createTextNode( txt ) );
+            el.appendChild( item )
+        }
+
+        function animate( el, fromX, fromY, toX, toY ) {
+            el.style.position = 'absolute';
+            var i = 0;
+
+            function step() {
+                el.style.left = fromX + ( toX - fromX ) * i / 100 + 'px';
+                el.style.top = fromY + ( toY - fromY ) * i / 100 + 'px';
+                i++;
+                if( i < 100 ) {
+                    setTimeout( step, 10 );
+                }
+            }
+
+            step();
+        }
+    </script>
+
+    <style>
+
+        .tester {
+            behavior: url(../PIE.htc);
+            background: #EEE url(border.png) 50% 50%;
+            border: 3px solid #66F;
+            float: left;
+            padding: 10px;
+            margin: 10px;
+            width: 10%;
+            -moz-border-radius: 10px;
+            -webkit-border-radius: 10px;
+            border-radius: 10px;
+            -pie-box-shadow: #000 5px 5px 8px;
+            -moz-box-shadow: #000 5px 5px 8px;
+            -webkit-box-shadow: #000 5px 5px 8px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+    <div class="tester">test</div>
+
+</body>
+</html>
