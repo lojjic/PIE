@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title></title>
+
+    <script type="text/javascript">
+        function toggleClass( el, cls ) {
+            var re = new RegExp( '\\b' + cls + '\\b' );
+            if( re.test( el.className ) ) {
+                el.className = el.className.replace( re, '' );
+            } else {
+                el.className += ' ' + cls;
+            }
+        }
+
+        function log( txt ) {
+            var el = log._el;
+            if(!el) {
+                el =log._el = document.createElement( 'div' );
+                el.style.position = 'absolute';
+                el.style.bottom = '1em';
+                el.style.right = '1em';
+                el.style.width = '200px';
+                el.style.height = '100px';
+                el.style.overflow = 'auto';
+                el.style.background = '#FFF';
+                el.style.border = '1px solid #EEE';
+                el.style.fontSize = '9px';
+                document.body.appendChild( el );
+            }
+            var item = document.createElement( 'div' );
+            item.appendChild( document.createTextNode( txt ) );
+            el.appendChild( item )
+        }
+
+        function animate( el, fromX, fromY, toX, toY ) {
+            el.style.position = 'absolute';
+            var i = 0;
+
+            function step() {
+                el.style.left = fromX + ( toX - fromX ) * i / 100 + 'px';
+                el.style.top = fromY + ( toY - fromY ) * i / 100 + 'px';
+                i++;
+                if( i < 100 ) {
+                    setTimeout( step, 10 );
+                }
+            }
+
+            step();
+        }
+    </script>
+
+    <style>
+
+        html, body {
+            height: 100%;
+        }
+
+        .tester {
+            behavior: url(../PIE.htc);
+            background: #EEE;
+            padding: 50px;
+            height: 50%;
+            margin: 20px;
+            text-align: center;
+        }
+
+        #test1 {
+            border-radius: 30px;
+            background: #EEE; /*fallback for browsers not supporting multiple backgrounds*/
+            background: url(border.png) no-repeat top left,
+                         url(border.png) no-repeat 50% top,
+                         url(border.png) no-repeat top right,
+                         url(border.png) no-repeat right 50%,
+                         url(border.png) no-repeat bottom right,
+                         url(border.png) no-repeat 50% bottom,
+                         url(border.png) no-repeat bottom left,
+                         url(border.png) no-repeat left 50%,
+                         #EEE;
+            -pie-background: url(border.png) no-repeat top left,
+                             url(border.png) no-repeat 50% top,
+                             url(border.png) no-repeat top right,
+                             url(border.png) no-repeat right 50%,
+                             url(border.png) no-repeat bottom right,
+                             url(border.png) no-repeat 50% bottom,
+                             url(border.png) no-repeat bottom left,
+                             url(border.png) no-repeat left 50%,
+                             linear-gradient( 45deg 0 100%, red, blue ),
+                             #EEE;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="test1" class="tester">test 1</div>
+
+</body>
+</html>
