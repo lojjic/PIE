@@ -1,0 +1,44 @@
+<html>
+<head>
+    <title></title>
+    <meta content="">
+    <style>
+        div {
+            padding: 1em;
+            margin: 1em;
+            background: #CCC;
+            border-width: 20px;
+            border-bottom-width: 30px;
+            height:25%;
+            behavior:url(../PIE.htc);
+        }
+        
+        #test1 {
+            border-image: url(border.png) 27 stretch;
+            -pie-border-image: url(border.png) 27 stretch;
+            -moz-border-image: url(border.png) 27 stretch;
+            -webkit-border-image: url(border.png) 27 stretch;
+        }
+        #test2 {
+            border-image: url(border.png) 27 repeat;
+            -pie-border-image: url(border.png) 27 repeat;
+            -moz-border-image: url(border.png) 27 repeat;
+            -webkit-border-image: url(border.png) 27 repeat;
+        }
+        #test3 {
+            border-image: url(border.png) 27 round;
+            -pie-border-image: url(border.png) 27 round;
+            -moz-border-image: url(border.png) 27 round;
+            -webkit-border-image: url(border.png) 27 round;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="test1">test 1</div>
+    <div id="test2">test 2</div>
+    <div id="test3">test 3</div>
+
+
+</body>
+</html>
