@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Tests for background gradients</title>
+
+    <style type="text/css">
+
+        .section {
+            display: block;
+            border: 1px solid #CCC;
+            margin: 2em 1em;
+            overflow: hidden;
+            background:url(border.png);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 1em;
+            margin: 1em;
+        }
+
+        p {
+            float: left;
+            padding: 1em;
+            width: 15%;
+            height: 8em;
+            border: 1px solid;
+            margin: 1em;
+            color: #000;
+            text-shadow: #FFF 0 0 2px;
+            -moz-border-radius: 1em;
+            -webkit-border-radius: 1em;
+            border-radius: 1em;
+            behavior: url(../PIE.htc);
+        }
+
+        #vert1 {
+            background: -moz-linear-gradient(top, yellow, blue);
+            -pie-background: linear-gradient(top, yellow, blue);
+        }
+        #vert2 {
+            background: -moz-linear-gradient(bottom, blue, yellow);
+            -pie-background: linear-gradient(bottom, blue, yellow);
+        }
+        #vert3 {
+            background: -moz-linear-gradient(-90deg, yellow, blue);
+            -pie-background: linear-gradient(-90deg, yellow, blue);
+        }
+        #vert4 {
+            background: -moz-linear-gradient(270deg, yellow, blue);
+            -pie-background: linear-gradient(270deg, yellow, blue);
+        }
+        #vert5 {
+            background: -moz-linear-gradient(top, yellow 0%, blue 100%);
+            -pie-background: linear-gradient(top, yellow 0%, blue 100%);
+        }
+        #vert6 {
+            background: -moz-linear-gradient(center top, yellow, blue);
+            -pie-background: linear-gradient(center top, yellow, blue);
+        }
+        #vert7 {
+            background: -moz-linear-gradient(yellow, blue);
+            -pie-background: linear-gradient(yellow, blue);
+        }
+
+        #horiz1 {
+            background: -moz-linear-gradient(left, yellow, blue);
+            -pie-background: linear-gradient(left, yellow, blue);
+        }
+        #horiz2 {
+            background: -moz-linear-gradient(right, blue, yellow);
+            -pie-background: linear-gradient(right, blue, yellow);
+        }
+        #horiz3 {
+            background: -moz-linear-gradient(0, yellow, blue);
+            -pie-background: linear-gradient(0, yellow, blue);
+        }
+        #horiz4 {
+            background: -moz-linear-gradient(360deg, yellow, blue);
+            -pie-background: linear-gradient(360deg, yellow, blue);
+        }
+        #horiz5 {
+            background: -moz-linear-gradient(left, yellow 0%, blue 100%);
+            -pie-background: linear-gradient(left, yellow 0%, blue 100%);
+        }
+        #horiz6 {
+            background: -moz-linear-gradient(left center, yellow, blue);
+            -pie-background: linear-gradient(left center, yellow, blue);
+        }
+
+
+        #diag1 {
+            background: -moz-linear-gradient(top left, yellow, blue);
+            -pie-background: linear-gradient(top left, yellow, blue);
+        }
+        #diag2 {
+            background: -moz-linear-gradient(0 0, yellow, blue);
+            -pie-background: linear-gradient(0 0, yellow, blue);
+        }
+        #diag3 {
+            background: -moz-linear-gradient(top 0px left 0px, yellow, blue);
+            -pie-background: linear-gradient(top 0px left 0px, yellow, blue);
+        }
+        #diag4 {
+            background: -moz-linear-gradient(bottom right, blue, yellow);
+            -pie-background: linear-gradient(bottom right, blue, yellow);
+        }
+        #diag5 {
+            background: -moz-linear-gradient(-45deg, yellow, blue);
+            -pie-background: linear-gradient(-45deg, yellow, blue);
+        }
+        #diag6 {
+            background: -moz-linear-gradient(315deg, yellow, blue);
+            -pie-background: linear-gradient(315deg, yellow, blue);
+        }
+
+
+        #multi1 {
+            background: -moz-linear-gradient(top, yellow, blue 20%, #0f0);
+            -pie-background: linear-gradient(top, yellow, blue 20%, #0f0);
+        }
+        #multi2 {
+            background: -moz-linear-gradient(left, yellow, blue 20%, #0f0);
+            -pie-background: linear-gradient(left, yellow, blue 20%, #0f0);
+        }
+        #multi3 {
+            background: -moz-linear-gradient(top, yellow 30%, blue 50%, green 70%);
+            -pie-background: linear-gradient(top, yellow 30%, blue 50%, green 70%);
+        }
+        #multi4 {
+            background: -moz-linear-gradient(left, yellow 50%, blue, green);
+            -pie-background: linear-gradient(left, yellow 50%, blue, green);
+        }
+        #multi5 {
+            background: -moz-linear-gradient(left, aqua, black, blue, fuchsia, gray, green, lime, maroon, navy, olive, purple, red, silver, teal, white, yellow );
+            -pie-background: linear-gradient(left, aqua, black, blue, fuchsia, gray, green, lime, maroon, navy, olive, purple, red, silver, teal, white, yellow );
+        }
+        #multi6 {
+            background: -moz-linear-gradient(45deg, red, yellow, green, blue);
+            -pie-background: linear-gradient(45deg, red, yellow, green, blue);
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+
+    <div class="section" id="vertTests">
+        <h1>Basic vertical linear gradient</h1>
+        <p id="vert1">linear-gradient( top, yellow, blue);</p>
+        <p id="vert2">linear-gradient( bottom, blue, yellow);</p>
+        <p id="vert3">linear-gradient( -90deg, yellow, blue);</p>
+        <p id="vert4">linear-gradient( 270deg, yellow, blue);</p>
+        <p id="vert5">linear-gradient( top, yellow 0%, blue 100%);</p>
+        <p id="vert6">linear-gradient( center top, yellow, blue);</p>
+        <p id="vert7">linear-gradient( yellow, blue);</p>
+    </div>
+
+    <div class="section" id="horizTests">
+        <h1>Basic horizontal linear gradient</h1>
+        <p id="horiz1">linear-gradient( left, yellow, blue);</p>
+        <p id="horiz2">linear-gradient( right, blue, yellow);</p>
+        <p id="horiz3">linear-gradient( 0, yellow, blue);</p>
+        <p id="horiz4">linear-gradient( 360deg, yellow, blue);</p>
+        <p id="horiz5">linear-gradient( left, yellow 0%, blue 100%);</p>
+        <p id="horiz6">linear-gradient( left center, yellow, blue);</p>
+    </div>
+
+    <div class="section" id="diagTests">
+        <h1>Basic diagonal linear gradient</h1>
+        <p id="diag1">linear-gradient(top left, yellow, blue);</p>
+        <p id="diag2">linear-gradient(0 0, yellow, blue);</p>
+        <p id="diag3">linear-gradient(top 0px left 0px, yellow, blue);</p>
+        <p id="diag4">linear-gradient(bottom right, blue, yellow);</p>
+        <p id="diag5">linear-gradient(-45deg, yellow, blue);</p>
+        <p id="diag6">linear-gradient(315deg, yellow, blue);</p>
+    </div>
+
+    <div class="section" id="multiStopTests">
+        <h1>Multiple color stops along linear gradient</h1>
+        <p id="multi1">linear-gradient(top, yellow, blue 20%, #0f0)</p>
+        <p id="multi2">linear-gradient(left, yellow, blue 20%, #0f0)</p>
+        <p id="multi3">linear-gradient(top, yellow 30%, blue 50%, green 70%)</p>
+        <p id="multi4">linear-gradient(left, yellow 50%, blue, green)</p>
+        <p id="multi5">linear-gradient(left, aqua, black, blue, fuchsia, gray, green, lime, maroon, navy, olive, purple, red, silver, teal, white, yellow );</p>
+        <p id="multi6">linear-gradient(45deg, red, yellow, green, blue);</p>
+    </div>
+
+</body>
+</html>
