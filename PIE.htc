@@ -77,6 +77,7 @@
                     img.onload = function() {
                         size = sizes[ src ] = { w: img.width, h: img.height };
                         func.call( ctx, size );
+                        img.onload = null;
                     };
                     img.src = src;
                 }
