@@ -27,8 +27,8 @@ IE to recognize and display a number of CSS3 properties.  Consider, if you will,
         border-radius: 1em;
     }
 
-This results in a box with nicely rounded corners in any of today's modern browsers, except of course for IE 6, 7, or 8,
-which all display a square box.  However, add the following single rule to that CSS:
+This results in a box with nicely rounded corners in any of today's modern browsers, except of course for IE 6, 7, or
+8, which all display a square box.  However, add the following single rule to that CSS:
 
     #myElement {
         ...
@@ -42,11 +42,9 @@ PIE currently has full or partial support for the following CSS3 features:
     * border-radius
     * box-shadow
     * border-image
+    * multiple background images
+    * linear-gradient as background image
 
-The following features are under active development and should be available soon:
-
-    * multiple backgrounds
-    * multiple box-shadows
-    * linear and radial gradients as background fills
-
-And after that, who knows, there's plenty of cool stuff we could do!
+Other features such as radial gradients, multiple box shadows, and many many bugfixes are under development.  This is
+still a young project which has a long way to go, but is already pretty remarkable!  We're working on getting a site
+up with documentation and examples.  Contributions (code, documentation, testing) are greatly appreciated!
