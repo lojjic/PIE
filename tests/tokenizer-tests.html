@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Tokenizer Tests</title>
+
+    <style type="text/css">
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+        }
+        th, td {
+            text-align: left;
+            padding: .2em 1em;
+            border-bottom: 1px solid #CCC;
+            font: 13px sans-serif;
+        }
+
+        .tokens ul,
+        .tokens li {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .result {
+            font-weight: bold;
+        }
+        .fail {
+            color: orange;
+        }
+        .error {
+            color: red;
+        }
+        .pass {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        window.PIE = {};
+
+        function runTest( css, expectedTokens) {
+            document.write( '<tr><td class="css">' + css + '</td><td class="tokens"><ul>' );
+
+            var result, error, className;
+            try {
+                var tokenizer = new PIE.Tokenizer( css ),
+                    actualTokens = [],
+                    token, failure;
+
+                while( token = tokenizer.next() ) {
+                    actualTokens.push( token );
+                    document.write( '<li>type=' + token.type + ', value=' + token.value + '</li>' );
+                }
+
+                if( actualTokens.length === expectedTokens.length ) {
+                    for( var i = 0, len = actualTokens.length; i < len; i++ ) {
+                        if( actualTokens[i].type !== expectedTokens[i].type ) {
+                            failure = "Type mismatch at token " + i + ": expected " + expectedTokens[i].type + ', got ' + actualTokens[i].type;
+                            break;
+                        }
+                        if( actualTokens[i].value !== expectedTokens[i].value ) {
+                            failure = "Value mismatch at token " + i + ": expected " + expectedTokens[i].value + ', got ' + actualTokens[i].value;
+                            break;
+                        }
+                    }
+                } else {
+                    failure = "Number of tokens is different: expected " + expectedTokens.length + ', got ' + actualTokens.length;
+                }
+            } catch( e ) {
+                error = e.message;
+            }
+            className = !!error ? 'error' : !!failure ? 'fail' : 'pass';
+
+            document.write( '</ul></td><td class="result ' + className + '">' + ( error || failure || 'Passed' ) + '</td></tr>' );
+        }
+
+    </script>
+
+    <script type="text/javascript" src="../sources/Tokenizer.js"></script>
+
+    <table>
+        <thead>
+            <tr>
+                <th>CSS Value</th>
+                <th>Tokens</th>
+                <th>Test Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <script type="text/javascript">
+
+                runTest( '#00CCFF', [
+                    { type: 'COLOR', value: '#00CCFF' }
+                ] );
+
+                runTest( 'rgb(0,127, 255 )', [
+                    { type: 'COLOR', value:'rgb(0,127, 255 )' }
+                ] );
+
+                runTest( 'rgba(0,127, 255, 1 )', [
+                    { type: 'COLOR', value:'rgba(0,127, 255, 1 )' }
+                ] );
+
+                runTest( 'linear-gradient(center top, yellow, blue)', [
+                    { type: 'FUNCTION', value: 'linear-gradient(' },
+                    { type: 'IDENT', value: 'center' },
+                    { type: 'IDENT', value: 'top' },
+                    { type: 'OPERATOR', value: ',' },
+                    { type: 'COLOR', value: 'yellow' },
+                    { type: 'OPERATOR', value: ',' },
+                    { type: 'COLOR', value: 'blue' },
+                    { type: 'CHAR', value: ')' }
+                ] );
+
+                runTest( 'top 15px 3em 50%', [
+                    { type: 'IDENT', value: 'top' },
+                    { type: 'LENGTH', value: '15px' },
+                    { type: 'LENGTH', value: '3em' },
+                    { type: 'PERCENT', value: '50%' }
+                ] );
+
+            </script>
+        </tbody>
+    </table>
+
+</body>
+
+</html>
