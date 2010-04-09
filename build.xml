@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+
+<project name="PIE" default="package" basedir=".">
+
+    <property name="build_dir" value="./build" />
+    <property name="src_dir" value="./sources" />
+
+    <target name="package-uncompressed">
+        <mkdir dir="${build_dir}" />
+        <concat destfile="${build_dir}/script_uncompressed.js">
+            <fileset file="${src_dir}/PIE_open.js" />
+            <fileset file="${src_dir}/Util.js" />
+            <fileset file="${src_dir}/Length.js" />
+            <fileset file="${src_dir}/BgPosition.js" />
+            <fileset file="${src_dir}/Angle.js" />
+            <fileset file="${src_dir}/Color.js" />
+            <fileset file="${src_dir}/Tokenizer.js" />
+            <fileset file="${src_dir}/StyleBase.js" />
+            <fileset file="${src_dir}/BackgroundStyleInfo.js" />
+            <fileset file="${src_dir}/BorderStyleInfo.js" />
+            <fileset file="${src_dir}/BorderRadiusStyleInfo.js" />
+            <fileset file="${src_dir}/BorderImageStyleInfo.js" />
+            <fileset file="${src_dir}/BoxShadowStyleInfo.js" />
+            <fileset file="${src_dir}/RendererBase.js" />
+            <fileset file="${src_dir}/RootRenderer.js" />
+            <fileset file="${src_dir}/BackgroundAndBorderRenderer.js" />
+            <fileset file="${src_dir}/BorderImageRenderer.js" />
+            <fileset file="${src_dir}/BoxShadowRenderer.js" />
+            <fileset file="${src_dir}/PIE_close.js" />
+            <fileset file="${src_dir}/event_handlers.js" />
+        </concat>
+
+        <concat destfile="${build_dir}/PIE_uncompressed.htc">
+            <fileset file="${src_dir}/htc_open.txt" />
+            <fileset file="${build_dir}/script_uncompressed.js" />
+            <fileset file="${src_dir}/htc_close.txt" />
+        </concat>
+    </target>
+
+    <target name="package-compressed" depends="package-uncompressed">
+        <!--<copy file="${build_dir}/script_uncompressed.js" tofile="${build_dir}/script_compressed.js" overwrite="true" />-->
+
+        <exec executable="yuicompressor">
+            <arg line="${build_dir}/script_uncompressed.js -o ${build_dir}/script_compressed.js" />
+        </exec>
+
+        <concat destfile="${build_dir}/PIE.htc">
+            <fileset file="${src_dir}/htc_open.txt" />
+            <fileset file="${build_dir}/script_compressed.js" />
+            <fileset file="${src_dir}/htc_close.txt" />
+        </concat>
+    </target>
+
+    <target name="package" depends="package-uncompressed,package-compressed" />
+
+</project>
