@@ -289,13 +289,6 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
         // than that of its predecessor we increase it to be equal. We then map that pixel offset to a
         // percentage along the VML gradient-line, which runs from shape corner to corner.
         lineLength = distance( [ startX, startY ], [ endX, endY ] );
-        /*vmlGradientLength = Math.abs(
-                Math.cos(
-                    Math.atan2( endCornerX - startCornerX, endCornerY - startCornerY ) +
-                    ( angle * PI / 180 )
-                ) *
-                Math.sqrt( w * w + h * h )
-            );*/
         vmlGradientLength = distance( [ startCornerX, startCornerY ], perpendicularIntersect( startCornerX, startCornerY, angle, endCornerX, endCornerY ) );
         vmlColors = [];
         vmlOffsetPct = distance( [ startX, startY ], perpendicularIntersect( startX, startY, angle, startCornerX, startCornerY ) ) / vmlGradientLength * 100;
@@ -400,8 +393,9 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
             // and set the wrapper element to visiblity:visible. This hides the outer element's decorations
             // (background and border) but displays all the contents.
             // TODO find a better way to do this that doesn't mess up the DOM parent-child relationship,
-            // as this can interfere with other author scripts which add/modify/delete children. Look into
-            // using a compositor filter which masks the border.
+            // as this can interfere with other author scripts which add/modify/delete children. Also, this
+            // won't work for elements which cannot take children, e.g. input/button/textarea/img/etc. Look into
+            // using a compositor filter or some other filter which masks the border.
             if( el.childNodes.length !== 1 || el.firstChild.tagName !== 'ie6-mask' ) {
                 var cont = this.element.document.createElement( 'ie6-mask' );
                 cont.style.visibility = 'visible';
@@ -422,7 +416,6 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
             elW, elH,
             borderInfo = this.styleInfos.border,
             segments = [],
-            deg = 65535,
             floor, ceil, wT, wR, wB, wL,
             borderProps, radiusInfo, radii, widths, styles, colors;
 
@@ -436,8 +429,9 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
             if( borderProps.widthsSame && borderProps.stylesSame && borderProps.colorsSame ) {
                 // shortcut for identical border on all sides - only need 1 stroked shape
                 wT = widths.t.pixels( el );
+                wR = Math.floor( wT / 2 );
                 segments.push( {
-                    path: this.getBoxPath( wT / 2 ),
+                    path: this.getBoxPath( { t: wR, r: wR, b: wR, l: wR } ),
                     stroke: styles.t,
                     color: colors.t,
                     weight: wT

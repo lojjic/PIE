@@ -9,7 +9,9 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
     attachIdents: { scroll:1, fixed:1, local:1 },
     repeatIdents: { 'repeat-x':1, 'repeat-y':1, 'repeat':1, 'no-repeat':1 },
     originIdents: { 'padding-box':1, 'border-box':1, 'content-box':1 },
+    clipIdents: { 'padding-box':1, 'border-box':1 },
     positionIdents: { top:1, right:1, bottom:1, left:1, center:1 },
+    sizeIdents: { contain:1, cover:1 },
 
     /**
      * For background styles, we support the -pie-background property but fall back to the standard
@@ -20,21 +22,25 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
      *
      * Format of return object:
      * {
-     *     color: new PIE.Color('red'),
+     *     color: <PIE.Color>,
      *     images: [
      *         {
      *             type: 'image',
      *             url: 'image.png',
-     *             repeat: 'no-repeat',
-     *             position: new PIE.BgPosition(...)
+     *             repeat: <'no-repeat' | 'repeat-x' | 'repeat-y' | 'repeat'>,
+     *             position: <PIE.BgPosition>,
+     *             attachment: <'scroll' | 'fixed' | 'local'>,
+     *             origin: <'border-box' | 'padding-box' | 'content-box'>,
+     *             clip: <'border-box' | 'padding-box'>,
+     *             size: <'contain' | 'cover' | { w: <'auto' | PIE.Length>, h: <'auto' | PIE.Length> }>
      *         },
      *         {
      *             type: 'linear-gradient',
-     *             gradientStart: new PIE.BgPosition(...),
-     *             angle: new PIE.Angle( '45deg' ),
+     *             gradientStart: <PIE.BgPosition>,
+     *             angle: <PIE.Angle>,
      *             stops: [
-     *                 { color: new PIE.Color('blue'), offset: new Length( '0' ) },
-     *                 { color: new PIE.Color('red'), offset: new Length( '100%' ) }
+     *                 { color: <PIE.Color>, offset: <PIE.Length> },
+     *                 { color: <PIE.Color>, offset: <PIE.Length> }, ...
      *             ]
      *         }
      *     ]
@@ -51,9 +57,16 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
             gradient, stop,
             props = null;
 
+        function isLengthOrPercent( token ) {
+            return token.type === 'LENGTH' || token.type === 'PERCENT' || ( token.type === 'NUMBER' && token.value === '0' );
+        }
+
         function isBgPosToken( token ) {
-            return token.type === 'LENGTH' || token.type === 'PERCENT' || token.type === 'NUMBER' ||
-                   ( token.type === 'IDENT' && token.value in positionIdents );
+            return isLengthOrPercent( token ) || ( token.type === 'IDENT' && token.value in positionIdents );
+        }
+
+        function sizeToken( token ) {
+            return ( isLengthOrPercent( token ) && new PIE.Length( token.value ) ) || ( token.value === 'auto' && 'auto' );
         }
 
         // If the CSS3-specific -pie-background property is present, parse it
@@ -135,7 +148,7 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
                     image.url = tokVal;
                     image.type = 'image';
                 }
-                else if( isBgPosToken( token ) ) {
+                else if( isBgPosToken( token ) && !image.size ) {
                     tokenizer.prev();
                     image.position = new PIE.BgPosition(
                         tokenizer.until( function( t ) {
@@ -148,16 +161,37 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
                     if( tokVal in this.repeatIdents ) {
                         image.repeat = tokVal;
                     }
-                    // TODO attachment, origin
+                    else if( tokVal in this.originIdents ) {
+                        image.origin = tokVal;
+                        if( tokVal in this.clipIdents ) {
+                            image.clip = tokVal;
+                        }
+                    }
+                    else if( tokVal in this.attachIdents ) {
+                        image.attachment = tokVal;
+                    }
                 }
                 else if( tokType === 'COLOR' && !props.color ) {
                     props.color = new PIE.Color( tokVal );
                 }
                 else if( tokType === 'OPERATOR' ) {
-                    /* TODO bg-size
+                    // background size
                     if( tokVal === '/' ) {
-                    }*/
-                    if( tokVal === ',' && image.type ) {
+                        token = tokenizer.next();
+                        tokType = token.type;
+                        tokVal = token.value;
+                        if( tokType === 'IDENT' && tokVal in this.sizeIdents ) {
+                            image.size = tokVal;
+                        }
+                        else if( tokVal = sizeToken( token ) ) {
+                            image.size = {
+                                w: tokVal,
+                                h: sizeToken( tokenizer.next() ) || ( tokenizer.prev() && tokVal )
+                            };
+                        }
+                    }
+                    // new layer
+                    else if( tokVal === ',' && image.type ) {
                         props.images.push( image );
                         image = {};
                     }

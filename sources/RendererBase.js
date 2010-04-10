@@ -85,17 +85,23 @@ PIE.RendererBase = {
         }
     },
 
+    /**
+     * Return the VML path string for the element's background box, with corners rounded.
+     * @param {Object<t,r,b,l>} shrink - if present, specifies number of pixels to shrink the box path inward from
+     *                                   the element's four sides.
+     */
     getBoxPath: function( shrink ) {
-        var r, instructions, values, str = '', i,
+        var r, str,
             el = this.element,
             w = el.offsetWidth - 1,
             h = el.offsetHeight - 1,
             radInfo = this.styleInfos.borderRadius,
             floor = Math.floor, ceil = Math.ceil,
-            deg = 65535,
+            shrinkT = shrink ? shrink.t : 0,
+            shrinkR = shrink ? shrink.r : 0,
+            shrinkB = shrink ? shrink.b : 0,
+            shrinkL = shrink ? shrink.l : 0,
             tlX, tlY, trX, trY, brX, brY, blX, blY;
-
-        shrink = floor( shrink || 0 );
 
         if( radInfo.isActive() ) {
             r = this.getRadiiPixels( radInfo.getProps() );
@@ -109,28 +115,20 @@ PIE.RendererBase = {
             blX = r.x.bl;
             blY = r.y.bl;
 
-            instructions = [ 'm', 'qy', 'l', 'qx', 'l', 'qy', 'l', 'qx' ];
-            values = [
-                shrink + ',' + floor(tlY),
-                floor(tlX) + ',' + shrink,
-                ceil(w - trX) + ',' + shrink,
-                ( w - shrink ) + ',' + floor(trY),
-                ( w - shrink ) + ',' + ceil(h - brY),
-                ceil(w - brX) + ',' + ( h - shrink ),
-                floor(blX) + ',' + ( h - shrink ),
-                shrink + ',' + ceil(h - blY)
-            ];
-
-            for ( i = 0; i < 8; i++ ) {
-                str += instructions[i] + values[i];
-            }
-            str += ' x e';
+            str = 'm' + shrinkL + ',' + floor(tlY) +
+                'qy' + floor(tlX) + ',' + shrinkT +
+                'l' + ceil(w - trX) + ',' + shrinkT +
+                'qx' + ( w - shrinkR ) + ',' + floor(trY) +
+                'l' + ( w - shrinkR ) + ',' + ceil(h - brY) +
+                'qy' + ceil(w - brX) + ',' + ( h - shrinkB ) +
+                'l' + floor(blX) + ',' + ( h - shrinkB ) +
+                'qx' + shrinkL + ',' + ceil(h - blY) + ' x e';
         } else {
             // simplified path for non-rounded box
-            str = 'm' + shrink + ',' + shrink +
-                  'l' + ( w - shrink ) + ',' + shrink +
-                  'l' + ( w - shrink ) + ',' + ( h - shrink ) +
-                  'l' + shrink + ',' + ( h - shrink ) +
+            str = 'm' + shrinkL + ',' + shrinkT +
+                  'l' + ( w - shrinkR ) + ',' + shrinkT +
+                  'l' + ( w - shrinkR ) + ',' + ( h - shrinkB ) +
+                  'l' + shrinkL + ',' + ( h - shrinkB ) +
                   'xe';
         }
         return str;
