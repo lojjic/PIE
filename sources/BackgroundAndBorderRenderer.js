@@ -65,6 +65,8 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
             if( alpha < 1 ) {
                 shape.fill.opacity = alpha;
             }
+        } else {
+            this.deleteShape( 'bgColor' );
         }
     },
 
@@ -104,6 +106,10 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
                 }
             }
         }
+
+        // Delete any bgImage shapes previously created which weren't used above
+        i = images ? images.length : 0;
+        while( this.deleteShape( 'bgImage' + i++ ) ) {}
     },
 
     positionBgImage: function( shape, index ) {
@@ -370,6 +376,9 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
                     shape.fill.color = seg.fill.value();
                 }
             }
+
+            // remove any previously-created border shapes which didn't get used above
+            while( this.deleteShape( 'borderPiece' + i++ ) ) {}
         }
     },
 

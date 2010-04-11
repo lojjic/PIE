@@ -76,6 +76,8 @@ PIE.Util.merge( PIE.BorderImageRenderer.prototype, PIE.RendererBase, {
                     p.t.imagedata.cropRight = p.b.imagedata.cropRight = p.c.imagedata.cropRight = slices.r / imgSize.w;
                 }
             }, this );
+        } else {
+            this.destroy();
         }
     },
 

@@ -35,6 +35,16 @@ PIE.RendererBase = {
         return shape;
     },
 
+    deleteShape: function( name ) {
+        var shapes = this._shapes,
+            shape = shapes && shapes[ name ];
+        if( shape ) {
+            shape.parentNode.removeChild( shape );
+            delete shapes[ name ];
+        }
+        return !!shape;
+    },
+
     getRadiiPixels: function( radii ) {
         var el = this.element,
             w = el.offsetWidth,

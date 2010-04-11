@@ -49,14 +49,14 @@ PIE.Util.merge( PIE.BoxShadowRenderer.prototype, PIE.RendererBase, {
 
             shape.coordsize = ( w + 1 ) + ',' + ( h + 1 ); //shrink the rendered shadow by 1 extra pixel
             shape.path = this.getBoxPath();
+        } else {
+            this.destroy();
         }
     },
 
     updateProps: function() {
         this.destroy();
-        if( this.isActive() ) {
-            this.updateSize();
-        }
+        this.updateSize();
     },
 
     getBox: function() {
