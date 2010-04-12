@@ -1,3 +1,8 @@
+/**
+ * Handles parsing, caching, and detecting changes to border-radius CSS
+ * @constructor
+ * @param {Element} el the target element
+ */
 PIE.BorderRadiusStyleInfo = function( el ) {
     this.element = el;
 };

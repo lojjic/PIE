@@ -1,3 +1,10 @@
+/**
+ * Renderer for border-image
+ * @constructor
+ * @param {Element} el The target element
+ * @param {Object} styleInfos The StyleInfo objects
+ * @param {PIE.RootRenderer} parent
+ */
 PIE.BorderImageRenderer = function( el, styleInfos, parent ) {
     this.element = el;
     this.styleInfos = styleInfos;

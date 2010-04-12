@@ -1,3 +1,10 @@
+/**
+ * Renderer for box-shadow
+ * @constructor
+ * @param {Element} el The target element
+ * @param {Object} styleInfos The StyleInfo objects
+ * @param {PIE.RootRenderer} parent
+ */
 PIE.BoxShadowRenderer = function( el, styleInfos, parent ) {
     this.element = el;
     this.styleInfos = styleInfos;

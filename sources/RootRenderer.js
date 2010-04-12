@@ -1,3 +1,9 @@
+/**
+ * Root renderer; creates the outermost container element and handles keeping it aligned
+ * with the target element's size and position.
+ * @param {Element} el The target element
+ * @param {Object} styleInfos The StyleInfo objects
+ */
 PIE.RootRenderer = function( el, styleInfos ) {
     this.element = el;
     this.styleInfos = styleInfos;

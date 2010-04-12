@@ -1,3 +1,10 @@
+/**
+ * Renderer for element backgrounds and borders.
+ * @constructor
+ * @param {Element} el The target element
+ * @param {Object} styleInfos The StyleInfo objects
+ * @param {PIE.RootRenderer} parent
+ */
 PIE.BackgroundAndBorderRenderer = function( el, styleInfos, parent ) {
     this.element = el;
     this.styleInfos = styleInfos;
@@ -33,12 +40,18 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
         }
     },
 
+    /**
+     * Draw the shapes
+     */
     draw: function() {
         this.drawBgColor();
         this.drawBgImages();
         this.drawBorder();
     },
 
+    /**
+     * Draw the background color shape
+     */
     drawBgColor: function() {
         var props = this.styleInfos.background.getProps(),
             color = props && props.color && props.color.value(),
@@ -70,6 +83,9 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
         }
     },
 
+    /**
+     * Draw all the background image layers
+     */
     drawBgImages: function() {
         var props = this.styleInfos.background.getProps(),
             images = props && props.images,
@@ -112,6 +128,12 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
         while( this.deleteShape( 'bgImage' + i++ ) ) {}
     },
 
+
+    /**
+     * Set the position and clipping of the background image for a layer
+     * @param {Element} shape
+     * @param {number} index
+     */
     positionBgImage: function( shape, index ) {
         PIE.Util.withImageSize( shape.fill.src, function( size ) {
             var fill = shape.fill,
@@ -152,6 +174,12 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
         }, this );
     },
 
+
+    /**
+     * Draw the linear gradient for a gradient layer
+     * @param {Element} shape
+     * @param {Object} info The object holding the information about the gradient
+     */
     addLinearGradient: function( shape, info ) {
         var el = this.element,
             w = el.offsetWidth,
@@ -336,6 +364,10 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
         fill.colors.value = vmlColors.join( ',' );
     },
 
+
+    /**
+     * Draw the border shape(s)
+     */
     drawBorder: function() {
         var cont = this.getBox(),
             el = this.element,
@@ -420,6 +452,11 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
         }
     },
 
+
+    /**
+     * Get the VML path definitions for the border segment(s).
+     * @return {Array<{string}>}
+     */
     getBorderSegments: function() {
         var el = this.element,
             elW, elH,
@@ -557,6 +594,10 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
         return segments;
     },
 
+
+    /**
+     * Get the container element for the shapes, creating it if necessary
+     */
     getBox: function() {
         var box = this._box,
             infos = this.styleInfos,
@@ -573,6 +614,10 @@ PIE.Util.merge( PIE.BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
         return box;
     },
 
+
+    /**
+     * Destroy the rendered objects
+     */
     destroy: function() {
         var box = this._box;
         if( box && box.parentNode ) {

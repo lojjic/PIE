@@ -1,3 +1,8 @@
+/**
+ * Handles parsing, caching, and detecting changes to box-shadow CSS
+ * @constructor
+ * @param {Element} el the target element
+ */
 PIE.BoxShadowStyleInfo = function( el ) {
     this.element = el;
 };

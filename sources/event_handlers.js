@@ -7,6 +7,7 @@ var lastW, lastH, lastX, lastY,
  * Update position and/or size as necessary. Both move and resize events call
  * this rather than the updatePos/Size functions because sometimes, particularly
  * during page load, one will fire but the other won't.
+ * @param {boolean=} force If true, will force updates
  */
 function update( force ) {
     if( renderers ) {
@@ -59,6 +60,10 @@ function propChanged() {
 }
 
 
+/**
+ * Handle property changes on ancestors of the element; see initAncestorPropChangeListeners()
+ * which adds these listeners as requested with the -pie-watch-ancestors CSS property.
+ */
 function ancestorPropChanged() {
     var name = event.propertyName;
     if( name === 'className' || name === 'id' ) {
@@ -67,6 +72,10 @@ function ancestorPropChanged() {
 }
 
 
+/**
+ * Clean everything up when the behavior is removed from the element, or the element
+ * is destroyed.
+ */
 function cleanup() {
     var i, len;
 
@@ -87,15 +96,20 @@ function cleanup() {
 }
 
 
-
+/**
+ * If requested via the custom -pie-watch-ancestors CSS property, add onpropertychange listeners
+ * to ancestor(s) of the element so we can pick up style changes based on CSS rules using
+ * descendant selectors.
+ */
 function initAncestorPropChangeListeners() {
-    var watch = element.currentStyle.getAttribute( PIE.CSS_PREFIX + 'watch-ancestors' ),
+    var el = element,
+        watch = el.currentStyle.getAttribute( PIE.CSS_PREFIX + 'watch-ancestors' ),
         i, a;
     if( watch ) {
         ancestors = [];
         watch = parseInt( watch, 10 );
         i = 0;
-        a = element.parentNode;
+        a = el.parentNode;
         while( a && ( watch === 'NaN' || i++ < watch ) ) {
             ancestors.push( a );
             a.attachEvent( 'onpropertychange', ancestorPropChanged );
@@ -106,7 +120,7 @@ function initAncestorPropChangeListeners() {
 
 
 /**
- * Initialize
+ * Initialize PIE for this element.
  */
 function init() {
     var el = element;
@@ -136,3 +150,5 @@ function init() {
 
     update();
 }
+
+

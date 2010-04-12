@@ -1,3 +1,6 @@
+/**
+ * Utility functions
+ */
 PIE.Util = {
 
     /**
@@ -8,6 +11,8 @@ PIE.Util = {
      * around this, we create a DocumentFragment, which in IE land is apparently a
      * full-fledged Document. It allows adding namespaces immediately, so we add the
      * namespace there and then have it create the VML element.
+     * @param {string} tag The tag name for the VML element
+     * @return {Element} The new VML element
      */
     createVmlElement: function( tag ) {
         var vmlPrefix = 'css3vml',
@@ -20,6 +25,11 @@ PIE.Util = {
     },
 
 
+    /**
+     * Simple utility for merging objects
+     * @param {Object} obj1 The main object into which all others will be merged
+     * @param {...Object} var_args Other objects which will be merged into the first, in order
+     */
     merge: function( obj1 ) {
         var i, len, p, objN, args = arguments;
         for( i = 1, len = args.length; i < len; i++ ) {
@@ -37,6 +47,9 @@ PIE.Util = {
     /**
      * Execute a callback function, passing it the dimensions of a given image once
      * they are known.
+     * @param {string} src The source URL of the image
+     * @param {function({w:number, h:number})} func The callback function to be called once the image dimensions are known
+     * @param {Object} ctx A context object which will be used as the 'this' value within the executed callback function
      */
     withImageSize: function( src, func, ctx ) {
         var sizes = PIE._imgSizes || ( PIE._imgSizes = {} ),

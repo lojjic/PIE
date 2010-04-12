@@ -1,3 +1,8 @@
+/**
+ * Handles parsing, caching, and detecting changes to border CSS
+ * @constructor
+ * @param {Element} el the target element
+ */
 PIE.BorderStyleInfo = function( el ) {
     this.element = el;
 };

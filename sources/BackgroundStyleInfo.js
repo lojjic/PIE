@@ -1,3 +1,8 @@
+/**
+ * Handles parsing, caching, and detecting changes to background (and -pie-background) CSS
+ * @constructor
+ * @param {Element} el the target element
+ */
 PIE.BackgroundStyleInfo = function( el ) {
     this.element = el;
 };
@@ -45,24 +50,30 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
      *         }
      *     ]
      * }
-     * @param css
+     * @param {String} css
+     * @override
      */
     parseCss: function( css ) {
         var el = this.element,
             cs = el.currentStyle,
             rs = el.runtimeStyle,
             tokenizer, token, image,
+            tok_type = PIE.Tokenizer.Type,
+            type_length = tok_type.LENGTH,
+            type_operator = tok_type.OPERATOR,
+            type_ident = tok_type.IDENT,
+            type_color = tok_type.COLOR,
             tokType, tokVal,
             positionIdents = this.positionIdents,
             gradient, stop,
             props = null;
 
         function isLengthOrPercent( token ) {
-            return token.type === 'LENGTH' || token.type === 'PERCENT' || ( token.type === 'NUMBER' && token.value === '0' );
+            return token.type === type_length || token.type === tok_type.PERCENT || ( token.type === tok_type.NUMBER && token.value === '0' );
         }
 
         function isBgPosToken( token ) {
-            return isLengthOrPercent( token ) || ( token.type === 'IDENT' && token.value in positionIdents );
+            return isLengthOrPercent( token ) || ( token.type === type_ident && token.value in positionIdents );
         }
 
         function sizeToken( token ) {
@@ -79,7 +90,7 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
                 tokType = token.type;
                 tokVal = token.value;
 
-                if( !image.type && tokType === 'FUNCTION' && tokVal === 'linear-gradient(' ) {
+                if( !image.type && tokType === tok_type.FUNCTION && tokVal === 'linear-gradient(' ) {
                     gradient = { stops: [], type: 'linear-gradient' };
                     stop = {};
                     while( token = tokenizer.next() ) {
@@ -98,11 +109,11 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
                         }
 
                         // Color stop - must start with color
-                        if( tokType === 'COLOR' ) {
+                        if( tokType === type_color ) {
                             // if we already have an angle/position, make sure that the previous token was a comma
                             if( gradient.angle || gradient.gradientStart ) {
                                 token = tokenizer.prev();
-                                if( token.type !== 'OPERATOR' ) {
+                                if( token.type !== type_operator ) {
                                     break; //fail
                                 }
                                 tokenizer.next();
@@ -113,14 +124,14 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
                             };
                             // check for offset following color
                             token = tokenizer.next();
-                            if( token.type === 'LENGTH' || token.type === 'PERCENT' || token.type === 'NUMBER' ) {
+                            if( isLengthOrPercent( token ) ) {
                                 stop.offset = new PIE.Length( token.value );
                             } else {
                                 tokenizer.prev();
                             }
                         }
                         // Angle - can only appear in first spot
-                        else if( tokType === 'ANGLE' && !gradient.angle && !stop.color && !gradient.stops.length ) {
+                        else if( tokType === tok_type.ANGLE && !gradient.angle && !stop.color && !gradient.stops.length ) {
                             gradient.angle = new PIE.Angle( token.value );
                         }
                         else if( isBgPosToken( token ) && !gradient.gradientStart && !stop.color && !gradient.stops.length ) {
@@ -132,7 +143,7 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
                             );
                             tokenizer.prev();
                         }
-                        else if( tokType === 'OPERATOR' && tokVal === ',' ) {
+                        else if( tokType === type_operator && tokVal === ',' ) {
                             if( stop.color ) {
                                 gradient.stops.push( stop );
                                 stop = {};
@@ -144,7 +155,7 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
                         }
                     }
                 }
-                else if( !image.type && tokType === 'URL' ) {
+                else if( !image.type && tokType === tok_type.URL ) {
                     image.url = tokVal;
                     image.type = 'image';
                 }
@@ -157,7 +168,7 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
                     );
                     tokenizer.prev();
                 }
-                else if( tokType === 'IDENT' ) {
+                else if( tokType === type_ident ) {
                     if( tokVal in this.repeatIdents ) {
                         image.repeat = tokVal;
                     }
@@ -171,16 +182,16 @@ PIE.Util.merge( PIE.BackgroundStyleInfo.prototype, PIE.StyleBase, {
                         image.attachment = tokVal;
                     }
                 }
-                else if( tokType === 'COLOR' && !props.color ) {
+                else if( tokType === type_color && !props.color ) {
                     props.color = new PIE.Color( tokVal );
                 }
-                else if( tokType === 'OPERATOR' ) {
+                else if( tokType === type_operator ) {
                     // background size
                     if( tokVal === '/' ) {
                         token = tokenizer.next();
                         tokType = token.type;
                         tokVal = token.value;
-                        if( tokType === 'IDENT' && tokVal in this.sizeIdents ) {
+                        if( tokType === type_ident && tokVal in this.sizeIdents ) {
                             image.size = tokVal;
                         }
                         else if( tokVal = sizeToken( token ) ) {
