@@ -1,7 +1,7 @@
-var PIE = window.PIE;
+var PIE = window['PIE'];
 
 if( !PIE ) {
-    PIE = window.PIE = {
+    PIE = window['PIE'] = {
         CSS_PREFIX: '-pie-',
         STYLE_PREFIX: 'Pie'
     };

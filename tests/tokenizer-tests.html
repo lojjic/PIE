@@ -97,33 +97,33 @@
             <script type="text/javascript">
 
                 runTest( '#00CCFF', [
-                    { type: 'COLOR', value: '#00CCFF' }
+                    { type: PIE.Tokenizer.Type.COLOR, value: '#00CCFF' }
                 ] );
 
                 runTest( 'rgb(0,127, 255 )', [
-                    { type: 'COLOR', value:'rgb(0,127, 255 )' }
+                    { type: PIE.Tokenizer.Type.COLOR, value:'rgb(0,127, 255 )' }
                 ] );
 
                 runTest( 'rgba(0,127, 255, 1 )', [
-                    { type: 'COLOR', value:'rgba(0,127, 255, 1 )' }
+                    { type: PIE.Tokenizer.Type.COLOR, value:'rgba(0,127, 255, 1 )' }
                 ] );
 
                 runTest( 'linear-gradient(center top, yellow, blue)', [
-                    { type: 'FUNCTION', value: 'linear-gradient(' },
-                    { type: 'IDENT', value: 'center' },
-                    { type: 'IDENT', value: 'top' },
-                    { type: 'OPERATOR', value: ',' },
-                    { type: 'COLOR', value: 'yellow' },
-                    { type: 'OPERATOR', value: ',' },
-                    { type: 'COLOR', value: 'blue' },
-                    { type: 'CHAR', value: ')' }
+                    { type: PIE.Tokenizer.Type.FUNCTION, value: 'linear-gradient(' },
+                    { type: PIE.Tokenizer.Type.IDENT, value: 'center' },
+                    { type: PIE.Tokenizer.Type.IDENT, value: 'top' },
+                    { type: PIE.Tokenizer.Type.OPERATOR, value: ',' },
+                    { type: PIE.Tokenizer.Type.COLOR, value: 'yellow' },
+                    { type: PIE.Tokenizer.Type.OPERATOR, value: ',' },
+                    { type: PIE.Tokenizer.Type.COLOR, value: 'blue' },
+                    { type: PIE.Tokenizer.Type.CHARACTER, value: ')' }
                 ] );
 
                 runTest( 'top 15px 3em 50%', [
-                    { type: 'IDENT', value: 'top' },
-                    { type: 'LENGTH', value: '15px' },
-                    { type: 'LENGTH', value: '3em' },
-                    { type: 'PERCENT', value: '50%' }
+                    { type: PIE.Tokenizer.Type.IDENT, value: 'top' },
+                    { type: PIE.Tokenizer.Type.LENGTH, value: '15px' },
+                    { type: PIE.Tokenizer.Type.LENGTH, value: '3em' },
+                    { type: PIE.Tokenizer.Type.PERCENT, value: '50%' }
                 ] );
 
             </script>

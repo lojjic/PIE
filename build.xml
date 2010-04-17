@@ -38,11 +38,23 @@
     </target>
 
     <target name="package-compressed" depends="package-uncompressed">
-        <!--<copy file="${build_dir}/script_uncompressed.js" tofile="${build_dir}/script_compressed.js" overwrite="true" />-->
+        <exec executable="java">
+            <arg line='-jar tools/compiler.jar
+                       --js ${build_dir}/script_uncompressed.js
+                       --js ${src_dir}/closure_preservefunctions.js
+                       --module "script_compressed:1"
+                       --module "temp:1"
+                       --module_output_path_prefix ${build_dir}/
+                       --compilation_level ADVANCED_OPTIMIZATIONS
+                       --externs ${src_dir}/closure_externs.js' />
+        </exec>
+        <delete file="${build_dir}/temp.js" />
 
+        <!--
         <exec executable="yuicompressor">
             <arg line="${build_dir}/script_uncompressed.js -o ${build_dir}/script_compressed.js" />
         </exec>
+        -->
 
         <concat destfile="${build_dir}/PIE.htc">
             <fileset file="${src_dir}/htc_open.txt" />

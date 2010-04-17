@@ -52,7 +52,7 @@ PIE.RendererBase = {
             s = shape.style;
             s.position = 'absolute';
             s.left = s.top = 0;
-            s.behavior = 'url(#default#VML)';
+            s['behavior'] = 'url(#default#VML)';
         }
         return shape;
     },
@@ -87,14 +87,14 @@ PIE.RendererBase = {
             h = el.offsetHeight,
             tlX, tlY, trX, trY, brX, brY, blX, blY, f;
 
-        tlX = radii.x.tl.pixels( el, w );
-        tlY = radii.y.tl.pixels( el, h );
-        trX = radii.x.tr.pixels( el, w );
-        trY = radii.y.tr.pixels( el, h );
-        brX = radii.x.br.pixels( el, w );
-        brY = radii.y.br.pixels( el, h );
-        blX = radii.x.bl.pixels( el, w );
-        blY = radii.y.bl.pixels( el, h );
+        tlX = radii.x['tl'].pixels( el, w );
+        tlY = radii.y['tl'].pixels( el, h );
+        trX = radii.x['tr'].pixels( el, w );
+        trY = radii.y['tr'].pixels( el, h );
+        brX = radii.x['br'].pixels( el, w );
+        brY = radii.y['br'].pixels( el, h );
+        blX = radii.x['bl'].pixels( el, w );
+        blY = radii.y['bl'].pixels( el, h );
 
         // If any corner ellipses overlap, reduce them all by the appropriate factor. This formula
         // is taken straight from the CSS3 Backgrounds and Borders spec.
@@ -117,16 +117,16 @@ PIE.RendererBase = {
 
         return {
             x: {
-                tl: tlX,
-                tr: trX,
-                br: brX,
-                bl: blX
+                'tl': tlX,
+                'tr': trX,
+                'br': brX,
+                'bl': blX
             },
             y: {
-                tl: tlY,
-                tr: trY,
-                br: brY,
-                bl: blY
+                'tl': tlY,
+                'tr': trY,
+                'br': brY,
+                'bl': blY
             }
         }
     },
@@ -153,14 +153,14 @@ PIE.RendererBase = {
         if( radInfo.isActive() ) {
             r = this.getRadiiPixels( radInfo.getProps() );
 
-            tlX = r.x.tl;
-            tlY = r.y.tl;
-            trX = r.x.tr;
-            trY = r.y.tr;
-            brX = r.x.br;
-            brY = r.y.br;
-            blX = r.x.bl;
-            blY = r.y.bl;
+            tlX = r.x['tl'];
+            tlY = r.y['tl'];
+            trX = r.x['tr'];
+            trY = r.y['tr'];
+            brX = r.x['br'];
+            brY = r.y['br'];
+            blX = r.x['bl'];
+            blY = r.y['bl'];
 
             str = 'm' + shrinkL + ',' + floor(tlY) +
                 'qy' + floor(tlX) + ',' + shrinkT +
