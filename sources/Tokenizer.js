@@ -201,7 +201,7 @@ PIE.Tokenizer = (function() {
 
         /**
          * Retrieve all the tokens in the CSS string
-         * @return {Array<{PIE.Tokenizer.Token}>}
+         * @return {Array.<PIE.Tokenizer.Token>}
          */
         all: function() {
             while( this.next() ) {}
@@ -215,7 +215,7 @@ PIE.Tokenizer = (function() {
          * @param {boolean} require - if true, then if the end of the CSS string is reached
          *        before the test function returns true, null will be returned instead of the
          *        tokens that have been found so far.
-         * @return {Array<{PIE.Tokenizer.Token}>}
+         * @return {Array.<PIE.Tokenizer.Token>}
          */
         until: function( func, require ) {
             var list = [], t, hit;

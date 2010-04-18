@@ -133,7 +133,7 @@ PIE.RendererBase = {
 
     /**
      * Return the VML path string for the element's background box, with corners rounded.
-     * @param {Object<{t:number, r:number, b:number, l:number}>} shrink - if present, specifies number of
+     * @param {Object.<{t:number, r:number, b:number, l:number}>} shrink - if present, specifies number of
      *        pixels to shrink the box path inward from the element's four sides.
      * @return {string} the VML path
      */

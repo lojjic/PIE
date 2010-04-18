@@ -1,7 +1,7 @@
 /**
  * Wrapper for a CSS3 bg-position value. Takes up to 2 position keywords and 2 lengths/percentages.
  * @constructor
- * @param {Array<{PIE.Tokenizer.Token}>} tokens The tokens making up the background position value.
+ * @param {Array.<PIE.Tokenizer.Token>} tokens The tokens making up the background position value.
  */
 PIE.BgPosition = (function() {
     function BgPosition( tokens ) {

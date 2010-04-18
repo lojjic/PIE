@@ -451,7 +451,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
 
         /**
          * Get the VML path definitions for the border segment(s).
-         * @return {Array<{string}>}
+         * @return {Array.<string>}
          */
         getBorderSegments: function() {
             var el = this.element,
