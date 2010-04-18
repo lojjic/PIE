@@ -55,14 +55,14 @@ PIE.BackgroundAndBorderRenderer = (function() {
          */
         drawBgColor: function() {
             var props = this.styleInfos.background.getProps(),
-                color = props && props.color && props.color.value(),
-                cont, el, shape, w, h, s, alpha;
+                el = this.element,
+                color = props && props.color && props.color.value( el ),
+                cont, shape, w, h, s, alpha;
 
             if( color && color !== 'transparent' ) {
                 this.hideBackground();
 
                 cont = this.getBox();
-                el = this.element;
                 shape = this.getShape( 'bgColor', 'fill' );
                 w = el.offsetWidth;
                 h = el.offsetHeight;
@@ -351,7 +351,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
             // Convert to percentage along the VML gradient line and add to the VML 'colors' value
             for( i = 0; i < stopCount; i++ ) {
                 vmlColors.push(
-                    ( vmlOffsetPct + ( stopPx[ i ] / vmlGradientLength * 100 ) ) + '% ' + stops[i].color.value()
+                    ( vmlOffsetPct + ( stopPx[ i ] / vmlGradientLength * 100 ) ) + '% ' + stops[i].color.value( el )
                 );
             }
 
@@ -360,8 +360,8 @@ PIE.BackgroundAndBorderRenderer = (function() {
             fill['angle'] = vmlAngle;
             fill['type'] = 'gradient';
             fill['method'] = 'sigma';
-            fill['color'] = stops[0].color.value();
-            fill['color2'] = stops[stopCount - 1].color.value();
+            fill['color'] = stops[0].color.value( el );
+            fill['color2'] = stops[stopCount - 1].color.value( el );
             fill['colors'].value = vmlColors.join( ',' );
         },
 
@@ -397,11 +397,11 @@ PIE.BackgroundAndBorderRenderer = (function() {
                     if( seg.stroke ) {
                         stroke = shape.stroke;
                         stroke['weight'] = seg.weight + 'px';
-                        stroke.color = seg.color.value();
+                        stroke.color = seg.color.value( el );
                         stroke['dashstyle'] = seg.stroke === 'dashed' ? '2 2' : seg.stroke === 'dotted' ? '1 1' : 'solid';
                         stroke['linestyle'] = seg.stroke === 'double' && seg.weight > 2 ? 'ThinThin' : 'Single';
                     } else {
-                        shape.fill.color = seg.fill.value();
+                        shape.fill.color = seg.fill.value( el );
                     }
                 }
 

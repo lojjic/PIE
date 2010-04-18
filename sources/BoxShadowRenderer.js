@@ -102,14 +102,14 @@ PIE.BoxShadowRenderer = (function() {
                     //TODO handle wider border if needed due to very large offsets or spread
                     s.left = xOff - 20 + spread - blur;
                     s.top = yOff - 20 + spread - blur;
-                    s.border = '20px solid ' + bs.color.value();
+                    s.border = '20px solid ' + bs.color.value( el );
                 } else {
                     s.left = xOff - blur - spread;
                     s.top = yOff - blur - spread;
                     s.zIndex = this.outsetZIndex;
 
                     shape.filled = true;
-                    shape.fillcolor = bs.color.value();
+                    shape.fillcolor = bs.color.value( el );
 
                     alpha = bs.color.alpha();
                     if( alpha < 1 ) {

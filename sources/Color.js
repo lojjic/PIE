@@ -35,11 +35,12 @@ PIE.Color = (function() {
         /**
          * Retrieve the value of the color in a format usable by IE natively. This will be the same as
          * the raw input value, except for rgba values which will be converted to an rgb value.
+         * @param {Element} el The context element, used to get 'currentColor' keyword value.
          * @return {string} Color value
          */
-        value: function() {
+        value: function( el ) {
             this.parse();
-            return this._color;
+            return this._color === 'currentColor' ? el.currentStyle.color : this._color;
         },
 
         /**
