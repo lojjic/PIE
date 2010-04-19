@@ -32,6 +32,8 @@ function update( force ) {
             lastW = w;
             lastH = h;
         }
+    } else {
+        init();
     }
 }
 
@@ -56,6 +58,8 @@ function propChanged() {
                 toUpdate[i].updateProps();
             }
         }
+    } else {
+        init();
     }
 }
 
@@ -80,10 +84,13 @@ function cleanup() {
     var i, len;
 
     // destroy any active renderers
-    for( i = 0, len = renderers.length; i < len; i++ ) {
-        renderers[i].destroy();
+    if( renderers ) {
+        for( i = 0, len = renderers.length; i < len; i++ ) {
+            renderers[i].destroy();
+        }
+        renderers = null;
     }
-    renderers = null;
+    
     styleInfos = null;
 
     // remove any ancestor propertychange listeners
