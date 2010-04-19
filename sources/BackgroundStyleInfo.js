@@ -12,12 +12,12 @@ PIE.BackgroundStyleInfo = (function() {
         cssProperty: PIE.CSS_PREFIX + 'background',
         styleProperty: PIE.STYLE_PREFIX + 'Background',
 
-        attachIdents: { scroll:1, fixed:1, local:1 },
+        attachIdents: { 'scroll':1, 'fixed':1, 'local':1 },
         repeatIdents: { 'repeat-x':1, 'repeat-y':1, 'repeat':1, 'no-repeat':1 },
         originIdents: { 'padding-box':1, 'border-box':1, 'content-box':1 },
         clipIdents: { 'padding-box':1, 'border-box':1 },
-        positionIdents: { top:1, right:1, bottom:1, left:1, center:1 },
-        sizeIdents: { contain:1, cover:1 },
+        positionIdents: { 'top':1, 'right':1, 'bottom':1, 'left':1, 'center':1 },
+        sizeIdents: { 'contain':1, 'cover':1 },
 
         /**
          * For background styles, we support the -pie-background property but fall back to the standard
