@@ -68,20 +68,26 @@ PIE.BorderImageRenderer = (function() {
 
                     // image croppings
 
+                    function setCrops( sides, crop, val ) {
+                        for( var i=0, len=sides.length; i < len; i++ ) {
+                            p[ sides[i] ]['imagedata'][ crop ] = val;
+                        }
+                    }
+
                     // corners
-                    p['tl']['imagedata']['cropBottom'] = p['t']['imagedata']['cropBottom'] = p['tr']['imagedata']['cropBottom'] = ( imgSize.h - slices.t ) / imgSize.h;
-                    p['tl']['imagedata']['cropRight'] = p['l']['imagedata']['cropRight'] = p['bl']['imagedata']['cropRight'] = ( imgSize.w - slices.l ) / imgSize.w;
-                    p['bl']['imagedata']['cropTop'] = p['b']['imagedata']['cropTop'] = p['br']['imagedata']['cropTop'] = ( imgSize.h - slices.b ) / imgSize.h;
-                    p['tr']['imagedata']['cropLeft'] = p['r']['imagedata']['cropLeft'] = p['br']['imagedata']['cropLeft'] = ( imgSize.w - slices.r ) / imgSize.w;
+                    setCrops( [ 'tl', 't', 'tr' ], 'cropBottom', ( imgSize.h - slices.t ) / imgSize.h );
+                    setCrops( [ 'tl', 'l', 'bl' ], 'cropRight', ( imgSize.w - slices.l ) / imgSize.w );
+                    setCrops( [ 'bl', 'b', 'br' ], 'cropTop', ( imgSize.h - slices.b ) / imgSize.h );
+                    setCrops( [ 'tr', 'r', 'br' ], 'cropLeft', ( imgSize.w - slices.r ) / imgSize.w );
 
                     // edges and center
                     if( props.repeat.v === 'stretch' ) {
-                        p['l']['imagedata']['cropTop'] = p['r']['imagedata']['cropTop'] = p['c']['imagedata']['cropTop'] = slices.t / imgSize.h;
-                        p['l']['imagedata']['cropBottom'] = p['r']['imagedata']['cropBottom'] = p['c']['imagedata']['cropBottom'] = slices.b / imgSize.h;
+                        setCrops( [ 'l', 'r', 'c' ], 'cropTop', slices.t / imgSize.h );
+                        setCrops( [ 'l', 'r', 'c' ], 'cropBottom', slices.b / imgSize.h );
                     }
                     if( props.repeat.h === 'stretch' ) {
-                        p['t']['imagedata']['cropLeft'] = p['b']['imagedata']['cropLeft'] = p['c']['imagedata']['cropLeft'] = slices.l / imgSize.w;
-                        p['t']['imagedata']['cropRight'] = p['b']['imagedata']['cropRight'] = p['c']['imagedata']['cropRight'] = slices.r / imgSize.w;
+                        setCrops( [ 't', 'b', 'c' ], 'cropLeft', slices.l / imgSize.w );
+                        setCrops( [ 't', 'b', 'c' ], 'cropRight', slices.r / imgSize.w );
                     }
                 }, this );
             } else {
