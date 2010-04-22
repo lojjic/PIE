@@ -1,5 +1,4 @@
 PIE.StyleBase = {
-    colorRE: /(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})|rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(\s*,\s*(\d+|\d*\.\d+))?\s*\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow/,
     lengthRE: /[\-\+]?\d*\.?\d*(px|em|ex|mm|cm|in|pt|pc)|[\-\+]?0/,
     percentRE: /[\-\+]?\d+\.?\d*%|[\-\+]?0/,
     angleRE: /[\-\+]?\d+(deg|rad|grad|turn)|[\-\+]?0/,

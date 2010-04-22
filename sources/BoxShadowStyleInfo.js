@@ -12,43 +12,58 @@ PIE.BoxShadowStyleInfo = (function() {
         cssProperty: PIE.CSS_PREFIX + 'box-shadow',
         styleProperty: PIE.STYLE_PREFIX + 'BoxShadow',
 
-        noneRE: /^\s*none\s*$/,
-        insetRE: /(inset)/,
-        lengthsRE: new RegExp( '\\s*(L)\\s+(L)(\\s+(L))?(\\s+(L))?\\s*'.replace( /L/g, PIE.StyleBase.lengthRE.source ) ),
-
         parseCss: function( css ) {
             var p = null, m,
-                Length = PIE.Length;
+                Length = PIE.Length,
+                Type = PIE.Tokenizer.Type,
+                tokenizer, token, type, value, color, lengths, len;
 
-            if( css && !this.noneRE.test( css ) ) {
+            function isLength( tok ) {
+                return tok.type === Type.LENGTH || ( tok.type === Type.NUMBER && tok.value === '0' );
+            }
+
+            if( css ) {
+                tokenizer = new PIE.Tokenizer( css );
                 p = {};
 
-                // check for inset keyword
-                if( this.insetRE.test( css ) ) {
-                    css = css.replace( this.insetRE, '' );
-                    p.inset = true;
+                while( token = tokenizer.next() ) {
+                    value = token.value;
+                    type = token.type;
+
+                    if( isLength( token ) ) {
+                        if( lengths ) {
+                            return null;
+                        }
+                        tokenizer.prev();
+                        lengths = tokenizer.until( function( token ) {
+                            return !isLength( token );
+                        } );
+                    }
+                    else if( type === Type.COLOR ) {
+                        if( color ) {
+                            return null;
+                        }
+                        color = value;
+                    }
+                    else if( type === Type.IDENT ) {
+                        if( value !== 'inset' || p.inset === true ) {
+                            return null;
+                        }
+                        p.inset = true;
+                    }
                 }
 
-                // get the color
-                m = css.match( this.colorRE );
-                if( m ) {
-                    css = css.replace( this.colorRE, '' );
-                    p.color = new PIE.Color( m[0] );
-                } else {
-                    p.color = new PIE.Color( this.element.currentStyle.color );
+                len = lengths.length;
+                if( len < 2 || len > 4 ) {
+                    return null;
                 }
 
-                // all that's left should be lengths; map them to xOffset/yOffset/blurRadius/spreadRadius
-                m = css.match( this.lengthsRE );
-                if( m ) {
-                    p.xOffset = new Length( m[1] );
-                    p.yOffset = new Length( m[3] );
-                    p.blur = new Length( m[6] || '0' );
-                    p.spread = new Length( m[9] || '0' );
-                } else {
-                    // Something unknown was present; give up.
-                    p = null;
-                }
+                p.xOffset = new Length( lengths[0].value );
+                p.yOffset = new Length( lengths[1].value );
+                p.blur = new Length( lengths[2] ? lengths[2].value : '0' );
+                p.spread = new Length( lengths[3] ? lengths[3].value : '0' );
+                
+                p.color = new PIE.Color( color || 'currentColor' );
             }
 
             return p;

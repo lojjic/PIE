@@ -140,9 +140,8 @@ PIE.BackgroundStyleInfo = (function() {
                                 gradient.gradientStart = new PIE.BgPosition(
                                     tokenizer.until( function( t ) {
                                         return !isBgPosToken( t );
-                                    }, false ).slice( 0, -1 )
+                                    }, false )
                                 );
-                                tokenizer.prev();
                             }
                             else if( tokType === type_operator && tokVal === ',' ) {
                                 if( stop.color ) {
@@ -165,9 +164,8 @@ PIE.BackgroundStyleInfo = (function() {
                         image.position = new PIE.BgPosition(
                             tokenizer.until( function( t ) {
                                 return !isBgPosToken( t );
-                            }, false ).slice( 0, -1 )
+                            }, false )
                         );
-                        tokenizer.prev();
                     }
                     else if( tokType === type_ident ) {
                         if( tokVal in this.repeatIdents ) {

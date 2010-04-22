@@ -15,7 +15,7 @@ PIE.Tokenizer = (function() {
      * Enumeration of token type constants. The values are arbitrary.
      * @enum {number}
      */
-    Tokenizer.Type = {
+    var Type = Tokenizer.Type = {
         ANGLE: 1,
         CHARACTER: 2,
         COLOR: 3,
@@ -52,10 +52,10 @@ PIE.Tokenizer = (function() {
         hashColor: /^#([\da-f]{6}|[\da-f]{3})/i,
 
         unitTypes: {
-            'px': Tokenizer.Type.LENGTH, 'em': Tokenizer.Type.LENGTH, 'ex': Tokenizer.Type.LENGTH,
-            'mm': Tokenizer.Type.LENGTH, 'cm': Tokenizer.Type.LENGTH, 'in': Tokenizer.Type.LENGTH,
-            'pt': Tokenizer.Type.LENGTH, 'pc': Tokenizer.Type.LENGTH,
-            'deg': Tokenizer.Type.ANGLE, 'rad': Tokenizer.Type.ANGLE, 'grad': Tokenizer.Type.ANGLE
+            'px': Type.LENGTH, 'em': Type.LENGTH, 'ex': Type.LENGTH,
+            'mm': Type.LENGTH, 'cm': Type.LENGTH, 'in': Type.LENGTH,
+            'pt': Type.LENGTH, 'pc': Type.LENGTH,
+            'deg': Type.ANGLE, 'rad': Type.ANGLE, 'grad': Type.ANGLE
         },
 
         colorNames: {
@@ -104,7 +104,7 @@ PIE.Tokenizer = (function() {
                 case '#':
                     if( match = css.match( this.hashColor ) ) {
                         this.ch += match[0].length;
-                        return newToken( Tokenizer.Type.COLOR, match[0] );
+                        return newToken( Type.COLOR, match[0] );
                     }
                     break;
 
@@ -112,19 +112,19 @@ PIE.Tokenizer = (function() {
                 case "'":
                     if( match = css.match( this.string ) ) {
                         this.ch += match[0].length;
-                        return newToken( Tokenizer.Type.STRING, match[2] || match[3] || '' );
+                        return newToken( Type.STRING, match[2] || match[3] || '' );
                     }
                     break;
 
                 case "/":
                 case ",":
                     this.ch++;
-                    return newToken( Tokenizer.Type.OPERATOR, ch );
+                    return newToken( Type.OPERATOR, ch );
 
                 case 'u':
                     if( match = css.match( this.url ) ) {
                         this.ch += match[0].length;
-                        return newToken( Tokenizer.Type.URL, match[2] || match[3] || match[4] || '' );
+                        return newToken( Type.URL, match[2] || match[3] || match[4] || '' );
                     }
             }
 
@@ -136,16 +136,16 @@ PIE.Tokenizer = (function() {
                 // Check if it is followed by a unit
                 if( css.charAt( val.length ) === '%' ) {
                     this.ch++;
-                    return newToken( Tokenizer.Type.PERCENT, val + '%' );
+                    return newToken( Type.PERCENT, val + '%' );
                 }
                 if( match = css.substring( val.length ).match( this.ident ) ) {
                     val += match[0];
                     this.ch += match[0].length;
-                    return newToken( this.unitTypes[ match[0].toLowerCase() ] || Tokenizer.Type.DIMEN, val );
+                    return newToken( this.unitTypes[ match[0].toLowerCase() ] || Type.DIMEN, val );
                 }
 
                 // Plain ol' number
-                return newToken( Tokenizer.Type.NUMBER, val );
+                return newToken( Type.NUMBER, val );
             }
 
             // Identifiers
@@ -155,7 +155,7 @@ PIE.Tokenizer = (function() {
 
                 // Named colors
                 if( val.toLowerCase() in this.colorNames ) {
-                    return newToken( Tokenizer.Type.COLOR, val );
+                    return newToken( Type.COLOR, val );
                 }
 
                 // Functions
@@ -164,31 +164,31 @@ PIE.Tokenizer = (function() {
 
                     // Color values in function format: rgb, rgba, hsl, hsla
                     if( val.toLowerCase() in this.colorFunctions ) {
-                        if( ( next = this.next() ) && ( next.type === Tokenizer.Type.NUMBER || ( val.charAt(0) === 'r' && next.type === Tokenizer.Type.PERCENT ) ) &&
+                        if( ( next = this.next() ) && ( next.type === Type.NUMBER || ( val.charAt(0) === 'r' && next.type === Type.PERCENT ) ) &&
                             ( next = this.next() ) && next.value === ',' &&
-                            ( next = this.next() ) && ( next.type === Tokenizer.Type.NUMBER || next.type === Tokenizer.Type.PERCENT ) &&
+                            ( next = this.next() ) && ( next.type === Type.NUMBER || next.type === Type.PERCENT ) &&
                             ( next = this.next() ) && next.value === ',' &&
-                            ( next = this.next() ) && ( next.type === Tokenizer.Type.NUMBER || next.type === Tokenizer.Type.PERCENT ) &&
+                            ( next = this.next() ) && ( next.type === Type.NUMBER || next.type === Type.PERCENT ) &&
                             ( val === 'rgb' || val === 'hsa' || (
                                 ( next = this.next() ) && next.value === ',' &&
-                                ( next = this.next() ) && next.type === Tokenizer.Type.NUMBER )
+                                ( next = this.next() ) && next.type === Type.NUMBER )
                             ) &&
                             ( next = this.next() ) && next.value === ')' ) {
-                            return newToken( Tokenizer.Type.COLOR, css.substring( 0, this.ch ) );
+                            return newToken( Type.COLOR, css.substring( 0, this.ch ) );
                         }
                         return null;
                     }
 
-                    return newToken( Tokenizer.Type.FUNCTION, val + '(' );
+                    return newToken( Type.FUNCTION, val + '(' );
                 }
 
                 // Other identifier
-                return newToken( Tokenizer.Type.IDENT, val );
+                return newToken( Type.IDENT, val );
             }
 
             // Standalone character
             this.ch++;
-            return newToken( Tokenizer.Type.CHARACTER, ch );
+            return newToken( Type.CHARACTER, ch );
         },
 
         /**
@@ -210,7 +210,7 @@ PIE.Tokenizer = (function() {
 
         /**
          * Return a list of tokens from the current position until the given function returns
-         * true. The final token will be included in the list.
+         * true. The final token will not be included in the list.
          * @param {function():boolean} func - test function
          * @param {boolean} require - if true, then if the end of the CSS string is reached
          *        before the test function returns true, null will be returned instead of the
@@ -220,11 +220,12 @@ PIE.Tokenizer = (function() {
         until: function( func, require ) {
             var list = [], t, hit;
             while( t = this.next() ) {
-                list.push( t );
                 if( func( t ) ) {
                     hit = true;
+                    this.prev();
                     break;
                 }
+                list.push( t );
             }
             return require && !hit ? null : list;
         }
