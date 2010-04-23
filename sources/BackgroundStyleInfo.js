@@ -60,7 +60,6 @@ PIE.BackgroundStyleInfo = (function() {
                 rs = el.runtimeStyle,
                 tokenizer, token, image,
                 tok_type = PIE.Tokenizer.Type,
-                type_length = tok_type.LENGTH,
                 type_operator = tok_type.OPERATOR,
                 type_ident = tok_type.IDENT,
                 type_color = tok_type.COLOR,
@@ -69,16 +68,12 @@ PIE.BackgroundStyleInfo = (function() {
                 gradient, stop,
                 props = null;
 
-            function isLengthOrPercent( token ) {
-                return token.type === type_length || token.type === tok_type.PERCENT || ( token.type === tok_type.NUMBER && token.value === '0' );
-            }
-
             function isBgPosToken( token ) {
-                return isLengthOrPercent( token ) || ( token.type === type_ident && token.value in positionIdents );
+                return token.isLengthOrPercent() || ( token.type === type_ident && token.value in positionIdents );
             }
 
             function sizeToken( token ) {
-                return ( isLengthOrPercent( token ) && new PIE.Length( token.value ) ) || ( token.value === 'auto' && 'auto' );
+                return ( token.isLengthOrPercent() && new PIE.Length( token.value ) ) || ( token.value === 'auto' && 'auto' );
             }
 
             // If the CSS3-specific -pie-background property is present, parse it
@@ -125,7 +120,7 @@ PIE.BackgroundStyleInfo = (function() {
                                 };
                                 // check for offset following color
                                 token = tokenizer.next();
-                                if( isLengthOrPercent( token ) ) {
+                                if( token.isLengthOrPercent() ) {
                                     stop.offset = new PIE.Length( token.value );
                                 } else {
                                     tokenizer.prev();

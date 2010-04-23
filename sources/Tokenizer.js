@@ -40,6 +40,14 @@ PIE.Tokenizer = (function() {
         this.type = type;
         this.value = value;
     };
+    Tokenizer.Token.prototype = {
+        isLength: function() {
+            return this.type === Type.LENGTH || ( this.type === Type.NUMBER && this.value === '0' );
+        },
+        isLengthOrPercent: function() {
+            return this.isLength() || this.type === Type.PERCENT;
+        }
+    };
 
     Tokenizer.prototype = {
         whitespace: /\s/,

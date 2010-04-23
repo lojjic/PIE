@@ -1,7 +1,6 @@
 PIE.StyleBase = {
     lengthRE: /[\-\+]?\d*\.?\d*(px|em|ex|mm|cm|in|pt|pc)|[\-\+]?0/,
     percentRE: /[\-\+]?\d+\.?\d*%|[\-\+]?0/,
-    angleRE: /[\-\+]?\d+(deg|rad|grad|turn)|[\-\+]?0/,
     urlRE: /^url\(\s*['"]?([^\s\)"]*)['"]?\s*\)$/,
     trimRE: /^\s*|\s*$/g,
 

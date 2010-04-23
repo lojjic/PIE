@@ -18,10 +18,6 @@ PIE.BoxShadowStyleInfo = (function() {
                 Type = PIE.Tokenizer.Type,
                 tokenizer, token, type, value, color, lengths, len;
 
-            function isLength( tok ) {
-                return tok.type === Type.LENGTH || ( tok.type === Type.NUMBER && tok.value === '0' );
-            }
-
             if( css ) {
                 tokenizer = new PIE.Tokenizer( css );
                 p = {};
@@ -30,13 +26,13 @@ PIE.BoxShadowStyleInfo = (function() {
                     value = token.value;
                     type = token.type;
 
-                    if( isLength( token ) ) {
+                    if( token.isLength() ) {
                         if( lengths ) {
                             return null;
                         }
                         tokenizer.prev();
                         lengths = tokenizer.until( function( token ) {
-                            return !isLength( token );
+                            return !token.isLength();
                         } );
                     }
                     else if( type === Type.COLOR ) {
