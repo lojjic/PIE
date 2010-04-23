@@ -12,22 +12,22 @@ PIE.Tokenizer = (function() {
     }
 
     /**
-     * Enumeration of token type constants. The values are arbitrary.
+     * Enumeration of token type constants.
      * @enum {number}
      */
     var Type = Tokenizer.Type = {
         ANGLE: 1,
         CHARACTER: 2,
-        COLOR: 3,
-        DIMEN: 4,
-        FUNCTION: 5,
-        IDENT: 6,
-        LENGTH: 7,
-        NUMBER: 8,
-        OPERATOR: 9,
-        PERCENT: 10,
-        STRING: 11,
-        URL: 12
+        COLOR: 4,
+        DIMEN: 8,
+        FUNCTION: 16,
+        IDENT: 32,
+        LENGTH: 64,
+        NUMBER: 128,
+        OPERATOR: 256,
+        PERCENT: 512,
+        STRING: 1024,
+        URL: 2048
     };
 
     /**
@@ -75,7 +75,7 @@ PIE.Tokenizer = (function() {
          * @return {PIE.Tokenizer.Token}
          */
         next: function() {
-            var css, ch, match, type, val, next,
+            var css, ch, match, type, val,
                 me = this;
 
             // In case we previously backed up, return the stored token in the next slot
@@ -164,16 +164,29 @@ PIE.Tokenizer = (function() {
 
                     // Color values in function format: rgb, rgba, hsl, hsla
                     if( val.toLowerCase() in this.colorFunctions ) {
-                        if( ( next = this.next() ) && ( next.type === Type.NUMBER || ( val.charAt(0) === 'r' && next.type === Type.PERCENT ) ) &&
-                            ( next = this.next() ) && next.value === ',' &&
-                            ( next = this.next() ) && ( next.type === Type.NUMBER || next.type === Type.PERCENT ) &&
-                            ( next = this.next() ) && next.value === ',' &&
-                            ( next = this.next() ) && ( next.type === Type.NUMBER || next.type === Type.PERCENT ) &&
+                        function isNum( tok ) {
+                            return tok && tok.type === Type.NUMBER;
+                        }
+                        function isNumOrPct( tok ) {
+                            return tok && ( tok.type & ( Type.NUMBER | Type.PERCENT ) );
+                        }
+                        function isValue( tok, val ) {
+                            return tok && tok.value === val;
+                        }
+                        function next() {
+                            return me.next();
+                        }
+
+                        if( ( val.charAt(0) === 'r' ? isNumOrPct( next() ) : isNum( next() ) ) &&
+                            isValue( next(), ',' ) &&
+                            isNumOrPct( next() ) &&
+                            isValue( next(), ',' ) &&
+                            isNumOrPct( next() ) &&
                             ( val === 'rgb' || val === 'hsa' || (
-                                ( next = this.next() ) && next.value === ',' &&
-                                ( next = this.next() ) && next.type === Type.NUMBER )
-                            ) &&
-                            ( next = this.next() ) && next.value === ')' ) {
+                                isValue( next(), ',' ) &&
+                                isNum( next() )
+                            ) ) &&
+                            isValue( next(), ')' ) ) {
                             return newToken( Type.COLOR, css.substring( 0, this.ch ) );
                         }
                         return null;
