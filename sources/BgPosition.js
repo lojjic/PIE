@@ -39,28 +39,28 @@ PIE.BgPosition = (function() {
                 // Two values - CSS2
                 if( len === 2 ) {
                     // If both idents, they can appear in either order, so switch them if needed
-                    if( tokens[0].type === type_ident && tokens[1].type === type_ident &&
+                    if( type_ident & ( tokens[0].type | tokens[1].type ) &&
                         tokens[0].value in vert_idents && tokens[1].value in horiz_idents ) {
                         tokens.push( tokens.shift() );
                     }
-                    if( tokens[0].type === type_ident ) {
+                    if( tokens[0].type & type_ident ) {
                         if( tokens[0].value === 'center' ) {
                             vals[1] = length_fifty;
                         } else {
                             vals[0] = tokens[0].value;
                         }
                     }
-                    else if( tokens[0].type === type_length || tokens[0].type === type_percent ) {
+                    else if( tokens[0].isLengthOrPercent() ) {
                         vals[1] = new PIE.Length( tokens[0].value );
                     }
-                    if( tokens[1].type === type_ident ) {
+                    if( tokens[1].type & type_ident ) {
                         if( tokens[1].value === 'center' ) {
                             vals[3] = length_fifty;
                         } else {
                             vals[2] = tokens[1].value;
                         }
                     }
-                    else if( tokens[1].type === type_length || tokens[1].type === type_percent ) {
+                    else if( tokens[1].isLengthOrPercent() ) {
                         vals[3] = new PIE.Length( tokens[1].value );
                     }
                 }

@@ -42,10 +42,10 @@ PIE.Tokenizer = (function() {
     };
     Tokenizer.Token.prototype = {
         isLength: function() {
-            return this.type === Type.LENGTH || ( this.type === Type.NUMBER && this.value === '0' );
+            return this.type & Type.LENGTH || ( this.type & Type.NUMBER && this.value === '0' );
         },
         isLengthOrPercent: function() {
-            return this.isLength() || this.type === Type.PERCENT;
+            return this.isLength() || this.type & Type.PERCENT;
         }
     };
 
@@ -173,7 +173,7 @@ PIE.Tokenizer = (function() {
                     // Color values in function format: rgb, rgba, hsl, hsla
                     if( val.toLowerCase() in this.colorFunctions ) {
                         function isNum( tok ) {
-                            return tok && tok.type === Type.NUMBER;
+                            return tok && tok.type & Type.NUMBER;
                         }
                         function isNumOrPct( tok ) {
                             return tok && ( tok.type & ( Type.NUMBER | Type.PERCENT ) );

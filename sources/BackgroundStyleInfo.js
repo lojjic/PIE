@@ -69,7 +69,7 @@ PIE.BackgroundStyleInfo = (function() {
                 props = null;
 
             function isBgPosToken( token ) {
-                return token.isLengthOrPercent() || ( token.type === type_ident && token.value in positionIdents );
+                return token.isLengthOrPercent() || ( token.type & type_ident && token.value in positionIdents );
             }
 
             function sizeToken( token ) {

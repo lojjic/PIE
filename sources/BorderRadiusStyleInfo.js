@@ -45,7 +45,7 @@ PIE.BorderRadiusStyleInfo = (function() {
                 if( x = collectLengths() ) {
                     // See if there is a slash followed by more lengths, for the y-axis radii
                     if( token ) {
-                        if( token.type === PIE.Tokenizer.Type.OPERATOR && token.value === '/' ) {
+                        if( token.type & PIE.Tokenizer.Type.OPERATOR && token.value === '/' ) {
                             y = collectLengths();
                         }
                     } else {
