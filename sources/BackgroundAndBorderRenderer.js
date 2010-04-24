@@ -424,7 +424,8 @@ PIE.BackgroundAndBorderRenderer = (function() {
          * however IE6 does not support transparent borders so we have to get tricky with it.
          */
         hideBorder: function() {
-            var el = this.element;
+            var el = this.element,
+                rs = el.runtimeStyle;
             if( PIE.isIE6 ) {
                 // Wrap all the element's children in a custom element, set the element to visiblity:hidden,
                 // and set the wrapper element to visiblity:visible. This hides the outer element's decorations
@@ -434,17 +435,18 @@ PIE.BackgroundAndBorderRenderer = (function() {
                 // won't work for elements which cannot take children, e.g. input/button/textarea/img/etc. Look into
                 // using a compositor filter or some other filter which masks the border.
                 if( el.childNodes.length !== 1 || el.firstChild.tagName !== 'ie6-mask' ) {
-                    var cont = this.element.document.createElement( 'ie6-mask' );
-                    cont.style.visibility = 'visible';
-                    cont.style.zoom = 1;
-                    while( el.firstChild ) {
-                        cont.appendChild( el.firstChild );
+                    var cont = el.document.createElement( 'ie6-mask' ),
+                        s = cont.style, child;
+                    s.visibility = 'visible';
+                    s.zoom = 1;
+                    while( child = el.firstChild ) {
+                        cont.appendChild( child );
                     }
                     el.appendChild( cont );
-                    el.runtimeStyle.visibility = 'hidden';
+                    rs.visibility = 'hidden';
                 }
             } else {
-                el.runtimeStyle.borderColor = 'transparent';
+                rs.borderColor = 'transparent';
             }
         },
 
