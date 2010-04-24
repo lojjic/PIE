@@ -35,7 +35,6 @@ PIE.BorderImageRenderer = (function() {
                 PIE.Util.withImageSize( props.src, function( imgSize ) {
                     var w = el.offsetWidth,
                         h = el.offsetHeight,
-                        z = el.currentStyle.zIndex,
 
                         t = p['t'].style,
                         tr = p['tr'].style,

@@ -52,7 +52,9 @@ function propChanged() {
         else { //if( event.propertyName === 'style.boxShadow' ) {
             toUpdate = [];
             for( i = 0, len = renderers.length; i < len; i++ ) {
-                toUpdate.push( renderers[i] );
+                if( renderers[i].needsUpdate() ) {
+                    toUpdate.push( renderers[i] );
+                }
             }
             for( i = 0, len = toUpdate.length; i < len; i++ ) {
                 toUpdate[i].updateProps();
