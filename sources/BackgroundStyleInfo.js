@@ -86,7 +86,7 @@ PIE.BackgroundStyleInfo = (function() {
                     tokType = token.type;
                     tokVal = token.value;
 
-                    if( !image.type && tokType === tok_type.FUNCTION && tokVal === 'linear-gradient(' ) {
+                    if( !image.type && tokType & tok_type.FUNCTION && tokVal === 'linear-gradient(' ) {
                         gradient = { stops: [], type: 'linear-gradient' };
                         stop = {};
                         while( token = tokenizer.next() ) {
@@ -94,7 +94,7 @@ PIE.BackgroundStyleInfo = (function() {
                             tokVal = token.value;
 
                             // If we reached the end of the function and had at least 2 stops, flush the info
-                            if( tokType === tok_type.CHARACTER && tokVal === ')' ) {
+                            if( tokType & tok_type.CHARACTER && tokVal === ')' ) {
                                 if( stop.color ) {
                                     gradient.stops.push( stop );
                                 }
@@ -105,7 +105,7 @@ PIE.BackgroundStyleInfo = (function() {
                             }
 
                             // Color stop - must start with color
-                            if( tokType === type_color ) {
+                            if( tokType & type_color ) {
                                 // if we already have an angle/position, make sure that the previous token was a comma
                                 if( gradient.angle || gradient.gradientStart ) {
                                     token = tokenizer.prev();
@@ -127,7 +127,7 @@ PIE.BackgroundStyleInfo = (function() {
                                 }
                             }
                             // Angle - can only appear in first spot
-                            else if( tokType === tok_type.ANGLE && !gradient.angle && !stop.color && !gradient.stops.length ) {
+                            else if( tokType & tok_type.ANGLE && !gradient.angle && !stop.color && !gradient.stops.length ) {
                                 gradient.angle = new PIE.Angle( token.value );
                             }
                             else if( isBgPosToken( token ) && !gradient.gradientStart && !stop.color && !gradient.stops.length ) {
@@ -138,7 +138,7 @@ PIE.BackgroundStyleInfo = (function() {
                                     }, false )
                                 );
                             }
-                            else if( tokType === type_operator && tokVal === ',' ) {
+                            else if( tokType & type_operator && tokVal === ',' ) {
                                 if( stop.color ) {
                                     gradient.stops.push( stop );
                                     stop = {};
@@ -150,7 +150,7 @@ PIE.BackgroundStyleInfo = (function() {
                             }
                         }
                     }
-                    else if( !image.type && tokType === tok_type.URL ) {
+                    else if( !image.type && tokType & tok_type.URL ) {
                         image.url = tokVal;
                         image.type = 'image';
                     }
@@ -162,7 +162,7 @@ PIE.BackgroundStyleInfo = (function() {
                             }, false )
                         );
                     }
-                    else if( tokType === type_ident ) {
+                    else if( tokType & type_ident ) {
                         if( tokVal in this.repeatIdents ) {
                             image.repeat = tokVal;
                         }
@@ -176,16 +176,16 @@ PIE.BackgroundStyleInfo = (function() {
                             image.attachment = tokVal;
                         }
                     }
-                    else if( tokType === type_color && !props.color ) {
+                    else if( tokType & type_color && !props.color ) {
                         props.color = new PIE.Color( tokVal );
                     }
-                    else if( tokType === type_operator ) {
+                    else if( tokType & type_operator ) {
                         // background size
                         if( tokVal === '/' ) {
                             token = tokenizer.next();
                             tokType = token.type;
                             tokVal = token.value;
-                            if( tokType === type_ident && tokVal in this.sizeIdents ) {
+                            if( tokType & type_ident && tokVal in this.sizeIdents ) {
                                 image.size = tokVal;
                             }
                             else if( tokVal = sizeToken( token ) ) {

@@ -35,13 +35,13 @@ PIE.BoxShadowStyleInfo = (function() {
                             return !token.isLength();
                         } );
                     }
-                    else if( type === Type.COLOR ) {
+                    else if( type & Type.COLOR ) {
                         if( color ) {
                             return null;
                         }
                         color = value;
                     }
-                    else if( type === Type.IDENT ) {
+                    else if( type & Type.IDENT ) {
                         if( value !== 'inset' || p.inset === true ) {
                             return null;
                         }
