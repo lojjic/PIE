@@ -9,8 +9,8 @@ PIE.BoxShadowStyleInfo = (function() {
     }
     PIE.Util.merge( BoxShadowStyleInfo.prototype, PIE.StyleBase, {
 
-        cssProperty: PIE.CSS_PREFIX + 'box-shadow',
-        styleProperty: PIE.STYLE_PREFIX + 'BoxShadow',
+        cssProperty: 'box-shadow',
+        styleProperty: 'boxShadow',
 
         parseCss: function( css ) {
             var p = null, m,

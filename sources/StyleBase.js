@@ -19,8 +19,14 @@ PIE.StyleBase = {
      * @return {string}
      */
     getCss: function() {
-        return this.element.style[ this.styleProperty ] ||
-               this.element.currentStyle.getAttribute( this.cssProperty );
+        var el = this.element,
+            s = el.style,
+            cs = el.currentStyle,
+            cssProp = this.cssProperty,
+            styleProp = this.styleProperty,
+            prefixedCssProp = this._prefixedCssProp || ( this._prefixedCssProp = PIE.CSS_PREFIX + cssProp ),
+            prefixedStyleProp = this._prefixedStyleProp || ( this._prefixedStyleProp = PIE.STYLE_PREFIX + styleProp.charAt(0).toUpperCase() + styleProp.substring(1) );
+        return s[ prefixedStyleProp ] || cs.getAttribute( prefixedCssProp ) || s[ styleProp ] || cs.getAttribute( cssProp );
     },
 
     /**

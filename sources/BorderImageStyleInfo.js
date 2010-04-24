@@ -9,8 +9,8 @@ PIE.BorderImageStyleInfo = (function() {
     }
     PIE.Util.merge( BorderImageStyleInfo.prototype, PIE.StyleBase, {
 
-        cssProperty: PIE.CSS_PREFIX + 'border-image',
-        styleProperty: PIE.STYLE_PREFIX + 'BorderImage',
+        cssProperty: 'border-image',
+        styleProperty: 'borderImage',
 
         repeatIdents: { 'stretch':1, 'round':1, 'repeat':1, 'space':1 },
 
