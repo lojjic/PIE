@@ -1,5 +1,4 @@
 PIE.StyleBase = {
-    urlRE: /^url\(\s*['"]?([^\s\)"]*)['"]?\s*\)$/,
     trimRE: /^\s*|\s*$/g,
 
     /**

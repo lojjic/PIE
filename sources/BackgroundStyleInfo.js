@@ -228,7 +228,7 @@ PIE.BackgroundStyleInfo = (function() {
                     if( img !== 'none' ) {
                         props.images = [ {
                             type: 'image',
-                            url: img.replace( this.urlRE, "$1" ),
+                            url: new PIE.Tokenizer( img ).next().value,
                             repeat: cs.backgroundRepeat,
                             position: new PIE.BgPosition( new PIE.Tokenizer( posX + ' ' + posY ).all() )
                         } ];
