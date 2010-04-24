@@ -47,12 +47,16 @@ PIE.BorderImageRenderer = (function() {
                         tl = p['tl'].style,
                         c = p['c'].style,
 
-                        slices = props.slice,
                         widths = props.width,
                         widthT = widths.t.pixels( el ),
                         widthR = widths.r.pixels( el ),
                         widthB = widths.b.pixels( el ),
-                        widthL = widths.l.pixels( el );
+                        widthL = widths.l.pixels( el ),
+                        slices = props.slice,
+                        sliceT = slices.t.pixels( el ),
+                        sliceR = slices.r.pixels( el ),
+                        sliceB = slices.b.pixels( el ),
+                        sliceL = slices.l.pixels( el );
 
                     tl.height = t.height = tr.height = widthT;
                     tl.width = l.width = bl.width = widthL;
@@ -67,7 +71,6 @@ PIE.BorderImageRenderer = (function() {
 
 
                     // image croppings
-
                     function setCrops( sides, crop, val ) {
                         for( var i=0, len=sides.length; i < len; i++ ) {
                             p[ sides[i] ]['imagedata'][ crop ] = val;
@@ -75,20 +78,23 @@ PIE.BorderImageRenderer = (function() {
                     }
 
                     // corners
-                    setCrops( [ 'tl', 't', 'tr' ], 'cropBottom', ( imgSize.h - slices.t ) / imgSize.h );
-                    setCrops( [ 'tl', 'l', 'bl' ], 'cropRight', ( imgSize.w - slices.l ) / imgSize.w );
-                    setCrops( [ 'bl', 'b', 'br' ], 'cropTop', ( imgSize.h - slices.b ) / imgSize.h );
-                    setCrops( [ 'tr', 'r', 'br' ], 'cropLeft', ( imgSize.w - slices.r ) / imgSize.w );
+                    setCrops( [ 'tl', 't', 'tr' ], 'cropBottom', ( imgSize.h - sliceT ) / imgSize.h );
+                    setCrops( [ 'tl', 'l', 'bl' ], 'cropRight', ( imgSize.w - sliceL ) / imgSize.w );
+                    setCrops( [ 'bl', 'b', 'br' ], 'cropTop', ( imgSize.h - sliceB ) / imgSize.h );
+                    setCrops( [ 'tr', 'r', 'br' ], 'cropLeft', ( imgSize.w - sliceR ) / imgSize.w );
 
                     // edges and center
                     if( props.repeat.v === 'stretch' ) {
-                        setCrops( [ 'l', 'r', 'c' ], 'cropTop', slices.t / imgSize.h );
-                        setCrops( [ 'l', 'r', 'c' ], 'cropBottom', slices.b / imgSize.h );
+                        setCrops( [ 'l', 'r', 'c' ], 'cropTop', sliceT / imgSize.h );
+                        setCrops( [ 'l', 'r', 'c' ], 'cropBottom', sliceB / imgSize.h );
                     }
                     if( props.repeat.h === 'stretch' ) {
-                        setCrops( [ 't', 'b', 'c' ], 'cropLeft', slices.l / imgSize.w );
-                        setCrops( [ 't', 'b', 'c' ], 'cropRight', slices.r / imgSize.w );
+                        setCrops( [ 't', 'b', 'c' ], 'cropLeft', sliceL / imgSize.w );
+                        setCrops( [ 't', 'b', 'c' ], 'cropRight', sliceR / imgSize.w );
                     }
+
+                    // center fill
+                    c.display = props.fill ? '' : 'none';
                 }, this );
             } else {
                 this.destroy();
