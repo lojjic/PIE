@@ -18,11 +18,11 @@ PIE.BoxShadowRenderer = (function() {
 
         needsUpdate: function() {
             var si = this.styleInfos;
-            return si.boxShadow.changed() || si.borderRadius.changed();
+            return si.boxShadowInfo.changed() || si.borderRadiusInfo.changed();
         },
 
         isActive: function() {
-            return this.styleInfos.boxShadow.isActive();
+            return this.styleInfos.boxShadowInfo.isActive();
         },
 
         updateSize: function() {
@@ -31,7 +31,7 @@ PIE.BoxShadowRenderer = (function() {
                     shape = box.firstChild,
                     s,
                     el = this.element,
-                    bs = this.styleInfos.boxShadow.getProps(),
+                    bs = this.styleInfos.boxShadowInfo.getProps(),
                     spread = bs.spread.pixels( el ),
                     w = el.offsetWidth,
                     h = el.offsetHeight;
@@ -72,7 +72,7 @@ PIE.BoxShadowRenderer = (function() {
             if( !box ) {
                 el = this.element;
                 box = this._box = el.document.createElement( 'box-shadow' );
-                bs = this.styleInfos.boxShadow.getProps();
+                bs = this.styleInfos.boxShadowInfo.getProps();
                 xOff = bs.xOffset.pixels( el );
                 yOff = bs.yOffset.pixels( el );
                 blur = bs.blur.pixels( el );

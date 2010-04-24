@@ -18,16 +18,16 @@ PIE.BorderImageRenderer = (function() {
 
         needsUpdate: function() {
             var si = this.styleInfos;
-            return si.borderImage.changed() || si.border.changed();
+            return si.borderImageInfo.changed() || si.borderImageInfo.changed();
         },
 
         isActive: function() {
-            return this.styleInfos.borderImage.isActive();
+            return this.styleInfos.borderImageInfo.isActive();
         },
 
         updateSize: function() {
             if( this.isActive() ) {
-                var props = this.styleInfos.borderImage.getProps(),
+                var props = this.styleInfos.borderImageInfo.getProps(),
                     box = this.getBox(), //make sure pieces are created
                     el = this.element,
                     p = this.pieces;
@@ -127,7 +127,7 @@ PIE.BorderImageRenderer = (function() {
                     s['behavior'] = 'url(#default#VML)';
                     s.position = "absolute";
                     s.top = s.left = 0;
-                    piece['imagedata'].src = this.styleInfos.borderImage.getProps().src;
+                    piece['imagedata'].src = this.styleInfos.borderImageInfo.getProps().src;
                     piece.stroked = false;
                     piece.filled = false;
                     box.appendChild( piece );

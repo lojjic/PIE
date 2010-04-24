@@ -142,7 +142,7 @@ PIE.RendererBase = {
             el = this.element,
             w = el.offsetWidth - 1,
             h = el.offsetHeight - 1,
-            radInfo = this.styleInfos.borderRadius,
+            radInfo = this.styleInfos.borderRadiusInfo,
             floor = Math.floor, ceil = Math.ceil,
             shrinkT = shrink ? shrink.t : 0,
             shrinkR = shrink ? shrink.r : 0,

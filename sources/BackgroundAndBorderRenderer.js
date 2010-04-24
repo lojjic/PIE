@@ -17,15 +17,15 @@ PIE.BackgroundAndBorderRenderer = (function() {
 
         needsUpdate: function() {
             var si = this.styleInfos;
-            return si.border.changed() || si.background.changed();
+            return si.borderInfo.changed() || si.backgroundInfo.changed();
         },
 
         isActive: function() {
             var si = this.styleInfos;
-            return si.borderImage.isActive() ||
-                   si.borderRadius.isActive() ||
-                   si.background.isActive() ||
-                   ( si.boxShadow.isActive() && si.boxShadow.getProps().inset );
+            return si.borderImageInfo.isActive() ||
+                   si.borderRadiusInfo.isActive() ||
+                   si.backgroundInfo.isActive() ||
+                   ( si.boxShadowInfo.isActive() && si.boxShadowInfo.getProps().inset );
         },
 
         updateSize: function() {
@@ -54,7 +54,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
          * Draw the background color shape
          */
         drawBgColor: function() {
-            var props = this.styleInfos.background.getProps(),
+            var props = this.styleInfos.backgroundInfo.getProps(),
                 el = this.element,
                 color = props && props.color && props.color.value( el ),
                 cont, shape, w, h, s, alpha;
@@ -88,7 +88,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
          * Draw all the background image layers
          */
         drawBgImages: function() {
-            var props = this.styleInfos.background.getProps(),
+            var props = this.styleInfos.backgroundInfo.getProps(),
                 images = props && props.images,
                 img, cont, el, shape, w, h, s, i;
 
@@ -143,13 +143,13 @@ PIE.BackgroundAndBorderRenderer = (function() {
                     elH = el.offsetHeight,
                     cs = el.currentStyle,
                     si = this.styleInfos,
-                    border = si.border.getProps(),
+                    border = si.borderInfo.getProps(),
                     bw = border && border.widths,
                     bwT = bw ? bw['t'].pixels( el ) : 0,
                     bwR = bw ? bw['r'].pixels( el ) : 0,
                     bwB = bw ? bw['b'].pixels( el ) : 0,
                     bwL = bw ? bw['l'].pixels( el ) : 0,
-                    bg = si.background.getProps().images[ index ],
+                    bg = si.backgroundInfo.getProps().images[ index ],
                     bgPos = bg.position.coords( el, elW - size.w - bwL - bwR, elH - size.h - bwT - bwB ),
                     repeat = bg.repeat,
                     pxX, pxY,
@@ -375,7 +375,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
                 cs = el.currentStyle,
                 w = el.offsetWidth,
                 h = el.offsetHeight,
-                props = this.styleInfos.border.getProps(),
+                props = this.styleInfos.borderInfo.getProps(),
                 side, shape, stroke, bColor, bWidth, bStyle, s;
 
             if( props ) {
@@ -456,7 +456,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
         getBorderSegments: function() {
             var el = this.element,
                 elW, elH,
-                borderInfo = this.styleInfos.border,
+                borderInfo = this.styleInfos.borderInfo,
                 segments = [],
                 floor, ceil, wT, wR, wB, wL,
                 borderProps, radiusInfo, radii, widths, styles, colors;
@@ -494,7 +494,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
                         'l': wL
                     };
 
-                    radiusInfo = this.styleInfos.borderRadius;
+                    radiusInfo = this.styleInfos.borderRadiusInfo;
                     if( radiusInfo.isActive() ) {
                         radii = this.getRadiiPixels( radiusInfo.getProps() );
                     }

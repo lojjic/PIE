@@ -139,11 +139,11 @@ function init() {
 
     // Create the style infos and renderers
     styleInfos = {
-        background: new PIE.BackgroundStyleInfo( el ),
-        border: new PIE.BorderStyleInfo( el ),
-        borderImage: new PIE.BorderImageStyleInfo( el ),
-        borderRadius: new PIE.BorderRadiusStyleInfo( el ),
-        boxShadow: new PIE.BoxShadowStyleInfo( el )
+        backgroundInfo: new PIE.BackgroundStyleInfo( el ),
+        borderInfo: new PIE.BorderStyleInfo( el ),
+        borderImageInfo: new PIE.BorderImageStyleInfo( el ),
+        borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
+        boxShadowInfo: new PIE.BoxShadowStyleInfo( el )
     };
 
     var rootRenderer = new PIE.RootRenderer( el, styleInfos );
