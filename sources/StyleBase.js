@@ -1,6 +1,4 @@
 PIE.StyleBase = {
-    trimRE: /^\s*|\s*$/g,
-
     /**
      * Get an object representation of the target CSS style, caching it as long as the
      * underlying CSS value hasn't changed.
@@ -42,14 +40,5 @@ PIE.StyleBase = {
      */
     changed: function() {
         return this._css !== this.getCss();
-    },
-
-    /**
-     * Trim a string
-     * @param {string} str
-     * @return {string}
-     */
-    trim: function( str ) {
-        return str.replace( this.trimRE, '' );
     }
 };
