@@ -17,7 +17,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
 
         needsUpdate: function() {
             var si = this.styleInfos;
-            return si.borderInfo.changed() || si.backgroundInfo.changed();
+            return si.borderInfo.changed() || si.backgroundInfo.changed() || si.borderRadiusInfo.changed();
         },
 
         isActive: function() {
