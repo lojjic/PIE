@@ -10,30 +10,27 @@ var lastW, lastH, lastX, lastY,
  * @param {boolean=} force If true, will force updates
  */
 function update( force ) {
-    if( renderers ) {
-        var el = element,
-            x = el.offsetLeft,
-            y = el.offsetTop,
-            w = el.offsetWidth,
-            h = el.offsetHeight,
-            i, len;
+    init();
+    var el = element,
+        x = el.offsetLeft,
+        y = el.offsetTop,
+        w = el.offsetWidth,
+        h = el.offsetHeight,
+        i, len;
 
-        if( force || x !== lastX || y !== lastY ) {
-            for( i = 0, len = renderers.length; i < len; i++ ) {
-                renderers[i].updatePos();
-            }
-            lastX = x;
-            lastY = y;
+    if( force || x !== lastX || y !== lastY ) {
+        for( i = 0, len = renderers.length; i < len; i++ ) {
+            renderers[i].updatePos();
         }
-        if( force || w !== lastW || h !== lastH ) {
-            for( i = 0, len = renderers.length; i < len; i++ ) {
-                renderers[i].updateSize();
-            }
-            lastW = w;
-            lastH = h;
+        lastX = x;
+        lastY = y;
+    }
+    if( force || w !== lastW || h !== lastH ) {
+        for( i = 0, len = renderers.length; i < len; i++ ) {
+            renderers[i].updateSize();
         }
-    } else {
-        init();
+        lastW = w;
+        lastH = h;
     }
 }
 
@@ -41,27 +38,24 @@ function update( force ) {
  * Handle property changes to trigger update when appropriate.
  */
 function propChanged() {
-    if( renderers ) {
-        var name = event.propertyName,
-            i, len, toUpdate;
-        if( name === 'style.display' || name === 'style.visibility' ) {
-            for( i = 0, len = renderers.length; i < len; i++ ) {
-                renderers[i].updateVis();
+    init();
+    var name = event.propertyName,
+        i, len, toUpdate;
+    if( name === 'style.display' || name === 'style.visibility' ) {
+        for( i = 0, len = renderers.length; i < len; i++ ) {
+            renderers[i].updateVis();
+        }
+    }
+    else { //if( event.propertyName === 'style.boxShadow' ) {
+        toUpdate = [];
+        for( i = 0, len = renderers.length; i < len; i++ ) {
+            if( renderers[i].needsUpdate() ) {
+                toUpdate.push( renderers[i] );
             }
         }
-        else { //if( event.propertyName === 'style.boxShadow' ) {
-            toUpdate = [];
-            for( i = 0, len = renderers.length; i < len; i++ ) {
-                if( renderers[i].needsUpdate() ) {
-                    toUpdate.push( renderers[i] );
-                }
-            }
-            for( i = 0, len = toUpdate.length; i < len; i++ ) {
-                toUpdate[i].updateProps();
-            }
+        for( i = 0, len = toUpdate.length; i < len; i++ ) {
+            toUpdate[i].updateProps();
         }
-    } else {
-        init();
     }
 }
 
@@ -132,32 +126,37 @@ function initAncestorPropChangeListeners() {
  * Initialize PIE for this element.
  */
 function init() {
-    var el = element;
+    if( !renderers ) {
+        var el = element;
 
-    // force layout so move/resize events will fire
-    el.runtimeStyle.zoom = 1;
+        // force layout so move/resize events will fire
+        el.runtimeStyle.zoom = 1;
 
-    // Create the style infos and renderers
-    styleInfos = {
-        backgroundInfo: new PIE.BackgroundStyleInfo( el ),
-        borderInfo: new PIE.BorderStyleInfo( el ),
-        borderImageInfo: new PIE.BorderImageStyleInfo( el ),
-        borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
-        boxShadowInfo: new PIE.BoxShadowStyleInfo( el )
-    };
+        // Create the style infos and renderers
+        styleInfos = {
+            backgroundInfo: new PIE.BackgroundStyleInfo( el ),
+            borderInfo: new PIE.BorderStyleInfo( el ),
+            borderImageInfo: new PIE.BorderImageStyleInfo( el ),
+            borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
+            boxShadowInfo: new PIE.BoxShadowStyleInfo( el )
+        };
 
-    var rootRenderer = new PIE.RootRenderer( el, styleInfos );
-    renderers = [
-        rootRenderer,
-        new PIE.BoxShadowRenderer( el, styleInfos, rootRenderer ),
-        new PIE.BackgroundAndBorderRenderer( el, styleInfos, rootRenderer ),
-        new PIE.BorderImageRenderer( el, styleInfos, rootRenderer )
-    ];
+        var rootRenderer = new PIE.RootRenderer( el, styleInfos );
+        renderers = [
+            rootRenderer,
+            new PIE.BoxShadowRenderer( el, styleInfos, rootRenderer ),
+            new PIE.BackgroundAndBorderRenderer( el, styleInfos, rootRenderer ),
+            new PIE.BorderImageRenderer( el, styleInfos, rootRenderer )
+        ];
 
-    // Add property change listeners to ancestors if requested
-    initAncestorPropChangeListeners();
+        // Add property change listeners to ancestors if requested
+        initAncestorPropChangeListeners();
 
-    update();
+        update();
+    }
 }
 
 
+if( element.readyState === 'complete' ) {
+    init();
+}
