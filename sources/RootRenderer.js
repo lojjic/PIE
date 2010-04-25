@@ -90,6 +90,7 @@ PIE.RootRenderer = (function() {
                 box.parentNode.removeChild( box );
             }
             delete this._box;
+            delete this._layers;
         }
 
     } );

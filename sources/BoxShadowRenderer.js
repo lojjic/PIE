@@ -13,8 +13,8 @@ PIE.BoxShadowRenderer = (function() {
     }
     PIE.Util.merge( BoxShadowRenderer.prototype, PIE.RendererBase, {
 
-        outsetZIndex: 100,
-        insetZIndex: 300,
+        outsetZIndex: 1,
+        insetZIndex: 3,
 
         needsUpdate: function() {
             var si = this.styleInfos;
@@ -94,7 +94,6 @@ PIE.BoxShadowRenderer = (function() {
                     s.overflow = 'hidden';
                     s.left = parseInt( cs.borderLeftWidth, 10 ) || 0;
                     s.top = parseInt( cs.borderTopWidth, 10 ) || 0;
-                    s.zIndex = this.insetZIndex;
 
                     s = shape.style;
                     s.position = 'absolute';
@@ -106,7 +105,6 @@ PIE.BoxShadowRenderer = (function() {
                 } else {
                     s.left = xOff - blur - spread;
                     s.top = yOff - blur - spread;
-                    s.zIndex = this.outsetZIndex;
 
                     shape.filled = true;
                     shape.fillcolor = bs.color.value( el );
@@ -124,16 +122,14 @@ PIE.BoxShadowRenderer = (function() {
                     ss.filter = filter + ' ' + filter;
                 }
 
-                this.parent.getBox().appendChild( box );
+                this.parent.addLayer( bs.inset ? this.insetZIndex : this.outsetZIndex, box );
             }
             return box;
         },
 
         destroy: function() {
-            var box = this._box;
-            if( box && box.parentNode ) {
-                box.parentNode.removeChild( box );
-            }
+            this.parent.removeLayer( this.insetZIndex );
+            this.parent.removeLayer( this.outsetZIndex );
             delete this._box;
             delete this._shapes;
         }

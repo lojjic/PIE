@@ -13,7 +13,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
     }
     PIE.Util.merge( BackgroundAndBorderRenderer.prototype, PIE.RendererBase, {
 
-        zIndex: 200,
+        zIndex: 2,
 
         needsUpdate: function() {
             var si = this.styleInfos;
@@ -57,13 +57,12 @@ PIE.BackgroundAndBorderRenderer = (function() {
             var props = this.styleInfos.backgroundInfo.getProps(),
                 el = this.element,
                 color = props && props.color && props.color.value( el ),
-                cont, shape, w, h, s, alpha;
+                shape, w, h, s, alpha;
 
             if( color && color !== 'transparent' ) {
                 this.hideBackground();
 
-                cont = this.getBox();
-                shape = this.getShape( 'bgColor', 'fill' );
+                shape = this.getShape( 'bgColor', 'fill', 1 );
                 w = el.offsetWidth;
                 h = el.offsetHeight;
                 shape.stroked = false;
@@ -72,7 +71,6 @@ PIE.BackgroundAndBorderRenderer = (function() {
                 s = shape.style;
                 s.width = w;
                 s.height = h;
-                s.zIndex = 1;
                 shape.fill.color = color;
 
                 alpha = props.color.alpha();
@@ -90,7 +88,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
         drawBgImages: function() {
             var props = this.styleInfos.backgroundInfo.getProps(),
                 images = props && props.images,
-                img, cont, el, shape, w, h, s, i;
+                img, el, shape, w, h, s, i;
 
             if( images ) {
                 this.hideBackground();
@@ -102,7 +100,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
                 i = images.length;
                 while( i-- ) {
                     img = images[i];
-                    shape = this.getShape( 'bgImage' + i, 'fill' );
+                    shape = this.getShape( 'bgImage' + i, 'fill', 2 );
 
                     shape.stroked = false;
                     shape.fill.type = 'tile';
@@ -112,7 +110,6 @@ PIE.BackgroundAndBorderRenderer = (function() {
                     s = shape.style;
                     s.width = w;
                     s.height = h;
-                    s.zIndex = 2;
 
                     if( img.type === 'linear-gradient' ) {
                         this.addLinearGradient( shape, img );
@@ -370,27 +367,26 @@ PIE.BackgroundAndBorderRenderer = (function() {
          * Draw the border shape(s)
          */
         drawBorder: function() {
-            var cont = this.getBox(),
-                el = this.element,
+            var el = this.element,
                 cs = el.currentStyle,
                 w = el.offsetWidth,
                 h = el.offsetHeight,
                 props = this.styleInfos.borderInfo.getProps(),
-                side, shape, stroke, bColor, bWidth, bStyle, s;
+                side, shape, stroke, bColor, bWidth, bStyle, s,
+                segments, seg, i, len;
 
             if( props ) {
                 this.hideBorder();
 
-                var segments = this.getBorderSegments();
-                for( var i=0; i<segments.length; i++) {
-                    var seg = segments[i];
-                    shape = this.getShape( 'borderPiece' + i, seg.stroke ? 'stroke' : 'fill' );
+                segments = this.getBorderSegments();
+                for( i = 0, len = segments.length; i < len; i++) {
+                    seg = segments[i];
+                    shape = this.getShape( 'borderPiece' + i, seg.stroke ? 'stroke' : 'fill', 3 );
                     shape.coordsize = w + ',' + h;
                     shape.path = seg.path;
                     s = shape.style;
                     s.width = w;
                     s.height = h;
-                    s.zIndex = 3;
 
                     shape.filled = !!seg.fill;
                     shape.stroked = !!seg.stroke;
@@ -605,8 +601,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
                 box = this._box = this.element.document.createElement( 'bg-and-border' );
                 s = box.style;
                 s.position = 'absolute';
-                s.zIndex = this.zIndex;
-                this.parent.getBox().appendChild( box );
+                this.parent.addLayer( this.zIndex, box );
             }
 
             return box;
@@ -617,12 +612,10 @@ PIE.BackgroundAndBorderRenderer = (function() {
          * Destroy the rendered objects
          */
         destroy: function() {
-            var box = this._box;
-            if( box && box.parentNode ) {
-                box.parentNode.removeChild( box );
-            }
+            this.parent.removeLayer( this.zIndex );
             delete this._box;
             delete this._shapes;
+            delete this._layers;
         }
 
     } );

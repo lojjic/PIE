@@ -13,7 +13,7 @@ PIE.BorderImageRenderer = (function() {
     }
     PIE.Util.merge( BorderImageRenderer.prototype, PIE.RendererBase, {
 
-        zIndex: 400,
+        zIndex: 4,
         pieceNames: [ 't', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl', 'c' ],
 
         needsUpdate: function() {
@@ -116,7 +116,6 @@ PIE.BorderImageRenderer = (function() {
                 box = this._box = this.element.document.createElement( 'border-image' );
                 s = box.style;
                 s.position = 'absolute';
-                s.zIndex = this.zIndex;
 
                 this.pieces = {};
 
@@ -133,17 +132,14 @@ PIE.BorderImageRenderer = (function() {
                     box.appendChild( piece );
                 }
 
-                this.parent.getBox().appendChild( box );
+                this.parent.addLayer( this.zIndex, box )
             }
 
             return box;
         },
 
         destroy: function() {
-            var box = this._box;
-            if( box && box.parentNode ) {
-                box.parentNode.removeChild( box );
-            }
+            this.parent.removeLayer( this.zIndex );
             delete this._box;
         }
 

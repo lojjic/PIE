@@ -34,21 +34,78 @@ PIE.RendererBase = {
 
 
     /**
+     * Add a layer element, with the given z-order index, to the renderer's main box element. We can't use
+     * z-index because that breaks when the root rendering box's z-index is 'auto' in IE8+ standards mode.
+     * So instead we make sure they are inserted into the DOM in the correct order.
+     * @param {number} index
+     * @param {Element} el
+     */
+    addLayer: function( index, el ) {
+        this.removeLayer( index );
+        for( var layers = this._layers || ( this._layers = [] ), i = index + 1, len = layers.length, layer; i < len; i++ ) {
+            layer = layers[i];
+            if( layer ) {
+                break;
+            }
+        }
+        layers[index] = el;
+        this.getBox().insertBefore( el, layer || null );
+    },
+
+    /**
+     * Retrieve a layer element by its index, or null if not present
+     * @param {number} index
+     * @return {Element}
+     */
+    getLayer: function( index ) {
+        var layers = this._layers;
+        return layers && layers[index] || null;
+    },
+
+    /**
+     * Remove a layer element by its index
+     * @param {number} index
+     */
+    removeLayer: function( index ) {
+        var layer = this.getLayer( index ),
+            box = this._box;
+        if( layer && box ) {
+            box.removeChild( layer );
+            this._layers[index] = null;
+        }
+    },
+
+
+    /**
      * Get a VML shape by name, creating it if necessary.
      * @param {string} name A name identifying the element
      * @param {string=} subElName If specified a subelement of the shape will be created with this tag name
+     * @param {number=} group If specified, an ordinal group for the shape. 1 or greater. Groups are rendered
+     *                  using container elements in the correct order, to get correct z stacking without z-index.
      */
-    getShape: function( name, subElName ) {
+    getShape: function( name, subElName, group ) {
         var shapes = this._shapes || ( this._shapes = {} ),
             shape = shapes[ name ],
-            s;
+            s, parent;
 
         if( !shape ) {
             shape = shapes[ name ] = PIE.Util.createVmlElement( 'shape' );
             if( subElName ) {
                 shape.appendChild( shape[ subElName ] = PIE.Util.createVmlElement( subElName ) );
             }
-            this.getBox().appendChild( shape );
+
+            if( group ) {
+                parent = this.getLayer( group );
+                if( !parent ) {
+                    this.addLayer( group, this.element.document.createElement( 'group' + group ) );
+                    parent = this.getLayer( group );
+                }
+            } else {
+                parent = this.getBox();
+            }
+
+            parent.appendChild( shape );
+
             s = shape.style;
             s.position = 'absolute';
             s.left = s.top = 0;
@@ -56,7 +113,6 @@ PIE.RendererBase = {
         }
         return shape;
     },
-
 
     /**
      * Delete a named shape which was created by getShape(). Returns true if a shape with the
