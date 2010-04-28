@@ -26,8 +26,8 @@ PIE.BgPosition = (function() {
                     type_length = PIE.Tokenizer.Type.LENGTH,
                     type_percent = PIE.Tokenizer.Type.PERCENT,
                     type, value,
-                    vert_idents = { top: 1, center: 1, bottom: 1 },
-                    horiz_idents = { left: 1, center: 1, right: 1 },
+                    vert_idents = { 'top': 1, 'center': 1, 'bottom': 1 },
+                    horiz_idents = { 'left': 1, 'center': 1, 'right': 1 },
                     vals = [ 'left', length_zero, 'top', length_zero ];
 
                 // If only one value, the second is assumed to be 'center'
