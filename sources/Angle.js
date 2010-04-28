@@ -8,13 +8,13 @@ PIE.Angle = (function() {
         this.val = val;
     }
     Angle.prototype = {
-        unitRE: /(deg|rad|grad|turn)$/,
+        unitRE: /[a-z]+$/i,
 
         /**
          * @return {string} The unit of the angle value
          */
         getUnit: function() {
-            return this._unit || ( this._unit = this.val.match( this.unitRE )[1] );
+            return this._unit || ( this._unit = this.val.match( this.unitRE )[0].toLowerCase() );
         },
 
         /**
@@ -23,7 +23,7 @@ PIE.Angle = (function() {
          */
         degrees: function() {
             var deg = this._deg, u, n;
-            if( !deg ) {
+            if( deg === undefined ) {
                 u = this.getUnit();
                 n = parseFloat( this.val, 10 );
                 deg = this._deg = ( u === 'deg' ? n : u === 'rad' ? n / Math.PI * 180 : u === 'grad' ? n / 400 * 360 : u === 'turn' ? n * 360 : 0 );
