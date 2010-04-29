@@ -158,7 +158,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
                 fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
 
                 // Repeating - clip the image shape
-                if( repeat !== 'repeat' ) {
+                if( repeat && repeat !== 'repeat' ) {
                     if( repeat === 'repeat-x' || repeat === 'no-repeat' ) {
                         clipT = pxY;
                         clipB = pxY + size.h;
