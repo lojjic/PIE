@@ -147,7 +147,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
                     bwB = bw ? bw['b'].pixels( el ) : 0,
                     bwL = bw ? bw['l'].pixels( el ) : 0,
                     bg = si.backgroundInfo.getProps().images[ index ],
-                    bgPos = bg.position.coords( el, elW - size.w - bwL - bwR, elH - size.h - bwT - bwB ),
+                    bgPos = bg.position ? bg.position.coords( el, elW - size.w - bwL - bwR, elH - size.h - bwT - bwB ) : { x:0, y:0 },
                     repeat = bg.repeat,
                     pxX, pxY,
                     clipT = 0, clipR = elW, clipB = elH, clipL = 0;
