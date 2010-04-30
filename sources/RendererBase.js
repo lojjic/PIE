@@ -191,32 +191,35 @@ PIE.RendererBase = {
      * Return the VML path string for the element's background box, with corners rounded.
      * @param {Object.<{t:number, r:number, b:number, l:number}>} shrink - if present, specifies number of
      *        pixels to shrink the box path inward from the element's four sides.
+     * @param {number=} mult If specified, all coordinates will be multiplied by this number
      * @return {string} the VML path
      */
-    getBoxPath: function( shrink ) {
+    getBoxPath: function( shrink, mult ) {
+        mult = mult || 1;
+
         var r, str,
             el = this.element,
-            w = el.offsetWidth - 1,
-            h = el.offsetHeight - 1,
+            w = el.offsetWidth * mult,
+            h = el.offsetHeight * mult,
             radInfo = this.styleInfos.borderRadiusInfo,
             floor = Math.floor, ceil = Math.ceil,
-            shrinkT = shrink ? shrink.t : 0,
-            shrinkR = shrink ? shrink.r : 0,
-            shrinkB = shrink ? shrink.b : 0,
-            shrinkL = shrink ? shrink.l : 0,
+            shrinkT = shrink ? shrink.t * mult : 0,
+            shrinkR = shrink ? shrink.r * mult : 0,
+            shrinkB = shrink ? shrink.b * mult : 0,
+            shrinkL = shrink ? shrink.l * mult : 0,
             tlX, tlY, trX, trY, brX, brY, blX, blY;
 
         if( radInfo.isActive() ) {
             r = this.getRadiiPixels( radInfo.getProps() );
 
-            tlX = r.x['tl'];
-            tlY = r.y['tl'];
-            trX = r.x['tr'];
-            trY = r.y['tr'];
-            brX = r.x['br'];
-            brY = r.y['br'];
-            blX = r.x['bl'];
-            blY = r.y['bl'];
+            tlX = r.x['tl'] * mult;
+            tlY = r.y['tl'] * mult;
+            trX = r.x['tr'] * mult;
+            trY = r.y['tr'] * mult;
+            brX = r.x['br'] * mult;
+            brY = r.y['br'] * mult;
+            blX = r.x['bl'] * mult;
+            blY = r.y['bl'] * mult;
 
             str = 'm' + shrinkL + ',' + floor(tlY) +
                 'qy' + floor(tlX) + ',' + shrinkT +

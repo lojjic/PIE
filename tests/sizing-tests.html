@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Tests that VML boxes are sized exactly as the main element</title>
+
+    <style>
+
+        body {
+            /*background:url(border.png);*/
+        }
+
+        .test {
+            behavior: url(../build/PIE_uncompressed.htc);
+            position: relative;
+            border-radius: 1em;
+            margin: 0 0 2em;
+        }
+        .control {
+            background: #FF0000;
+            position: absolute;
+        }
+
+        #test1,
+        #control1 {
+            width: 200px;
+            height: 201px;
+        }
+        #test1 {
+            background: green;
+            -pie-background: green;
+        }
+
+        #test2,
+        #control2 {
+            width: 200px;
+            height: 100px;
+        }
+        #test2 {
+            -pie-background: url(background2.gif);
+        }
+
+
+
+    </style>
+</head>
+<body>
+
+    <div id="control1" class="control">test 1</div>
+    <div id="test1" class="test">test 1</div>
+
+    <div id="control2" class="control">test 1</div>
+    <div id="test2" class="test">test 1</div>
+</body>
+</html>

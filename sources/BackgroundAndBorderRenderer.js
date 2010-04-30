@@ -66,8 +66,9 @@ PIE.BackgroundAndBorderRenderer = (function() {
                 w = el.offsetWidth;
                 h = el.offsetHeight;
                 shape.stroked = false;
-                shape.coordsize = w + ',' + h;
-                shape.path = this.getBoxPath();
+                shape.coordsize = w * 2 + ',' + h * 2;
+                shape.coordorigin = '1,1';
+                shape.path = this.getBoxPath( null, 2 );
                 s = shape.style;
                 s.width = w;
                 s.height = h;
@@ -105,8 +106,9 @@ PIE.BackgroundAndBorderRenderer = (function() {
                     shape.stroked = false;
                     shape.fill.type = 'tile';
                     shape.fillcolor = 'none';
-                    shape.coordsize = w + ',' + h;
-                    shape.path = this.getBoxPath();
+                    shape.coordsize = w * 2 + ',' + h * 2;
+                    shape.coordorigin = '1,1';
+                    shape.path = this.getBoxPath( 0, 2 );
                     s = shape.style;
                     s.width = w;
                     s.height = h;
@@ -153,19 +155,21 @@ PIE.BackgroundAndBorderRenderer = (function() {
                     clipT = 0, clipR = elW, clipB = elH, clipL = 0;
 
                 // Positioning - find the pixel offset from the top/left and convert to a ratio
-                pxX = bgPos.x + bwL;
-                pxY = bgPos.y + bwT;
+                // The position is shifted by half a pixel, to adjust for the half-pixel coordorigin shift which is
+                // needed to fix antialiasing but makes the bg image fuzzy.
+                pxX = bgPos.x + bwL + 0.5;
+                pxY = bgPos.y + bwT + 0.5;
                 fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
 
                 // Repeating - clip the image shape
                 if( repeat && repeat !== 'repeat' ) {
                     if( repeat === 'repeat-x' || repeat === 'no-repeat' ) {
-                        clipT = pxY;
-                        clipB = pxY + size.h;
+                        clipT = pxY + 1;
+                        clipB = pxY + size.h + 1;
                     }
                     if( repeat === 'repeat-y' || repeat === 'no-repeat' ) {
-                        clipL = pxX;
-                        clipR = pxX + size.w;
+                        clipL = pxX + 1;
+                        clipR = pxX + size.w + 1;
                     }
                     shape.style.clip = 'rect(' + clipT + 'px,' + clipR + 'px,' + clipB + 'px,' + clipL + 'px)';
                 }
@@ -378,11 +382,12 @@ PIE.BackgroundAndBorderRenderer = (function() {
             if( props ) {
                 this.hideBorder();
 
-                segments = this.getBorderSegments();
+                segments = this.getBorderSegments( 2 );
                 for( i = 0, len = segments.length; i < len; i++) {
                     seg = segments[i];
                     shape = this.getShape( 'borderPiece' + i, seg.stroke ? 'stroke' : 'fill', 3 );
-                    shape.coordsize = w + ',' + h;
+                    shape.coordsize = w * 2 + ',' + h * 2;
+                    shape.coordorigin = '1,1';
                     shape.path = seg.path;
                     s = shape.style;
                     s.width = w;
@@ -449,9 +454,10 @@ PIE.BackgroundAndBorderRenderer = (function() {
 
         /**
          * Get the VML path definitions for the border segment(s).
+         * @param {number=} mult If specified, all coordinates will be multiplied by this number
          * @return {Array.<string>}
          */
-        getBorderSegments: function() {
+        getBorderSegments: function( mult ) {
             var el = this.element,
                 elW, elH,
                 borderInfo = this.styleInfos.borderInfo,
@@ -468,18 +474,19 @@ PIE.BackgroundAndBorderRenderer = (function() {
 
                 if( borderProps.widthsSame && borderProps.stylesSame && borderProps.colorsSame ) {
                     // shortcut for identical border on all sides - only need 1 stroked shape
-                    wT = widths['t'].pixels( el );
-                    wR = Math.floor( wT / 2 );
+                    wT = widths['t'].pixels( el ); //thickness
+                    wR = wT / 2; //shrink
                     segments.push( {
-                        path: this.getBoxPath( { t: wR, r: wR, b: wR, l: wR } ),
+                        path: this.getBoxPath( { t: wR, r: wR, b: wR, l: wR }, mult ),
                         stroke: styles['t'],
                         color: colors['t'],
                         weight: wT
                     } );
                 }
                 else {
-                    elW = el.offsetWidth - 1;
-                    elH = el.offsetHeight - 1;
+                    mult = mult || 1;
+                    elW = el.offsetWidth;
+                    elH = el.offsetHeight;
 
                     wT = widths['t'].pixels( el );
                     wR = widths['r'].pixels( el );
@@ -507,10 +514,10 @@ PIE.BackgroundAndBorderRenderer = (function() {
                             isRight = corner.charAt( 1 ) === 'r',
                             isBottom = corner.charAt( 0 ) === 'b';
                         return ( rx > 0 && ry > 0 ) ?
-                                    ( isRight ? ceil( elW - rx ) : floor( rx ) ) + ',' + // center x
-                                    ( isBottom ? ceil( elH - ry ) : floor( ry ) ) + ',' + // center y
-                                    ( floor( rx ) - shrinkX ) + ',' + // width
-                                    ( floor( ry ) - shrinkY ) + ',' + // height
+                                    ( isRight ? ceil( elW - rx ) : floor( rx ) ) * mult + ',' + // center x
+                                    ( isBottom ? ceil( elH - ry ) : floor( ry ) ) * mult + ',' + // center y
+                                    ( floor( rx ) - shrinkX ) * mult + ',' + // width
+                                    ( floor( ry ) - shrinkY ) * mult + ',' + // height
                                     ( startAngle * deg ) + ',' + // start angle
                                     ( 45 * deg * ( ccw ? 1 : -1 ) ) // angle change
                                 : '';
@@ -536,17 +543,17 @@ PIE.BackgroundAndBorderRenderer = (function() {
                                 segments.push( {
                                     path: (
                                         side === 't' ?
-                                            'm' + floor( radii.x['tl'] ) + ',' + ceil( wT/2 ) +
-                                            'l' + ceil( elW - radii.x['tr'] ) + ',' + ceil( wT/2 ) :
+                                            'm' + floor( radii.x['tl'] ) * mult + ',' + ceil( wT/2 ) * mult +
+                                            'l' + ceil( elW - radii.x['tr'] ) * mult + ',' + ceil( wT/2 ) * mult :
                                         side === 'r' ?
-                                            'm' + ceil( elW - wR/2 ) + ',' + floor( radii.y['tr'] ) +
-                                            'l' + ceil( elW - wR/2 ) + ',' + ceil( elH - radii.y['br'] ) :
+                                            'm' + ceil( elW - wR/2 ) * mult + ',' + floor( radii.y['tr'] ) * mult +
+                                            'l' + ceil( elW - wR/2 ) * mult + ',' + ceil( elH - radii.y['br'] ) * mult :
                                         side === 'b' ?
-                                            'm' + ceil( elW - radii.x['br'] ) + ',' + floor( elH - wB/2 ) +
-                                            'l' + floor( radii.x['bl'] ) + ',' + floor( elH - wB/2 ) :
+                                            'm' + ceil( elW - radii.x['br'] ) * mult + ',' + floor( elH - wB/2 ) * mult +
+                                            'l' + floor( radii.x['bl'] ) * mult + ',' + floor( elH - wB/2 ) * mult :
                                         // side === 'l'
-                                            'm' + floor( wL/2 ) + ',' + ceil( elH - radii.y['bl'] ) +
-                                            'l' + floor( wL/2 ) + ',' + floor( radii.y['tl'] )
+                                            'm' + floor( wL/2 ) * mult + ',' + ceil( elH - radii.y['bl'] ) * mult +
+                                            'l' + floor( wL/2 ) * mult + ',' + floor( radii.y['tl'] ) * mult
                                     ),
                                     stroke: styles[ side ],
                                     weight: pxWidths[ side ],
