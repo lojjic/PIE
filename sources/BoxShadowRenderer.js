@@ -33,10 +33,11 @@ PIE.BoxShadowRenderer = (function() {
                     el = this.element,
                     bs = this.styleInfos.boxShadowInfo.getProps(),
                     spread = bs.spread.pixels( el ),
+                    shrink = bs.blur.pixels( el ) > 0 ? 4 : 0,
                     w = el.offsetWidth,
                     h = el.offsetHeight;
 
-                if( bs.inset ) {
+                /*if( bs.inset ) {
                     // if inset, the width does not include any element border
                     s = el.currentStyle;
                     w -= ( parseInt( s.borderLeftWidth, 10 ) || 0 ) + ( parseInt( s.borderRightWidth, 10 ) || 0 );
@@ -46,17 +47,19 @@ PIE.BoxShadowRenderer = (function() {
                     s = box.firstChild.style;
                     s.width = w - spread * 2;
                     s.height = h - spread * 2;
-                } else {
+                } else {*/
                     w += spread * 2;
                     h += spread * 2;
-                }
+                /*}*/
 
                 s = shape.style;
                 s.width = w;
                 s.height = h;
 
-                shape.coordsize = ( w + 1 ) + ',' + ( h + 1 ); //shrink the rendered shadow by 1 extra pixel
-                shape.path = this.getBoxPath();
+                // Blurred shadows end up slightly too wide; shrink them down
+                shape.coordsize = ( w * 2 + shrink ) + ',' + ( h * 2 + shrink );
+                shape.coordorigin = '1,1';
+                shape.path = this.getBoxPath( 0, 2 );
             } else {
                 this.destroy();
             }
@@ -89,7 +92,7 @@ PIE.BoxShadowRenderer = (function() {
                 ss = shape.style;
                 shape.stroked = false;
 
-                if( bs.inset ) {
+                /*if( bs.inset ) {
                     cs = this.element.currentStyle;
                     s.overflow = 'hidden';
                     s.left = parseInt( cs.borderLeftWidth, 10 ) || 0;
@@ -102,7 +105,7 @@ PIE.BoxShadowRenderer = (function() {
                     s.left = xOff - 20 + spread - blur;
                     s.top = yOff - 20 + spread - blur;
                     s.border = '20px solid ' + bs.color.value( el );
-                } else {
+                } else {*/
                     s.left = xOff - blur - spread;
                     s.top = yOff - blur - spread;
 
@@ -113,7 +116,7 @@ PIE.BoxShadowRenderer = (function() {
                     if( alpha < 1 ) {
                         shape.fill.opacity = alpha;
                     }
-                }
+                /*}*/
 
                 // Apply blur filter to the outer or inner element. Applying the blur filter twice with
                 // half the pixel value gives a shadow nearly identical to other browsers.
