@@ -7,9 +7,8 @@ var lastW, lastH, lastX, lastY,
  * Update position and/or size as necessary. Both move and resize events call
  * this rather than the updatePos/Size functions because sometimes, particularly
  * during page load, one will fire but the other won't.
- * @param {boolean=} force If true, will force updates
  */
-function update( force ) {
+function update() {
     init();
     var el = element,
         x = el.offsetLeft,
@@ -18,14 +17,14 @@ function update( force ) {
         h = el.offsetHeight,
         i, len;
 
-    if( force || x !== lastX || y !== lastY ) {
+    if( x !== lastX || y !== lastY ) {
         for( i = 0, len = renderers.length; i < len; i++ ) {
             renderers[i].updatePos();
         }
         lastX = x;
         lastY = y;
     }
-    if( force || w !== lastW || h !== lastH ) {
+    if( w !== lastW || h !== lastH ) {
         for( i = 0, len = renderers.length; i < len; i++ ) {
             renderers[i].updateSize();
         }
