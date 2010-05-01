@@ -30,21 +30,11 @@ PIE.BorderImageRenderer = (function() {
                 var props = this.styleInfos.borderImageInfo.getProps(),
                     box = this.getBox(), //make sure pieces are created
                     el = this.element,
-                    p = this.pieces;
+                    pieces = this.pieces;
 
                 PIE.Util.withImageSize( props.src, function( imgSize ) {
-                    var w = el.offsetWidth,
-                        h = el.offsetHeight,
-
-                        t = p['t'].style,
-                        tr = p['tr'].style,
-                        r = p['r'].style,
-                        br = p['br'].style,
-                        b = p['b'].style,
-                        bl = p['bl'].style,
-                        l = p['l'].style,
-                        tl = p['tl'].style,
-                        c = p['c'].style,
+                    var elW = el.offsetWidth,
+                        elH = el.offsetHeight,
 
                         widths = props.width,
                         widthT = widths.t.pixels( el ),
@@ -57,22 +47,29 @@ PIE.BorderImageRenderer = (function() {
                         sliceB = slices.b.pixels( el ),
                         sliceL = slices.l.pixels( el );
 
-                    tl.height = t.height = tr.height = widthT;
-                    tl.width = l.width = bl.width = widthL;
-                    tr.left = r.left = br.left = w - widthR;
-                    tr.width = r.width = br.width = widthR;
-                    br.top = b.top = bl.top = h - widthB;
-                    br.height = b.height = bl.height = widthB;
-                    t.left = b.left = c.left = widthL;
-                    t.width = b.width = c.width = w - widthL - widthR;
-                    l.top = r.top = c.top = widthT;
-                    l.height = r.height = c.height = h - widthT - widthB;
+                    // Piece positions and sizes
+                    function setSizeAndPos( piece, w, h, x, y ) {
+                        var s = pieces[piece].style;
+                        s.width = w;
+                        s.height = h;
+                        s.left = x;
+                        s.top = y;
+                    }
+                    setSizeAndPos( 'tl', widthL, widthT, 0, 0 );
+                    setSizeAndPos( 't', elW - widthL - widthR, widthT, widthL, 0 );
+                    setSizeAndPos( 'tr', widthR, widthT, elW - widthR, 0 );
+                    setSizeAndPos( 'r', widthR, elH - widthT - widthB, elW - widthR, widthT );
+                    setSizeAndPos( 'br', widthR, widthB, elW - widthR, elH - widthB );
+                    setSizeAndPos( 'b', elW - widthL - widthR, widthB, widthL, elH - widthB );
+                    setSizeAndPos( 'bl', widthL, widthB, 0, elH - widthB );
+                    setSizeAndPos( 'l', widthL, elH - widthT - widthB, 0, widthL );
+                    setSizeAndPos( 'c', elW - widthL - widthR, elH - widthT - widthB, widthL, widthT );
 
 
                     // image croppings
                     function setCrops( sides, crop, val ) {
                         for( var i=0, len=sides.length; i < len; i++ ) {
-                            p[ sides[i] ]['imagedata'][ crop ] = val;
+                            pieces[ sides[i] ]['imagedata'][ crop ] = val;
                         }
                     }
 
@@ -93,7 +90,7 @@ PIE.BorderImageRenderer = (function() {
                     }
 
                     // center fill
-                    c.display = props.fill ? '' : 'none';
+                    pieces['c'].style.display = props.fill ? '' : 'none';
                 }, this );
             } else {
                 this.destroy();
