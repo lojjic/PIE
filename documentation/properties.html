@@ -1,20 +1,21 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head>
+<!DOCTYPE html>
+<html>
+<head>
   
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
   <title>PIE Documentation</title>
 
-  
-</head><body>
+</head>
+<body>
+
 <h1>Supported CSS3 properties and values</h1>
-<p>The following sections describe in detail the exact levels of support PIE has for certain CSS3 properties.<br>
-</p>
+<p>The following sections describe in detail the exact levels of support PIE has for certain CSS3 properties.</p>
 <h2>border-radius</h2>
 
 <p>PIE fully supports the border-radius property as defined in the CSS3
 Backgrounds and Borders module specification.</p>
 
-<pre>border-radius: [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} [ / [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} ]? <br></pre>
+<pre>border-radius: [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} [ / [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} ]?</pre>
 
 <p>
 Only the shorthand version is supported; the longhand
@@ -22,8 +23,7 @@ border-top-left-radius etc. properties are not.</p>
 
 <p>The rounded corners are applied to the element's background area
 (including solid background colors, background images, and background
-gradients), the element's border, and the box-shadow if specified.<br>
-</p>
+gradients), the element's border, and the box-shadow if specified.</p>
 
 <p>Both the standard border-radius property name as well as a custom
 prefixed -pie-border-radius property name are recognized; if both are
@@ -49,8 +49,7 @@ also does not support percentage values at all. (TODO: check this in
 WebKit nightlies and recent Chrome, I think these may now match the
 spec and drop the prefix.)</p>
 
-<h2>box-shadow<br>
-</h2>
+<h2>box-shadow</h2>
 
 <p>PIE supports the box-shadow property syntax as of its last
 appearance in the CSS3 Backgrounds and Borders module. It was removed
@@ -62,7 +61,8 @@ Regardless, this is an extremely useful property which has widespread
 support (via prefixed properties) in other browsers, so PIE includes
 support as best it can.</p>
 
-<pre>box-shadow: none | &lt;shadow&gt; [,&lt;shadow&gt;]*<br>    where &lt;shadow&gt; = inset? &amp;&amp; [ &lt;offset-x&gt; &lt;offset-y&gt; &lt;blur-radius&gt;? &lt;spread-radius&gt;? &amp;&amp; &lt;color&gt;? ]<br></pre>
+<pre>box-shadow: none | &lt;shadow&gt; [,&lt;shadow&gt;]*
+    where &lt;shadow&gt; = inset? &amp;&amp; [ &lt;offset-x&gt; &lt;offset-y&gt; &lt;blur-radius&gt;? &lt;spread-radius&gt;? &amp;&amp; &lt;color&gt;? ]</pre>
 
 <p>Both the (ex-)standard box-shadow property name as well as a custom
 prefixed -pie-box-shadow property name are recognized; if both are
@@ -72,8 +72,7 @@ incompatibilities between PIE's implementation and others which use the
 non-prefixed property, such as Opera.</p>
 
 <p>When used in conjunction with border-radius, the shape of the shadow
-matches the shape of the rounded border box.<br>
-</p>
+matches the shape of the rounded border box.</p>
 
 <p>When using the blur radius parameter, the strength and size of the
 blur as rendered by PIE should match that of other browsers almost
@@ -85,8 +84,7 @@ more than a one-pixel difference).</p>
 planned in a future version.</p>
 
 <p>PIE does not currently support the 'inset' keyword, but support is
-planned in a future version.<br>
-</p>
+planned in a future version.</p>
 
 <p>Notes on other browsers:</p>
 
@@ -115,11 +113,15 @@ are no supported corresponding longhand values (e.g.
 <p>For backward-compatibility with browsers which do not support CSS3
 backgrounds, be sure to include appropriate fallbacks. For example:</p>
 
-<pre>#myElement {<br>    background: url(bg-image.png) no-repeat #CCC; /*non-CSS3 browsers will use this*/<br>    background: url(bg-image.png) no-repeat, -moz-linear-gradient(90deg, #CCC, #EEE); /*gecko*/<br>    background: url(bg-image.png) no-repeat, -webkit-gradient(linear, left bottom, left top, from(#CCC) to(#EEE)); /*webkit*/ <br>    -pie-background: url(bg-image.png) no-repeat, linear-gradient(90deg, #CCC, #EEE); /*PIE*/<br>}<br></pre>
+<pre>#myElement {
+    background: url(bg-image.png) no-repeat #CCC; /*non-CSS3 browsers will use this*/
+    background: url(bg-image.png) no-repeat, -moz-linear-gradient(90deg, #CCC, #EEE); /*gecko*/
+    background: url(bg-image.png) no-repeat, -webkit-gradient(linear, left bottom, left top, from(#CCC) to(#EEE)); /*webkit*/
+    -pie-background: url(bg-image.png) no-repeat, linear-gradient(90deg, #CCC, #EEE); /*PIE*/
+}</pre>
 
 <p>While the PIE parser will allow them, the following aspects of the
-background shorthand will currently be ignored when rendering:<br>
-</p>
+background shorthand will currently be ignored when rendering:</p>
 
 <ul>
 
@@ -131,8 +133,7 @@ values are supported)</li>
   <li>background-position values with more than 2 parts</li>
 </ul>
 
-<p>Support for these items will be added in future versions as possible.<br>
-</p>
+<p>Support for these items will be added in future versions as possible.</p>
 
 <h2>-pie-watch-ancestors</h2>
 
@@ -142,13 +143,21 @@ that if you have scripting which modifies any of the recognized CSS3
 properties on the fly, those changes will automatically be picked up
 and the rendering will be updated to match. For example:</p>
 
-<pre>/* JS: */<br>myElement.onclick = function() {<br>    this.style.borderRadius = '20px';<br>};<br><br>/* CSS: */<br>#myElement {<br>    behavior: url(PIE.htc);<br>    border-radius: 10px;<br>}<br></pre>
+<pre>/* JS: */
+myElement.onclick = function() {
+    this.style.borderRadius = '20px';
+};
+
+/* CSS: */
+#myElement {
+    behavior: url(PIE.htc);
+    border-radius: 10px;
+}</pre>
 
 <p>Assuming myElement has the PIE.htc behavior attached to it, the
 above code will work as expected without any extra effort from the
 author of the script or CSS. This seamlessness is a big part of why PIE
-is so easy to use.<br>
-</p>
+is so easy to use.</p>
 
 <p>But common best-practices in scripting dictate that instead of
 setting styles directly with element.style.foo, scripts should only
@@ -156,7 +165,19 @@ add/remove elements' class names, letting the actual styles
 corresponding to those class names be maintained in the CSS. So
 reworking the above example:</p>
 
-<pre>/* JS: */<br>myElement.onclick = function() {<br>    this.className += ' poked';<br>}<br><br>/* CSS: */<br>#myElement {<br>    behavior: url(PIE.htc);<br>    border-radius: 10px;<br>}<br>#myElement.poked {<br>    border-radius: 20px;<br>}<br></pre>
+<pre>/* JS: */
+myElement.onclick = function() {
+    this.className += ' poked';
+}
+
+/* CSS: */
+#myElement {
+    behavior: url(PIE.htc);
+    border-radius: 10px;
+}
+#myElement.poked {
+    border-radius: 20px;
+}</pre>
 
 <p>Again, since the className is being changed on the element to which
 the behavior is applied, PIE will automatically be notified of the
@@ -165,7 +186,19 @@ change and update the border-radius rendering to match the new value.</p>
 <p>However, what if the className is changed not on the element itself
 but on one of its ancestors?</p>
 
-<pre>/* JS: */<br>myElement.onclick = function() {<br>    this.parentNode.className += ' poked';<br>}<br><br>/* CSS: */<br>#myElement {<br>    behavior: url(PIE.htc);<br>    border-radius: 10px;<br>}<br>.poked #myElement {<br>    border-radius: 20px;<br>}<br></pre>
+<pre>/* JS: */
+myElement.onclick = function() {
+    this.parentNode.className += ' poked';
+}
+
+/* CSS: */
+#myElement {
+    behavior: url(PIE.htc);
+    border-radius: 10px;
+}
+.poked #myElement {
+    border-radius: 20px;
+}</pre>
 
 <p>This is a very common pattern which allows a lot of flexibility.
 However, in this case, PIE will not be automatically notified of the
@@ -176,12 +209,25 @@ PIE-targeted element, but that would be bad for performance and memory
 usage. So instead, we have introduced a custom CSS property which
 allows authors to tell PIE that certain ancestors should be watched:</p>
 
-<pre>/* JS: */<br>myElement.onclick = function() {<br>    this.parentNode.className += ' poked';<br>}<br><br>/* CSS: */<br>#myElement {<br>    behavior: url(PIE.htc);<br>    border-radius: 10px;<br>    <span style="font-weight: bold;">-pie-watch-ancestors: 1;</span><br>}<br>.poked #myElement {<br>    border-radius: 20px;<br>}<br></pre>
+<pre>/* JS: */
+myElement.onclick = function() {
+    this.parentNode.className += ' poked';
+}
+
+/* CSS: */
+#myElement {
+    behavior: url(PIE.htc);
+    border-radius: 10px;
+    <strong>-pie-watch-ancestors: 1;</strong>
+}
+.poked #myElement {
+    border-radius: 20px;
+}</pre>
 
 <p>This tells PIE that it should watch for changes on ancestors one
 level up from the element. It will attach the propertychange listener
 to the element's parent and therefore be notified when the parent's
-className gets changed, and update the rendering correctly.<br>
+className gets changed, and update the rendering correctly.
 </p>
 
 <h2>rgba color values</h2>
@@ -193,10 +239,8 @@ RGB color, but fully opaque. Here are the supported contexts in which
 the opacity will be rendered correctly:</p>
 
 <ul>
-
   <li>The background-color as specified in the -pie-background property</li>
-  <li>The color value of box-shadow<br>
-  </li>
+  <li>The color value of box-shadow</li>
 </ul>
 
 <h2>gradients</h2>
@@ -206,13 +250,12 @@ the opacity will be rendered correctly:</p>
 are not supported. The supported syntax matches that of the current
 CSS3 Image Values module.</p>
 
-<pre>linear-gradient([&lt;bg-position&gt; || &lt;angle&gt;,]? &lt;color-stop&gt;, &lt;color-stop&gt;[, &lt;color-stop&gt;]*);<br></pre>
+<pre>linear-gradient([&lt;bg-position&gt; || &lt;angle&gt;,]? &lt;color-stop&gt;, &lt;color-stop&gt;[, &lt;color-stop&gt;]*);</pre>
 
 <p>Currently all color stops are rendered fully opaque, even if
 specifying an rgba color value. This is due to a limitation in VML's
 linear gradient syntax which does not allow setting opacity for
-individual color stops.<span style="font-family: monospace;"><br>
-</span></p>
+individual color stops.</p>
 
 <p>Gradients containing color-stops which lie outside the bounding area
 of the element are not currently supported, due to limitations in VML's
@@ -226,7 +269,7 @@ gradients (they end up rectangular).</p>
 
 <p>WebKit's gradient syntax is drastically different than that of the
 CSS3 spec. See the Safari documentation for their syntax:
-http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/Gradients/Gradients.html</p>
+<a href="http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/Gradients/Gradients.html">http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/Gradients/Gradients.html</a></p>
 
 <p>Mozilla only supports gradients (via the -moz-linear-gradient
 property) as of Firefox 3.6.</p>
