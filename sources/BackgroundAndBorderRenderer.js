@@ -507,28 +507,59 @@ PIE.BackgroundAndBorderRenderer = (function() {
                     floor = Math.floor;
                     ceil = Math.ceil;
 
-                    function curve( corner, shrinkX, shrinkY, startAngle, ccw ) {
+                    function curve( corner, shrinkX, shrinkY, startAngle, ccw, doMove ) {
                         var rx = radii.x[ corner ],
                             ry = radii.y[ corner ],
                             deg = 65535,
                             isRight = corner.charAt( 1 ) === 'r',
                             isBottom = corner.charAt( 0 ) === 'b';
                         return ( rx > 0 && ry > 0 ) ?
+                                    ( doMove ? 'al' : 'ae' ) +
                                     ( isRight ? ceil( elW - rx ) : floor( rx ) ) * mult + ',' + // center x
                                     ( isBottom ? ceil( elH - ry ) : floor( ry ) ) * mult + ',' + // center y
                                     ( floor( rx ) - shrinkX ) * mult + ',' + // width
                                     ( floor( ry ) - shrinkY ) * mult + ',' + // height
                                     ( startAngle * deg ) + ',' + // start angle
-                                    ( 45 * deg * ( ccw ? 1 : -1 ) ) // angle change
-                                : '';
+                                    ( 45 * deg * ( ccw ? 1 : -1 ) // angle change
+                                ) : (
+                                    ( doMove ? 'm' : 'l' ) +
+                                    ( isRight ? elW - shrinkX : shrinkX ) * mult + ',' +
+                                    ( isBottom ? elH - shrinkY : shrinkY ) * mult
+                                );
+                    }
+
+                    function line( side, shrink, ccw, doMove ) {
+                        var start = (
+                                side === 't' ?
+                                    floor( radii.x['tl'] ) * mult + ',' + ceil( shrink ) * mult :
+                                side === 'r' ?
+                                    ceil( elW - shrink ) * mult + ',' + floor( radii.y['tr'] ) * mult :
+                                side === 'b' ?
+                                    ceil( elW - radii.x['br'] ) * mult + ',' + floor( elH - shrink ) * mult :
+                                // side === 'l' ?
+                                    floor( shrink ) * mult + ',' + ceil( elH - radii.y['bl'] ) * mult
+                            ),
+                            end = (
+                                side === 't' ?
+                                    ceil( elW - radii.x['tr'] ) * mult + ',' + ceil( shrink ) * mult :
+                                side === 'r' ?
+                                    ceil( elW - shrink ) * mult + ',' + ceil( elH - radii.y['br'] ) * mult :
+                                side === 'b' ?
+                                    floor( radii.x['bl'] ) * mult + ',' + floor( elH - shrink ) * mult :
+                                // side === 'l' ?
+                                    floor( shrink ) * mult + ',' + floor( radii.y['tl'] ) * mult
+                            );
+                        return ccw ? ( doMove ? 'm' + end : '' ) + 'l' + start :
+                                     ( doMove ? 'm' + start : '' ) + 'l' + end;
                     }
 
 
                     function addSide( side, sideBefore, sideAfter, cornerBefore, cornerAfter, baseAngle ) {
                         var vert = side === 'l' || side === 'r',
+                            sideW = pxWidths[ side ],
                             beforeX, beforeY, afterX, afterY;
 
-                        if( pxWidths[ side ] > 0 && styles[ side ] !== 'none' ) {
+                        if( sideW > 0 && styles[ side ] !== 'none' ) {
                             beforeX = pxWidths[ vert ? side : sideBefore ];
                             beforeY = pxWidths[ vert ? sideBefore : side ];
                             afterX = pxWidths[ vert ? side : sideAfter ];
@@ -536,49 +567,41 @@ PIE.BackgroundAndBorderRenderer = (function() {
 
                             if( styles[ side ] === 'dashed' || styles[ side ] === 'dotted' ) {
                                 segments.push( {
-                                    path: 'al' + curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0 ) +
-                                          'ae' + curve( cornerBefore, 0, 0, baseAngle, 1 ),
+                                    path: curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0, 1 ) +
+                                          curve( cornerBefore, 0, 0, baseAngle, 1, 0 ),
                                     fill: colors[ side ]
                                 } );
                                 segments.push( {
-                                    path: (
-                                        side === 't' ?
-                                            'm' + floor( radii.x['tl'] ) * mult + ',' + ceil( wT/2 ) * mult +
-                                            'l' + ceil( elW - radii.x['tr'] ) * mult + ',' + ceil( wT/2 ) * mult :
-                                        side === 'r' ?
-                                            'm' + ceil( elW - wR/2 ) * mult + ',' + floor( radii.y['tr'] ) * mult +
-                                            'l' + ceil( elW - wR/2 ) * mult + ',' + ceil( elH - radii.y['br'] ) * mult :
-                                        side === 'b' ?
-                                            'm' + ceil( elW - radii.x['br'] ) * mult + ',' + floor( elH - wB/2 ) * mult +
-                                            'l' + floor( radii.x['bl'] ) * mult + ',' + floor( elH - wB/2 ) * mult :
-                                        // side === 'l'
-                                            'm' + floor( wL/2 ) * mult + ',' + ceil( elH - radii.y['bl'] ) * mult +
-                                            'l' + floor( wL/2 ) * mult + ',' + floor( radii.y['tl'] ) * mult
-                                    ),
+                                    path: line( side, sideW / 2, 0, 1 ),
                                     stroke: styles[ side ],
-                                    weight: pxWidths[ side ],
+                                    weight: sideW,
                                     color: colors[ side ]
                                 } );
                                 segments.push( {
-                                    path: 'al' + curve( cornerAfter, afterX, afterY, baseAngle, 0 ) +
-                                          'ae' + curve( cornerAfter, 0, 0, baseAngle - 45, 1 ),
+                                    path: curve( cornerAfter, afterX, afterY, baseAngle, 0, 1 ) +
+                                          curve( cornerAfter, 0, 0, baseAngle - 45, 1, 0 ),
                                     fill: colors[ side ]
                                 } );
                             }
                             else {
                                 segments.push( {
-                                    path: 'al' + curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0 ) +
-                                          'ae' + curve( cornerAfter, afterX, afterY, baseAngle, 0 ) +
+                                    path: curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0, 1 ) +
+                                          line( side, sideW, 0, 0 ) +
+                                          curve( cornerAfter, afterX, afterY, baseAngle, 0, 0 ) +
 
-                                          ( styles[ side ] === 'double' && pxWidths[ side ] > 2 ?
-                                                  'ae' + curve( cornerAfter, afterX - floor( afterX / 3 ), afterY - floor( afterY / 3 ), baseAngle - 45, 1 ) +
-                                                  'ae' + curve( cornerBefore, beforeX - floor( beforeX / 3 ), beforeY - floor( beforeY / 3 ), baseAngle, 1 ) +
-                                                  'x al' + curve( cornerBefore, floor( beforeX / 3 ), floor( beforeY / 3 ), baseAngle + 45, 0 ) +
-                                                  'ae' + curve( cornerAfter, floor( afterX / 3 ), floor( afterY / 3 ), baseAngle, 0 )
+                                          ( styles[ side ] === 'double' && sideW > 2 ?
+                                                  curve( cornerAfter, afterX - floor( afterX / 3 ), afterY - floor( afterY / 3 ), baseAngle - 45, 1, 0 ) +
+                                                  line( side, ceil( sideW / 3 * 2 ), 1, 0 ) +
+                                                  curve( cornerBefore, beforeX - floor( beforeX / 3 ), beforeY - floor( beforeY / 3 ), baseAngle, 1, 0 ) +
+                                                  'x ' +
+                                                  curve( cornerBefore, floor( beforeX / 3 ), floor( beforeY / 3 ), baseAngle + 45, 0, 1 ) +
+                                                  line( side, floor( sideW / 3 ), 1, 0 ) +
+                                                  curve( cornerAfter, floor( afterX / 3 ), floor( afterY / 3 ), baseAngle, 0, 0 )
                                               : '' ) +
 
-                                          'ae' + curve( cornerAfter, 0, 0, baseAngle - 45, 1 ) +
-                                          'ae' + curve( cornerBefore, 0, 0, baseAngle, 1 ),
+                                          curve( cornerAfter, 0, 0, baseAngle - 45, 1, 0 ) +
+                                          line( side, 0, 1, 0 ) +
+                                          curve( cornerBefore, 0, 0, baseAngle, 1, 0 ),
                                     fill: colors[ side ]
                                 } );
                             }
