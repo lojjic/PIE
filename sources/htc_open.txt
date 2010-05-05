@@ -3,6 +3,8 @@
     <PUBLIC:ATTACH EVENT="onresize" FOR="window" ONEVENT="update()" /><!-- for IE8 -->
     <PUBLIC:ATTACH EVENT="onmove" FOR="element" ONEVENT="update()" />
     <PUBLIC:ATTACH EVENT="onpropertychange" FOR="element" ONEVENT="propChanged()" />
+    <PUBLIC:ATTACH EVENT="onmouseenter" FOR="element" ONEVENT="mouseEntered()" />
+    <PUBLIC:ATTACH EVENT="onmouseout" FOR="element" ONEVENT="mouseLeft()" />
     <PUBLIC:ATTACH EVENT="oncontentready" FOR="element" ONEVENT="init()" />
     <PUBLIC:ATTACH EVENT="ondetach" FOR="element" ONEVENT="cleanup()" />
 

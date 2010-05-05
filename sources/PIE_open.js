@@ -3,7 +3,8 @@ var PIE = window['PIE'];
 if( !PIE ) {
     PIE = window['PIE'] = {
         CSS_PREFIX: '-pie-',
-        STYLE_PREFIX: 'Pie'
+        STYLE_PREFIX: 'Pie',
+        CLASS_PREFIX: 'pie_'
     };
 
     // Detect IE6

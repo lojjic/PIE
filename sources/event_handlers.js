@@ -38,7 +38,7 @@ function update() {
  */
 function propChanged() {
     init();
-    var name = event.propertyName,
+    var name = event && event.propertyName,
         i, len, toUpdate;
     if( name === 'style.display' || name === 'style.visibility' ) {
         for( i = 0, len = renderers.length; i < len; i++ ) {
@@ -56,6 +56,25 @@ function propChanged() {
             toUpdate[i].updateProps();
         }
     }
+}
+
+
+/**
+ * Handle mouseenter events. Adds a custom class to the element to allow IE6 to add
+ * hover styles to non-link elements.
+ */
+function mouseEntered() {
+    element.className += ' ' + PIE.CLASS_PREFIX + 'hover';
+    //must delay this because the mouseleave event fires before the :hover styles are added.
+    setTimeout( propChanged, 0 );
+}
+/**
+ * Handle mouseleave events
+ */
+function mouseLeft() {
+    element.className = element.className.replace( new RegExp( '\\b' + PIE.CLASS_PREFIX + 'hover\\b', 'g' ), '' );
+    //must delay this because the mouseleave event fires before the :hover styles are removed.
+    setTimeout( propChanged, 0 );
 }
 
 

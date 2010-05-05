@@ -2,5 +2,7 @@
 
 update();
 propChanged();
+mouseEntered();
+mouseLeft();
 init();
 cleanup();

@@ -2,5 +2,7 @@
 
 function update(){};
 function propChanged(){};
+function mouseEntered(){};
+function mouseLeft(){};
 function init(){};
 function cleanup(){};

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <style type="text/css">
+
+        html, body {
+            font: 12px sans-serif;
+        }
+
+        .tester {
+            behavior: url(../build/PIE_uncompressed.htc);
+        }
+
+        #test1 {
+            float: left;
+            padding: 2em;
+            border-radius: 8px;
+            background: #F99;
+        }
+        #test1:hover {
+            background: #9F9;
+        }
+
+        #test2 {
+            float: left;
+            clear: left;
+            padding: 2em;
+            margin-top: 3em;
+            background: #F99;
+            border-radius: 8px;
+        }
+        #test2:hover,
+        #test2.pie_hover {
+            background: #9F9;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <p>
+        <a href="#" class="tester" id="test1">Link</a>
+    </p>
+
+    <div class="tester" id="test2">Non-link</div>
+
+</body>
+</html>
