@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>PIE Documentation: Known Issues</title>
+
+</head>
+<body>
+
+<h1>Known Issues</h1>
+
+<p>This document describes the most common general issues encountered when using PIE. For information regarding bugs
+and limitations in the implementations of specific features, see the detailed documentation of the
+<a href="properties.html">supported CSS3 properties and values</a>, and also our issue tracking system [TODO provide link].</p>
+
+<h2>Problems with z-index</h2>
+
+<p>First, a little background on how PIE renders CSS3 decorations: a single <code>&lt;css3-container/&gt;</code>
+element is created which holds all the VML objects. This container element is inserted as a previous sibling to the
+target element, and absolutely positioned at the same coordinates.  If the target element is position:absolute or
+position:relative, then the css3-container element is given the same z-index as the target element, and since it
+is a previous sibling in the DOM tree it gets displayed behind, with no possibility of any other element sneaking
+in between.</p>
+
+<p>However, this does not work so well when the target element is position:static, because static elements do not
+participate in z-index stacking. The only way to make our position:absolute css3 element go behind it is to give
+it <code>z-index:-1</code>. Unfortunately, this has a bad side-effect: not only will the css3 element go behind the
+target element, it will also go <em>behind the background of any ancestor element(s) which are themselves position:static.</em>
+This leads to situations in which PIE creates the VML rendering correctly but it disappears behind a parent element's
+background.</p>
+
+<p>The only way I know of to work around this is to either:</p>
+<ol>
+    <li>make the target element position:relative, or</li>
+    <li>make the ancestor element position:relative.</li>
+</ol>
+
+<p>Both of these workarounds can have potential unwanted side-effects in terms of child element positioning and
+z-index stacking. PIE could easily force one or the other itself, but:</p>
+<ol>
+    <li>One or the other may be more appropriate depending on the particular situation, so the CSS author needs to
+    be able to control which one gets chosen.</li>
+    <li>Forcing position:relative outside of the CSS would put IE out of sync with other browsers, leading to
+    confusing inconsistencies.</li>
+</ol>
+
+<p>PIE therefore does neither, and it is up to the author to implement either workaround where necessary.</p>
+
+
+
+
+<h2>Relative paths</h2>
+
+<p>There are two main issues related to relative paths in CSS:</p>
+
+<h3>The behavior URL</h3>
+
+<p>IE interprets the URL for the <code>behavior</code> property relative to the source HTML document, rather than
+relative to the CSS file like every other CSS property.  This makes invoking the PIE behavior inconvenient, because
+the URL has to either be:</p>
+
+<ol>
+    <li>Absolute from the domain root &mdash; this makes the CSS not easily moveable between directories &mdash; or,</li>
+    <li>Relative to the HTML document &mdash; this makes the CSS not easily reusable between different HTML files.</li>
+</ol>
+
+<h3>URLs in PIE-interpreted CSS properties</h3>
+
+<p>PIE does not parse the CSS stylesheets (to do so would be unacceptably slow); it lets IE handle the parsing,
+selector querying, cascading, etc. and then simply asks it for the resulting property values.  This means that when
+PIE gets a property value, it has no knowledge of the context from which that value originated.</p>
+
+<p>As a result, for properties which contain URL values (such as border-image or -pie-background), PIE cannot resolve
+those URLs relative to the CSS file in which they appear. It resolves them instead relative to the JavaScript
+execution context, which is the location of the source HTML document.</p>
+
+
+
+<h2>Shorthand only</h2>
+
+<p>For all CSS properties which PIE parses, only the shorthand versions of those properties will be recognized.
+For example, while <code>border-radius</code> is supported, the individual longhand <code>border-top-left-radius</code>
+etc. properties are not.</p>
+
+<p>The reason for this is the same reason URLs are not resolved relative to the CSS file (see above): PIE does not
+have visibility into where each style property comes from.  If there is both a shorthand and a longhand
+property present, PIE cannot determine the order in which the CSS author specified those properties, nor can it
+determine the specificity of the selector for each property.  It cannot therefore make an informed decision about
+which property should take precedence.</p>
+
+<p>To avoid making dumb guesses, we have opted to only support shorthand properties. Shorthand was chosen over longhand
+to keep file size small and avoid tediousness.</p>
+
+
+
+<h2>Problems with hasLayout</h2>
+
+<p>In order to automatically detect element position and dimension changes, PIE has to force
+"<a href="http://www.satzansatz.de/cssd/onhavinglayout.html">hasLayout</a>" on the target element (in IE6 and IE7).
+It does so by applying the style <code>zoom:1;</code> to the element.</p>
+
+<p>For the most part, doing this has no adverse effect on the rendering of the element. In fact, a lot of times it
+improves the rendering (hasLayout is often used as a hack to work around IE CSS bugs).  However, in some cases this has
+<a href="http://www.satzansatz.de/cssd/onhavinglayout.html#rev">unwanted consequences</a>.</p>
+
+
+
+<h2>Deviations from CSS spec</h2>
+
+<p>For the properties it supports, PIE attempts to match the syntax parsing and rendering as specified by the current
+CSS3 spec document drafts.  Any deviations should be considered defects. If you find a bug, please open a ticket in
+our issue tracking system [TODO provide link]. You can find information about many of the known issues in the
+detailed documentation of <a href="properties.html">supported CSS3 properties and values</a>.</p>
+
+<p>Do keep in mind, however, that the CSS3 specs are still a moving target. Some properties, such as border-radius,
+have been around long enough, and have sufficient cross-browser implementation, such that it is unlikely further
+changes to the spec will occur. Other things, such as gradients, are relatively new to the specs and are more likely
+to change in future drafts.</p>
+
+<p>Fortunately, this threat of future change is not as much of a problem when using PIE as it is when writing
+for other browsers. The reason is that the CSS author, by deploying PIE, essentially has control over the user agent.
+You know that when you deploy a certain version of PIE, all IE users will experience the same parsing and rendering
+behavior. You don't have to worry that some users will be using an old version which has more bugs, or that users will
+have a newer version in the future which has different behavior you can't plan for. You can safely depend on the
+behavior of the exact PIE version you deploy, indefinitely into the future.</p>
+
+<p>But what happens when the spec changes and PIE hasn't yet been updated to support the new syntax or behavior? Or
+what about when there's a bug in PIE that makes it impossible to use the same CSS property for both PIE and other
+browsers?  To handle both these cases, any of the supported CSS3 properties can be prefixed with <code>-pie-</code>
+and that will be used in preference to the standard property. So for instance you could specify a <code>box-shadow</code>
+value which would be used by other browsers, and then a <code>-pie-box-shadow</code> value which will be used only by
+PIE. This is recommended only as a final resort; it's always best to use the standard property if at all possible.</p>
+
+
+</body>
+</html>
