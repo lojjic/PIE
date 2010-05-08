@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>PIE Documentation: Building PIE</title>
+
+</head>
+<body>
+
+<h1>Building PIE</h1>
+
+<h2>Prerequisites</h2>
+
+<p>Building PIE is straightforward. You need the following tools installed:</p>
+
+<ol>
+    <li><a href="http://git-scm.com/">Git</a>, if you are going to be checking out the source from the Git repository</li>
+    <li><a href="http://java.com">Java</a> runtime, version 6 or higher</li>
+    <li><a href="http://ant.apache.org">Ant</a>, for performing the build</li>
+</ol>
+
+<p>Once these prerequisites are installed, perform the following steps:</p>
+
+
+
+<h2>Get the source code</h2>
+
+<p>You have two options for getting the source:</p>
+
+<ol>
+    <li>Check out the source using Git:
+        <pre><kbd>git clone git://github.com/lojjic/PIE.git</kbd></pre>
+        or:
+    </li>
+    <li>Download an archive of the source:
+        <a href="http://github.com/lojjic/PIE/archives/master">http://github.com/lojjic/PIE/archives/master</a>
+    </li>
+</ol>
+
+
+
+<h2>Perform the build</h2>
+
+<p>From the root directory of your local copy of the source code, invoke the following command in the terminal:</p>
+
+<pre><kbd>ant</kbd></pre>
+
+<p>This will perform the build, creating a new directory named "build/". This directory will contain the following
+artifacts:</p>
+
+<ul>
+    <li>PIE.htc - The fully compressed behavior file; this is the version which should be deployed in production
+    environments.</li>
+    <li>PIE_uncompressed.htc - An uncompressed version of the behavior; this is useful for debugging purposes but is
+    very large so it should not be deployed in production environments.</li>
+</ul>
+
+
+
+</body>
+</html>
