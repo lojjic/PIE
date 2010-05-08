@@ -48,7 +48,6 @@
                        --compilation_level ADVANCED_OPTIMIZATIONS
                        --externs ${src_dir}/closure_externs.js' />
         </exec>
-        <delete file="${build_dir}/temp.js" />
 
         <!--
         <exec executable="yuicompressor">
@@ -61,8 +60,20 @@
             <fileset file="${build_dir}/script_compressed.js" />
             <fileset file="${src_dir}/htc_close.txt" />
         </concat>
+
+        <delete file="${build_dir}/temp.js" />
+        <delete file="${build_dir}/script_uncompressed.js" />
+        <delete file="${build_dir}/script_compressed.js" />
     </target>
 
-    <target name="package" depends="package-uncompressed,package-compressed" />
+
+    <target name="copy-wrappers">
+        <copy todir="${build_dir}">
+            <fileset dir="${src_dir}/wrappers" />
+        </copy>
+    </target>
+
+
+    <target name="package" depends="package-uncompressed,package-compressed,copy-wrappers" />
 
 </project>
