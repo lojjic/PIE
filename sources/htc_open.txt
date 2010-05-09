@@ -1,3 +1,8 @@
+<!--
+PIE: CSS3 for IE
+http://css3pie.com
+Licensed for use under the Apache License, Version 2.0
+-->
 <PUBLIC:COMPONENT lightWeight="true">
     <PUBLIC:ATTACH EVENT="onresize" FOR="element" ONEVENT="update()" />
     <PUBLIC:ATTACH EVENT="onresize" FOR="window" ONEVENT="update()" /><!-- for IE8 -->
