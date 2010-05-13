@@ -90,7 +90,7 @@ determine the specificity of the selector for each property.  It cannot therefor
 which property should take precedence.</p>
 
 <p>To avoid making dumb guesses, we have opted to only support shorthand properties. Shorthand was chosen over longhand
-to keep file size small and avoid tediousness.</p>
+to keep file size small and avoid tedious repetition.</p>
 
 
 
@@ -131,6 +131,27 @@ browsers?  To handle both these cases, any of the supported CSS3 properties can 
 and that will be used in preference to the standard property. So for instance you could specify a <code>box-shadow</code>
 value which would be used by other browsers, and then a <code>-pie-box-shadow</code> value which will be used only by
 PIE. This is recommended only as a final resort; it's always best to use the standard property if at all possible.</p>
+
+
+
+<h2>Serving the correct Content-Type</h2>
+
+<p>IE requires that HTC behaviors are served up with a content-type header of "text/x-component", otherwise it will
+simply ignore the behavior. Many web servers are preconfigured to serve the correct content-type, but others are not.</p>
+
+<p>If you have problems with the PIE behavior not being applied, check your server configuration and if possible
+update it to use the correct content-type. For Apache, you can do this in a .htaccess file:</p>
+
+<pre><code>AddType text/x-component htc</code></pre>
+
+<p>If for some reason you are unable to modify the server configuration (e.g. if you are on a shared host which does
+not allow custom .htaccess files), then you may also use a wrapper script. For instance, PIE includes in its
+distribution files a PHP script called PIE.php; this script simply serves up the PIE.htc file using the correct
+content-type header. To use it, simply make sure both PIE.php and PIE.htc are in the same directory, and then in your
+CSS point the behavior to the PHP file instead:</p>
+
+<pre><code>behavior: url(PIE.php);</code></pre>
+
 
 
 </body>
