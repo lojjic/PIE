@@ -18,7 +18,7 @@ and render a number of the most useful CSS3 properties.</p>
 
 <h2>How does it work?</h2>
 <p>PIE is implemented as an attached behavior; in your CSS, you simply specify:</p>
-<pre><code>behavior:url(PIE.htc);</code></pre>
+<pre><code>behavior: url(PIE.htc);</code></pre>
 <p>Once the behavior is attached, it looks for any of the supported CSS3 properties which might be attached to the
 target element, parses those properties, and renders them on the page.</p>
 
@@ -47,7 +47,8 @@ goals are:</p>
 <ol>
     <li>
         <h3>Be simple to use</h3>
-        <p></p>
+        <p>Applying PIE is extremely simple; in many cases the only thing you have to do is add the behavior property
+        to your CSS.</p>
     </li>
     <li>
         <h3>Be a CSS-only solution</h3>
@@ -76,8 +77,9 @@ goals are:</p>
     </li>
     <li>
         <h3>Be as compliant with the CSS3 specs as possible</h3>
-        <p>PIE aims to be a true CSS3 implementation for those features it supports, complying strictly to the specs.
-        The goal is to allow authors to write a single set of CSS3 code and have it "just work" between browsers.</p>
+        <p>PIE aims to be a true CSS3 implementation for those features it supports, complying with the current spec
+        drafts as closely as possible. The goal is to allow authors to write a single set of CSS3 code and have it
+        "just work" between browsers.</p>
     </li>
     <li>
         <h3>Be as performant as possible</h3>
