@@ -80,11 +80,25 @@ PIE.Tokenizer = (function() {
         /**
          * Advance to and return the next token in the CSS string. If the end of the CSS string has
          * been reached, null will be returned.
+         * @param {boolean} forget - if true, the token will not be stored for the purposes of backtracking with prev().
          * @return {PIE.Tokenizer.Token}
          */
-        next: function() {
-            var css, ch, match, type, val,
+        next: function( forget ) {
+            var css, ch, firstChar, match, type, val,
                 me = this;
+
+            function newToken( type, value ) {
+                var tok = new Tokenizer.Token( type, value );
+                if( !forget ) {
+                    me.tokens.push( tok );
+                    me.tokenIndex++;
+                }
+                return tok;
+            }
+            function failure() {
+                me.tokenIndex++;
+                return null;
+            }
 
             // In case we previously backed up, return the stored token in the next slot
             if( this.tokenIndex < this.tokens.length ) {
@@ -96,19 +110,13 @@ PIE.Tokenizer = (function() {
                 this.ch++;
             }
             if( this.ch >= this.css.length ) {
-                return null;
+                return failure();
             }
 
-            function newToken( type, value ) {
-                var tok = new Tokenizer.Token( type, value );
-                me.tokens.push( tok );
-                me.tokenIndex++;
-                return tok;
-            }
-
+            ch = this.ch;
             css = this.css.substring( this.ch );
-            ch = css.charAt( 0 );
-            switch( ch ) {
+            firstChar = css.charAt( 0 );
+            switch( firstChar ) {
                 case '#':
                     if( match = css.match( this.hashColor ) ) {
                         this.ch += match[0].length;
@@ -127,7 +135,7 @@ PIE.Tokenizer = (function() {
                 case "/":
                 case ",":
                     this.ch++;
-                    return newToken( Type.OPERATOR, ch );
+                    return newToken( Type.OPERATOR, firstChar );
 
                 case 'u':
                     if( match = css.match( this.url ) ) {
@@ -182,7 +190,7 @@ PIE.Tokenizer = (function() {
                             return tok && tok.value === val;
                         }
                         function next() {
-                            return me.next();
+                            return me.next( 1 );
                         }
 
                         if( ( val.charAt(0) === 'r' ? isNumOrPct( next() ) : isNum( next() ) ) &&
@@ -195,9 +203,9 @@ PIE.Tokenizer = (function() {
                                 isNum( next() )
                             ) ) &&
                             isValue( next(), ')' ) ) {
-                            return newToken( Type.COLOR, css.substring( 0, this.ch ) );
+                            return newToken( Type.COLOR, this.css.substring( ch, this.ch ) );
                         }
-                        return null;
+                        return failure();
                     }
 
                     return newToken( Type.FUNCTION, val + '(' );
@@ -209,7 +217,7 @@ PIE.Tokenizer = (function() {
 
             // Standalone character
             this.ch++;
-            return newToken( Type.CHARACTER, ch );
+            return newToken( Type.CHARACTER, firstChar );
         },
 
         /**
