@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Test cases for box-shadow</title>
+
+    <style type="text/css">
+
+        .w3cSpec {
+            border:5px solid blue;
+            background-color:#FFA500;
+            width: 144px;
+            height: 144px;
+            margin: 0 2em 2em 0;
+            behavior: url(../build/PIE.htc);
+        }
+        .w3cSpecRound {
+            -webkit-border-radius: 20px;
+            -moz-border-radius: 20px;
+            border-radius: 20px;
+            clear: left;
+            float: left;
+        }
+        .w3cSpecOutset {
+            -moz-box-shadow: rgba(0,0,0,0.4) 10px 10px;
+            box-shadow: rgba(0,0,0,0.4) 10px 10px;
+        }
+        .w3cSpecInset {
+            -moz-box-shadow: rgba(0,0,0,0.4) 10px 10px inset;
+            box-shadow: rgba(0,0,0,0.4) 10px 10px inset;
+        }
+        .w3cSpecOutsetSpread {
+            -moz-box-shadow: rgba(0,0,0,0.4) 10px 10px 0 10px;
+            box-shadow: rgba(0,0,0,0.4) 10px 10px 0 10px;
+        }
+        .w3cSpecInsetSpread {
+            -moz-box-shadow: rgba(0,0,0,0.4) 10px 10px 0 10px inset;
+            box-shadow: rgba(0,0,0,0.4) 10px 10px 0 10px inset;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <h1>Tests for box-shadow</h1>
+
+    <div>
+        <h2>Examples from W3C <a href="http://dev.w3.org/csswg/css3-background/#box-shadow-samples">spec</a></h2>
+
+        <div class="w3cSpec w3cSpecOutset w3cSpecRound"></div>
+        <div class="w3cSpec w3cSpecOutset"></div>
+
+        <div class="w3cSpec w3cSpecInset w3cSpecRound"></div>
+        <div class="w3cSpec w3cSpecInset"></div>
+
+        <div class="w3cSpec w3cSpecOutsetSpread w3cSpecRound"></div>
+        <div class="w3cSpec w3cSpecOutsetSpread"></div>
+
+        <div class="w3cSpec w3cSpecInsetSpread w3cSpecRound"></div>
+        <div class="w3cSpec w3cSpecInsetSpread"></div>
+    </div>
+
+</body>
+</html>

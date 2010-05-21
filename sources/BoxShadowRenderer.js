@@ -59,7 +59,7 @@ PIE.BoxShadowRenderer = (function() {
                 // Blurred shadows end up slightly too wide; shrink them down
                 shape.coordsize = ( w * 2 + shrink ) + ',' + ( h * 2 + shrink );
                 shape.coordorigin = '1,1';
-                shape.path = this.getBoxPath( 0, 2 );
+                shape.path = this.getBoxPath( spread ? { t: -spread, r: -spread, b: -spread, l: -spread } : 0, 2 );
             } else {
                 this.destroy();
             }
@@ -71,7 +71,7 @@ PIE.BoxShadowRenderer = (function() {
         },
 
         getBox: function() {
-            var box = this._box, s, ss, cs, bs, xOff, yOff, spread, blur, halfBlur, shape, el, filter, alpha;
+            var box = this._box, s, ss, cs, bs, xOff, yOff, blur, halfBlur, shape, el, filter, alpha;
             if( !box ) {
                 el = this.element;
                 box = this._box = el.document.createElement( 'box-shadow' );
@@ -79,7 +79,6 @@ PIE.BoxShadowRenderer = (function() {
                 xOff = bs.xOffset.pixels( el );
                 yOff = bs.yOffset.pixels( el );
                 blur = bs.blur.pixels( el );
-                spread = bs.spread.pixels( el );
 
                 // Adjust the blur value so it's always an even number
                 halfBlur = Math.ceil( blur / 2 );
@@ -106,8 +105,8 @@ PIE.BoxShadowRenderer = (function() {
                     s.top = yOff - 20 + spread - blur;
                     s.border = '20px solid ' + bs.color.value( el );
                 } else {*/
-                    s.left = xOff - blur - spread;
-                    s.top = yOff - blur - spread;
+                    s.left = xOff - blur;
+                    s.top = yOff - blur;
 
                     shape.filled = true;
                     shape.fillcolor = bs.color.value( el );
@@ -126,6 +125,9 @@ PIE.BoxShadowRenderer = (function() {
                 }
 
                 this.parent.addLayer( bs.inset ? this.insetZIndex : this.outsetZIndex, box );
+                if( bs.inset ) {
+                    box.style.display = 'none';
+                }
             }
             return box;
         },
