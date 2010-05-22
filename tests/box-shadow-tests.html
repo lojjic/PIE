@@ -13,7 +13,7 @@
             width: 144px;
             height: 144px;
             margin: 0 40px 40px 184px;
-            behavior: url(../build/PIE.htc);
+            behavior: url(../build/PIE_uncompressed.htc);
         }
         .w3cSpecRound {
             -webkit-border-radius: 20px;
@@ -44,6 +44,22 @@
             box-shadow: rgba(0,0,0,0.4) 10px 10px 0 10px inset;
         }
 
+        #elektroNotdienst {
+            background: khaki;
+            padding: 2em;
+        }
+        #elektroNotdienst div {
+            width: 8em;
+            font: small "Courier New", "Nimbus Mono L", FreeMono, "Luxi Mono";
+            padding: 0.5em;
+            margin: 1.6em 0;
+            background: white;
+            white-space: pre;
+            behavior: url(../build/PIE_uncompressed.htc);
+            position: relative;
+        }
+
+
     </style>
 
 </head>
@@ -51,7 +67,7 @@
 
     <h1>Tests for box-shadow</h1>
 
-    <div>
+    <div id="w3cTests">
         <h2>Examples from W3C <a href="http://dev.w3.org/csswg/css3-background/#box-shadow-samples">spec</a></h2>
 
         <div class="w3cSpec w3cSpecOutset w3cSpecRound"></div>
@@ -65,6 +81,61 @@
 
         <div class="w3cSpec w3cSpecInsetSpread w3cSpecRound"></div>
         <div class="w3cSpec w3cSpecInsetSpread"></div>
+    </div>
+
+
+    <div id="elektroNotdienst">
+        <h2>Examples from <a href="http://www.elektronotdienst-nuernberg.de/bugs/box-shadow_inset.html">Elektro-Notdienst test document</a></h2>
+
+        <div> 0.5em -0.5em 0.4em red,
+         0.5em  0.5em 0.4em gold,
+        -0.5em  0.5em 0.4em lime,
+        -0.5em -0.5em 0.4em blue;</div>
+        
+        <div>0 0 0 0.5em;</div>
+        <div>0 0 1em;</div>
+        <div>1em 0.5em;</div>
+        <div>1em 0.5em 1em;</div>
+        
+        <div>0.3em 0.3em silver;</div>
+        <div>0.3em 0.3em 0 0.6em silver;</div>
+
+        
+        <div>0 0 1em maroon;</div>
+        <div>0 0 1em 0.5em maroon;</div>
+        
+        <div>-0.4em -0.4em 1em olive;</div>
+        <div>0.4em 0.4em 1em olive;</div>
+        <div>0.4em 0.4em 1em -0.2em olive;</div>
+        <div>0.4em 0.4em 1em 0.4em olive;</div>
+        
+        <div>inset 0 0 0.5em blue;</div>
+
+        <div>inset 0 0 1em blue;</div>
+        <div>inset 0 0 2em blue;</div>
+        <div>inset 0 2em 3em -1em green;</div>
+        <div>inset 0 2em 3em -2em green;</div>
+        <div>inset 0 2em 3em -3em green;</div>
+        <div>inset 0 0 1em khaki, inset 0 0 1em khaki, inset 0 0 1em khaki, inset 0 0 1em khaki;</div>
+        <div>inset 0 2em 3em -1.5em green, inset 0 -2em 3em -2em blue;</div>
+        <div>inset 1em 1em 2em -1em blue;</div>
+        <div>inset 1em 1em 2em -1em blue, inset -1em -1em 2em -1em red;</div>
+
+        <div style="background:red;">inset 0 2em 3em -2em white, inset 0 -2em 3em -2.5em black; /* background:red */</div>
+        <div style="background:red;">inset 1em 1em 1em -1em white, inset -1em -1em 1em -1em black; /* background:red */</div>
+        <div style="background:red;">inset -1em -1em 1em -1em black, inset 1em 1em 1em -1em white; /* background:red */</div>
+        <div>inset -3em 0 3em -2em blue;</div>
+        <div>0.2em 0.2em 0.7em black, inset 0 0 0.7em red;</div>
+
+        <script type="text/javascript">
+            (function() {
+                var S= "";
+                var D= document.getElementById("elektroNotdienst").getElementsByTagName("div");
+                for(var i=0; S=D[i] && D[i].firstChild.data; i++) {
+                    D[i].style.cssText += "; -moz-box-shadow:" + S + "-webkit-box-shadow:" + S + "box-shadow:" + S;
+                }
+            })();
+        </script>
     </div>
 
 </body>
