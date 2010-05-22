@@ -25,10 +25,14 @@ PIE.BorderRadiusStyleInfo = (function() {
                 tokenizer = new PIE.Tokenizer( css );
 
                 function collectLengths() {
-                    var arr = [];
+                    var arr = [], num;
                     while( ( token = tokenizer.next() ) && token.isLengthOrPercent() ) {
                         length = newLength( token.value );
-                        if( length.getNumber() !== 0 ) {
+                        num = length.getNumber();
+                        if( num < 0 ) {
+                            return null;
+                        }
+                        if( num > 0 ) {
                             hasNonZero = true;
                         }
                         arr.push( length );
