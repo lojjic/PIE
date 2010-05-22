@@ -221,6 +221,16 @@ PIE.Tokenizer = (function() {
         },
 
         /**
+         * Determine whether there is another token
+         * @return {boolean}
+         */
+        hasNext: function() {
+            var next = this.next();
+            this.prev();
+            return !!next;
+        },
+
+        /**
          * Back up and return the previous token
          * @return {PIE.Tokenizer.Token}
          */

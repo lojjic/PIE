@@ -31,7 +31,7 @@ PIE.BoxShadowRenderer = (function() {
                     shape = box.firstChild,
                     s,
                     el = this.element,
-                    bs = this.styleInfos.boxShadowInfo.getProps(),
+                    bs = this.styleInfos.boxShadowInfo.getProps()[0],
                     spread = bs.spread.pixels( el ),
                     shrink = bs.blur.pixels( el ) > 0 ? 4 : 0,
                     w = el.offsetWidth,
@@ -73,7 +73,7 @@ PIE.BoxShadowRenderer = (function() {
             if( !box ) {
                 el = this.element;
                 box = this._box = el.document.createElement( 'box-shadow' );
-                bs = this.styleInfos.boxShadowInfo.getProps();
+                bs = this.styleInfos.boxShadowInfo.getProps()[0];
                 xOff = bs.xOffset.pixels( el );
                 yOff = bs.yOffset.pixels( el );
                 blur = bs.blur.pixels( el );

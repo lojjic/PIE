@@ -13,56 +13,64 @@ PIE.BoxShadowStyleInfo = (function() {
         styleProperty: 'boxShadow',
 
         parseCss: function( css ) {
-            var p = null, m,
+            var props, item,
                 Length = PIE.Length,
                 Type = PIE.Tokenizer.Type,
-                tokenizer, token, type, value, color, lengths, len;
+                tokenizer;
 
             if( css ) {
                 tokenizer = new PIE.Tokenizer( css );
-                p = {};
+                props = [];
 
-                while( token = tokenizer.next() ) {
-                    value = token.value;
-                    type = token.type;
+                function parseItem() {
+                    var token, type, value, color, lengths, inset, len;
 
-                    if( token.isLength() ) {
-                        if( lengths ) {
+                    while( token = tokenizer.next() ) {
+                        value = token.value;
+                        type = token.type;
+
+                        if( type & Type.OPERATOR && value === ',' ) {
+                            break;
+                        }
+                        else if( token.isLength() && !lengths ) {
+                            tokenizer.prev();
+                            lengths = tokenizer.until( function( token ) {
+                                return !token.isLength();
+                            } );
+                        }
+                        else if( type & Type.COLOR && !color ) {
+                            color = value;
+                        }
+                        else if( type & Type.IDENT && value === 'inset' && !inset ) {
+                            inset = true;
+                        }
+                        else { //encountered an unrecognized token; fail.
                             return null;
                         }
-                        tokenizer.prev();
-                        lengths = tokenizer.until( function( token ) {
-                            return !token.isLength();
-                        } );
                     }
-                    else if( type & Type.COLOR ) {
-                        if( color ) {
-                            return null;
-                        }
-                        color = value;
-                    }
-                    else if( type & Type.IDENT ) {
-                        if( value !== 'inset' || p.inset === true ) {
-                            return null;
-                        }
-                        p.inset = true;
-                    }
+
+                    len = lengths && lengths.length;
+                    return ( len > 1 && len < 5 ) ? {
+                        xOffset: new Length( lengths[0].value ),
+                        yOffset: new Length( lengths[1].value ),
+                        blur: new Length( lengths[2] ? lengths[2].value : '0' ),
+                        spread: new Length( lengths[3] ? lengths[3].value : '0' ),
+                        color: new PIE.Color( color || 'currentColor' ),
+                        inset: !!inset
+                    } : null;
                 }
 
-                len = lengths.length;
-                if( len < 2 || len > 4 ) {
-                    return null;
+                while( tokenizer.hasNext() ) {
+                    if( !( item = parseItem() ) ) {
+                        // If parseItem() returned null that means it encountered something
+                        // invalid, so throw away everything.
+                        return null;
+                    }
+                    props.push( item );
                 }
-
-                p.xOffset = new Length( lengths[0].value );
-                p.yOffset = new Length( lengths[1].value );
-                p.blur = new Length( lengths[2] ? lengths[2].value : '0' );
-                p.spread = new Length( lengths[3] ? lengths[3].value : '0' );
-                
-                p.color = new PIE.Color( color || 'currentColor' );
             }
 
-            return p;
+            return props && props.length ? props : null;
         }
     } );
 
