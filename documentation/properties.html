@@ -82,10 +82,10 @@ rounding, particularly when the blur is very small (this should not be
 more than a one-pixel difference).</p>
 
 <p>PIE does not currently support multiple box shadows, but support is
-planned in a future version.</p>
+planned in a future version (see <a href="http://github.com/lojjic/PIE/issues#issue/4">issue #4</a>.</p>
 
 <p>PIE does not currently support the 'inset' keyword, but support is
-planned in a future version.</p>
+planned in a future version (see <a href="http://github.com/lojjic/PIE/issues#issue/3">issue #3</a>.</p>
 
 <p>Notes on other browsers:</p>
 
@@ -255,7 +255,7 @@ RGB color, but fully opaque. Here are the supported contexts in which
 the opacity will be rendered correctly:</p>
 
 <ul>
-  <li>The background-color as specified in the -pie-background property</li>
+  <li>The solid background-color as specified in the -pie-background property</li>
   <li>The color value of box-shadow</li>
 </ul>
 
@@ -271,15 +271,15 @@ CSS3 Image Values module.</p>
 <p>Currently all color stops are rendered fully opaque, even if
 specifying an rgba color value. This is due to a limitation in VML's
 linear gradient syntax which does not allow setting opacity for
-individual color stops.</p>
+individual color stops. (See <a href="http://github.com/lojjic/PIE/issues#issue/7">issue #7</a>)</p>
 
 <p>Gradients containing color-stops which lie outside the bounding area
 of the element are not currently supported, due to limitations in VML's
 gradient rendering.</p>
 
-<p>Radial gradients are not supported at this time; support would be
-nice but there does not seem to be a way to make VML render true radial
-gradients (they end up rectangular).</p>
+<p>Radial gradients are not supported at this time; this feature is planned
+for a future release (see <a href="http://github.com/lojjic/PIE/issues#issue/2">issue #2</a>)
+but it may turn out to be impossible to implement due to VML's strange radial gradient behvior.</p>
 
 <p>Notes on other browsers:</p>
 
