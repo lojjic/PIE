@@ -47,10 +47,8 @@ PIE.BoxShadowRenderer = (function() {
                     s = box.firstChild.style;
                     s.width = w - spread * 2;
                     s.height = h - spread * 2;
-                } else {*/
-                    w += spread * 2;
-                    h += spread * 2;
-                /*}*/
+                } else {
+                }*/
 
                 s = shape.style;
                 s.width = w;
