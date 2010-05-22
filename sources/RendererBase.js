@@ -221,20 +221,20 @@ PIE.RendererBase = {
             blX = r.x['bl'] * mult;
             blY = r.y['bl'] * mult;
 
-            str = 'm' + shrinkL + ',' + floor(tlY) +
-                'qy' + floor(tlX) + ',' + shrinkT +
-                'l' + ceil(w - trX) + ',' + shrinkT +
-                'qx' + ( w - shrinkR ) + ',' + floor(trY) +
-                'l' + ( w - shrinkR ) + ',' + ceil(h - brY) +
-                'qy' + ceil(w - brX) + ',' + ( h - shrinkB ) +
-                'l' + floor(blX) + ',' + ( h - shrinkB ) +
-                'qx' + shrinkL + ',' + ceil(h - blY) + ' x e';
+            str = 'm' + floor( shrinkL ) + ',' + floor( tlY ) +
+                'qy' + floor( tlX ) + ',' + floor( shrinkT ) +
+                'l' + ceil( w - trX ) + ',' + floor( shrinkT ) +
+                'qx' + ceil( w - shrinkR ) + ',' + floor( trY ) +
+                'l' + ceil( w - shrinkR ) + ',' + ceil( h - brY ) +
+                'qy' + ceil( w - brX ) + ',' + ceil( h - shrinkB ) +
+                'l' + floor( blX ) + ',' + ceil( h - shrinkB ) +
+                'qx' + floor( shrinkL ) + ',' + ceil( h - blY ) + ' x e';
         } else {
             // simplified path for non-rounded box
-            str = 'm' + shrinkL + ',' + shrinkT +
-                  'l' + ( w - shrinkR ) + ',' + shrinkT +
-                  'l' + ( w - shrinkR ) + ',' + ( h - shrinkB ) +
-                  'l' + shrinkL + ',' + ( h - shrinkB ) +
+            str = 'm' + floor( shrinkL ) + ',' + floor( shrinkT ) +
+                  'l' + ceil( w - shrinkR ) + ',' + floor( shrinkT ) +
+                  'l' + ceil( w - shrinkR ) + ',' + ceil( h - shrinkB ) +
+                  'l' + floor( shrinkL ) + ',' + ceil( h - shrinkB ) +
                   'xe';
         }
         return str;
