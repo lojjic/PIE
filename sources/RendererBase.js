@@ -80,13 +80,14 @@ PIE.RendererBase = {
      * Get a VML shape by name, creating it if necessary.
      * @param {string} name A name identifying the element
      * @param {string=} subElName If specified a subelement of the shape will be created with this tag name
+     * @param {Element} parent The parent element for the shape; will be ignored if 'group' is specified
      * @param {number=} group If specified, an ordinal group for the shape. 1 or greater. Groups are rendered
      *                  using container elements in the correct order, to get correct z stacking without z-index.
      */
-    getShape: function( name, subElName, group ) {
+    getShape: function( name, subElName, parent, group ) {
         var shapes = this._shapes || ( this._shapes = {} ),
             shape = shapes[ name ],
-            s, parent;
+            s;
 
         if( !shape ) {
             shape = shapes[ name ] = PIE.Util.createVmlElement( 'shape' );
@@ -100,8 +101,6 @@ PIE.RendererBase = {
                     this.addLayer( group, this.element.document.createElement( 'group' + group ) );
                     parent = this.getLayer( group );
                 }
-            } else {
-                parent = this.getBox();
             }
 
             parent.appendChild( shape );

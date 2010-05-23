@@ -62,7 +62,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
             if( color && color !== 'transparent' ) {
                 this.hideBackground();
 
-                shape = this.getShape( 'bgColor', 'fill', 1 );
+                shape = this.getShape( 'bgColor', 'fill', this.getBox(), 1 );
                 w = el.offsetWidth;
                 h = el.offsetHeight;
                 shape.stroked = false;
@@ -101,7 +101,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
                 i = images.length;
                 while( i-- ) {
                     img = images[i];
-                    shape = this.getShape( 'bgImage' + i, 'fill', 2 );
+                    shape = this.getShape( 'bgImage' + i, 'fill', this.getBox(), 2 );
 
                     shape.stroked = false;
                     shape.fill.type = 'tile';
@@ -385,7 +385,7 @@ PIE.BackgroundAndBorderRenderer = (function() {
                 segments = this.getBorderSegments( 2 );
                 for( i = 0, len = segments.length; i < len; i++) {
                     seg = segments[i];
-                    shape = this.getShape( 'borderPiece' + i, seg.stroke ? 'stroke' : 'fill', 3 );
+                    shape = this.getShape( 'borderPiece' + i, seg.stroke ? 'stroke' : 'fill', this.getBox(), 3 );
                     shape.coordsize = w * 2 + ',' + h * 2;
                     shape.coordorigin = '1,1';
                     shape.path = seg.path;
