@@ -13,7 +13,7 @@
             width: 144px;
             height: 144px;
             margin: 0 40px 40px 184px;
-            behavior: url(../build/PIE_uncompressed.htc);
+            behavior: url(../build/PIE.htc);
         }
         .w3cSpecRound {
             -webkit-border-radius: 20px;
@@ -55,7 +55,7 @@
             margin: 1.6em 0;
             background: white;
             white-space: pre;
-            behavior: url(../build/PIE_uncompressed.htc);
+            behavior: url(../build/PIE.htc);
             position: relative;
         }
 
@@ -136,6 +136,30 @@
                 }
             })();
         </script>
+    </div>
+
+    <div id="misc">
+        <h2>Miscellaneous</h2>
+
+        <style type="text/css">
+            #misc div {
+                behavior: url(../build/PIE.htc);
+            }
+            #misc1 {
+                margin: 16px;
+                padding: 20px;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+                border-radius: 20px;
+                background: #EEE;
+                width: 400px;
+                -webkit-box-shadow: 0 0 0 2px blue, 0 0 0 4px red, 0 0 0 6px green, 0 0 0 8px yellow, 0 0 0 10px purple, 0 0 0 12px olive, 0 0 0 14px aqua, 0 0 0 16px black;
+                -moz-box-shadow: 0 0 0 2px blue, 0 0 0 4px red, 0 0 0 6px green, 0 0 0 8px yellow, 0 0 0 10px purple, 0 0 0 12px olive, 0 0 0 14px aqua, 0 0 0 16px black;
+                box-shadow: 0 0 0 2px blue, 0 0 0 4px red, 0 0 0 6px green, 0 0 0 8px yellow, 0 0 0 10px purple, 0 0 0 12px olive, 0 0 0 14px aqua, 0 0 0 16px black;
+            }
+        </style>
+
+        <div id="misc1">Faking multiple borders with box-shadow</div>
     </div>
 
 </body>
