@@ -5,286 +5,277 @@
  * @param {Object} styleInfos The StyleInfo objects
  * @param {PIE.RootRenderer} parent
  */
-PIE.BorderRenderer = (function() {
-    function BorderRenderer( el, styleInfos, parent ) {
-        this.element = el;
-        this.styleInfos = styleInfos;
-        this.parent = parent;
-    }
-    PIE.Util.merge( BorderRenderer.prototype, PIE.RendererBase, {
+PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
 
-        zIndex: 4,
-        boxName: 'border',
+    zIndex: 4,
+    boxName: 'border',
 
-        needsUpdate: function() {
-            var si = this.styleInfos;
-            return si.borderInfo.changed() || si.borderRadiusInfo.changed();
-        },
+    needsUpdate: function() {
+        var si = this.styleInfos;
+        return si.borderInfo.changed() || si.borderRadiusInfo.changed();
+    },
 
-        isActive: function() {
-            var si = this.styleInfos;
-            return si.borderImageInfo.isActive() ||
-                   si.borderRadiusInfo.isActive() ||
-                   si.backgroundInfo.isActive();
-        },
+    isActive: function() {
+        var si = this.styleInfos;
+        return si.borderImageInfo.isActive() ||
+               si.borderRadiusInfo.isActive() ||
+               si.backgroundInfo.isActive();
+    },
 
-        updateSize: function() {
-            if( this.isActive() ) {
-                this.drawBorder();
+    updateSize: function() {
+        if( this.isActive() ) {
+            this.drawBorder();
+        }
+    },
+
+    updateProps: function() {
+        this.destroy();
+        if( this.isActive() ) {
+            this.drawBorder();
+        }
+    },
+
+
+    /**
+     * Draw the border shape(s)
+     */
+    drawBorder: function() {
+        var el = this.element,
+            cs = el.currentStyle,
+            w = el.offsetWidth,
+            h = el.offsetHeight,
+            props = this.styleInfos.borderInfo.getProps(),
+            side, shape, stroke, bColor, bWidth, bStyle, s,
+            segments, seg, i, len;
+
+        if( props ) {
+            this.hideBorder();
+
+            segments = this.getBorderSegments( 2 );
+            for( i = 0, len = segments.length; i < len; i++) {
+                seg = segments[i];
+                shape = this.getShape( 'borderPiece' + i, seg.stroke ? 'stroke' : 'fill', this.getBox() );
+                shape.coordsize = w * 2 + ',' + h * 2;
+                shape.coordorigin = '1,1';
+                shape.path = seg.path;
+                s = shape.style;
+                s.width = w;
+                s.height = h;
+
+                shape.filled = !!seg.fill;
+                shape.stroked = !!seg.stroke;
+                if( seg.stroke ) {
+                    stroke = shape.stroke;
+                    stroke['weight'] = seg.weight + 'px';
+                    stroke.color = seg.color.value( el );
+                    stroke['dashstyle'] = seg.stroke === 'dashed' ? '2 2' : seg.stroke === 'dotted' ? '1 1' : 'solid';
+                    stroke['linestyle'] = seg.stroke === 'double' && seg.weight > 2 ? 'ThinThin' : 'Single';
+                } else {
+                    shape.fill.color = seg.fill.value( el );
+                }
             }
-        },
 
-        updateProps: function() {
-            this.destroy();
-            if( this.isActive() ) {
-                this.drawBorder();
+            // remove any previously-created border shapes which didn't get used above
+            while( this.deleteShape( 'borderPiece' + i++ ) ) {}
+        }
+    },
+
+    /**
+     * Hide the actual border of the element. In IE7 and up we can just set its color to transparent;
+     * however IE6 does not support transparent borders so we have to get tricky with it.
+     */
+    hideBorder: function() {
+        var el = this.element,
+            rs = el.runtimeStyle;
+        if( PIE.isIE6 ) {
+            // Wrap all the element's children in a custom element, set the element to visiblity:hidden,
+            // and set the wrapper element to visiblity:visible. This hides the outer element's decorations
+            // (background and border) but displays all the contents.
+            // TODO find a better way to do this that doesn't mess up the DOM parent-child relationship,
+            // as this can interfere with other author scripts which add/modify/delete children. Also, this
+            // won't work for elements which cannot take children, e.g. input/button/textarea/img/etc. Look into
+            // using a compositor filter or some other filter which masks the border.
+            if( el.childNodes.length !== 1 || el.firstChild.tagName !== 'ie6-mask' ) {
+                var cont = el.document.createElement( 'ie6-mask' ),
+                    s = cont.style, child;
+                s.visibility = 'visible';
+                s.zoom = 1;
+                while( child = el.firstChild ) {
+                    cont.appendChild( child );
+                }
+                el.appendChild( cont );
+                rs.visibility = 'hidden';
             }
-        },
+        } else {
+            rs.borderColor = 'transparent';
+        }
+    },
 
 
-        /**
-         * Draw the border shape(s)
-         */
-        drawBorder: function() {
-            var el = this.element,
-                cs = el.currentStyle,
-                w = el.offsetWidth,
-                h = el.offsetHeight,
-                props = this.styleInfos.borderInfo.getProps(),
-                side, shape, stroke, bColor, bWidth, bStyle, s,
-                segments, seg, i, len;
+    /**
+     * Get the VML path definitions for the border segment(s).
+     * @param {number=} mult If specified, all coordinates will be multiplied by this number
+     * @return {Array.<string>}
+     */
+    getBorderSegments: function( mult ) {
+        var el = this.element,
+            elW, elH,
+            borderInfo = this.styleInfos.borderInfo,
+            segments = [],
+            floor, ceil, wT, wR, wB, wL,
+            borderProps, radiusInfo, radii, widths, styles, colors;
 
-            if( props ) {
-                this.hideBorder();
+        if( borderInfo.isActive() ) {
+            borderProps = borderInfo.getProps();
 
-                segments = this.getBorderSegments( 2 );
-                for( i = 0, len = segments.length; i < len; i++) {
-                    seg = segments[i];
-                    shape = this.getShape( 'borderPiece' + i, seg.stroke ? 'stroke' : 'fill', this.getBox() );
-                    shape.coordsize = w * 2 + ',' + h * 2;
-                    shape.coordorigin = '1,1';
-                    shape.path = seg.path;
-                    s = shape.style;
-                    s.width = w;
-                    s.height = h;
+            widths = borderProps.widths;
+            styles = borderProps.styles;
+            colors = borderProps.colors;
 
-                    shape.filled = !!seg.fill;
-                    shape.stroked = !!seg.stroke;
-                    if( seg.stroke ) {
-                        stroke = shape.stroke;
-                        stroke['weight'] = seg.weight + 'px';
-                        stroke.color = seg.color.value( el );
-                        stroke['dashstyle'] = seg.stroke === 'dashed' ? '2 2' : seg.stroke === 'dotted' ? '1 1' : 'solid';
-                        stroke['linestyle'] = seg.stroke === 'double' && seg.weight > 2 ? 'ThinThin' : 'Single';
-                    } else {
-                        shape.fill.color = seg.fill.value( el );
-                    }
+            if( borderProps.widthsSame && borderProps.stylesSame && borderProps.colorsSame ) {
+                // shortcut for identical border on all sides - only need 1 stroked shape
+                wT = widths['t'].pixels( el ); //thickness
+                wR = wT / 2; //shrink
+                segments.push( {
+                    path: this.getBoxPath( { t: wR, r: wR, b: wR, l: wR }, mult ),
+                    stroke: styles['t'],
+                    color: colors['t'],
+                    weight: wT
+                } );
+            }
+            else {
+                mult = mult || 1;
+                elW = el.offsetWidth;
+                elH = el.offsetHeight;
+
+                wT = widths['t'].pixels( el );
+                wR = widths['r'].pixels( el );
+                wB = widths['b'].pixels( el );
+                wL = widths['l'].pixels( el );
+                var pxWidths = {
+                    't': wT,
+                    'r': wR,
+                    'b': wB,
+                    'l': wL
+                };
+
+                radiusInfo = this.styleInfos.borderRadiusInfo;
+                if( radiusInfo.isActive() ) {
+                    radii = this.getRadiiPixels( radiusInfo.getProps() );
                 }
 
-                // remove any previously-created border shapes which didn't get used above
-                while( this.deleteShape( 'borderPiece' + i++ ) ) {}
-            }
-        },
+                floor = Math.floor;
+                ceil = Math.ceil;
 
-        /**
-         * Hide the actual border of the element. In IE7 and up we can just set its color to transparent;
-         * however IE6 does not support transparent borders so we have to get tricky with it.
-         */
-        hideBorder: function() {
-            var el = this.element,
-                rs = el.runtimeStyle;
-            if( PIE.isIE6 ) {
-                // Wrap all the element's children in a custom element, set the element to visiblity:hidden,
-                // and set the wrapper element to visiblity:visible. This hides the outer element's decorations
-                // (background and border) but displays all the contents.
-                // TODO find a better way to do this that doesn't mess up the DOM parent-child relationship,
-                // as this can interfere with other author scripts which add/modify/delete children. Also, this
-                // won't work for elements which cannot take children, e.g. input/button/textarea/img/etc. Look into
-                // using a compositor filter or some other filter which masks the border.
-                if( el.childNodes.length !== 1 || el.firstChild.tagName !== 'ie6-mask' ) {
-                    var cont = el.document.createElement( 'ie6-mask' ),
-                        s = cont.style, child;
-                    s.visibility = 'visible';
-                    s.zoom = 1;
-                    while( child = el.firstChild ) {
-                        cont.appendChild( child );
-                    }
-                    el.appendChild( cont );
-                    rs.visibility = 'hidden';
-                }
-            } else {
-                rs.borderColor = 'transparent';
-            }
-        },
-
-
-        /**
-         * Get the VML path definitions for the border segment(s).
-         * @param {number=} mult If specified, all coordinates will be multiplied by this number
-         * @return {Array.<string>}
-         */
-        getBorderSegments: function( mult ) {
-            var el = this.element,
-                elW, elH,
-                borderInfo = this.styleInfos.borderInfo,
-                segments = [],
-                floor, ceil, wT, wR, wB, wL,
-                borderProps, radiusInfo, radii, widths, styles, colors;
-
-            if( borderInfo.isActive() ) {
-                borderProps = borderInfo.getProps();
-
-                widths = borderProps.widths;
-                styles = borderProps.styles;
-                colors = borderProps.colors;
-
-                if( borderProps.widthsSame && borderProps.stylesSame && borderProps.colorsSame ) {
-                    // shortcut for identical border on all sides - only need 1 stroked shape
-                    wT = widths['t'].pixels( el ); //thickness
-                    wR = wT / 2; //shrink
-                    segments.push( {
-                        path: this.getBoxPath( { t: wR, r: wR, b: wR, l: wR }, mult ),
-                        stroke: styles['t'],
-                        color: colors['t'],
-                        weight: wT
-                    } );
-                }
-                else {
-                    mult = mult || 1;
-                    elW = el.offsetWidth;
-                    elH = el.offsetHeight;
-
-                    wT = widths['t'].pixels( el );
-                    wR = widths['r'].pixels( el );
-                    wB = widths['b'].pixels( el );
-                    wL = widths['l'].pixels( el );
-                    var pxWidths = {
-                        't': wT,
-                        'r': wR,
-                        'b': wB,
-                        'l': wL
-                    };
-
-                    radiusInfo = this.styleInfos.borderRadiusInfo;
-                    if( radiusInfo.isActive() ) {
-                        radii = this.getRadiiPixels( radiusInfo.getProps() );
-                    }
-
-                    floor = Math.floor;
-                    ceil = Math.ceil;
-
-                    function curve( corner, shrinkX, shrinkY, startAngle, ccw, doMove ) {
-                        var rx = radii.x[ corner ],
-                            ry = radii.y[ corner ],
-                            deg = 65535,
-                            isRight = corner.charAt( 1 ) === 'r',
-                            isBottom = corner.charAt( 0 ) === 'b';
-                        return ( rx > 0 && ry > 0 ) ?
-                                    ( doMove ? 'al' : 'ae' ) +
-                                    ( isRight ? ceil( elW - rx ) : floor( rx ) ) * mult + ',' + // center x
-                                    ( isBottom ? ceil( elH - ry ) : floor( ry ) ) * mult + ',' + // center y
-                                    ( floor( rx ) - shrinkX ) * mult + ',' + // width
-                                    ( floor( ry ) - shrinkY ) * mult + ',' + // height
-                                    ( startAngle * deg ) + ',' + // start angle
-                                    ( 45 * deg * ( ccw ? 1 : -1 ) // angle change
-                                ) : (
-                                    ( doMove ? 'm' : 'l' ) +
-                                    ( isRight ? elW - shrinkX : shrinkX ) * mult + ',' +
-                                    ( isBottom ? elH - shrinkY : shrinkY ) * mult
-                                );
-                    }
-
-                    function line( side, shrink, ccw, doMove ) {
-                        var start = (
-                                side === 't' ?
-                                    floor( radii.x['tl'] ) * mult + ',' + ceil( shrink ) * mult :
-                                side === 'r' ?
-                                    ceil( elW - shrink ) * mult + ',' + floor( radii.y['tr'] ) * mult :
-                                side === 'b' ?
-                                    ceil( elW - radii.x['br'] ) * mult + ',' + floor( elH - shrink ) * mult :
-                                // side === 'l' ?
-                                    floor( shrink ) * mult + ',' + ceil( elH - radii.y['bl'] ) * mult
-                            ),
-                            end = (
-                                side === 't' ?
-                                    ceil( elW - radii.x['tr'] ) * mult + ',' + ceil( shrink ) * mult :
-                                side === 'r' ?
-                                    ceil( elW - shrink ) * mult + ',' + ceil( elH - radii.y['br'] ) * mult :
-                                side === 'b' ?
-                                    floor( radii.x['bl'] ) * mult + ',' + floor( elH - shrink ) * mult :
-                                // side === 'l' ?
-                                    floor( shrink ) * mult + ',' + floor( radii.y['tl'] ) * mult
+                function curve( corner, shrinkX, shrinkY, startAngle, ccw, doMove ) {
+                    var rx = radii.x[ corner ],
+                        ry = radii.y[ corner ],
+                        deg = 65535,
+                        isRight = corner.charAt( 1 ) === 'r',
+                        isBottom = corner.charAt( 0 ) === 'b';
+                    return ( rx > 0 && ry > 0 ) ?
+                                ( doMove ? 'al' : 'ae' ) +
+                                ( isRight ? ceil( elW - rx ) : floor( rx ) ) * mult + ',' + // center x
+                                ( isBottom ? ceil( elH - ry ) : floor( ry ) ) * mult + ',' + // center y
+                                ( floor( rx ) - shrinkX ) * mult + ',' + // width
+                                ( floor( ry ) - shrinkY ) * mult + ',' + // height
+                                ( startAngle * deg ) + ',' + // start angle
+                                ( 45 * deg * ( ccw ? 1 : -1 ) // angle change
+                            ) : (
+                                ( doMove ? 'm' : 'l' ) +
+                                ( isRight ? elW - shrinkX : shrinkX ) * mult + ',' +
+                                ( isBottom ? elH - shrinkY : shrinkY ) * mult
                             );
-                        return ccw ? ( doMove ? 'm' + end : '' ) + 'l' + start :
-                                     ( doMove ? 'm' + start : '' ) + 'l' + end;
-                    }
+                }
+
+                function line( side, shrink, ccw, doMove ) {
+                    var start = (
+                            side === 't' ?
+                                floor( radii.x['tl'] ) * mult + ',' + ceil( shrink ) * mult :
+                            side === 'r' ?
+                                ceil( elW - shrink ) * mult + ',' + floor( radii.y['tr'] ) * mult :
+                            side === 'b' ?
+                                ceil( elW - radii.x['br'] ) * mult + ',' + floor( elH - shrink ) * mult :
+                            // side === 'l' ?
+                                floor( shrink ) * mult + ',' + ceil( elH - radii.y['bl'] ) * mult
+                        ),
+                        end = (
+                            side === 't' ?
+                                ceil( elW - radii.x['tr'] ) * mult + ',' + ceil( shrink ) * mult :
+                            side === 'r' ?
+                                ceil( elW - shrink ) * mult + ',' + ceil( elH - radii.y['br'] ) * mult :
+                            side === 'b' ?
+                                floor( radii.x['bl'] ) * mult + ',' + floor( elH - shrink ) * mult :
+                            // side === 'l' ?
+                                floor( shrink ) * mult + ',' + floor( radii.y['tl'] ) * mult
+                        );
+                    return ccw ? ( doMove ? 'm' + end : '' ) + 'l' + start :
+                                 ( doMove ? 'm' + start : '' ) + 'l' + end;
+                }
 
 
-                    function addSide( side, sideBefore, sideAfter, cornerBefore, cornerAfter, baseAngle ) {
-                        var vert = side === 'l' || side === 'r',
-                            sideW = pxWidths[ side ],
-                            beforeX, beforeY, afterX, afterY;
+                function addSide( side, sideBefore, sideAfter, cornerBefore, cornerAfter, baseAngle ) {
+                    var vert = side === 'l' || side === 'r',
+                        sideW = pxWidths[ side ],
+                        beforeX, beforeY, afterX, afterY;
 
-                        if( sideW > 0 && styles[ side ] !== 'none' ) {
-                            beforeX = pxWidths[ vert ? side : sideBefore ];
-                            beforeY = pxWidths[ vert ? sideBefore : side ];
-                            afterX = pxWidths[ vert ? side : sideAfter ];
-                            afterY = pxWidths[ vert ? sideAfter : side ];
+                    if( sideW > 0 && styles[ side ] !== 'none' ) {
+                        beforeX = pxWidths[ vert ? side : sideBefore ];
+                        beforeY = pxWidths[ vert ? sideBefore : side ];
+                        afterX = pxWidths[ vert ? side : sideAfter ];
+                        afterY = pxWidths[ vert ? sideAfter : side ];
 
-                            if( styles[ side ] === 'dashed' || styles[ side ] === 'dotted' ) {
-                                segments.push( {
-                                    path: curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0, 1 ) +
-                                          curve( cornerBefore, 0, 0, baseAngle, 1, 0 ),
-                                    fill: colors[ side ]
-                                } );
-                                segments.push( {
-                                    path: line( side, sideW / 2, 0, 1 ),
-                                    stroke: styles[ side ],
-                                    weight: sideW,
-                                    color: colors[ side ]
-                                } );
-                                segments.push( {
-                                    path: curve( cornerAfter, afterX, afterY, baseAngle, 0, 1 ) +
-                                          curve( cornerAfter, 0, 0, baseAngle - 45, 1, 0 ),
-                                    fill: colors[ side ]
-                                } );
-                            }
-                            else {
-                                segments.push( {
-                                    path: curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0, 1 ) +
-                                          line( side, sideW, 0, 0 ) +
-                                          curve( cornerAfter, afterX, afterY, baseAngle, 0, 0 ) +
+                        if( styles[ side ] === 'dashed' || styles[ side ] === 'dotted' ) {
+                            segments.push( {
+                                path: curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0, 1 ) +
+                                      curve( cornerBefore, 0, 0, baseAngle, 1, 0 ),
+                                fill: colors[ side ]
+                            } );
+                            segments.push( {
+                                path: line( side, sideW / 2, 0, 1 ),
+                                stroke: styles[ side ],
+                                weight: sideW,
+                                color: colors[ side ]
+                            } );
+                            segments.push( {
+                                path: curve( cornerAfter, afterX, afterY, baseAngle, 0, 1 ) +
+                                      curve( cornerAfter, 0, 0, baseAngle - 45, 1, 0 ),
+                                fill: colors[ side ]
+                            } );
+                        }
+                        else {
+                            segments.push( {
+                                path: curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0, 1 ) +
+                                      line( side, sideW, 0, 0 ) +
+                                      curve( cornerAfter, afterX, afterY, baseAngle, 0, 0 ) +
 
-                                          ( styles[ side ] === 'double' && sideW > 2 ?
-                                                  curve( cornerAfter, afterX - floor( afterX / 3 ), afterY - floor( afterY / 3 ), baseAngle - 45, 1, 0 ) +
-                                                  line( side, ceil( sideW / 3 * 2 ), 1, 0 ) +
-                                                  curve( cornerBefore, beforeX - floor( beforeX / 3 ), beforeY - floor( beforeY / 3 ), baseAngle, 1, 0 ) +
-                                                  'x ' +
-                                                  curve( cornerBefore, floor( beforeX / 3 ), floor( beforeY / 3 ), baseAngle + 45, 0, 1 ) +
-                                                  line( side, floor( sideW / 3 ), 1, 0 ) +
-                                                  curve( cornerAfter, floor( afterX / 3 ), floor( afterY / 3 ), baseAngle, 0, 0 )
-                                              : '' ) +
+                                      ( styles[ side ] === 'double' && sideW > 2 ?
+                                              curve( cornerAfter, afterX - floor( afterX / 3 ), afterY - floor( afterY / 3 ), baseAngle - 45, 1, 0 ) +
+                                              line( side, ceil( sideW / 3 * 2 ), 1, 0 ) +
+                                              curve( cornerBefore, beforeX - floor( beforeX / 3 ), beforeY - floor( beforeY / 3 ), baseAngle, 1, 0 ) +
+                                              'x ' +
+                                              curve( cornerBefore, floor( beforeX / 3 ), floor( beforeY / 3 ), baseAngle + 45, 0, 1 ) +
+                                              line( side, floor( sideW / 3 ), 1, 0 ) +
+                                              curve( cornerAfter, floor( afterX / 3 ), floor( afterY / 3 ), baseAngle, 0, 0 )
+                                          : '' ) +
 
-                                          curve( cornerAfter, 0, 0, baseAngle - 45, 1, 0 ) +
-                                          line( side, 0, 1, 0 ) +
-                                          curve( cornerBefore, 0, 0, baseAngle, 1, 0 ),
-                                    fill: colors[ side ]
-                                } );
-                            }
+                                      curve( cornerAfter, 0, 0, baseAngle - 45, 1, 0 ) +
+                                      line( side, 0, 1, 0 ) +
+                                      curve( cornerBefore, 0, 0, baseAngle, 1, 0 ),
+                                fill: colors[ side ]
+                            } );
                         }
                     }
-
-                    addSide( 't', 'l', 'r', 'tl', 'tr', 90 );
-                    addSide( 'r', 't', 'b', 'tr', 'br', 0 );
-                    addSide( 'b', 'r', 'l', 'br', 'bl', -90 );
-                    addSide( 'l', 'b', 't', 'bl', 'tl', -180 );
                 }
-            }
 
-            return segments;
+                addSide( 't', 'l', 'r', 'tl', 'tr', 90 );
+                addSide( 'r', 't', 'b', 'tr', 'br', 0 );
+                addSide( 'b', 'r', 'l', 'br', 'bl', -90 );
+                addSide( 'l', 'b', 't', 'bl', 'tl', -180 );
+            }
         }
 
-    } );
+        return segments;
+    }
 
-    return BorderRenderer;
-})();
+} );

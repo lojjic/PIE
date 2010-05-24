@@ -1,6 +1,21 @@
 PIE.RendererBase = {
 
     /**
+     * Create a new Renderer class, with the standard constructor, and augmented by
+     * the RendererBase's members.
+     * @param proto
+     */
+    newRenderer: function( proto ) {
+        function Renderer( el, styleInfos, parent ) {
+            this.element = el;
+            this.styleInfos = styleInfos;
+            this.parent = parent;
+        }
+        PIE.Util.merge( Renderer.prototype, PIE.RendererBase, proto );
+        return Renderer;
+    },
+
+    /**
      * Determine if the renderer needs to be updated
      * @return {boolean}
      */
