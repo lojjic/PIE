@@ -1,20 +1,20 @@
 /**
- * Renderer for box-shadow
+ * Renderer for outset box-shadows
  * @constructor
  * @param {Element} el The target element
  * @param {Object} styleInfos The StyleInfo objects
  * @param {PIE.RootRenderer} parent
  */
-PIE.BoxShadowRenderer = (function() {
-    function BoxShadowRenderer( el, styleInfos, parent ) {
+PIE.BoxShadowOutsetRenderer = (function() {
+    function BoxShadowOutsetRenderer( el, styleInfos, parent ) {
         this.element = el;
         this.styleInfos = styleInfos;
         this.parent = parent;
     }
-    PIE.Util.merge( BoxShadowRenderer.prototype, PIE.RendererBase, {
+    PIE.Util.merge( BoxShadowOutsetRenderer.prototype, PIE.RendererBase, {
 
-        outsetZIndex: 1,
-        insetZIndex: 3,
+        zIndex: 1,
+        boxName: 'outset-box-shadow',
 
         needsUpdate: function() {
             var si = this.styleInfos;
@@ -22,23 +22,23 @@ PIE.BoxShadowRenderer = (function() {
         },
 
         isActive: function() {
-            return this.styleInfos.boxShadowInfo.isActive();
+            var boxShadowInfo = this.styleInfos.boxShadowInfo;
+            return boxShadowInfo.isActive() && boxShadowInfo.getProps().outset[0];
         },
 
         updateSize: function() {
             if( this.isActive() ) {
                 var el = this.element,
-                    shadowInfos = this.styleInfos.boxShadowInfo.getProps(),
+                    shadowInfos = this.styleInfos.boxShadowInfo.getProps().outset,
                     i = shadowInfos.length,
                     w = el.offsetWidth,
                     h = el.offsetHeight,
-                    shadowInfo, box, shape, ss, xOff, yOff, spread, blur, shrink, halfBlur, filter, alpha;
+                    shadowInfo, shape, ss, xOff, yOff, spread, blur, shrink, halfBlur, filter, alpha;
 
                 while( i-- ) {
                     shadowInfo = shadowInfos[ i ];
 
-                    box = this.getBox( shadowInfo.inset );
-                    shape = this.getShape( 'shadow' + i, 'fill', box );
+                    shape = this.getShape( 'shadow' + i, 'fill', this.getBox() );
                     ss = shape.style;
 
                     xOff = shadowInfo.xOffset.pixels( el );
@@ -79,13 +79,7 @@ PIE.BoxShadowRenderer = (function() {
 
                     shape.coordorigin = '1,1';
                     shape.path = this.getBoxPath( spread ? { t: -spread, r: -spread, b: -spread, l: -spread } : 0, 2 );
-
-                    box.appendChild( shape );
                 }
-
-                // remove any previously-created border shapes which didn't get used above
-                i = shadowInfos.length;
-                while( this.deleteShape( 'shadow' + i++ ) ) {}
             } else {
                 this.destroy();
             }
@@ -94,31 +88,9 @@ PIE.BoxShadowRenderer = (function() {
         updateProps: function() {
             this.destroy();
             this.updateSize();
-        },
-
-        getBox: function( isInset ) {
-            var zIndex = isInset ? this.insetZIndex : this.outsetZIndex,
-                box = this.parent.getLayer( zIndex );
-            if( !box ) {
-                box = this.element.document.createElement( ( isInset ? 'inset' : 'outset' ) + '-box-shadow' );
-                box.style.position = 'absolute';
-                this.parent.addLayer( zIndex, box );
-
-                // Temporarily hide inset shadows, until they are properly implemented
-                if( isInset ) {
-                    box.style.display = 'none';
-                }
-            }
-            return box;
-        },
-
-        destroy: function() {
-            this.parent.removeLayer( this.insetZIndex );
-            this.parent.removeLayer( this.outsetZIndex );
-            delete this._shapes;
         }
 
     } );
 
-    return BoxShadowRenderer;
+    return BoxShadowOutsetRenderer;
 })();

@@ -162,8 +162,9 @@ function init() {
         var rootRenderer = new PIE.RootRenderer( el, styleInfos );
         renderers = [
             rootRenderer,
-            new PIE.BoxShadowRenderer( el, styleInfos, rootRenderer ),
+            new PIE.BoxShadowOutsetRenderer( el, styleInfos, rootRenderer ),
             new PIE.BackgroundRenderer( el, styleInfos, rootRenderer ),
+            new PIE.BoxShadowInsetRenderer( el, styleInfos, rootRenderer ),
             new PIE.BorderRenderer( el, styleInfos, rootRenderer ),
             new PIE.BorderImageRenderer( el, styleInfos, rootRenderer )
         ];

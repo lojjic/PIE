@@ -13,14 +13,14 @@ PIE.BoxShadowStyleInfo = (function() {
         styleProperty: 'boxShadow',
 
         parseCss: function( css ) {
-            var props, item,
+            var props,
                 Length = PIE.Length,
                 Type = PIE.Tokenizer.Type,
                 tokenizer;
 
             if( css ) {
                 tokenizer = new PIE.Tokenizer( css );
-                props = [];
+                props = { outset: [], inset: [] };
 
                 function parseItem() {
                     var token, type, value, color, lengths, inset, len;
@@ -45,32 +45,28 @@ PIE.BoxShadowStyleInfo = (function() {
                             inset = true;
                         }
                         else { //encountered an unrecognized token; fail.
-                            return null;
+                            return false;
                         }
                     }
 
                     len = lengths && lengths.length;
-                    return ( len > 1 && len < 5 ) ? {
-                        xOffset: new Length( lengths[0].value ),
-                        yOffset: new Length( lengths[1].value ),
-                        blur: new Length( lengths[2] ? lengths[2].value : '0' ),
-                        spread: new Length( lengths[3] ? lengths[3].value : '0' ),
-                        color: new PIE.Color( color || 'currentColor' ),
-                        inset: !!inset
-                    } : null;
+                    if( len > 1 && len < 5 ) {
+                        ( inset ? props.inset : props.outset ).push( {
+                            xOffset: new Length( lengths[0].value ),
+                            yOffset: new Length( lengths[1].value ),
+                            blur: new Length( lengths[2] ? lengths[2].value : '0' ),
+                            spread: new Length( lengths[3] ? lengths[3].value : '0' ),
+                            color: new PIE.Color( color || 'currentColor' )
+                        } );
+                        return true;
+                    }
+                    return false;
                 }
 
-                while( tokenizer.hasNext() ) {
-                    if( !( item = parseItem() ) ) {
-                        // If parseItem() returned null that means it encountered something
-                        // invalid, so throw away everything.
-                        return null;
-                    }
-                    props.push( item );
-                }
+                while( parseItem() ) {}
             }
 
-            return props && props.length ? props : null;
+            return props && ( props.inset.length || props.outset.length ) ? props : null;
         }
     } );
 

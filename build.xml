@@ -26,7 +26,8 @@
             <fileset file="${src_dir}/BackgroundRenderer.js" />
             <fileset file="${src_dir}/BorderRenderer.js" />
             <fileset file="${src_dir}/BorderImageRenderer.js" />
-            <fileset file="${src_dir}/BoxShadowRenderer.js" />
+            <fileset file="${src_dir}/BoxShadowOutsetRenderer.js" />
+            <fileset file="${src_dir}/BoxShadowInsetRenderer.js" />
             <fileset file="${src_dir}/PIE_close.js" />
             <fileset file="${src_dir}/event_handlers.js" />
         </concat>
