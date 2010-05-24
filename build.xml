@@ -23,7 +23,8 @@
             <fileset file="${src_dir}/BoxShadowStyleInfo.js" />
             <fileset file="${src_dir}/RendererBase.js" />
             <fileset file="${src_dir}/RootRenderer.js" />
-            <fileset file="${src_dir}/BackgroundAndBorderRenderer.js" />
+            <fileset file="${src_dir}/BackgroundRenderer.js" />
+            <fileset file="${src_dir}/BorderRenderer.js" />
             <fileset file="${src_dir}/BorderImageRenderer.js" />
             <fileset file="${src_dir}/BoxShadowRenderer.js" />
             <fileset file="${src_dir}/PIE_close.js" />

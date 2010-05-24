@@ -13,7 +13,7 @@ PIE.BorderImageRenderer = (function() {
     }
     PIE.Util.merge( BorderImageRenderer.prototype, PIE.RendererBase, {
 
-        zIndex: 4,
+        zIndex: 5,
         pieceNames: [ 't', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl', 'c' ],
 
         needsUpdate: function() {
@@ -133,11 +133,6 @@ PIE.BorderImageRenderer = (function() {
             }
 
             return box;
-        },
-
-        destroy: function() {
-            this.parent.removeLayer( this.zIndex );
-            delete this._box;
         }
 
     } );

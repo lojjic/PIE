@@ -237,5 +237,32 @@ PIE.RendererBase = {
                   'xe';
         }
         return str;
+    },
+
+
+    /**
+     * Get the container element for the shapes, creating it if necessary.
+     */
+    getBox: function() {
+        var box = this.parent.getLayer( this.zIndex );
+
+        if( !box ) {
+            box = this.element.document.createElement( this.boxName );
+            box.style.position = 'absolute';
+            this.parent.addLayer( this.zIndex, box );
+        }
+
+        return box;
+    },
+
+
+    /**
+     * Destroy the rendered objects. This is a base implementation which handles common renderer
+     * structures, but individual renderers may override as necessary.
+     */
+    destroy: function() {
+        this.parent.removeLayer( this.zIndex );
+        delete this._shapes;
+        delete this._layers;
     }
 };
