@@ -259,11 +259,13 @@ PIE.RendererBase = {
      * Get the container element for the shapes, creating it if necessary.
      */
     getBox: function() {
-        var box = this.parent.getLayer( this.zIndex );
+        var box = this.parent.getLayer( this.zIndex ), s;
 
         if( !box ) {
             box = this.element.document.createElement( this.boxName );
-            box.style.position = 'absolute';
+            s = box.style;
+            s.position = 'absolute';
+            s.top = s.left = 0;
             this.parent.addLayer( this.zIndex, box );
         }
 
