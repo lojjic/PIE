@@ -29,7 +29,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                 par = el,
                 docEl,
                 elRect, parRect,
-                s = this.getBox().style,
+                s = this.getBox().style, cs,
                 x = 0, y = 0;
 
             // Get the element's offsets from its nearest positioned ancestor. Uses
@@ -40,8 +40,9 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
             elRect = el.getBoundingClientRect();
             if( par ) {
                 parRect = par.getBoundingClientRect();
-                x = elRect.left - parRect.left;
-                y = elRect.top - parRect.top;
+                cs = par.currentStyle;
+                x = elRect.left - parRect.left - ( parseFloat(cs.borderLeftWidth) || 0 );
+                y = elRect.top - parRect.top - ( parseFloat(cs.borderTopWidth) || 0 );
             } else {
                 docEl = el.document.documentElement;
                 x = elRect.left + docEl.scrollLeft - docEl.clientLeft;
