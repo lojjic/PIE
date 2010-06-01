@@ -167,9 +167,13 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                 floor = Math.floor;
                 ceil = Math.ceil;
 
+                function radius( xy, corner ) {
+                    return radii ? radii[ xy ][ corner ] : 0;
+                }
+
                 function curve( corner, shrinkX, shrinkY, startAngle, ccw, doMove ) {
-                    var rx = radii.x[ corner ],
-                        ry = radii.y[ corner ],
+                    var rx = radius( 'x', corner),
+                        ry = radius( 'y', corner),
                         deg = 65535,
                         isRight = corner.charAt( 1 ) === 'r',
                         isBottom = corner.charAt( 0 ) === 'b';
@@ -189,25 +193,26 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                 }
 
                 function line( side, shrink, ccw, doMove ) {
-                    var start = (
+                    var
+                        start = (
                             side === 't' ?
-                                floor( radii.x['tl'] ) * mult + ',' + ceil( shrink ) * mult :
+                                floor( radius( 'x', 'tl') ) * mult + ',' + ceil( shrink ) * mult :
                             side === 'r' ?
-                                ceil( elW - shrink ) * mult + ',' + floor( radii.y['tr'] ) * mult :
+                                ceil( elW - shrink ) * mult + ',' + floor( radius( 'y', 'tr') ) * mult :
                             side === 'b' ?
-                                ceil( elW - radii.x['br'] ) * mult + ',' + floor( elH - shrink ) * mult :
+                                ceil( elW - radius( 'x', 'br') ) * mult + ',' + floor( elH - shrink ) * mult :
                             // side === 'l' ?
-                                floor( shrink ) * mult + ',' + ceil( elH - radii.y['bl'] ) * mult
+                                floor( shrink ) * mult + ',' + ceil( elH - radius( 'y', 'bl') ) * mult
                         ),
                         end = (
                             side === 't' ?
-                                ceil( elW - radii.x['tr'] ) * mult + ',' + ceil( shrink ) * mult :
+                                ceil( elW - radius( 'x', 'tr') ) * mult + ',' + ceil( shrink ) * mult :
                             side === 'r' ?
-                                ceil( elW - shrink ) * mult + ',' + ceil( elH - radii.y['br'] ) * mult :
+                                ceil( elW - shrink ) * mult + ',' + ceil( elH - radius( 'y', 'br') ) * mult :
                             side === 'b' ?
-                                floor( radii.x['bl'] ) * mult + ',' + floor( elH - shrink ) * mult :
+                                floor( radius( 'x', 'bl') ) * mult + ',' + floor( elH - shrink ) * mult :
                             // side === 'l' ?
-                                floor( shrink ) * mult + ',' + floor( radii.y['tl'] ) * mult
+                                floor( shrink ) * mult + ',' + floor( radius( 'y', 'tl') ) * mult
                         );
                     return ccw ? ( doMove ? 'm' + end : '' ) + 'l' + start :
                                  ( doMove ? 'm' + start : '' ) + 'l' + end;
