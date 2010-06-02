@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project name="PIE" default="package" basedir=".">
+<project name="PIE" default="build" basedir=".">
 
     <property name="build_dir" value="./build" />
     <property name="src_dir" value="./sources" />
@@ -9,7 +9,7 @@
         <delete dir="${build_dir}" />
     </target>
 
-    <target name="package-uncompressed">
+    <target name="build-uncompressed">
         <mkdir dir="${build_dir}" />
         <concat destfile="${build_dir}/script_uncompressed.js">
             <fileset file="${src_dir}/PIE_open.js" />
@@ -43,7 +43,7 @@
         </concat>
     </target>
 
-    <target name="package-compressed" depends="package-uncompressed">
+    <target name="build-compressed" depends="build-uncompressed">
         <exec executable="java">
             <arg line='-jar tools/compiler.jar
                        --js ${build_dir}/script_uncompressed.js
@@ -80,7 +80,9 @@
     </target>
 
 
-    <target name="package" depends="package-uncompressed,package-compressed,copy-wrappers">
+    <target name="build" depends="build-uncompressed,build-compressed" />
+
+    <target name="package" depends="clean,build,copy-wrappers">
         <!-- Create distribution bundle -->
         <zip destfile="${build_dir}/PIE.zip" basedir="${build_dir}"/>
     </target>
