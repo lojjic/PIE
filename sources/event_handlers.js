@@ -147,6 +147,9 @@ function init() {
     if( !renderers ) {
         var el = element;
 
+        // force layout so move/resize events will fire
+        el.runtimeStyle.zoom = 1;
+
         // Create the style infos and renderers
         styleInfos = {
             backgroundInfo: new PIE.BackgroundStyleInfo( el ),
