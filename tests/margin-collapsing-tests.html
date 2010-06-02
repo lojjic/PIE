@@ -37,6 +37,7 @@
         
         #test2 {
             background: red;
+            position: relative;
         }
         #test2 .inside {
             behavior: url(../build/PIE.htc);
@@ -53,25 +54,23 @@
     <h1>Margin/Overflow Treatment with PIE</h1>
     
     <p>These boxes have <code>overflow:hidden</code>. Inside is a <code>div</code> with margin. The expected behavior is for that margin not to collapse (because of the overflow setting).</p>
-    
-    <p>In cases where PIE is attached to the inner, the top margin collapses.</p>
-    
+
     <div id="test" class="box">
         <div class="inside">
-            This box has PIE on the outside and the inside. This box should be spaced 20px on all sides, but it isn't.
+            This box has PIE on the outside and the inside. This box should be spaced 20px on all sides.
         </div><!--/inside-->
     </div><!--/test-->
     
     <div id="test2" class="box">
         <div class="inside">
-            This box has PIE on the inside only. This box should be spaced 20px on all sides, but it isn't. Additionally, it is missing a background color.
+            This box has PIE on the inside only. This box should be spaced 20px on all sides.
         </div><!--/inside-->
     </div><!--/test2-->
     
     
     <div id="control" class="box">
         <div class="inside">
-            This box has PIE on the outside, but not on the inside. Margin is respected.
+            This box has PIE on the outside, but not on the inside.
         </div><!--/test2-->
     </div><!--/test-->
 </body>
