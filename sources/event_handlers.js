@@ -10,11 +10,11 @@ var lastW, lastH, lastX, lastY,
  */
 function update() {
     init();
-    var el = element,
-        x = el.offsetLeft,
-        y = el.offsetTop,
-        w = el.offsetWidth,
-        h = el.offsetHeight,
+    var rect = element.getBoundingClientRect(),
+        x = rect.left,
+        y = rect.top,
+        w = rect.right - x,
+        h = rect.bottom - y,
         i, len;
 
     if( x !== lastX || y !== lastY ) {
