@@ -10,6 +10,13 @@ var lastW, lastH, lastX, lastY,
  */
 function update() {
     init();
+
+    /* TODO just using getBoundingClientRect may not always be accurate; it's possible that
+       an element will actually move relative to its positioning parent, but its position
+       relative to the viewport will stay the same. Need to come up with a better way to
+       track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
+       but that is a more expensive operation since it does some DOM walking, and we want this
+       check to be as fast as possible. */
     var rect = element.getBoundingClientRect(),
         x = rect.left,
         y = rect.top,
