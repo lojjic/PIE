@@ -19,7 +19,7 @@
             <fileset file="${src_dir}/Angle.js" />
             <fileset file="${src_dir}/Color.js" />
             <fileset file="${src_dir}/Tokenizer.js" />
-            <fileset file="${src_dir}/StyleBase.js" />
+            <fileset file="${src_dir}/StyleInfoBase.js" />
             <fileset file="${src_dir}/BackgroundStyleInfo.js" />
             <fileset file="${src_dir}/BorderStyleInfo.js" />
             <fileset file="${src_dir}/BorderRadiusStyleInfo.js" />

@@ -1,4 +1,18 @@
-PIE.StyleBase = {
+PIE.StyleInfoBase = {
+
+    /**
+     * Create a new StyleInfo class, with the standard constructor, and augmented by
+     * the StyleInfoBase's members.
+     * @param proto
+     */
+    newStyleInfo: function( proto ) {
+        function StyleInfo( el ) {
+            this.element = el;
+        }
+        PIE.Util.merge( StyleInfo.prototype, PIE.StyleInfoBase, proto );
+        return StyleInfo;
+    },
+
     /**
      * Get an object representation of the target CSS style, caching it as long as the
      * underlying CSS value hasn't changed.
