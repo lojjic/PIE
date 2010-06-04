@@ -41,12 +41,6 @@ PIE.RendererBase = {
     updateSize: function() {
     },
 
-    /**
-     * Tell the renderer to update based on modified element visibility
-     */
-    updateVis: function() {
-    },
-
 
     /**
      * Add a layer element, with the given z-order index, to the renderer's main box element. We can't use

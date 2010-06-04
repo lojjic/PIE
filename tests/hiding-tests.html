@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Tests for hiding/showing elements</title>
+
+    <style type="text/css">
+
+        .section {
+            border: 1px solid #CCC;
+            padding: 2em;
+            margin: 2em;
+        }
+
+        .test {
+            padding: 2em;
+            margin: 2em 0 0;
+            width: 300px;
+            background: #CCF;
+            -webkit-border-radius: 1em;
+            -moz-border-radius: 1em;
+            border-radius: 1em;
+            -webkit-box-shadow: 0 0 5px #000;
+            -moz-box-shadow: 0 0 5px #000;
+            box-shadow: 0 0 5px #000;
+            behavior: url(../build/PIE.htc);
+        }
+
+    </style>
+
+    <script type="text/javascript">
+
+        function toggleDisplay( id ) {
+            var el = document.getElementById( id );
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleVisibility( id ) {
+            var el = document.getElementById( id );
+            el.style.visibility = el.style.visibility === 'hidden' ? 'visible' : 'hidden';
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <h1>Tests for hiding/showing elements</h1>
+
+    <div class="section">
+        <h2>Toggle display, hidden initially</h2>
+
+        <button type="button" onclick="toggleDisplay('test1')">Toggle</button>
+
+        <div class="test" id="test1" style="display:none;">
+            Hello PIE
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Toggle display, shown initially</h2>
+
+        <button type="button" onclick="toggleDisplay('test2')">Toggle</button>
+
+        <div class="test" id="test2">
+            Hello PIE
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Toggle visibility, hidden initially</h2>
+
+        <button type="button" onclick="toggleVisibility('test3')">Toggle</button>
+
+        <div class="test" id="test3" style="visibility: hidden">
+            Hello PIE
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Toggle visibility, shown initially</h2>
+
+        <button type="button" onclick="toggleVisibility('test4')">Toggle</button>
+
+        <div class="test" id="test4">
+            Hello PIE
+        </div>
+    </div>
+
+</body>
+</html>

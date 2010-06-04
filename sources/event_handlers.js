@@ -45,23 +45,15 @@ function update() {
  */
 function propChanged() {
     init();
-    var name = event && event.propertyName,
-        i, len, toUpdate;
-    if( name === 'style.display' || name === 'style.visibility' ) {
-        for( i = 0, len = renderers.length; i < len; i++ ) {
-            renderers[i].updateVis();
+    var i, len,
+        toUpdate = [];
+    for( i = 0, len = renderers.length; i < len; i++ ) {
+        if( renderers[i].needsUpdate() ) {
+            toUpdate.push( renderers[i] );
         }
     }
-    else { //if( event.propertyName === 'style.boxShadow' ) {
-        toUpdate = [];
-        for( i = 0, len = renderers.length; i < len; i++ ) {
-            if( renderers[i].needsUpdate() ) {
-                toUpdate.push( renderers[i] );
-            }
-        }
-        for( i = 0, len = toUpdate.length; i < len; i++ ) {
-            toUpdate[i].updateProps();
-        }
+    for( i = 0, len = toUpdate.length; i < len; i++ ) {
+        toUpdate[i].updateProps();
     }
 }
 
@@ -163,7 +155,8 @@ function init() {
             borderInfo: new PIE.BorderStyleInfo( el ),
             borderImageInfo: new PIE.BorderImageStyleInfo( el ),
             borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
-            boxShadowInfo: new PIE.BoxShadowStyleInfo( el )
+            boxShadowInfo: new PIE.BoxShadowStyleInfo( el ),
+            visibilityInfo: new PIE.VisibilityStyleInfo( el )
         };
 
         var rootRenderer = new PIE.RootRenderer( el, styleInfos );

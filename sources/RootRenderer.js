@@ -16,11 +16,8 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
         return false;
     },
 
-    updateVis: function() {
-        if( this.isActive() ) {
-            var cs = this.element.currentStyle;
-            this.getBox().style.display = ( cs.visibility === 'hidden' || cs.display === 'none' ) ? 'none' : '';
-        }
+    needsUpdate: function() {
+        return this.styleInfos.visibilityInfo.changed();
     },
 
     updatePos: function() {
@@ -66,6 +63,19 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
         }
     },
 
+    updateVisibility: function() {
+        var vis = this.styleInfos.visibilityInfo.getProps();
+        this.getBox().style.display = ( vis.visible && vis.displayed ) ? '' : 'none';
+    },
+
+    updateProps: function() {
+        if( this.isActive() ) {
+            this.updateVisibility();
+        } else {
+            this.destroy();
+        }
+    },
+
     getBox: function() {
         var box = this._box, el, s;
         if( !box ) {
@@ -74,6 +84,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
             s = box.style;
 
             s.position = 'absolute';
+            this.updateVisibility();
 
             el.parentNode.insertBefore( box, el );
         }

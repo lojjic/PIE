@@ -25,6 +25,7 @@
             <fileset file="${src_dir}/BorderRadiusStyleInfo.js" />
             <fileset file="${src_dir}/BorderImageStyleInfo.js" />
             <fileset file="${src_dir}/BoxShadowStyleInfo.js" />
+            <fileset file="${src_dir}/VisibilityStyleInfo.js" />
             <fileset file="${src_dir}/RendererBase.js" />
             <fileset file="${src_dir}/RootRenderer.js" />
             <fileset file="${src_dir}/BackgroundRenderer.js" />
