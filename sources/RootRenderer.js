@@ -83,7 +83,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
             box = this._box = el.document.createElement( 'css3-container' );
             s = box.style;
 
-            s.position = 'absolute';
+            s.position = el.currentStyle.position === 'fixed' ? 'fixed' : 'absolute';
             this.updateVisibility();
 
             el.parentNode.insertBefore( box, el );
