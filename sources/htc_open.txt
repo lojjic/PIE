@@ -9,7 +9,7 @@ Licensed for use under the Apache License, Version 2.0
     <PUBLIC:ATTACH EVENT="onmove" FOR="element" ONEVENT="update()" />
     <PUBLIC:ATTACH EVENT="onpropertychange" FOR="element" ONEVENT="propChanged()" />
     <PUBLIC:ATTACH EVENT="onmouseenter" FOR="element" ONEVENT="mouseEntered()" />
-    <PUBLIC:ATTACH EVENT="onmouseout" FOR="element" ONEVENT="mouseLeft()" />
+    <PUBLIC:ATTACH EVENT="onmouseleave" FOR="element" ONEVENT="mouseLeft()" />
     <PUBLIC:ATTACH EVENT="oncontentready" FOR="element" ONEVENT="init()" />
     <PUBLIC:ATTACH EVENT="ondetach" FOR="element" ONEVENT="cleanup()" />
 

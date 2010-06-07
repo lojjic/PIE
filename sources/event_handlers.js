@@ -63,7 +63,8 @@ function propChanged() {
  * hover styles to non-link elements.
  */
 function mouseEntered() {
-    element.className += ' ' + PIE.CLASS_PREFIX + 'hover';
+    var el = event.srcElement;
+    el.className += ' ' + PIE.CLASS_PREFIX + 'hover';
     //must delay this because the mouseleave event fires before the :hover styles are added.
     setTimeout( propChanged, 0 );
 }
@@ -71,7 +72,8 @@ function mouseEntered() {
  * Handle mouseleave events
  */
 function mouseLeft() {
-    element.className = element.className.replace( new RegExp( '\\b' + PIE.CLASS_PREFIX + 'hover\\b', 'g' ), '' );
+    var el = event.srcElement;
+    el.className = el.className.replace( new RegExp( '\\b' + PIE.CLASS_PREFIX + 'hover\\b', 'g' ), '' );
     //must delay this because the mouseleave event fires before the :hover styles are removed.
     setTimeout( propChanged, 0 );
 }
@@ -110,6 +112,8 @@ function cleanup() {
     if( ancestors ) {
         for( i = 0, len = ancestors.length; i < len; i++ ) {
             ancestors[i].detachEvent( 'onpropertychange', ancestorPropChanged );
+            ancestors[i].detachEvent( 'onmouseenter', mouseEntered );
+            ancestors[i].detachEvent( 'onmouseleave', mouseLeft );
         }
         ancestors = null;
     }
@@ -133,6 +137,8 @@ function initAncestorPropChangeListeners() {
         while( a && ( watch === 'NaN' || i++ < watch ) ) {
             ancestors.push( a );
             a.attachEvent( 'onpropertychange', ancestorPropChanged );
+            a.attachEvent( 'onmouseenter', mouseEntered );
+            a.attachEvent( 'onmouseleave', mouseLeft );
             a = a.parentNode;
         }
     }
