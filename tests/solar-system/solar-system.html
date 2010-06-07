@@ -1,0 +1,148 @@
+<!DOCTYPE html> 
+<html lang="en">
+
+    <!--
+	********************************************************************************
+
+	Our Solar System by Alex Giron
+	
+	An experiment with CSS3 border-radius, transforms & animations.
+
+	Learn more about it at:
+	http://neography.com/journal/our-solar-system-in-css3/
+
+	Send comments/suggestions to alexgiron@gmail.com or a tweet to @alexgiron
+		
+	Cheers!
+
+    Modified by Jason Johnston with the following changes:
+        - Enabled PIE rendering of CSS3 styles
+        - Removed embedded fonts
+        - Added html5shiv call to support styling HTML5 elements
+
+	********************************************************************************
+    -->
+     
+  <head> 
+    <title>Our Solar System — An experiment with CSS3 border-radius, transforms &amp; animations.</title> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" /> 
+    <meta name="description" content="" /> 
+    <meta name="keywords" content="" /> 
+    <meta name="author" content="Alex Giron" /> 
+    <meta name="copyright" content="Neography" /> 
+    <link rel="stylesheet" type="text/css" media="screen,projection" href="styles.css" />
+
+      <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <style type="text/css">
+        section, header { display: block; }
+    </style>
+    <![endif]-->
+
+    <script src="http://www.google.com/jsapi"></script>
+    <script>
+      // Load jQuery
+      google.load("jquery", "1");
+    </script>
+    <script type="text/javascript" charset="utf-8">
+      $(function(){
+        $('ul#descriptions h2').hover(function(){
+          $('ul.solarsystem li.' + $(this).attr('id') ).toggleClass('active');
+
+        })
+      });
+    </script>
+ 
+  </head> 
+  
+  <body>
+  
+  <div class="wrap clearfix">
+  
+    <section>
+        <header class="clearfix">
+            <h1>Our Solar System</h1>
+            <p>An experiment with CSS3 border-radius, transforms &amp; animations.</p>
+            <p class="disclaimer">Animation properties currently only work on -webkit browsers (Chrome or Safari).</p>
+        </header>
+    </section>
+  
+    <section class="clearfix">
+  
+        <ul class="solarsystem">
+          <li class="sun"><a href="#sun"><span>Sun</span></a></li>
+          <li class="mercury"><a href="#mercury"><span>Mercury</span></a></li>
+          <li class="venus"><a href="#venus"><span>Venus</span></a></li>
+          <li class="earth"><a href="#earth"><span>Earth<span class="moon"> &amp; Moon</span></span></a></li>
+          <li class="mars"><a href="#mars"><span>Mars</span></a></li>
+          <li class="asteroids_meteorids"><span>Asteroids &amp; Meteorids</span></li>
+          <li class="jupiter"><a href="#jupiter"><span>Jupiter</span></a></li>
+          <li class="saturn"><a href="#saturn"><span>Saturn &amp; <span class="ring">Ring</span></span></a></li>
+          <li class="uranus"><a href="#uranus"><span>Uranus</span></a></li>
+          <li class="neptune"><a href="#neptune"><span>Neptune</span></a></li>
+          <li class="pluto"><a href="#pluto"><span>Pluto</span></a></li>
+        </ul>
+        
+        <ul id="descriptions">
+            <li>
+            <h2 id="sun">Sun</h2>
+            <p>The Sun is a star, a hot ball of glowing gases at the heart of our solar system. Its influence extends far beyond the orbits of distant Neptune and Pluto. Without the Sun's intense energy and heat, there would be no life on Earth. And though it is special to us, there are billions of stars like our Sun scattered across the Milky Way galaxy.</p>
+            </li>
+            
+            <li>
+            <h2 id="mercury">Mercury</h2>
+            <p>Sun-scorched Mercury is only slightly larger than Earth's Moon. Like the Moon, Mercury has very little atmosphere to stop impacts and it is covered with craters. Mercury's dayside is super heated by the Sun, but at night temperatures drop hundreds of degrees below freezing. Ice may even exist in craters. Mercury's egg-shaped orbit takes it around the Sun every 88 days.</p>
+            </li>
+            
+            <li>
+            <h2 id="venus">Venus</h2>
+            <p>Venus is a dim world of intense heat and volcanic activity. Similar in structure and size to Earth, Venus' thick, toxic atmosphere traps heat in a runaway 'greenhouse effect.' The scorched world has temperatures hot enough to melt lead. Glimpses below the clouds reveal volcanoes and deformed mountains. Venus spins slowly in the opposite direction of most planets.</p>
+            </li>
+            
+            <li>
+            <h2 id="earth">Earth</h2>
+            <p>Earth is an ocean planet. Our home world's abundance of water - and life - makes it unique in our solar system. Other planets, plus a few moons, have ice, atmospheres, seasons and even weather, but only on Earth does the whole complicated mix come together in a way that encourages life - and lots of it.</p>
+            </li>
+            
+            <li>
+            <h2 id="mars">Mars</h2>
+            <p>Though details of Mars' surface are difficult to see from Earth, telescope observations show seasonally changing features and white patches at the poles. For decades, people speculated that bright and dark areas on Mars were patches of vegetation, that Mars could be a likely place for life-forms, and that water might exist in the polar caps. When the Mariner 4 spacecraft flew by Mars in 1965, many were shocked to see photographs of a bleak, cratered surface. Mars seemed to be a dead planet. Later missions, however, have shown that Mars is a complex member of the solar system and holds many mysteries yet to be solved.</p>
+            </li>
+            
+            <li>
+            <h2 id="jupiter">Jupiter</h2>
+            <p>The most massive planet in our solar system, with four large moons and many smaller moons, Jupiter forms a kind of miniature solar system. Jupiter resembles a star in composition. In fact, if it had been about 80 times more massive, it would have become a star rather than a planet.</p>
+            </li>
+            
+            <li>
+            <h2 id="saturn">Saturn</h2>
+            <p>Saturn was the most distant of the five planets known to the ancients. Like Jupiter, Saturn is made mostly of hydrogen and helium. Its volume is 755 times greater than that of Earth. Winds in the upper atmosphere reach 500 meters (1,600 feet) per second in the equatorial region. These super-fast winds, combined with heat rising from within the planet's interior, cause the yellow and gold bands visible in the atmosphere.</p>
+            </li>
+            
+            <li>
+            <h2 id="uranus">Uranus</h2>
+            <p>The first planet found with the aid of a telescope, Uranus was discovered in 1781 by astronomer William Herschel. The seventh planet from the Sun is so distant that it takes 84 years to complete one orbit.</p>
+            </li>
+            
+            <li>
+            <h2 id="neptune">Neptune</h2>
+            <p>Nearly 4.5 billion kilometers (2.8 billion miles) from the Sun, Neptune orbits the Sun once every 165 years. It is invisible to the naked eye because of its extreme distance from Earth. Interestingly, the unusual elliptical orbit of the dwarf planet Pluto brings Pluto inside Neptune's orbit for a 20-year period out of every 248 Earth years</p>
+            </li>
+            
+            <li>
+            <h2 id="pluto">Pluto</h2>
+            <p>Tiny, cold and incredibly distant, Pluto was discovered in 1930 and long considered to be the ninth planet. But after the discoveries of similar intriguing worlds even farther out, Pluto was reclassified as a dwarf planet. This new class of worlds may offer some of the best evidence of the origins of our solar system.</p>
+            </li>
+        </ul>
+        
+    </section>
+  
+  <p class="links">
+  <a class="about" href="http://neography.com/journal/our-solar-system-in-css3/">About this experiment  &rarr;</a>
+  <a class="twitter" href="http://twitter.com/alexgiron">On Twitter &rarr;</a>
+  </p>
+  
+  </div>
+  
+  </body>
+  </html>
