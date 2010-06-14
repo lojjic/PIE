@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Styled Buttons</title>
+
+    <style type="text/css">
+
+        html, body {
+            font-size: 11px;
+            font-family: sans-serif;
+        }
+
+        .section {
+            margin: 2em 0;
+            border: 1px solid #CCC;
+            padding: 2em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h2 {
+            font-size: 1.1em;
+            margin: 0 0 2em;
+        }
+
+        .button {
+            background: none;
+            border: 0;
+            padding: 0;
+            text-decoration: none;
+            color: inherit;
+            font-family: inherit;
+            font-size: 11px;
+            margin-right: 2em;
+            cursor: pointer;
+            overflow: visible; /* prevent extra horizontal padding in IE */
+            behavior: url(../build/PIE.htc);
+        }
+        .button::-moz-focus-inner { /* prevent extra padding in Firefox */
+            padding: 0;
+            border: 0;
+        }
+
+
+
+
+        
+        #test1 .button {
+            background: #EFD;
+            background: -webkit-gradient(linear, 0 0, 0 bottom, from(#EFD), to(#BF6));
+            background: -moz-linear-gradient(#EFD, #BF6);
+            background: linear-gradient(#EFD, #BF6);
+            -pie-background: linear-gradient(#EFD, #BF6);
+            color: #09700B;
+            font-size: 14px;
+            padding: 12px;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            border: 1px solid #AF9;
+            -webkit-box-shadow: #C0C0C0 3px 3px 6px;
+            -moz-box-shadow: #C0C0C0 3px 3px 6px;
+            box-shadow: #C0C0C0 3px 3px 6px;
+        }
+        #test1 .button:hover {
+            border-width: 2px;
+            padding: 11px;
+        }
+
+
+        #test2 .button {
+            padding: 2px 10px;
+            font-weight: bold;
+            font-size: 11px;
+            line-height: 15px;
+            background: #EEE;
+            color: #333;
+            border: 1px solid #FFF;
+            -webkit-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            -webkit-box-shadow: #666 0 0 4px;
+            -moz-box-shadow: #666 0 0 4px;
+            box-shadow: #666 0 0 4px;
+        }
+        #test2 .button:hover {
+            -webkit-box-shadow: #333 0 0 6px;
+            -moz-box-shadow: #333 0 0 6px;
+            box-shadow: #333 0 0 6px;
+        }
+
+
+
+
+
+        #test3 .button {
+            border: 1px solid #AEAEAE;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #666;
+            padding: 4px 12px;
+            /*text-shadow: #FFF 0 -1px;*/
+            background: #E6E6E6;
+            background: -webkit-gradient(linear, left top, left bottom, from(#FDFDFD), color-stop(0.4, #E6E6E6), color-stop(0.6, #D6D6D6), to(#CECECE));
+            background: -moz-linear-gradient(#FDFDFD, #E6E6E6 40%, #D6D6D6 60%, #CECECE);
+            background: linear-gradient(#FDFDFD, #E6E6E6 40%, #D6D6D6 60%, #CECECE);
+            -pie-background: linear-gradient(#FDFDFD, #E6E6E6 40%, #D6D6D6 60%, #CECECE);
+            -webkit-box-shadow: 0 0 0 2px rgba(220, 220, 220, 0.25);
+            -moz-box-shadow: 0 0 0 2px rgba(220, 220, 220, 0.25);
+            box-shadow: 0 0 0 2px rgba(220, 220, 220, 0.25);
+        }
+        #test3 .button:hover {
+            -webkit-box-shadow: 0 0 0 2px rgba(220, 220, 220, 0.75);
+            -moz-box-shadow: 0 0 0 2px rgba(220, 220, 220, 0.75);
+            box-shadow: 0 0 0 2px rgba(220, 220, 220, 0.75);
+        }
+        #test3 .style2 .button {
+            color: #FFF;
+            /*text-shadow: #AB2525 0 -1px;*/
+            border-color: #AB2525;
+            background: #D50623;
+            background: -webkit-gradient(linear, left top, left bottom, from(#EA655E), color-stop(0.4, #EA655E), color-stop(0.6, #D50623), to(#D50623));
+            background: -moz-linear-gradient(#EA655E, #EA655E 40%, #D50623 60%, #D50623);
+            background: linear-gradient(#EA655E, #EA655E 40%, #D50623 60%, #D50623);
+            -pie-background: linear-gradient(#EA655E, #EA655E 40%, #D50623 60%, #D50623);
+        }
+        #test3 .style3 .button {
+            color: #FFF;
+            /*text-shadow: #3774C8 0 -1px;*/
+            border-color: #3774C8;
+            background: #097FEB;
+            background: -webkit-gradient(linear, left top, left bottom, from(#B0D2EF), color-stop(0.4, #44A4E8), color-stop(0.6, #168CE6), to(#097FEB));
+            background: -moz-linear-gradient(#B0D2EF, #44A4E8 40%, #168CE6 60%, #097FEB);
+            background: linear-gradient(#B0D2EF, #44A4E8 40%, #168CE6 60%, #097FEB);
+            -pie-background: linear-gradient(#B0D2EF, #44A4E8 40%, #168CE6 60%, #097FEB);
+        }
+        #test3 .style4 .button {
+            color: #FFF;
+            /*text-shadow: #DFB844 0 -1px;*/
+            border-color: #DFB844;
+            background: #EDD077;
+            background: -webkit-gradient(linear, left top, left bottom, from(#F6E6B6), color-stop(0.4, #EDD077), color-stop(0.6, #E3B62E), to(#DFB844));
+            background: -moz-linear-gradient(#F6E6B6, #EDD077 40%, #E3B62E 60%, #DFB844);
+            background: linear-gradient(#F6E6B6, #EDD077 40%, #E3B62E 60%, #DFB844);
+            -pie-background: linear-gradient(#F6E6B6, #EDD077 40%, #E3B62E 60%, #DFB844);
+        }
+        #test3 .style5 .button {
+            color: #FFF;
+            /*text-shadow: #DFB844 0 -1px;*/
+            border-color: #EF7210;
+            background: #EF7311;
+            background: -webkit-gradient(linear, left top, left bottom, from(#F3A66B), color-stop(0.4, #F08A3A), color-stop(0.6, #F08029), to(#EF7311));
+            background: -moz-linear-gradient(#F3A66B, #F08A3A 40%, #F08029 60%, #EF7311);
+            background: linear-gradient(#F3A66B, #F08A3A 40%, #F08029 60%, #EF7311);
+            -pie-background: linear-gradient(#F3A66B, #F08A3A 40%, #F08029 60%, #EF7311);
+        }
+
+
+
+        #test4 .button {
+            float: left;
+            padding: 0 14px;
+            height: 22px;
+            line-height: 22px;
+            color: #FFF;
+            background: #71B6E8;
+            background: -webkit-gradient(linear, 0 0, 0 bottom, from(#71B6E8), to(#2E76CF));
+            background: -moz-linear-gradient(#71B6E8, #2E76CF);
+            background: linear-gradient(#71B6E8, #2E76CF);
+            -pie-background: linear-gradient(#71B6E8, #2E76CF);
+            -webkit-border-radius: 11px;
+            -moz-border-radius: 11px;
+            border-radius: 11px;
+            -webkit-box-shadow: #666 0 1px 3px;
+            -moz-box-shadow: #666 0 1px 3px;
+            box-shadow: #666 0 1px 3px;
+        }
+
+
+        #test5 .button {
+            float: left;
+            height: 26px;
+            line-height: 26px;
+            font-family: Helvetica, sans-serif;
+            font-weight: bold;
+            border-width: 0 8px 0 14px;
+            color: white;
+            /*text-shadow: #000 0px 1px 1px;*/
+            -webkit-border-image: url("iPhoneBackButton.png") 0 8 0 14;
+            -moz-border-image: url("iPhoneBackButton.png") 0 8 0 14;
+            border-image: url("iPhoneBackButton.png") 0 8 0 14 fill;
+        }
+
+
+    </style>
+
+</head>
+<body>
+
+    <h1>Demos of button styles</h1>
+    <p>Each demo shows the same button-like styling on a <code>&lt;a&gt;</code> element and on a <code>&lt;button&gt;</code> element.</p>
+
+    <div class="section" id="test1">
+        <h2>Ala mozilla.com</h2>
+        <a href="#" class="button">I'm as cute as a button</a>
+        <button class="button">I'm actually a button</button>
+    </div>
+
+    <div class="section" id="test2">
+        <h2>Ala detelefoongids.nl</h2>
+        <a href="#" class="button">I'm as cute as a button</a>
+        <button class="button">I'm actually a button</button>
+    </div>
+
+    <div class="section" id="test3">
+        <h2>Ala realestate.com.au</h2>
+        <p class="style1">
+            <a href="#" class="button">I'm as cute as a button</a>
+            <button class="button">I'm actually a button</button>
+        </p>
+        <p class="style2">
+            <a href="#" class="button">I'm as cute as a button</a>
+            <button class="button">I'm actually a button</button>
+        </p>
+        <p class="style3">
+            <a href="#" class="button">I'm as cute as a button</a>
+            <button class="button">I'm actually a button</button>
+        </p>
+        <p class="style4">
+            <a href="#" class="button">I'm as cute as a button</a>
+            <button class="button">I'm actually a button</button>
+        </p>
+        <p class="style5">
+            <a href="#" class="button">I'm as cute as a button</a>
+            <button class="button">I'm actually a button</button>
+        </p>
+    </div>
+
+    <div class="section" id="test4">
+        <h2>Ala itunes.com</h2>
+        <a href="#" class="button">I'm as cute as a button</a>
+        <button class="button">I'm actually a button</button>
+    </div>
+
+    <div class="section" id="test5">
+        <h2>iPhone back button  (<a href="http://groupaware.mobi/iphone/#_Samples">source</a>)</h2>
+        <a href="#" class="button">I'm as cute as a button</a>
+        <button class="button">I'm actually a button</button>
+    </div>
+
+
+</body>
+</html>
