@@ -56,7 +56,7 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
                 setSizeAndPos( 'br', widthR, widthB, elW - widthR, elH - widthB );
                 setSizeAndPos( 'b', elW - widthL - widthR, widthB, widthL, elH - widthB );
                 setSizeAndPos( 'bl', widthL, widthB, 0, elH - widthB );
-                setSizeAndPos( 'l', widthL, elH - widthT - widthB, 0, widthL );
+                setSizeAndPos( 'l', widthL, elH - widthT - widthB, 0, widthT );
                 setSizeAndPos( 'c', elW - widthL - widthR, elH - widthT - widthB, widthL, widthT );
 
 
