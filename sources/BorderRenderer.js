@@ -281,6 +281,12 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
         }
 
         return segments;
+    },
+
+    destroy: function() {
+        PIE.RendererBase.destroy.call( this );
+        this.element.runtimeStyle.borderColor = '';
     }
+
 
 } );

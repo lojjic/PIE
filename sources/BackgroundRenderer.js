@@ -368,6 +368,12 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         var rs = this.element.runtimeStyle;
         rs.backgroundImage = 'none';
         rs.backgroundColor = 'transparent';
+    },
+
+    destroy: function() {
+        PIE.RendererBase.destroy.call( this );
+        var rs = this.element.runtimeStyle;
+        rs.backgroundImage = rs.backgroundColor = '';
     }
 
 } );
