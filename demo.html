@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>PIE CSS3 Quick Demo</title>
+
+    <style type="text/css">
+        #demo {
+            width: 600px;
+            border: 1px solid #CCC;
+            padding: 20px 20px 0;
+            position: relative;
+            font-size: 11px;
+            font-family: sans-serif;
+        }
+
+        #target {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            width: 200px;
+            text-align: center;
+            padding: 60px 0;
+            background: #EEE;
+            border: 1px solid #999;
+            font-size: 18px;
+
+            /* default CSS3 values: */
+            /*-webkit-border-radius: 8px;
+            -moz-border-radius: 8px;
+            border-radius: 8px;
+            -webkit-box-shadow: #666 0 2px 3px;
+            -moz-box-shadow: #666 0 2px 3px;
+            box-shadow: #666 0 2px 3px;
+            background: -webkit-gradient(linear, 0 0, 0 bottom, from(#9F9), to(#393));
+            background: -moz-linear-gradient(#9F9, #393);
+            -pie-background: linear-gradient(#9F9, #393);*/
+        }
+
+        #controls {
+            margin: 0 0 20px 220px;
+        }
+
+        #controls input {
+            font-family: monospace;
+            font-size: 1em;
+        }
+
+        #controls fieldset {
+            border: 1px solid #CCC;
+            padding: 3px 10px 5px;
+            margin: 0 0 10px;
+            overflow: hidden;
+        }
+
+        #controls fieldset legend {
+            line-height: normal;
+            color: #000;
+        }
+
+        #controls fieldset fieldset {
+            margin: 0 0 5px;
+            line-height: 25px;
+        }
+
+        #controls ul, #controls li {
+            display: block;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #controls .toggle {
+            float: left;
+        }
+        #controls .details {
+            float: right;
+        }
+
+        #output {
+            display: block;
+            border: 1px solid #CCC;
+            background: #EEE;
+            margin: 0 0 20px;
+            padding: 20px;
+            white-space: pre;
+        }
+    </style>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        $( function() {
+
+            var loaded = false,
+                behaviorId,
+                behaviorUrl = 'build/PIE.htc';
+
+            var controls = {
+                radius: {
+                    toggle: $( '#borderRadiusToggle' ),
+                    deets: $( '#borderRadiusDetails' ),
+                    size: $( '#borderRadiusSize' )
+                },
+                shadow: {
+                    toggle: $( '#boxShadowToggle' ),
+                    deets: $( '#boxShadowDetails' ),
+                    blur: $( '#boxShadowBlur' ),
+                    x: $( '#boxShadowX' ),
+                    y: $( '#boxShadowY' )
+                },
+                gradient: {
+                    toggle: $( '#gradientToggle' ),
+                    color1: $( '#gradientColor1' ),
+                    color2: $( '#gradientColor2' )
+                },
+                pie: {
+                    on: $( '#pieToggle' )
+                }
+            };
+
+            function getFieldValue( field ) {
+                
+            }
+
+            function getBorderRadiusCss() {
+                var info = controls.radius,
+                    on = info.toggle.is(':checked'),
+                    size = info.size.val();
+                return on ? [ '-webkit-border-radius: ' + size + 'px;', '-moz-border-radius: ' + size + 'px;', 'border-radius: ' + size + 'px;' ] : []
+            }
+
+            function getBoxShadowCss() {
+                var info = controls.shadow,
+                    on = info.toggle.is(':checked'),
+                    x = info.x.val(),
+                    y = info.y.val(),
+                    blur = info.blur.val(),
+                    cssVal = on ? '#666 ' + x + 'px ' + y + 'px ' + blur + 'px;' : '';
+                return cssVal ? [ '-webkit-box-shadow: ' + cssVal, '-moz-box-shadow: ' + cssVal, 'box-shadow: ' + cssVal ] : [];
+            }
+
+            function getGradientCss() {
+                var info = controls.gradient,
+                    on = info.toggle.is(':checked'),
+                    color1 = info.color1.val(),
+                    color2 = info.color2.val(),
+                    css = [ 'background: ' + color1 + ';' ];
+                if( on ) {
+                    css.push( 'background: -webkit-gradient(linear, 0 0, 0 bottom, from(' + color1 + '), to(' + color2 + '));' );
+                    css.push( 'background: -moz-linear-gradient(' + color1 + ', ' + color2 + ');' );
+                    if( controls.pie.on.is(':checked') ) {
+                        css.push( '-pie-background: linear-gradient(' + color1 + ', ' + color2 + ');' );
+                    }
+                }
+                return css;
+            }
+
+            function updateCss() {
+                var tgtEl = $( '#target' )[0],
+                    css = [ 'border: 1px solid #696;', 'padding: 60px 0;', 'text-align: center; width: 200px;' ].concat( getBorderRadiusCss() ).concat( getBoxShadowCss() ).concat( getGradientCss() );
+
+                if( controls.pie.on.is(':checked') ) {
+                    css.push( 'behavior: url(' + behaviorUrl + ');' );
+                }
+                $( '#output' ).html( css.join( '<br>' ) );
+
+                tgtEl.style.cssText = css.join( '' );
+
+                if( tgtEl.addBehavior ) {
+                    if( controls.pie.on.is(':checked') ) {
+                        if( !behaviorId ) {
+                            behaviorId = tgtEl.addBehavior( behaviorUrl );
+                        }
+                    }
+                    else if( behaviorId ) {
+                        tgtEl.removeBehavior( behaviorId );
+                        behaviorId = null;
+                    }
+                }
+            }
+
+            function updateDetailsVis() {
+                $( '#controls .toggle > input' ).each( function() {
+                    var checked = this.checked,
+                        deets = $( this ).closest( 'fieldset' ).find( '.details' );
+                    if( loaded ) {
+                        deets[ checked ? 'fadeIn' : 'fadeOut' ]( 'fast' );
+                    } else {
+                        deets[ checked ? 'show' : 'hide' ]();
+                    }
+                } );
+            }
+
+            function updateCodeVis() {
+                var checked = $( '#codeToggle' ).is( ':checked' ),
+                    code = $( '#output' );
+                if( loaded ) {
+                    code[ checked ? 'slideDown' : 'slideUp' ]( 'fast' );
+                } else {
+                    code[ checked ? 'show' : 'hide' ]();
+                }
+            }
+
+            $( '#controls input' ).change( updateCss );
+            $( '#controls .toggle > input' ).change( updateDetailsVis );
+            $( '#codeToggle' ).change( updateCodeVis );
+
+            updateCss();
+            updateDetailsVis();
+            updateCodeVis();
+            loaded = true;
+        } );
+    </script>
+
+</head>
+<body>
+
+    <h1>PIE CSS3 Quick Demo</h1>
+
+    <p>Adjust the controls on the right and see the CSS3 in action. Remember, there are no images used at all!</p>
+    
+    <div id="demo">
+
+        <div id="target">
+            Mmmmm, pie.
+        </div>
+
+        <div id="controls">
+            <fieldset id="featureControls">
+                <legend>CSS3 features</legend>
+
+                <fieldset>
+                    <legend>border-radius</legend>
+
+                    <div class="toggle">
+                        <input type="checkbox" id="borderRadiusToggle" class="featureToggle" checked="checked" />
+                        <label for="borderRadiusToggle">Enable</label>
+                    </div>
+
+                    <div class="details">
+                        <label for="borderRadiusSize">Radius size:</label>
+                        <!--<input type="number" id="borderRadiusSize" min="0" max="20" value="8" size="2" />-->
+                        <input type="text" id="borderRadiusSize" value="8" size="3" />
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>box-shadow</legend>
+
+                    <div class="toggle">
+                        <input type="checkbox" id="boxShadowToggle" class="featureToggle" checked="checked" />
+                        <label for="boxShadowToggle">Enable</label>
+                    </div>
+
+                    <div class="details">
+                        <label for="boxShadowBlur">Blur size:</label>
+                        <!--<input type="number" id="boxShadowBlur" min="0" max="10" value="3" size="2" />-->
+                        <input type="text" id="boxShadowBlur" value="3" size="3" />
+
+                        <label for="boxShadowX">X offset:</label>
+                        <!--<input type="number" id="boxShadowX" min="-10" max="10" value="0" size="3" />-->
+                        <input type="text" id="boxShadowX" value="0" size="3" />
+
+                        <label for="boxShadowY">Y offset:</label>
+                        <!--<input type="number" id="boxShadowY" min="-10" max="10" value="2" size="3" />-->
+                        <input type="text" id="boxShadowY" value="2" size="3" />
+                    </div>
+
+                </fieldset>
+
+                <fieldset>
+                    <legend>linear-gradient</legend>
+
+                    <div class="toggle">
+                        <input type="checkbox" id="gradientToggle" class="featureToggle" checked="checked" />
+                        <label for="gradientToggle">Enable</label>
+                    </div>
+
+                    <div class="details">
+                        <label for="gradientColor1">Top color:</label>
+                        <!--<input type="color" id="gradientColor1" value="#99FF99" size="7" />-->
+                        <input type="text" id="gradientColor1" value="#99FF99" size="7" />
+
+                        <label for="gradientColor2">Bottom color:</label>
+                        <!--<input type="color" id="gradientColor2" value="#339933" size="7" />-->
+                        <input type="text" id="gradientColor2" value="#339933" size="7" />
+                    </div>
+                </fieldset>
+            </fieldset>
+            
+            <fieldset id="pieControls">
+                <legend>Options</legend>
+                <ul>
+                    <li>
+                        <input type="checkbox" id="pieToggle" checked="checked" />
+                        <label for="pieToggle">Enable PIE (only affects IE)</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="codeToggle" />
+                        <label for="codeToggle">Show CSS</label>
+                    </li>
+                </ul>
+            </fieldset>
+        </div>
+
+        <code id="output">
+            
+        </code>
+    </div>
+
+</body>
+</html>
