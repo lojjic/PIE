@@ -97,60 +97,30 @@
                 behaviorId,
                 behaviorUrl = 'build/PIE.htc';
 
-            var controls = {
-                radius: {
-                    toggle: $( '#borderRadiusToggle' ),
-                    deets: $( '#borderRadiusDetails' ),
-                    size: $( '#borderRadiusSize' )
-                },
-                shadow: {
-                    toggle: $( '#boxShadowToggle' ),
-                    deets: $( '#boxShadowDetails' ),
-                    blur: $( '#boxShadowBlur' ),
-                    x: $( '#boxShadowX' ),
-                    y: $( '#boxShadowY' )
-                },
-                gradient: {
-                    toggle: $( '#gradientToggle' ),
-                    color1: $( '#gradientColor1' ),
-                    color2: $( '#gradientColor2' )
-                },
-                pie: {
-                    on: $( '#pieToggle' )
-                }
-            };
-
-            function getFieldValue( field ) {
-                
-            }
-
             function getBorderRadiusCss() {
-                var info = controls.radius,
-                    on = info.toggle.is(':checked'),
-                    size = info.size.val();
+                var on = $( '#borderRadiusToggle' ).is(':checked'),
+                    size = $( '#borderRadiusSize' ).val();
                 return on ? [ '-webkit-border-radius: ' + size + 'px;', '-moz-border-radius: ' + size + 'px;', 'border-radius: ' + size + 'px;' ] : []
             }
 
             function getBoxShadowCss() {
-                var info = controls.shadow,
-                    on = info.toggle.is(':checked'),
-                    x = info.x.val(),
-                    y = info.y.val(),
-                    blur = info.blur.val(),
+                var on = $( '#boxShadowToggle' ).is(':checked'),
+                    x = $( '#boxShadowX' ).val(),
+                    y = $( '#boxShadowY' ).val(),
+                    blur = $( '#boxShadowBlur' ).val(),
                     cssVal = on ? '#666 ' + x + 'px ' + y + 'px ' + blur + 'px;' : '';
                 return cssVal ? [ '-webkit-box-shadow: ' + cssVal, '-moz-box-shadow: ' + cssVal, 'box-shadow: ' + cssVal ] : [];
             }
 
             function getGradientCss() {
-                var info = controls.gradient,
-                    on = info.toggle.is(':checked'),
-                    color1 = info.color1.val(),
-                    color2 = info.color2.val(),
+                var on = $( '#gradientToggle' ).is(':checked'),
+                    color1 = $( '#gradientColor1' ).val(),
+                    color2 = $( '#gradientColor2' ).val(),
                     css = [ 'background: ' + color1 + ';' ];
                 if( on ) {
                     css.push( 'background: -webkit-gradient(linear, 0 0, 0 bottom, from(' + color1 + '), to(' + color2 + '));' );
                     css.push( 'background: -moz-linear-gradient(' + color1 + ', ' + color2 + ');' );
-                    if( controls.pie.on.is(':checked') ) {
+                    if( $( '#pieToggle' ).is(':checked') ) {
                         css.push( '-pie-background: linear-gradient(' + color1 + ', ' + color2 + ');' );
                     }
                 }
@@ -161,7 +131,7 @@
                 var tgtEl = $( '#target' )[0],
                     css = [ 'border: 1px solid #696;', 'padding: 60px 0;', 'text-align: center; width: 200px;' ].concat( getBorderRadiusCss() ).concat( getBoxShadowCss() ).concat( getGradientCss() );
 
-                if( controls.pie.on.is(':checked') ) {
+                if( $( '#pieToggle' ).is(':checked') ) {
                     css.push( 'behavior: url(' + behaviorUrl + ');' );
                 }
                 $( '#output' ).html( css.join( '<br>' ) );
@@ -169,7 +139,7 @@
                 tgtEl.style.cssText = css.join( '' );
 
                 if( tgtEl.addBehavior ) {
-                    if( controls.pie.on.is(':checked') ) {
+                    if( $( '#pieToggle' ).is(':checked') ) {
                         if( !behaviorId ) {
                             behaviorId = tgtEl.addBehavior( behaviorUrl );
                         }
