@@ -11,9 +11,18 @@ PIE.VisibilityStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     },
 
     parseCss: function() {
-        var cs = this.element.currentStyle;
+        var el = this.element,
+            rs = el.runtimeStyle,
+            cs = el.currentStyle,
+            rsVis = rs.visibility,
+            csVis;
+
+        rs.visibility = '';
+        csVis = cs.visibility;
+        rs.visibility = rsVis;
+
         return {
-            visible: cs.visibility !== 'hidden',
+            visible: csVis !== 'hidden',
             displayed: cs.display !== 'none'
         }
     },
