@@ -45,7 +45,7 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             c[ ltr ] = new PIE.Color( color );
 
             width = w[ ltr ] = new PIE.Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ width ] || width ) );
-            if( s[ ltr ] !== 'none' || width.pixels( this.element ) > 0 ) {
+            if( width.pixels( this.element ) > 0 ) {
                 active = true;
             }
         }
