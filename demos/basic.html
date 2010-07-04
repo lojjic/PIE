@@ -51,7 +51,6 @@
             border: 1px solid #CCC;
             padding: 3px 10px 5px;
             margin: 0 0 10px;
-            overflow: hidden;
         }
 
         #controls fieldset legend {
@@ -61,6 +60,7 @@
 
         #controls fieldset fieldset {
             margin: 0 0 5px;
+            padding-left: 5px;
             line-height: 25px;
         }
 
@@ -77,6 +77,16 @@
         #controls .details {
             float: right;
         }
+        #controls .details label {
+            margin-left: 2px;
+        }
+
+        .colorPicker {
+            position: absolute;
+            margin-top: 20px;
+            border: 1px solid #CCC;
+            background: #FFF;
+        }
 
         #output {
             display: block;
@@ -88,7 +98,9 @@
         }
     </style>
 
+    <link href="farbtastic/farbtastic.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="farbtastic/farbtastic.min.js"></script>
 
     <script type="text/javascript">
         $( function() {
@@ -177,6 +189,30 @@
             $( '#controls .toggle > input' ).change( updateDetailsVis );
             $( '#codeToggle' ).change( updateCodeVis );
 
+            $( '#controls input.color' ).each( function() {
+                var inp = $( this ),
+                    picker = $( '<div class="colorPicker"/>' ),
+                    farb = $.farbtastic( picker, function( c ) {
+                        if( c ) {
+                            inp[0].value = c.toUpperCase();
+                            inp.change();
+                        }
+                    } );
+
+                inp.focus( function() {
+                    farb.setColor( this.value );
+                    picker.css( inp.position() ).fadeIn();
+                    $( document ).bind( 'mousedown', function handler() {
+                        picker.fadeOut();
+                        $( this ).unbind( 'mousedown', handler )
+                    } );
+                } );
+
+                picker.insertAfter( inp ).hide().mousedown( function( e ) {
+                    e.stopPropagation();
+                } );
+            } );
+
             updateCss();
             updateDetailsVis();
             updateCodeVis();
@@ -251,11 +287,11 @@
                     <div class="details">
                         <label for="gradientColor1">Top color:</label>
                         <!--<input type="color" id="gradientColor1" value="#99FF99" size="7" />-->
-                        <input type="text" id="gradientColor1" value="#99FF99" size="7" />
+                        <input type="text" class="color" id="gradientColor1" value="#99FF99" size="7" />
 
                         <label for="gradientColor2">Bottom color:</label>
                         <!--<input type="color" id="gradientColor2" value="#339933" size="7" />-->
-                        <input type="text" id="gradientColor2" value="#339933" size="7" />
+                        <input type="text" class="color" id="gradientColor2" value="#339933" size="7" />
                     </div>
                 </fieldset>
             </fieldset>
