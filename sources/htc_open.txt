@@ -1,5 +1,6 @@
 <!--
-PIE: CSS3 for IE
+PIE: CSS3 rendering for IE
+Version $Version$
 http://css3pie.com
 Licensed for use under the Apache License, Version 2.0
 -->

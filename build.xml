@@ -2,6 +2,7 @@
 
 <project name="PIE" default="build" basedir=".">
 
+    <property name="version" value="1.0beta1" />
     <property name="build_dir" value="./build" />
     <property name="src_dir" value="./sources" />
 
@@ -42,6 +43,8 @@
             <fileset file="${build_dir}/script_uncompressed.js" />
             <fileset file="${src_dir}/htc_close.txt" />
         </concat>
+
+        <replace file="${build_dir}/PIE_uncompressed.htc" token="$Version$" value="${version}"/>
     </target>
 
     <target name="build-compressed" depends="build-uncompressed">
@@ -67,6 +70,8 @@
             <fileset file="${build_dir}/script_compressed.js" />
             <fileset file="${src_dir}/htc_close.txt" />
         </concat>
+
+        <replace file="${build_dir}/PIE.htc" token="$Version$" value="${version}"/>
 
         <delete file="${build_dir}/temp.js" />
         <delete file="${build_dir}/script_uncompressed.js" />
