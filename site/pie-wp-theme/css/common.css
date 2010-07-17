@@ -43,6 +43,7 @@ h1, h2 {
     font-weight: normal;
     color: #666;
     line-height: normal;
+    position: relative; /*for IE6*/
 }
 h1 {
     font-size: 2.3em;
@@ -61,8 +62,13 @@ pre {
     background: #EEE;
     display: block;
     border: 1px solid #CCC;
-    padding: .5em 1em;
+    padding: 10px 12px;
+}
+pre.long {
+    padding-bottom: 20px;
     overflow: auto;
+    overflow-y: hidden;
+    width: 584px;
 }
 
 
@@ -204,11 +210,21 @@ nav#mainNav .outbound {
     padding-left: 30px;
     font-weight: normal;
 }
-#mainNav .outbound:hover,
-#mainNav .outbound.pie_hover {
+#mainNav .outbound:hover {
     -webkit-box-shadow: #444 0 0 10px;
     -moz-box-shadow: #444 0 0 10px;
     box-shadow: #444 0 0 10px;
+}
+
+#mainNav .outbound .version {
+    color: #999999;
+    position: absolute;
+    left: 12px;
+    top: 6px;
+    font-size: 11px;
+    line-height: normal;
+    text-align: left;
+    width: 5em;
 }
 
 #mainNav p {
@@ -250,24 +266,33 @@ nav#mainNav .outbound {
 /*
  * Blog posts
  */
+article.post {
+    margin: 0 0 2em;
+}
 article.post footer {
     background: #F6F6F6;
     color: #999;
     padding: .75em 1em;
+    text-align: right;
+    line-height: normal;
 }
 article.post footer p {
-    margin: 0 0 .5em;
+    margin: 0;
+    float: left;
 }
 article.post footer a {
-    margin: 0 1em 0 0;
+    margin: 0 0 0 1em;
 }
 
+.pagination,
 .pagination_single {
     overflow: hidden;
 }
+.pagination .previous,
 .pagination_single .previous {
     float: left;
 }
+.pagination .next,
 .pagination_single .next {
     float: right;
 }
@@ -285,6 +310,29 @@ section#comments {
 section#comments h2 {
     font-size: 1.5em;
     margin: .5em 0;
+}
+section#comments ol {
+    margin: 2em 0;
+    padding: 0;
+    border-top: 1px solid #CCC;
+}
+section#comments .li-comment {
+    display: block;
+    list-style: none;
+    border-bottom: 1px solid #CCC;
+    margin: 0;
+    padding: 1em 0;
+}
+section#comments .avatar {
+    float: left;
+    margin: 0 1em 1em 0;
+}
+section#comments .meta {
+    clear: both;
+    text-align: right;
+    font-style: italic;
+    color: #666;
+    margin: 1em 0 0;
 }
 
 

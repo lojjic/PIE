@@ -24,27 +24,30 @@ extract($data); // for comment reply link
 
 ?>
 <div id="comment-<?php comment_ID(); ?>">
-<?php if ($comment->comment_approved == '0') {
-	_e('Your comment is awaiting moderation.', 'carrington-jam');
-}
+    <?php if ($comment->comment_approved == '0') {
+        _e('Your comment is awaiting moderation.', 'carrington-jam');
+    }
 
-if (function_exists('get_avatar')) { 
-	echo get_avatar($comment, 54);
-}
+    if (function_exists('get_avatar')) {
+        echo get_avatar($comment, 54);
+    }
 
-comment_author_link();
+    comment_author_link();
 
-comment_text();
+    comment_text();
+    ?>
 
-comment_date();
+    <p class="meta">
+        <?php
+        comment_date();
 
-echo '<a href="'.htmlspecialchars(get_comment_link( $comment->comment_ID )).'">', comment_time(), '</a>';
+        echo ' <a href="'.htmlspecialchars(get_comment_link( $comment->comment_ID )).'">', comment_time(), '</a> ';
 
-if (function_exists('comment_reply_link')) {
-	comment_reply_link(array_merge( $args, array('depth' => $depth, 'max_depth' => $args['max_depth'])), $comment, $post);
-}
+        if (function_exists('comment_reply_link')) {
+            comment_reply_link(array_merge( $args, array('depth' => $depth, 'max_depth' => $args['max_depth'])), $comment, $post);
+        }
 
-edit_comment_link(__('Edit This', 'carrington-jam'), '', '');
-
-?>
+        edit_comment_link(__('Edit This', 'carrington-jam'), '', '');
+        ?>
+    </p>
 </div>
