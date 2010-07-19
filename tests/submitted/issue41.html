@@ -5,152 +5,160 @@
 <title>Unbenanntes Dokument</title>
 <style>
 div.box {
-	position:relative;
-	float:left;
-	width:220px;	
-	height:240px;
-	margin:5px;
-	padding:0;
+    position:relative;
+    float:left;
+    width:220px;    
+    height:240px;
+    margin:5px;
+    padding:0;
 }
 div.drmbox {
-	background-color:white;
-	border:1px solid silver;
-	-moz-border-radius: 4px; /* Firefox */
-	-webkit-border-radius: 4px; /* Safari and Chrome */
-	border-radius: 4px; /* Opera 10.5+, future browsers, and now also Internet Explorer 6+ using IE-CSS3 */
-	-moz-box-shadow: 4px 4px 4px #CCCCCC; /* Firefox */
-	-webkit-box-shadow: 4px 4px 4px #CCCCCC; /* Safari and Chrome */
-	box-shadow: 4px 4px 4px #CCCCCC; /* Opera 10.5+, future browsers and IE6+ using IE-CSS3 */
-	behavior: url(../../build/PIE.htc); /* This lets IE know to call the script on all elements which get the 'box' class */
+    background-color:white;
+    border:1px solid silver;
+    -moz-border-radius: 4px; /* Firefox */
+    -webkit-border-radius: 4px; /* Safari and Chrome */
+    border-radius: 4px; /* Opera 10.5+, future browsers, and now also Internet Explorer 6+ using IE-CSS3 */
+    -moz-box-shadow: 4px 4px 4px #CCCCCC; /* Firefox */
+    -webkit-box-shadow: 4px 4px 4px #CCCCCC; /* Safari and Chrome */
+    box-shadow: 4px 4px 4px #CCCCCC; /* Opera 10.5+, future browsers and IE6+ using IE-CSS3 */
+    behavior: url(../../build/PIE.htc); /* This lets IE know to call the script on all elements which get the 'box' class */
 }
 
 
 .con {
-	display:none;
-	clear:left;
+    display:none;
+    clear:left;
 }
 
 #con_1 .box {
-	background-color:green;
+    background-color:green;
 }
 #con_2 .box {
-	background-color:yellow;
+    background-color:yellow;
 }
 #con_3 .box {
-	background-color:blue;
+    background-color:blue;
 }
 #con_4 .box {
-	background-color:silver;
+    background-color:silver;
 }
 
 ul li {
-	float:left;
-	list-style:none;
-	padding: 3px 6px;
-	border: 1px solid silver;
-	cursor:pointer;
+    float:left;
+    list-style:none;
+    padding: 3px 6px;
+    border: 1px solid silver;
+    cursor:pointer;
 }
 
 ul li.active {
-	background-color:#DDDDDD;
-	float:left;
-	list-style:none;
-	padding: 3px 6px;
-	border: 1px solid silver;
-	cursor:pointer;
+    background-color:#DDDDDD;
+    float:left;
+    list-style:none;
+    padding: 3px 6px;
+    border: 1px solid silver;
+    cursor:pointer;
 }
 </style>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script type="text/javascript">
-	$(document).ready (function () {
-		$('.caller').each (function () {
-			$(this).bind ('click, mouseover', function () {
-				$('.caller').removeClass('active');				
-				$(this).addClass('active');			
-			});	
-		});
-		$('#caller_con_1').bind ('click', function () {	
-			$('.con').css ('display', 'none');
-			$('#con_1').css ('display', 'block');
-		});
-		$('#caller_con_2').bind ('click', function () {
-			$('.con').css ('display', 'none');
-			$('#con_2').css ('display', 'block');
-		});
-		$('#caller_con_3').bind ('click', function () {	
-			$('.con').css ('display', 'none');
-			$('#con_3').css ('display', 'block');
-		});
-		$('#caller_con_4').bind ('click', function () {	
-			$('.con').css ('display', 'none');
-			$('#con_4').css ('display', 'block');
-		});
-	});
+    $(document).ready (function () {
+        function refresh(cont) {
+            //workaround: if($.browser.msie) $( cont + ' .box').each( function() { this.fireEvent('onmove') } );
+        }
+
+        $('.caller').each (function () {
+            $(this).bind ('click, mouseover', function () {
+                $('.caller').removeClass('active');
+                $(this).addClass('active');
+            });
+        });
+        $('#caller_con_1').bind ('click', function () {
+            $('.con').css ('display', 'none');
+            $('#con_1').css ('display', 'block');
+            refresh('#con_1');
+        });
+        $('#caller_con_2').bind ('click', function () {
+            $('.con').css ('display', 'none');
+            $('#con_2').css ('display', 'block');
+            refresh('#con_2');
+        });
+        $('#caller_con_3').bind ('click', function () {
+            $('.con').css ('display', 'none');
+            $('#con_3').css ('display', 'block');
+            refresh('#con_3');
+        });
+        $('#caller_con_4').bind ('click', function () {
+            $('.con').css ('display', 'none');
+            $('#con_4').css ('display', 'block');
+            refresh('#con_4');
+        });
+    });
 </script>
 
 </head>
 <body>
 <ul>
-	<li id="caller_con_1" class="caller">Show container 1</li>
-	<li id="caller_con_2" class="caller">Show container 2</li>
-	<li id="caller_con_3" class="caller">Show container 3</li>
-	<li id="caller_con_4" class="caller">Show container 4</li>
-	<div style="clear:left;"></div>
+    <li id="caller_con_1" class="caller">Show container 1</li>
+    <li id="caller_con_2" class="caller">Show container 2</li>
+    <li id="caller_con_3" class="caller">Show container 3</li>
+    <li id="caller_con_4" class="caller">Show container 4</li>
+    <div style="clear:left;"></div>
 </ul>
 
-	<div id="con_1" class="con">
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-	</div>
-	<div id="con_2" class="con">
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-	</div>
-	<div id="con_3" class="con">
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-	</div>
-	<div id="con_4" class="con">
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-		<div class="box drmbox">hello world</div>
-	</div>
+    <div id="con_1" class="con">
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+    </div>
+    <div id="con_2" class="con">
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+    </div>
+    <div id="con_3" class="con">
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+    </div>
+    <div id="con_4" class="con">
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+        <div class="box drmbox">hello world</div>
+    </div>
 
 </body>
 </html>
