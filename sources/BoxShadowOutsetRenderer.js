@@ -24,55 +24,72 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
         if( this.isActive() ) {
             var el = this.element,
                 shadowInfos = this.styleInfos.boxShadowInfo.getProps().outset,
-                i = shadowInfos.length,
+                i = shadowInfos.length, j,
                 w = el.offsetWidth,
                 h = el.offsetHeight,
-                shadowInfo, shape, ss, xOff, yOff, spread, blur, shrink, halfBlur, filter, alpha;
+                corners = [ 'tl', 'tr', 'br', 'bl' ], corner,
+                shadowInfo, radii, shape, fill, ss, xOff, yOff, spread, blur, shrink, alpha,
+                gradientLength, focusX, focusY;
 
             while( i-- ) {
                 shadowInfo = shadowInfos[ i ];
 
                 shape = this.getShape( 'shadow' + i, 'fill', this.getBox() );
                 ss = shape.style;
+                fill = shape.fill;
 
                 xOff = shadowInfo.xOffset.pixels( el );
                 yOff = shadowInfo.yOffset.pixels( el );
                 spread = shadowInfo.spread.pixels( el ),
                 blur = shadowInfo.blur.pixels( el );
 
-                // Adjust the blur value so it's always an even number
-                halfBlur = Math.ceil( blur / 2 );
-                blur = halfBlur * 2;
-
-                // Apply blur filter to the shape. Applying the blur filter twice with
-                // half the pixel value gives a shadow nearly identical to other browsers.
-                if( blur > 0 ) {
-                    filter = 'progid:DXImageTransform.Microsoft.blur(pixelRadius=' + halfBlur + ')';
-                    ss.filter = filter + ' ' + filter;
-                }
-
                 // Position and size
-                ss.left = xOff - blur;
-                ss.top = yOff - blur;
+                ss.left = xOff;
+                ss.top = yOff;
                 ss.width = w;
                 ss.height = h;
+                shape.coordsize = w * 2 + ',' + h * 2;
+                //shape.coordorigin = '1,1';
 
                 // Color and opacity
                 shape.stroked = false;
                 shape.filled = true;
-                shape.fillcolor = shadowInfo.color.value( el );
-
+                fill.color = shadowInfo.color.value( el );
                 alpha = shadowInfo.color.alpha();
                 if( alpha < 1 ) {
-                    shape.fill.opacity = alpha;
+                    ss.filter = 'alpha(opacity=' + ( alpha * 100 ) + ')';
                 }
 
-                // Blurred shadows end up slightly too wide; shrink them down
-                shrink = blur > 0 ? 4 : 0,
-                shape.coordsize = ( w * 2 + shrink ) + ',' + ( h * 2 + shrink );
+                if( blur ) {
+                    fill['type'] = 'gradienttitle'; //makes the VML gradient follow the shape's outline - hooray for undocumented features?!?!
+                    fill['color2'] = fill.color;
+                    fill['opacity'] = 0;
 
-                shape.coordorigin = '1,1';
-                shape.path = this.getBoxPath( spread ? { t: -spread, r: -spread, b: -spread, l: -spread } : 0, 2 );
+                    gradientLength = blur * 2;
+                    var diff = Math.max( gradientLength - w / 2, gradientLength - h / 2 );
+                    if( diff > 0 ) {
+                        gradientLength -= diff;
+                    }
+
+                    focusX = gradientLength / ( w + spread + blur );
+                    focusY = gradientLength / ( h + spread + blur );
+                    fill['focusposition'] = focusX + ',' + focusY;
+                    fill['focussize'] = ( 1 - focusX * 2 ) + ',' + ( 1 - focusY * 2 );
+
+                    // Modify square corners to round them slightly if blurred
+                    radii = this.styleInfos.borderRadiusInfo.getProps();
+                    if( !radii ) {
+                        radii = { x: {}, y: {} };
+                        for( j = 4; j--; ) {
+                            corner = corners[j];
+                            radii.x[ corner ] = radii.y[ corner ] = PIE.Length.ZERO;
+                        }
+                    }
+                }
+
+                // Shape path
+                shrink = -spread - blur;
+                shape.path = this.getBoxPath( { t: shrink, r: shrink, b: shrink, l: shrink }, 2, radii );
             }
         } else {
             this.destroy();

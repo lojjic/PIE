@@ -200,9 +200,11 @@ PIE.RendererBase = {
      * @param {Object.<{t:number, r:number, b:number, l:number}>} shrink - if present, specifies number of
      *        pixels to shrink the box path inward from the element's four sides.
      * @param {number=} mult If specified, all coordinates will be multiplied by this number
+     * @param {Object=} radii If specified, this will be used for the corner radii instead of the properties
+     *        from this renderer's borderRadiusInfo object.
      * @return {string} the VML path
      */
-    getBoxPath: function( shrink, mult ) {
+    getBoxPath: function( shrink, mult, radii ) {
         mult = mult || 1;
 
         var r, str,
@@ -217,8 +219,8 @@ PIE.RendererBase = {
             shrinkL = shrink ? shrink.l * mult : 0,
             tlX, tlY, trX, trY, brX, brY, blX, blY;
 
-        if( radInfo.isActive() ) {
-            r = this.getRadiiPixels( radInfo.getProps() );
+        if( radii || radInfo.isActive() ) {
+            r = this.getRadiiPixels( radii || radInfo.getProps() );
 
             tlX = r.x['tl'] * mult;
             tlY = r.y['tl'] * mult;
