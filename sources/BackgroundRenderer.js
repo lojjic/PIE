@@ -16,11 +16,13 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
     },
 
     isActive: function() {
-        var si = this.styleInfos;
-        return si.borderImageInfo.isActive() ||
+        var si = this.styleInfos,
+            el = this.element;
+        return el.offsetWidth && el.offsetHeight && (
+               si.borderImageInfo.isActive() ||
                si.borderRadiusInfo.isActive() ||
                si.backgroundInfo.isActive() ||
-               ( si.boxShadowInfo.isActive() && si.boxShadowInfo.getProps().inset );
+               ( si.boxShadowInfo.isActive() && si.boxShadowInfo.getProps().inset ) );
     },
 
     updateSize: function() {
