@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>css3pie testcase</title>
+        <style type="text/css">
+            html, body {
+                background: white;
+                font-family: sans-serif;
+                margin: 10px;
+            }
+
+            fieldset {
+                padding: 10px 20px 20px;
+                margin: 20px;
+                border: solid 1px #ccc;
+            }
+
+            legend {
+                padding: 0 10px;
+                background: white;
+                margin: 0 0 15px 0;
+            }
+
+            #myDiv {
+                margin: 20px 0;
+                width: 400px;
+                height: 300px;
+                color: white;
+            }
+
+            div.test {
+                padding: 2em;
+                margin: 2em 0;
+                border: 1px solid #CCC;
+            }
+
+            input[type="submit"], button, a.link-button {
+                vertical-align: middle;
+                color: white;
+                position: relative;
+                font-weight: bold;
+                text-decoration: none !important;
+                margin: 0 1em 0 0;
+                border: 1px solid red;
+                padding: 15px 30px;
+                overflow: visible;
+                font-size: 18px;
+                text-align: center;
+                -webkit-border-radius: 8px;
+                -moz-border-radius: 8px;
+                border-radius: 8px;
+                -webkit-box-shadow: #666 0px 2px 3px;
+                -moz-box-shadow: #666 0px 2px 3px;
+                box-shadow: #666 0px 2px 3px;
+                background: #FDECEF;
+                background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FDECEF), to(#8E1A2F));
+                background: -moz-linear-gradient(#FDECEF, #8E1A2F);
+                -pie-background: linear-gradient(#FDECEF, #8E1A2F);
+                behavior: url(../../build/PIE.htc);
+            }
+
+            input[type="submit"].pie_hover, button.pie_hover, a.link-button.pie_hover,
+            .ui-button.ui-state-hover {
+                border-color: green;
+                background: #B6F4AE;
+                background: -webkit-gradient(linear, 0 0, 0 bottom, from(#B6F4AE), to(#11461E));
+                background: -moz-linear-gradient(#B6F4AE, #11461E);
+                -pie-background: linear-gradient(#B6F4AE, #11461E);
+            }
+
+            .ui-button.ui-state-active, .ui-button.pie_hover.ui-state-active {
+                border-color: blue;
+                background: #CBD2FB;
+                background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CBD2FB), to(#04128B));
+                background: -moz-linear-gradient(#CBD2FB, #04128B);
+                -pie-background: linear-gradient(#CBD2FB, #04128B);
+            }
+
+            .ui-button:active, .ui-button:focus, a.ui-button:active, a.ui-button:focus  {
+                outline: 0;
+            }
+
+            /* For removing gecko's focus styles. Handle focus styles via jQuery ui's focus classes. */
+            button::-moz-focus-inner,
+            input[type="reset"]::-moz-focus-inner,
+            input[type="button"]::-moz-focus-inner,
+            input[type="submit"]::-moz-focus-inner,
+            input[type="file"] > input[type="button"]::-moz-focus-inner {
+                border: 0;
+            }
+
+
+
+            #test2 {
+                display: block;
+                width: 162px;
+                padding: 85px 10px 8px 10px;
+                background: url(../border.png) no-repeat;
+                border: 1px #D5E5F2 solid;
+                border-radius: 20px 0;
+                -webkit-border-radius: 20px 0;
+                -moz-border-radius: 20px 0;
+                behavior: url(../../build/PIE.htc);
+                position: relative;
+            }
+        </style>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js"></script>
+        <script type="text/javascript">
+
+            $(document).ready(function() {
+
+                $('input[type="submit"], button, a.link-button').button();
+
+            });
+        </script>
+    </head>
+    <body>
+        <div class="test">
+            <p>This tests that the entire area, not just the text, reacts to hover.</p>
+            <input type="submit" name="previous" value="Input [type=submit]">
+
+            <button name="media-play-pause">Button Element</button>
+            <a class="link-button" href="#">Anchor [class=link-button]</a>
+        </div>
+        
+        <div class="test">
+            <p>This tests that the entire area of the link is clickable.</p>
+            <a href="#" id="test2">
+                Landscape model
+            </a>
+        </div>
+    </body>
+
+</html>

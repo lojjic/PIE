@@ -368,7 +368,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
      */
     hideBackground: function() {
         var rs = this.element.runtimeStyle;
-        rs.backgroundImage = 'none';
+        rs.backgroundImage = 'url(about:blank)'; //ensures the background area reacts to mouse events
         rs.backgroundColor = 'transparent';
     },
 
