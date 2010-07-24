@@ -148,7 +148,9 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 bgPos = bg.position ? bg.position.coords( el, elW - size.w - bwL - bwR, elH - size.h - bwT - bwB ) : { x:0, y:0 },
                 repeat = bg.repeat,
                 pxX, pxY,
-                clipT = 0, clipR = elW, clipB = elH, clipL = 0;
+                clipT = 0, clipL = 0,
+                clipR = elW + 1, clipB = elH + 1, //make sure the default clip region is not inside the box (by a subpixel)
+                clipAdjust = PIE.isIE8 ? 0 : 1; //prior to IE8 requires 1 extra pixel in the image clip region
 
             // Positioning - find the pixel offset from the top/left and convert to a ratio
             // The position is shifted by half a pixel, to adjust for the half-pixel coordorigin shift which is
@@ -161,11 +163,11 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             if( repeat && repeat !== 'repeat' ) {
                 if( repeat === 'repeat-x' || repeat === 'no-repeat' ) {
                     clipT = pxY + 1;
-                    clipB = pxY + size.h + 1;
+                    clipB = pxY + size.h + clipAdjust;
                 }
                 if( repeat === 'repeat-y' || repeat === 'no-repeat' ) {
                     clipL = pxX + 1;
-                    clipR = pxX + size.w + 1;
+                    clipR = pxX + size.w + clipAdjust;
                 }
                 shape.style.clip = 'rect(' + clipT + 'px,' + clipR + 'px,' + clipB + 'px,' + clipL + 'px)';
             }
