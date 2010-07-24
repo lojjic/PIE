@@ -3,6 +3,8 @@
  * @constructor
  * @param {Element} el the target element
  */
+(function() {
+
 PIE.BorderRadiusStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 
     cssProperty: 'border-radius',
@@ -62,3 +64,9 @@ PIE.BorderRadiusStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         return p;
     }
 } );
+
+var ZERO = PIE.Length.ZERO,
+    zeros = { 'tl': ZERO, 'tr': ZERO, 'br': ZERO, 'bl': ZERO };
+PIE.BorderRadiusStyleInfo.ALL_ZERO = { x: zeros, y: zeros };
+
+})();

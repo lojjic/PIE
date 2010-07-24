@@ -15,3 +15,6 @@ if( !PIE ) {
         PIE.CSS_PREFIX = PIE.CSS_PREFIX.replace( /^-/, '' );
     }
 
+    // Detect IE8
+    PIE.isIE8 = !!element.document.documentMode;
+
