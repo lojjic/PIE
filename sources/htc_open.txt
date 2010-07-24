@@ -2,7 +2,7 @@
 PIE: CSS3 rendering for IE
 Version $Version$
 http://css3pie.com
-Licensed for use under the Apache License, Version 2.0
+Dual-licensed for use under the Apache License Version 2.0 or the General Public License (GPL) Version 2.
 -->
 <PUBLIC:COMPONENT lightWeight="true">
     <PUBLIC:ATTACH EVENT="onresize" FOR="element" ONEVENT="update()" />
