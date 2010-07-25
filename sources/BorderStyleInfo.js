@@ -16,40 +16,41 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         var w = {},
             s = {},
             c = {},
-            el = this.element,
-            cs = el.currentStyle,
-            rs = el.runtimeStyle,
-            rtColor = rs.borderColor,
-            i = 0,
             active = false,
-            colorsSame = true, stylesSame = true, widthsSame = true,
-            style, color, width, lastStyle, lastColor, lastWidth, side, ltr;
+            colorsSame = true,
+            stylesSame = true,
+            widthsSame = true;
 
-        rs.borderColor = '';
-        for( ; i < 4; i++ ) {
-            side = this.sides[ i ];
-            ltr = side.charAt(0).toLowerCase();
-            style = s[ ltr ] = cs[ 'border' + side + 'Style' ];
-            color = cs[ 'border' + side + 'Color' ];
-            width = cs[ 'border' + side + 'Width' ];
+        this.withActualBorder( function() {
+            var el = this.element,
+                cs = el.currentStyle,
+                i = 0,
+                style, color, width, lastStyle, lastColor, lastWidth, side, ltr;
+            for( ; i < 4; i++ ) {
+                side = this.sides[ i ];
 
-            if( i > 0 ) {
-                if( style !== lastStyle ) { stylesSame = false; }
-                if( color !== lastColor ) { colorsSame = false; }
-                if( width !== lastWidth ) { widthsSame = false; }
+                ltr = side.charAt(0).toLowerCase();
+                style = s[ ltr ] = cs[ 'border' + side + 'Style' ];
+                color = cs[ 'border' + side + 'Color' ];
+                width = cs[ 'border' + side + 'Width' ];
+
+                if( i > 0 ) {
+                    if( style !== lastStyle ) { stylesSame = false; }
+                    if( color !== lastColor ) { colorsSame = false; }
+                    if( width !== lastWidth ) { widthsSame = false; }
+                }
+                lastStyle = style;
+                lastColor = color;
+                lastWidth = width;
+
+                c[ ltr ] = new PIE.Color( color );
+
+                width = w[ ltr ] = new PIE.Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ width ] || width ) );
+                if( width.pixels( this.element ) > 0 ) {
+                    active = true;
+                }
             }
-            lastStyle = style;
-            lastColor = color;
-            lastWidth = width;
-
-            c[ ltr ] = new PIE.Color( color );
-
-            width = w[ ltr ] = new PIE.Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ width ] || width ) );
-            if( width.pixels( this.element ) > 0 ) {
-                active = true;
-            }
-        }
-        rs.borderColor = rtColor;
+        } );
 
         return active ? {
             widths: w,
@@ -64,14 +65,35 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     getCss: function() {
         var el = this.element,
             cs = el.currentStyle,
-            rs = el.runtimeStyle,
-            rtColor = rs.borderColor,
             css;
 
-        rs.borderColor = '';
-        css = cs.borderWidth + '|' + cs.borderStyle + '|' + cs.borderColor;
-        rs.borderColor = rtColor;
+        this.withActualBorder( function() {
+            css = cs.borderWidth + '|' + cs.borderStyle + '|' + cs.borderColor;
+        } );
         return css;
+    },
+
+    /**
+     * Execute a function with the actual border styles (not overridden with runtimeStyle
+     * properties set by the renderers) available via currentStyle.
+     * @param fn
+     */
+    withActualBorder: function( fn ) {
+        var rs = this.element.runtimeStyle,
+            rsWidth = rs.borderWidth,
+            rsStyle = rs.borderStyle,
+            rsColor = rs.borderColor,
+            ret;
+
+        rs.borderWidth = rs.borderStyle = rs.borderColor = '';
+
+        ret = fn.call( this );
+
+        rs.borderWidth = rsWidth;
+        rs.borderStyle = rsStyle;
+        rs.borderColor = rsColor;
+
+        return ret;
     }
 
 } );

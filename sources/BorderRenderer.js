@@ -82,12 +82,30 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
 
     /**
      * Hide the actual border of the element. In IE7 and up we can just set its color to transparent;
-     * however IE6 does not support transparent borders so we have to get tricky with it.
+     * however IE6 does not support transparent borders so we have to get tricky with it. Also, some elements
+     * like form buttons require removing the border width altogether, so for those we increase the padding
+     * by the border size.
      */
     hideBorder: function() {
         var el = this.element,
-            rs = el.runtimeStyle;
-        if( PIE.isIE6 ) {
+            cs = el.currentStyle,
+            rs = el.runtimeStyle,
+            tag = el.tagName,
+            sides, side, i;
+
+        if( tag === 'BUTTON' || ( tag === 'INPUT' && el.type in { 'submit':1, 'button':1, 'reset':1 } ) ) {
+            rs.borderWidth = '';
+            sides = this.styleInfos.borderInfo.sides;
+            for( i = sides.length; i--; ) {
+                side = sides[ i ];
+                rs[ 'padding' + side ] = '';
+                rs[ 'padding' + side ] = parseInt( cs[ 'padding' + side ] ) +
+                                         parseInt( cs[ 'border' + side + 'Width' ] ) +
+                                         ( !PIE.isIE8 && i % 2 ? 1 : 0 ); //needs an extra horizontal pixel to counteract the extra "inner border" going away
+            }
+            rs.borderWidth = 0;
+        }
+        else if( PIE.isIE6 ) {
             // Wrap all the element's children in a custom element, set the element to visiblity:hidden,
             // and set the wrapper element to visiblity:visible. This hides the outer element's decorations
             // (background and border) but displays all the contents.
@@ -106,7 +124,8 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                 el.appendChild( cont );
                 rs.visibility = 'hidden';
             }
-        } else {
+        }
+        else {
             rs.borderColor = 'transparent';
         }
     },
