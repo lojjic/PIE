@@ -61,12 +61,13 @@
             -webkit-border-radius: 5px;
             -moz-border-radius: 5px;
             border-radius: 5px;
-            border: 1px solid #AF9;
+            border: 1px solid #87C462;
             -webkit-box-shadow: #C0C0C0 3px 3px 6px;
             -moz-box-shadow: #C0C0C0 3px 3px 6px;
             box-shadow: #C0C0C0 3px 3px 6px;
         }
-        #test1 .button:hover {
+        #test1 .button:hover,
+        #test1 .button.pie_hover {
             border-width: 2px;
             padding: 11px;
         }
@@ -88,7 +89,8 @@
             -moz-box-shadow: #666 0 0 4px;
             box-shadow: #666 0 0 4px;
         }
-        #test2 .button:hover {
+        #test2 .button:hover,
+        #test2 .button.pie_hover {
             -webkit-box-shadow: #333 0 0 6px;
             -moz-box-shadow: #333 0 0 6px;
             box-shadow: #333 0 0 6px;
@@ -116,7 +118,8 @@
             -moz-box-shadow: 0 0 0 2px rgba(220, 220, 220, 0.25);
             box-shadow: 0 0 0 2px rgba(220, 220, 220, 0.25);
         }
-        #test3 .button:hover {
+        #test3 .button:hover,
+        #test3 .button.pie_hover {
             -webkit-box-shadow: 0 0 0 2px rgba(220, 220, 220, 0.75);
             -moz-box-shadow: 0 0 0 2px rgba(220, 220, 220, 0.75);
             box-shadow: 0 0 0 2px rgba(220, 220, 220, 0.75);
@@ -199,6 +202,44 @@
         }
 
 
+        #test6 .button {
+            float: left;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            -webkit-box-shadow: 0 1px 4px #CCC;
+            -moz-box-shadow: 0 1px 4px #CCC;
+            box-shadow: 0 1px 4px #CCC;
+            background: #E1E1E1;
+            background: -webkit-gradient(linear, 0 0, 0 100%, from(#FFF), to(#E1E1E1));
+            background: -moz-linear-gradient(#FFF, #E1E1E1);
+            background: linear-gradient(#FFF, #E1E1E1);
+            -pie-background: linear-gradient(#FFF, #E1E1E1);
+            border: 0;
+            border-bottom: 1px solid #EBEBEB;
+            color:#333333;
+            font-family:helvetica,arial,freesans,clean,sans-serif;
+            font-size:12px;
+            font-weight:bold;
+            height:34px;
+            line-height: 36px;
+            margin-left:10px;
+            overflow:visible;
+            padding:0 13px;
+            text-shadow:1px 1px 0 #FFFFFF;
+        }
+    #test6 .button:hover,
+    #test6 .button.pie_hover {
+        background: #0CA6DD;
+        background: -webkit-gradient(linear, 0 0, 0 100%, from(#0CA6DD), to(#0770A0));
+        background: -moz-linear-gradient(#0CA6DD, #0770A0);
+        background: linear-gradient(#0CA6DD, #0770A0);
+        -pie-background: linear-gradient(#0CA6DD, #0770A0);
+        border-bottom-color: #0770A0;
+        color:#FFFFFF;
+        text-shadow:-1px -1px 0 rgba(0, 0, 0, 0.3);
+    }
+
     </style>
 
 </head>
@@ -209,50 +250,66 @@
 
     <div class="section" id="test1">
         <h2>Ala mozilla.com</h2>
-        <a href="#" class="button">I'm as cute as a button</a>
-        <button class="button">I'm actually a button</button>
+        <a href="#" class="button">I'm a link, as cute as a button</a>
+        <button class="button">I'm actually a &lt;button/&gt;</button>
+        <input class="button" type="button" value="I'm an &lt;input/&gt; button" />
     </div>
 
     <div class="section" id="test2">
         <h2>Ala detelefoongids.nl</h2>
-        <a href="#" class="button">I'm as cute as a button</a>
-        <button class="button">I'm actually a button</button>
+        <a href="#" class="button">I'm a link, as cute as a button</a>
+        <button class="button">I'm actually a &lt;button/&gt;</button>
+        <input class="button" type="button" value="I'm an &lt;input/&gt; button" />
     </div>
 
     <div class="section" id="test3">
         <h2>Ala realestate.com.au</h2>
         <p class="style1">
-            <a href="#" class="button">I'm as cute as a button</a>
-            <button class="button">I'm actually a button</button>
+            <a href="#" class="button">I'm a link, as cute as a button</a>
+            <button class="button">I'm actually a &lt;button/&gt;</button>
+            <input class="button" type="button" value="I'm an &lt;input/&gt; button" />
         </p>
         <p class="style2">
-            <a href="#" class="button">I'm as cute as a button</a>
-            <button class="button">I'm actually a button</button>
+            <a href="#" class="button">I'm a link, as cute as a button</a>
+            <button class="button">I'm actually a &lt;button/&gt;</button>
+            <input class="button" type="button" value="I'm an &lt;input/&gt; button" />
         </p>
         <p class="style3">
-            <a href="#" class="button">I'm as cute as a button</a>
-            <button class="button">I'm actually a button</button>
+            <a href="#" class="button">I'm a link, as cute as a button</a>
+            <button class="button">I'm actually a &lt;button/&gt;</button>
+            <input class="button" type="button" value="I'm an &lt;input/&gt; button" />
         </p>
         <p class="style4">
-            <a href="#" class="button">I'm as cute as a button</a>
-            <button class="button">I'm actually a button</button>
+            <a href="#" class="button">I'm a link, as cute as a button</a>
+            <button class="button">I'm actually a &lt;button/&gt;</button>
+            <input class="button" type="button" value="I'm an &lt;input/&gt; button" />
         </p>
         <p class="style5">
-            <a href="#" class="button">I'm as cute as a button</a>
-            <button class="button">I'm actually a button</button>
+            <a href="#" class="button">I'm a link, as cute as a button</a>
+            <button class="button">I'm actually a &lt;button/&gt;</button>
+            <input class="button" type="button" value="I'm an &lt;input/&gt; button" />
         </p>
     </div>
 
     <div class="section" id="test4">
         <h2>Ala itunes.com</h2>
-        <a href="#" class="button">I'm as cute as a button</a>
-        <button class="button">I'm actually a button</button>
+        <a href="#" class="button">I'm a link, as cute as a button</a>
+        <button class="button">I'm actually a &lt;button/&gt;</button>
+        <input class="button" type="button" value="I'm an &lt;input/&gt; button" />
     </div>
 
     <div class="section" id="test5">
         <h2>iPhone back button  (<a href="http://groupaware.mobi/iphone/#_Samples">source</a>)</h2>
-        <a href="#" class="button">I'm as cute as a button</a>
-        <button class="button">I'm actually a button</button>
+        <a href="#" class="button">I'm a link, as cute as a button</a>
+        <button class="button">I'm actually a &lt;button/&gt;</button>
+        <input class="button" type="button" value="I'm an &lt;input/&gt; button" />
+    </div>
+
+    <div class="section" id="test6">
+        <h2>Ala GitHub.com</h2>
+        <a href="#" class="button">I'm a link, as cute as a button</a>
+        <button class="button">I'm actually a &lt;button/&gt;</button>
+        <input class="button" type="button" value="I'm an &lt;input/&gt; button" />
     </div>
 
 
