@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                background: #ddd;
+                font-family: sans-serif;
+                font-size: 12px;
+            }
+            #side {
+                width: 200px;
+                float: left;
+                color: #999;
+            }
+            #side dt {
+                top: 4px;
+                margin: 30px 20px 0 0;
+                font-size: 20px;
+                line-height: 30px;
+                text-align: center;
+                color: #f70;
+            }
+            #side dt a {
+                border-color: #f70;
+                color: #f70;
+            }
+            #side dd {
+                margin: 20px 20px 20px 0;
+            }
+            #side p {
+                margin: 20px 0;
+                text-align: justify;
+            }
+            #side a {
+                color: #69c;
+                border-color: #69c;
+            }
+            #side a:hover {
+                color: #06f;
+                border-color: #06f;
+            }
+            #nav {
+                z-index: 100;
+                margin: 40px 0px 0px 0px;
+                width: 120px;
+                float: left;
+                list-style: none;
+            }
+            #nav li {
+                position: relative;
+                padding: 0 0 0 1em;
+            }
+            #nav a {
+                color: #888;
+                border-color: transparent;
+            }
+            #nav a:hover, #nav .active a {
+                color: #06f;
+            }
+            #nav .active {
+                margin: 10px 0px;
+                line-height: 40px;
+                font-weight: bold;
+                background: #fff;
+                border-radius: 20px 0px 0px 20px;
+                -moz-border-radius: 20px 0px 0px 20px;
+                -webkit-border-top-left-radius: 20px;
+                -webkit-border-bottom-left-radius: 20px;
+                box-shadow: -2px 1px 2px rgba(0,0,0,0.33);
+                -moz-box-shadow: -2px 1px 2px rgba(0,0,0,0.33);
+                -webkit-box-shadow: -2px 1px 2px rgba(0,0,0,0.33);
+                behavior: url(../../build/PIE.htc);
+            }
+            #search {
+                position: relative;
+                display: block;
+                width: 180px;
+                height: 18px;
+                margin: 0 5%;
+                border: 1px solid #999;
+                background: #fff;
+                border-radius: 9px;
+                -moz-border-radius: 9px;
+                -webkit-border-radius: 9px;
+                box-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+                -moz-box-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+                -webkit-box-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+                behavior: url(../../build/PIE.htc);
+            }
+            #search .terms {
+                display: block;
+                float: left;
+                width: 144px;
+                height: 18px;
+                margin: 0 2px 0 5px;
+                border: 0;
+                background: transparent;
+            }
+            #search .submit {
+                width: 18px;
+                height: 18px;
+                border: 0;
+            }
+        </style>
+        <title>the cake is a pie</title>
+    </head>
+    <body>
+        <ul id="nav">
+            <li class="active"><a href="/">home / all posts</a></li>
+            <li><a href="/page/tags/">categories &amp; tags</a></li>
+            <li><a href="/page/popular/">what's hot &amp; not</a></li>
+            <li><a href="/page/about/">about hb stone</a></li>
+            <li><a href="/page/blogroll/">stuff hb likes</a></li>
+        </ul>
+        <dl id="side">
+            <dt>search blog</dt>
+            <dd>
+                <form action="/" method="get">
+                    <label id="search"><input name="search" class="terms" type="text"><input type="image" class="submit" src="/img/new-search.png" alt="blog search"></label>
+                </form>
+            </dd>
+        </dl>
+    </body>
+</html>
