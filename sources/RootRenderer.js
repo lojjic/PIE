@@ -53,14 +53,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
     },
 
     updateSize: function() {
-        if( this.isActive() ) {
-            var el = this.element,
-                s = this.getBox().style,
-                i, len;
-
-            s.width = el.offsetWidth;
-            s.height = el.offsetHeight;
-        }
+        // NO-OP
     },
 
     updateVisibility: function() {
