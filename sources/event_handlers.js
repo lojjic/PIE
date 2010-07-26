@@ -177,12 +177,10 @@ function init() {
 
         // Add property change listeners to ancestors if requested
         initAncestorPropChangeListeners();
-
-        update();
     }
 }
 
 
 if( element.readyState === 'complete' ) {
-    init();
+    update();
 }
