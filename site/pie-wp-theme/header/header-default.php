@@ -75,7 +75,8 @@ if (CFCT_DEBUG) { cfct_banner(__FILE__); }
 
         <p class="tagline">Progressive Internet Explorer</p>
 
-        <nav id="mainNav">
+        <!--[if IE 8]><nav id="mainNav" class="ie8"><![endif]-->
+        <![if lt IE 8]><nav id="mainNav"><![endif]>
             <?php wp_nav_menu( array('menu' => 'Main Menu', 'container' => null )); ?>
 
             <p><a class="outbound" href="http://github.com/lojjic/PIE/downloads"><strong>Download</strong> <span class="version">Version 1.0beta1</span></a></p>

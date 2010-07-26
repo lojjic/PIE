@@ -86,6 +86,9 @@ pre.long {
     -webkit-box-shadow: #999 0 0 12px;
     -moz-box-shadow: #999 0 0 12px;
     box-shadow: #999 0 0 12px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
     behavior: url(/PIE.htc);
 }
 
@@ -134,6 +137,10 @@ pre.long {
     width: 250px;
     padding: 10px 0;
     overflow: hidden;
+}
+#mainNav.ie8 {
+    /* workaround for weird bug where IE8 draws a 1px line outside the overflow:hidden container */
+    clip: rect(0,250px,1000px,1px);
 }
 #mainNav ul,
 #mainNav li {
