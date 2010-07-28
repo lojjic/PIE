@@ -2,7 +2,7 @@
 
 <project name="PIE" default="build" basedir=".">
 
-    <property name="version" value="1.0beta2-SNAPSHOT" />
+    <property name="version" value="1.0beta2" />
     <property name="build_dir" value="./build" />
     <property name="src_dir" value="./sources" />
 
