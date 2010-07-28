@@ -40,14 +40,12 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
 
             function getShadowShape( index, corner, xOff, yOff, color, blur, path ) {
                 var shape = me.getShape( 'shadow' + index + corner, 'fill', box, len - index ),
-                    ss = shape.style;
+                    ss = shape.style,
                     fill = shape.fill;
 
                 // Position and size
                 ss.left = xOff;
                 ss.top = yOff;
-                ss.width = w;
-                ss.height = h;
                 shape['coordsize'] = w * 2 + ',' + h * 2;
                 shape['coordorigin'] = '1,1';
 
@@ -63,6 +61,10 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
 
                 // Path
                 shape.path = path;
+
+                // This needs to go last for some reason, to prevent rendering at incorrect size
+                ss.width = w;
+                ss.height = h;
 
                 return shape;
             }
@@ -114,13 +116,13 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
                         }
                     } else {
                         // TODO delete old quadrant shapes if resizing expands past the barrier
-                        shape = getShadowShape( i, null, xOff, yOff, color, blur, path );
+                        shape = getShadowShape( i, '', xOff, yOff, color, blur, path );
                         fill = shape.fill;
                         fill['focusposition'] = focusX + ',' + focusY;
                         fill['focussize'] = ( 1 - focusX * 2 ) + ',' + ( 1 - focusY * 2 );
                     }
                 } else {
-                    shape = getShadowShape( i, null, xOff, yOff, color, blur, path );
+                    shape = getShadowShape( i, '', xOff, yOff, color, blur, path );
                     alpha = color.alpha();
                     if( alpha < 1 ) {
                         // shape.style.filter = 'alpha(opacity=' + ( alpha * 100 ) + ')';
