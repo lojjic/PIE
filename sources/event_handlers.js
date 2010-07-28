@@ -117,6 +117,11 @@ function cleanup() {
         }
         ancestors = null;
     }
+
+    // Add to list of polled elements in IE8
+    if( PIE.ie8DocMode === 8 ) {
+        PIE.ie8Poller.remove( update );
+    }
 }
 
 
@@ -177,6 +182,11 @@ function init() {
 
         // Add property change listeners to ancestors if requested
         initAncestorPropChangeListeners();
+
+        // Add to list of polled elements in IE8
+        if( PIE.ie8DocMode === 8 ) {
+            PIE.ie8Poller.add( update );
+        }
     }
 }
 

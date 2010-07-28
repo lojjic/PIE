@@ -16,5 +16,34 @@ if( !PIE ) {
     }
 
     // Detect IE8
-    PIE.isIE8 = !!element.document.documentMode;
+    PIE.ie8DocMode = element.document.documentMode;
+    PIE.isIE8 = !!PIE.ie8DocMode;
+
+    // Set up polling - this is a brute-force workaround for issues in IE8 caused by it not
+    // always firing the onmove and onresize events when elements are moved or resized.
+    if( PIE.ie8DocMode === 8 ) {
+        PIE.ie8Poller = {
+            fns: {},
+
+            add: function( fn ) {
+                var id = fn.id || ( fn.id = '' + new Date().getTime() + Math.random() );
+                this.fns[ id ] = fn;
+            },
+
+            remove: function( fn ) {
+                delete this.fns[ fn.id ];
+            },
+
+            fire: function() {
+                var fns = this.fns, id;
+                for( id in fns ) {
+                    if( fns.hasOwnProperty( id ) ) {
+                        fns[ id ]();
+                    }
+                }
+            }
+        };
+        setInterval( function() { PIE.ie8Poller.fire() }, 250 )
+    }
+
 
