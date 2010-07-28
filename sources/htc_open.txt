@@ -6,7 +6,7 @@ Dual-licensed for use under the Apache License Version 2.0 or the General Public
 -->
 <PUBLIC:COMPONENT lightWeight="true">
     <PUBLIC:ATTACH EVENT="onresize" FOR="element" ONEVENT="update()" />
-    <!--[if IE 8]><PUBLIC:ATTACH EVENT="onresize" FOR="window" ONEVENT="update()" /><![endif]-->
+    <PUBLIC:ATTACH EVENT="onresize" FOR="window" ONEVENT="update()" />
     <PUBLIC:ATTACH EVENT="onmove" FOR="element" ONEVENT="update()" />
     <PUBLIC:ATTACH EVENT="onpropertychange" FOR="element" ONEVENT="propChanged()" />
     <PUBLIC:ATTACH EVENT="onmouseenter" FOR="element" ONEVENT="mouseEntered()" />
