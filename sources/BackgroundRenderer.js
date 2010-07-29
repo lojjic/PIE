@@ -52,10 +52,10 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
     drawBgColor: function() {
         var props = this.styleInfos.backgroundInfo.getProps(),
             el = this.element,
-            color = props && props.color && props.color.value( el ),
+            color = props && props.color,
             shape, w, h, s, alpha;
 
-        if( color && color !== 'transparent' ) {
+        if( color && color.alpha() > 0 ) {
             this.hideBackground();
 
             shape = this.getShape( 'bgColor', 'fill', this.getBox(), 1 );
@@ -68,9 +68,9 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             s = shape.style;
             s.width = w;
             s.height = h;
-            shape.fill.color = color;
+            shape.fill.color = color.value( el );
 
-            alpha = props.color.alpha();
+            alpha = color.alpha();
             if( alpha < 1 ) {
                 shape.fill.opacity = alpha;
             }
