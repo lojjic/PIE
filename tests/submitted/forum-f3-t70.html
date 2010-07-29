@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Playing with CSS3 buttons</title>
+    <style type="text/css">
+        body {
+          margin: 50px 100px;
+          font-family: Arial, verdana, sans-serif;
+          background: #F0EDE6;
+        }
+        h1 {
+          margin-bottom: 50px;
+          color: #6A6A26;
+        }
+        div {
+          margin: 50px 0 0 0;
+        }
+        .buttons {
+            background: #fff;
+            padding: 50px;
+        }
+        .bloc {
+            width: 20%;
+            min-height: 150px;
+            display: inline-block;
+            vertical-align: top;
+            padding: 10px;
+            margin-right: 10px;
+            background: #fff;
+              border-width: 7px 7px 16px 7px;
+            -moz-border-image: url(block.png) 7 7 16 7;
+            -webkit-border-image: url(block.png) 7 7 16 7;
+            border-image: url(block.png) 7 7 16 7;
+            /* et pour Internet Explorer */
+          behavior: url(../../build/PIE.htc);
+        }
+
+        .button {
+          display: inline-block;
+          padding: 10px 25px;
+          margin: 0 30px 0 0;
+          border: 1px solid #777;
+          color: #fff;
+          text-decoration: none;
+          font-size: 1.5em;
+          background-color: #456;
+          text-shadow: 0 1px 1px #555;
+
+          /* et pour Internet Explorer */
+          behavior: url(../../build/PIE.htc);
+            position: relative;
+        }
+
+        .first {
+          /* Ombrages pour Webkit, Firefox et standard  */
+          -webkit-box-shadow: 0px 0px 3px #555;
+          -moz-box-shadow: 0px 0px 3px #555;
+          box-shadow: 0px 0px 3px #555;
+
+          /* Arrondis pour Webkit, Firefox et standard */
+          -webkit-border-radius: 6px;
+          -moz-border-radius: 6px;
+          border-radius: 6px;
+
+          /* Gradient for everyone */
+          background: #344b8f;
+           background-image: -moz-linear-gradient(top, #97bbdb, #344b8f);
+           background: -webkit-gradient(linear, left top, left bottom, from(#97bbdb), to(#344b8f));
+            -pie-background: linear-gradient(#97bbdb, #344b8f);
+        }
+
+
+        .second {
+
+           /* Border-image for everyone */
+           padding: 10px 0;
+
+           border-width: 0 30px;
+            -moz-border-image: url(tab.png) 0 45;
+            -webkit-border-image: url(tab.png) 0 45;
+            border-image: url(tab.png) 0 45;
+        }
+
+        .third {
+            /* Border-image for everyone */
+           border: 27px solid transparent;
+            -moz-border-image: url(http://www.w3.org/TR/css3-background/border.png) 27 round;
+            -webkit-border-image: url(http://www.w3.org/TR/css3-background/border.png) 27 round;
+            border-image: url(http://www.w3.org/TR/css3-background/border.png) 27 round;
+
+        }
+
+
+    </style>
+    
+  </head>
+
+
+  <body>
+  
+  <h1>CSS3 buttons tests</h1>
+  
+  <div class="buttons">
+
+  <a class="button first" href="#">button link</a>
+  
+  <a class="button second" href="#">second button link</a>
+  
+  <a class="button third" href="#">third link</a>
+  
+  </div>
+  
+  <p class="bloc">
+  	Lorem Elsass ipsum réchime amet sed bissame so libero. DNA, leo Richard Schirmeck tellus Pellentesque gewurztraminer morbi
+  </p>
+  
+  <p class="bloc">
+  	Coopé de Truchtersheim knack  tchao bissame hopla  blottkopf, placerat mänele mamsell messti de Bischheim habitant gravida rossbolla schpeck Heineken yeuh. gal hopla munster Mauris météor und vulputate turpis Bischheim habitant gravida rossbolla schpeck Heineken yeuh. gal hopla munster Mauris météor und vulputate turpis
+  </p>
+  
+  <p class="bloc">
+  	Christkindelsmärik Strasbourg leverwurscht kougelhopf sed Miss Dahlias Oberschaeffolsheim geht's pellentesque wurscht elementum semper tellus s'guelt Pfourtz !
+  </p>
+  
+  
+
+  <div>
+
+    <p>Auteur : <a href="http://www.goetter.fr" hreflang="fr">Raphael Goetter</a></p>
+  </div>
+    
+  </body>
+
+</html>
