@@ -45,7 +45,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
             w = el.offsetWidth,
             h = el.offsetHeight,
             props = this.styleInfos.borderInfo.getProps(),
-            side, shape, stroke, bColor, bWidth, bStyle, s,
+            side, shape, stroke, s,
             segments, seg, i, len;
 
         if( props ) {
@@ -152,15 +152,17 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
             colors = borderProps.colors;
 
             if( borderProps.widthsSame && borderProps.stylesSame && borderProps.colorsSame ) {
-                // shortcut for identical border on all sides - only need 1 stroked shape
-                wT = widths['t'].pixels( el ); //thickness
-                wR = wT / 2; //shrink
-                segments.push( {
-                    path: this.getBoxPath( { t: wR, r: wR, b: wR, l: wR }, mult ),
-                    stroke: styles['t'],
-                    color: colors['t'],
-                    weight: wT
-                } );
+                if( colors['t'].alpha() > 0 ) {
+                    // shortcut for identical border on all sides - only need 1 stroked shape
+                    wT = widths['t'].pixels( el ); //thickness
+                    wR = wT / 2; //shrink
+                    segments.push( {
+                        path: this.getBoxPath( { t: wR, r: wR, b: wR, l: wR }, mult ),
+                        stroke: styles['t'],
+                        color: colors['t'],
+                        weight: wT
+                    } );
+                }
             }
             else {
                 mult = mult || 1;
@@ -243,7 +245,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                         sideW = pxWidths[ side ],
                         beforeX, beforeY, afterX, afterY;
 
-                    if( sideW > 0 && styles[ side ] !== 'none' ) {
+                    if( sideW > 0 && styles[ side ] !== 'none' && colors[ side ].alpha() > 0 ) {
                         beforeX = pxWidths[ vert ? side : sideBefore ];
                         beforeY = pxWidths[ vert ? sideBefore : side ];
                         afterX = pxWidths[ vert ? side : sideAfter ];

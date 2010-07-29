@@ -27,7 +27,7 @@ PIE.Color = (function() {
                     this._alpha = parseFloat( m[4] );
                 } else {
                     this._color = v;
-                    this._alpha = 1;
+                    this._alpha = ( v === 'transparent' ? 0 : 1 );
                 }
             }
         },
