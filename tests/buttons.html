@@ -240,6 +240,283 @@
         text-shadow:-1px -1px 0 rgba(0, 0, 0, 0.3);
     }
 
+
+    #test7 div {
+        padding: 20px 0;
+        border-bottom: solid 1px #ccc;
+    }
+    #test7 .wdwbutton  {
+        display: inline-block;
+        zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
+        *display: inline;
+        vertical-align: baseline;
+        margin: 0 2px;
+        outline: none;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        font: 14px/100% Arial, Helvetica, sans-serif;
+        padding: .5em 2em .55em;
+        text-shadow: 0 1px 1px rgba(0,0,0,.3);
+        -webkit-border-radius: .5em;
+        -moz-border-radius: .5em;
+        border-radius: .5em;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+        -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+        box-shadow: 0 1px 2px rgba(0,0,0,.2);
+
+        /* added: */
+        behavior: url(../build/PIE.htc);
+        overflow: visible;
+    }
+    #test7 .wdwbutton:hover {
+        text-decoration: none;
+    }
+    #test7 .wdwbutton:active {
+        position: relative;
+        top: 1px;
+    }
+
+    #test7 .bigrounded {
+        -webkit-border-radius: 2em;
+        -moz-border-radius: 2em;
+        border-radius: 2em;
+    }
+    #test7 .medium {
+        font-size: 12px;
+        padding: .4em 1.5em .42em;
+    }
+    #test7 .small {
+        font-size: 11px;
+        padding: .2em 1em .275em;
+    }
+    /* black */
+    #test7 .black {
+        color: #d7d7d7;
+        border: solid 1px #333;
+        background: #333;
+        background: -webkit-gradient(linear, left top, left bottom, from(#666), to(#000));
+        background: -moz-linear-gradient(top,  #666,  #000);
+        background: linear-gradient(top,  #666,  #000);
+        -pie-background: linear-gradient(top,  #666,  #000);
+    }
+    #test7 .black:hover {
+        background: #000;
+        background: -webkit-gradient(linear, left top, left bottom, from(#444), to(#000));
+        background: -moz-linear-gradient(top,  #444,  #000);
+        background: linear-gradient(top,  #444,  #000);
+        -pie-background: linear-gradient(top,  #444,  #000);
+    }
+    #test7 .black:active {
+        color: #666;
+        background: -webkit-gradient(linear, left top, left bottom, from(#000), to(#444));
+        background: -moz-linear-gradient(top,  #000,  #444);
+        background: linear-gradient(top,  #000,  #444);
+        -pie-background: linear-gradient(top,  #000,  #444);
+    }
+
+    /* gray */
+    #test7 .gray {
+        color: #e9e9e9;
+        border: solid 1px #555;
+        background: #6e6e6e;
+        background: -webkit-gradient(linear, left top, left bottom, from(#888), to(#575757));
+        background: -moz-linear-gradient(top,  #888,  #575757);
+        background: linear-gradient(top,  #888,  #575757);
+        -pie-background: linear-gradient(top,  #888,  #575757);
+    }
+    #test7 .gray:hover {
+        background: #616161;
+        background: -webkit-gradient(linear, left top, left bottom, from(#757575), to(#4b4b4b));
+        background: -moz-linear-gradient(top,  #757575,  #4b4b4b);
+        background: linear-gradient(top,  #757575,  #4b4b4b);
+        -pie-background: linear-gradient(top,  #757575,  #4b4b4b);
+    }
+    #test7 .gray:active {
+        color: #afafaf;
+        background: -webkit-gradient(linear, left top, left bottom, from(#575757), to(#888));
+        background: -moz-linear-gradient(top,  #575757,  #888);
+        background: linear-gradient(top,  #575757,  #888);
+        -pie-background: linear-gradient(top,  #575757,  #888);
+    }
+
+    /* white */
+    #test7 .white {
+        color: #606060;
+        border: solid 1px #b7b7b7;
+        background: #fff;
+        background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+        background: -moz-linear-gradient(top,  #fff,  #ededed);
+        background: linear-gradient(top,  #fff,  #ededed);
+        -pie-background: linear-gradient(top,  #fff,  #ededed);
+    }
+    #test7 .white:hover {
+        background: #ededed;
+        background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#dcdcdc));
+        background: -moz-linear-gradient(top,  #fff,  #dcdcdc);
+        background: linear-gradient(top,  #fff,  #dcdcdc);
+        -pie-background: linear-gradient(top,  #fff,  #dcdcdc);
+    }
+    #test7 .white:active {
+        color: #999;
+        background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#fff));
+        background: -moz-linear-gradient(top,  #ededed,  #fff);
+        background: linear-gradient(top,  #ededed,  #fff);
+        -pie-background: linear-gradient(top,  #ededed,  #fff);
+    }
+
+    /* orange */
+    #test7 .orange {
+        color: #fef4e9;
+        border: solid 1px #da7c0c;
+        background: #f78d1d;
+        background: -webkit-gradient(linear, left top, left bottom, from(#faa51a), to(#f47a20));
+        background: -moz-linear-gradient(top,  #faa51a,  #f47a20);
+        background: linear-gradient(top,  #faa51a,  #f47a20);
+        -pie-background: linear-gradient(top,  #faa51a,  #f47a20);
+    }
+    #test7 .orange:hover {
+        background: #f47c20;
+        background: -webkit-gradient(linear, left top, left bottom, from(#f88e11), to(#f06015));
+        background: -moz-linear-gradient(top,  #f88e11,  #f06015);
+        background: linear-gradient(top,  #f88e11,  #f06015);
+        -pie-background: linear-gradient(top,  #f88e11,  #f06015);
+    }
+    #test7 .orange:active {
+        color: #fcd3a5;
+        background: -webkit-gradient(linear, left top, left bottom, from(#f47a20), to(#faa51a));
+        background: -moz-linear-gradient(top,  #f47a20,  #faa51a);
+        background: linear-gradient(top,  #f47a20,  #faa51a);
+        -pie-background: linear-gradient(top,  #f47a20,  #faa51a);
+    }
+
+    /* red */
+    #test7 .red {
+        color: #faddde;
+        border: solid 1px #980c10;
+        background: #d81b21;
+        background: -webkit-gradient(linear, left top, left bottom, from(#ed1c24), to(#aa1317));
+        background: -moz-linear-gradient(top,  #ed1c24,  #aa1317);
+        background: linear-gradient(top,  #ed1c24,  #aa1317);
+        -pie-background: linear-gradient(top,  #ed1c24,  #aa1317);
+    }
+    #test7 .red:hover {
+        background: #b61318;
+        background: -webkit-gradient(linear, left top, left bottom, from(#c9151b), to(#a11115));
+        background: -moz-linear-gradient(top,  #c9151b,  #a11115);
+        background: linear-gradient(top,  #c9151b,  #a11115);
+        -pie-background: linear-gradient(top,  #c9151b,  #a11115);
+    }
+    #test7 .red:active {
+        color: #de898c;
+        background: -webkit-gradient(linear, left top, left bottom, from(#aa1317), to(#ed1c24));
+        background: -moz-linear-gradient(top,  #aa1317,  #ed1c24);
+        background: linear-gradient(top,  #aa1317,  #ed1c24);
+        -pie-background: linear-gradient(top,  #aa1317,  #ed1c24);
+    }
+
+    /* blue */
+    #test7 .blue {
+        color: #d9eef7;
+        border: solid 1px #0076a3;
+        background: #0095cd;
+        background: -webkit-gradient(linear, left top, left bottom, from(#00adee), to(#0078a5));
+        background: -moz-linear-gradient(top,  #00adee,  #0078a5);
+        background: linear-gradient(top,  #00adee,  #0078a5);
+        -pie-background: linear-gradient(top,  #00adee,  #0078a5);
+    }
+    #test7 .blue:hover {
+        background: #007ead;
+        background: -webkit-gradient(linear, left top, left bottom, from(#0095cc), to(#00678e));
+        background: -moz-linear-gradient(top,  #0095cc,  #00678e);
+        background: linear-gradient(top,  #0095cc,  #00678e);
+        -pie-background: linear-gradient(top,  #0095cc,  #00678e);
+    }
+    #test7 .blue:active {
+        color: #80bed6;
+        background: -webkit-gradient(linear, left top, left bottom, from(#0078a5), to(#00adee));
+        background: -moz-linear-gradient(top,  #0078a5,  #00adee);
+        background: linear-gradient(top,  #0078a5,  #00adee);
+        -pie-background: linear-gradient(top,  #0078a5,  #00adee);
+    }
+
+    /* rosy */
+    #test7 .rosy {
+        color: #fae7e9;
+        border: solid 1px #b73948;
+        background: #da5867;
+        background: -webkit-gradient(linear, left top, left bottom, from(#f16c7c), to(#bf404f));
+        background: -moz-linear-gradient(top,  #f16c7c,  #bf404f);
+        background: linear-gradient(top,  #f16c7c,  #bf404f);
+        -pie-background: linear-gradient(top,  #f16c7c,  #bf404f);
+    }
+    #test7 .rosy:hover {
+        background: #ba4b58;
+        background: -webkit-gradient(linear, left top, left bottom, from(#cf5d6a), to(#a53845));
+        background: -moz-linear-gradient(top,  #cf5d6a,  #a53845);
+        background: linear-gradient(top,  #cf5d6a,  #a53845);
+        -pie-background: linear-gradient(top,  #cf5d6a,  #a53845);
+    }
+    #test7 .rosy:active {
+        color: #dca4ab;
+        background: -webkit-gradient(linear, left top, left bottom, from(#bf404f), to(#f16c7c));
+        background: -moz-linear-gradient(top,  #bf404f,  #f16c7c);
+        background: linear-gradient(top,  #bf404f,  #f16c7c);
+        -pie-background: linear-gradient(top,  #bf404f,  #f16c7c);
+    }
+
+    /* green */
+    #test7 .green {
+        color: #e8f0de;
+        border: solid 1px #538312;
+        background: #64991e;
+        background: -webkit-gradient(linear, left top, left bottom, from(#7db72f), to(#4e7d0e));
+        background: -moz-linear-gradient(top,  #7db72f,  #4e7d0e);
+        background: linear-gradient(top,  #7db72f,  #4e7d0e);
+        -pie-background: linear-gradient(top,  #7db72f,  #4e7d0e);
+    }
+    #test7 .green:hover {
+        background: #538018;
+        background: -webkit-gradient(linear, left top, left bottom, from(#6b9d28), to(#436b0c));
+        background: -moz-linear-gradient(top,  #6b9d28,  #436b0c);
+        background: linear-gradient(top,  #6b9d28,  #436b0c);
+        -pie-background: linear-gradient(top,  #6b9d28,  #436b0c);
+    }
+    #test7 .green:active {
+        color: #a9c08c;
+        background: -webkit-gradient(linear, left top, left bottom, from(#4e7d0e), to(#7db72f));
+        background: -moz-linear-gradient(top,  #4e7d0e,  #7db72f);
+        background: linear-gradient(top,  #4e7d0e,  #7db72f);
+        -pie-background: linear-gradient(top,  #4e7d0e,  #7db72f);
+    }
+
+    /* pink */
+    #test7 .pink {
+        color: #feeef5;
+        border: solid 1px #d2729e;
+        background: #f895c2;
+        background: -webkit-gradient(linear, left top, left bottom, from(#feb1d3), to(#f171ab));
+        background: -moz-linear-gradient(top,  #feb1d3,  #f171ab);
+        background: linear-gradient(top,  #feb1d3,  #f171ab);
+        -pie-background: linear-gradient(top,  #feb1d3,  #f171ab);
+    }
+    #test7 .pink:hover {
+        background: #d57ea5;
+        background: -webkit-gradient(linear, left top, left bottom, from(#f4aacb), to(#e86ca4));
+        background: -moz-linear-gradient(top,  #f4aacb,  #e86ca4);
+        background: linear-gradient(top,  #f4aacb,  #e86ca4);
+        -pie-background: linear-gradient(top,  #f4aacb,  #e86ca4);
+    }
+    #test7 .pink:active {
+        color: #f3c3d9;
+        background: -webkit-gradient(linear, left top, left bottom, from(#f171ab), to(#feb1d3));
+        background: -moz-linear-gradient(top,  #f171ab,  #feb1d3);
+        background: linear-gradient(top,  #f171ab,  #feb1d3);
+        -pie-background: linear-gradient(top,  #f171ab,  #feb1d3);
+    }
+
+
+
     </style>
 
 </head>
@@ -312,6 +589,145 @@
         <input class="button" type="button" value="I'm an &lt;input/&gt; button" />
     </div>
 
+    <div class="section" id="test7">
+        <h2>Webdesignerwall.com CSS3 Buttons Demo (<a href="http://www.webdesignerwall.com/demo/css-buttons.html">Source</a>)</h2>
+
+        <div>
+            <a href="#" class="wdwbutton black">Rectangle</a>  or
+            <a href="#" class="wdwbutton black bigrounded">Rounded</a> Can be
+            <a href="#" class="wdwbutton black medium">Medium</a> or
+            <a href="#" class="wdwbutton black small">Small</a>
+            <br /><br />
+            <input class="wdwbutton black" type="button" value="Input Element" />
+            <button class="wdwbutton black">Button Tag</button>
+
+            <span class="wdwbutton black">Span</span>
+            <div class="wdwbutton black">Div</div>
+            <p class="wdwbutton black">P Tag</p>
+            <h3 class="wdwbutton black">H3</h3>
+        </div>
+
+        <div>
+            <a href="#" class="wdwbutton gray">Gray</a>
+            <a href="#" class="wdwbutton gray bigrounded">Rounded</a>
+            <a href="#" class="wdwbutton gray medium">Medium</a>
+            <a href="#" class="wdwbutton gray small">Small</a>
+            <br /><br />
+
+            <input class="wdwbutton gray" type="button" value="Input Element" />
+            <button class="wdwbutton gray">Button Tag</button>
+            <span class="wdwbutton gray">Span</span>
+            <div class="wdwbutton gray">Div</div>
+            <p class="wdwbutton gray">P Tag</p>
+            <h3 class="wdwbutton gray">H3</h3>
+        </div>
+
+        <div>
+            <a href="#" class="wdwbutton white">White</a>
+            <a href="#" class="wdwbutton white bigrounded">Rounded</a>
+            <a href="#" class="wdwbutton white medium">Medium</a>
+            <a href="#" class="wdwbutton white small">Small</a>
+            <br /><br />
+
+            <input class="wdwbutton white" type="button" value="Input Element" />
+            <button class="wdwbutton white">Button Tag</button>
+            <span class="wdwbutton white">Span</span>
+            <div class="wdwbutton white">Div</div>
+            <p class="wdwbutton white">P Tag</p>
+            <h3 class="wdwbutton white">H3</h3>
+        </div>
+
+        <div>
+            <a href="#" class="wdwbutton orange">Orange</a>
+            <a href="#" class="wdwbutton orange bigrounded">Rounded</a>
+            <a href="#" class="wdwbutton orange medium">Medium</a>
+            <a href="#" class="wdwbutton orange small">Small</a>
+            <br /><br />
+
+            <input class="wdwbutton orange" type="button" value="Input Element" />
+            <button class="wdwbutton orange">Button Tag</button>
+            <span class="wdwbutton orange">Span</span>
+            <div class="wdwbutton orange">Div</div>
+            <p class="wdwbutton orange">P Tag</p>
+            <h3 class="wdwbutton orange">H3</h3>
+        </div>
+
+        <div>
+            <a href="#" class="wdwbutton red">Red</a>
+            <a href="#" class="wdwbutton red bigrounded">Rounded</a>
+            <a href="#" class="wdwbutton red medium">Medium</a>
+            <a href="#" class="wdwbutton red small">Small</a>
+            <br /><br />
+
+            <input class="wdwbutton red" type="button" value="Input Element" />
+            <button class="wdwbutton red">Button Tag</button>
+            <span class="wdwbutton red">Span</span>
+            <div class="wdwbutton red">Div</div>
+            <p class="wdwbutton red">P Tag</p>
+            <h3 class="wdwbutton red">H3</h3>
+        </div>
+
+        <div>
+            <a href="#" class="wdwbutton blue">Blue</a>
+            <a href="#" class="wdwbutton blue bigrounded">Rounded</a>
+            <a href="#" class="wdwbutton blue medium">Medium</a>
+            <a href="#" class="wdwbutton blue small">Small</a>
+            <br /><br />
+
+            <input class="wdwbutton blue" type="button" value="Input Element" />
+            <button class="wdwbutton blue">Button Tag</button>
+            <span class="wdwbutton blue">Span</span>
+            <div class="wdwbutton blue">Div</div>
+            <p class="wdwbutton blue">P Tag</p>
+            <h3 class="wdwbutton blue">H3</h3>
+        </div>
+
+        <div>
+            <a href="#" class="wdwbutton rosy">Rosy</a>
+            <a href="#" class="wdwbutton rosy bigrounded">Rounded</a>
+            <a href="#" class="wdwbutton rosy medium">Medium</a>
+            <a href="#" class="wdwbutton rosy small">Small</a>
+            <br /><br />
+
+            <input class="wdwbutton rosy" type="button" value="Input Element" />
+            <button class="wdwbutton rosy">Button Tag</button>
+            <span id="scrolltest" class="wdwbutton rosy">Span</span>
+            <div class="wdwbutton rosy">Div</div>
+            <p class="wdwbutton rosy">P Tag</p>
+            <h3 class="wdwbutton rosy">H3</h3>
+        </div>
+
+        <div>
+            <a href="#" class="wdwbutton green">Green</a>
+            <a href="#" class="wdwbutton green bigrounded">Rounded</a>
+            <a href="#" class="wdwbutton green medium">Medium</a>
+            <a href="#" class="wdwbutton green small">Small</a>
+            <br /><br />
+
+            <input class="wdwbutton green" type="button" value="Input Element" />
+            <button class="wdwbutton green">Button Tag</button>
+            <span class="wdwbutton green">Span</span>
+            <div class="wdwbutton green">Div</div>
+            <p class="wdwbutton green">P Tag</p>
+            <h3 class="wdwbutton green">H3</h3>
+        </div>
+
+        <div>
+            <a href="#" class="wdwbutton pink">Pink</a>
+            <a href="#" class="wdwbutton pink bigrounded">Rounded</a>
+            <a href="#" class="wdwbutton pink medium">Medium</a>
+            <a href="#" class="wdwbutton pink small">Small</a>
+            <br /><br />
+
+            <input class="wdwbutton pink" type="button" value="Input Element" />
+            <button class="wdwbutton pink">Button Tag</button>
+            <span class="wdwbutton pink">Span</span>
+            <div class="wdwbutton pink">Div</div>
+            <p class="wdwbutton pink">P Tag</p>
+            <h3 class="wdwbutton pink">H3</h3>
+        </div>
+
+    </div>
 
 </body>
 </html>
