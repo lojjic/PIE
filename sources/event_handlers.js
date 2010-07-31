@@ -1,7 +1,10 @@
 var lastW, lastH, lastX, lastY,
     renderers,
     styleInfos,
-    ancestors;
+    ancestors,
+    initializing,
+    initialized,
+    delayed;
 
 /**
  * Update position and/or size as necessary. Both move and resize events call
@@ -9,34 +12,37 @@ var lastW, lastH, lastX, lastY,
  * during page load, one will fire but the other won't.
  */
 function update() {
-    init();
+    if( initialized ) {
+        /* TODO just using getBoundingClientRect may not always be accurate; it's possible that
+           an element will actually move relative to its positioning parent, but its position
+           relative to the viewport will stay the same. Need to come up with a better way to
+           track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
+           but that is a more expensive operation since it does some DOM walking, and we want this
+           check to be as fast as possible. */
+        var rect = element.getBoundingClientRect(),
+            x = rect.left,
+            y = rect.top,
+            w = rect.right - x,
+            h = rect.bottom - y,
+            i, len;
 
-    /* TODO just using getBoundingClientRect may not always be accurate; it's possible that
-       an element will actually move relative to its positioning parent, but its position
-       relative to the viewport will stay the same. Need to come up with a better way to
-       track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
-       but that is a more expensive operation since it does some DOM walking, and we want this
-       check to be as fast as possible. */
-    var rect = element.getBoundingClientRect(),
-        x = rect.left,
-        y = rect.top,
-        w = rect.right - x,
-        h = rect.bottom - y,
-        i, len;
-
-    if( x !== lastX || y !== lastY ) {
-        for( i = 0, len = renderers.length; i < len; i++ ) {
-            renderers[i].updatePos();
+        if( x !== lastX || y !== lastY ) {
+            for( i = 0, len = renderers.length; i < len; i++ ) {
+                renderers[i].updatePos();
+            }
+            lastX = x;
+            lastY = y;
         }
-        lastX = x;
-        lastY = y;
+        if( w !== lastW || h !== lastH ) {
+            for( i = 0, len = renderers.length; i < len; i++ ) {
+                renderers[i].updateSize();
+            }
+            lastW = w;
+            lastH = h;
+        }
     }
-    if( w !== lastW || h !== lastH ) {
-        for( i = 0, len = renderers.length; i < len; i++ ) {
-            renderers[i].updateSize();
-        }
-        lastW = w;
-        lastH = h;
+    else if( !initializing ) {
+        init();
     }
 }
 
@@ -44,16 +50,20 @@ function update() {
  * Handle property changes to trigger update when appropriate.
  */
 function propChanged() {
-    init();
-    var i, len,
-        toUpdate = [];
-    for( i = 0, len = renderers.length; i < len; i++ ) {
-        if( renderers[i].needsUpdate() ) {
-            toUpdate.push( renderers[i] );
+    if( initialized ) {
+        var i, len,
+            toUpdate = [];
+        for( i = 0, len = renderers.length; i < len; i++ ) {
+            if( renderers[i].needsUpdate() ) {
+                toUpdate.push( renderers[i] );
+            }
+        }
+        for( i = 0, len = toUpdate.length; i < len; i++ ) {
+            toUpdate[i].updateProps();
         }
     }
-    for( i = 0, len = toUpdate.length; i < len; i++ ) {
-        toUpdate[i].updateProps();
+    else if( !initializing ) {
+        init();
     }
 }
 
@@ -118,10 +128,12 @@ function cleanup() {
         ancestors = null;
     }
 
-    // Add to list of polled elements in IE8
+    // Remove from list of polled elements in IE8
     if( PIE.ie8DocMode === 8 ) {
-        PIE.ie8Poller.remove( update );
+        PIE.Heartbeat.unobserve( update );
     }
+    // Stop onscroll listening
+    PIE.OnScroll.unobserve( update );
 }
 
 
@@ -154,43 +166,66 @@ function initAncestorPropChangeListeners() {
  * Initialize PIE for this element.
  */
 function init() {
-    if( !renderers ) {
-        var el = element;
+    if( !initialized ) {
+        var el = element,
+            doc = el.document,
+            docEl = doc.documentElement || doc.body,
+            rect = el.getBoundingClientRect(),
+            rootRenderer;
 
-        // force layout so move/resize events will fire
-        el.runtimeStyle.zoom = 1;
+        // Force layout so move/resize events will fire. Set this as soon as possible to avoid layout changes
+        // after load, but make sure it only gets called the first time through to avoid recursive calls to init().
+        if( !initializing ) {
+            initializing = 1;
+            el.runtimeStyle.zoom = 1;
+        }
 
-        // Create the style infos and renderers
-        styleInfos = {
-            backgroundInfo: new PIE.BackgroundStyleInfo( el ),
-            borderInfo: new PIE.BorderStyleInfo( el ),
-            borderImageInfo: new PIE.BorderImageStyleInfo( el ),
-            borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
-            boxShadowInfo: new PIE.BoxShadowStyleInfo( el ),
-            visibilityInfo: new PIE.VisibilityStyleInfo( el )
-        };
+        // Check if the element is in the viewport; if not, delay initialization
+        if( rect.top > docEl.clientHeight || rect.left > docEl.clientWidth || rect.bottom < 0 || rect.right < 0 ) {
+            if( !delayed ) {
+                delayed = 1;
+                PIE.OnScroll.observe( init );
+            }
+        } else {
+            initialized = 1;
+            delayed = initializing = 0;
+            PIE.OnScroll.unobserve( init );
 
-        var rootRenderer = new PIE.RootRenderer( el, styleInfos );
-        renderers = [
-            rootRenderer,
-            new PIE.BoxShadowOutsetRenderer( el, styleInfos, rootRenderer ),
-            new PIE.BackgroundRenderer( el, styleInfos, rootRenderer ),
-            new PIE.BoxShadowInsetRenderer( el, styleInfos, rootRenderer ),
-            new PIE.BorderRenderer( el, styleInfos, rootRenderer ),
-            new PIE.BorderImageRenderer( el, styleInfos, rootRenderer )
-        ];
+            // Create the style infos and renderers
+            styleInfos = {
+                backgroundInfo: new PIE.BackgroundStyleInfo( el ),
+                borderInfo: new PIE.BorderStyleInfo( el ),
+                borderImageInfo: new PIE.BorderImageStyleInfo( el ),
+                borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
+                boxShadowInfo: new PIE.BoxShadowStyleInfo( el ),
+                visibilityInfo: new PIE.VisibilityStyleInfo( el )
+            };
 
-        // Add property change listeners to ancestors if requested
-        initAncestorPropChangeListeners();
+            rootRenderer = new PIE.RootRenderer( el, styleInfos );
+            renderers = [
+                rootRenderer,
+                new PIE.BoxShadowOutsetRenderer( el, styleInfos, rootRenderer ),
+                new PIE.BackgroundRenderer( el, styleInfos, rootRenderer ),
+                new PIE.BoxShadowInsetRenderer( el, styleInfos, rootRenderer ),
+                new PIE.BorderRenderer( el, styleInfos, rootRenderer ),
+                new PIE.BorderImageRenderer( el, styleInfos, rootRenderer )
+            ];
 
-        // Add to list of polled elements in IE8
-        if( PIE.ie8DocMode === 8 ) {
-            PIE.ie8Poller.add( update );
+            // Add property change listeners to ancestors if requested
+            initAncestorPropChangeListeners();
+
+            // Add to list of polled elements in IE8
+            if( PIE.ie8DocMode === 8 ) {
+                PIE.Heartbeat.observe( update );
+            }
+
+            // Trigger rendering
+            update();
         }
     }
 }
 
 
 if( element.readyState === 'complete' ) {
-    update();
+    init();
 }
