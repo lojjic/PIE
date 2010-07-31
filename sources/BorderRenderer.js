@@ -99,8 +99,8 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
             for( i = sides.length; i--; ) {
                 side = sides[ i ];
                 rs[ 'padding' + side ] = '';
-                rs[ 'padding' + side ] = parseInt( cs[ 'padding' + side ] ) +
-                                         parseInt( cs[ 'border' + side + 'Width' ] ) +
+                rs[ 'padding' + side ] = ( new PIE.Length( cs[ 'padding' + side ] ) ).pixels( el ) +
+                                         ( new PIE.Length( cs[ 'border' + side + 'Width' ] ) ).pixels( el ) +
                                          ( !PIE.isIE8 && i % 2 ? 1 : 0 ); //needs an extra horizontal pixel to counteract the extra "inner border" going away
             }
             rs.borderWidth = 0;
