@@ -14,7 +14,7 @@
     <script type="text/javascript">
         $( function() {
             var cb = $( '#togglePIE' );
-            if( !cb[0].addBehavior ) return; //IE only
+            if( !( cb[0] && cb[0].addBehavior ) ) return; //IE only
 
             function togglePIE() {
                 $( cb[0].getAttribute( 'data-target' ) ).each( function() {
@@ -89,42 +89,48 @@
             padding: 0 10px;
             overflow: hidden;
             margin-bottom: -1px;
+            height: 2.25em;
         }
         .tabBox .tabs li {
             float: left;
             list-style: none;
             margin: 0;
-            padding: 3px 3px 0;
+            padding: .25em .25em 0;
+            height: 2em;
             overflow: hidden;
             position: relative;
             z-index: 1;
+            border-bottom: 1px solid #FFF;
         }
         .tabBox .tabs li.selected {
             z-index: 3;
         }
         .tabBox .tabs a {
             float: left;
+            height: 2em;
+            line-height: 2em;
             -webkit-border-radius: 8px 8px 0 0;
             -moz-border-radius: 8px 8px 0 0;
             border-radius: 8px 8px 0 0;
             background: #EEE;
             border: 1px solid #CCC;
-            padding: 4px 10px;
+            border-bottom: 0;
+            padding: 0 10px;
             color: #000;
             text-decoration: none;
             /* applied by script instead so it can be toggled dynamically... behavior: url(../build/PIE.htc); */
         }
         .tabBox .tabs .selected a {
             background: #FFF;
-            border-bottom-color: #FFF;
-            -webkit-box-shadow: #CCC 0 0 3px;
-            -moz-box-shadow: #CCC 0 0 3px;
-            box-shadow: #CCC 0 0 3px;
+            -webkit-box-shadow: #CCC 0 0 .25em;
+            -moz-box-shadow: #CCC 0 0 .25em;
+            box-shadow: #CCC 0 0 .25em;
         }
 
         .tabBox .tabs a:hover {
             background: -webkit-gradient(linear, 0 0, 0 70%, from(#EEF), to(#FFF));
             background: -moz-linear-gradient(#EEF, #FFF 70%);
+            background: linear-gradient(#EEF, #FFF 70%);
             -pie-background: linear-gradient(#EEF, #FFF 70%);
         }
 
@@ -138,9 +144,9 @@
             -webkit-border-radius: 3px;
             -moz-border-radius: 3px;
             border-radius: 3px;
-            -webkit-box-shadow: #CCC 0 0 3px;
-            -moz-box-shadow: #CCC 0 0 3px;
-            box-shadow: #CCC 0 0 3px;
+            -webkit-box-shadow: #CCC 0 0 .25em;
+            -moz-box-shadow: #CCC 0 0 .25em;
+            box-shadow: #CCC 0 0 .25em;
             /* applied by script instead so it can be toggled dynamically... behavior: url(../build/PIE.htc); */
         }
         .tabBox .content p {
@@ -156,9 +162,10 @@
 
     <section class="explain">
         <h2>Explanation</h2>
-        <p>This example demonstrates a common tabbed interface, styled only with CSS3 (no images are used). It uses
-        <code>border-radius</code> to give the tabs rounded corners. Also, <code>box-shadow</code> is used to give the
-        active tab and the content container a subtle drop shadow, which creates a sense of depth and makes the inactive
+        <p>This example demonstrates a common tabbed interface, styled only with CSS3 (no images are used). The tabs
+        don't actually do anything, as that would require extra JavaScript beyond the scope of this demo.</p>
+        <p>In this demo <code>border-radius</code> is used to give the tabs rounded corners on the top. Also, <code>box-shadow</code>
+        gives the active tab and the content container a subtle glow, which creates a sense of depth and makes the inactive
         tabs look like they are sliding behind the content box. The tabs have a hover effect using a linear gradient.</p>
     </section>
 
@@ -217,16 +224,19 @@
     padding: 0 10px;
     overflow: hidden;
     margin-bottom: -1px;
+    height: 2.25em;
 }
 
 .tabBox .tabs li {
     float: left;
     list-style: none;
     margin: 0;
-    padding: 3px 3px 0;
+    padding: .25em .25em 0;
+    height: 2em;
     overflow: hidden;
     position: relative;
     z-index: 1;
+    border-bottom: 1px solid #FFF;
 }
 
 .tabBox .tabs li.selected {
@@ -235,9 +245,15 @@
 
 .tabBox .tabs a {
     float: left;
+    height: 2em;
+    line-height: 2em;
+    -webkit-border-radius: 8px 8px 0 0;
+    -moz-border-radius: 8px 8px 0 0;
+    border-radius: 8px 8px 0 0;
     background: #EEE;
     border: 1px solid #CCC;
-    padding: 4px 10px;
+    border-bottom: 0;
+    padding: 0 10px;
     color: #000;
     text-decoration: none;
     behavior: url(PIE.htc);
@@ -245,15 +261,15 @@
 
 .tabBox .tabs .selected a {
     background: #FFF;
-    border-bottom-color: #FFF;
-    -webkit-box-shadow: #CCC 0 0 3px;
-    -moz-box-shadow: #CCC 0 0 3px;
-    box-shadow: #CCC 0 0 3px;
+    -webkit-box-shadow: #CCC 0 0 .25em;
+    -moz-box-shadow: #CCC 0 0 .25em;
+    box-shadow: #CCC 0 0 .25em;
 }
 
 .tabBox .tabs a:hover {
     background: -webkit-gradient(linear, 0 0, 0 70%, from(#EEF), to(#FFF));
     background: -moz-linear-gradient(#EEF, #FFF 70%);
+    background: linear-gradient(#EEF, #FFF 70%);
     -pie-background: linear-gradient(#EEF, #FFF 70%);
 }
 
@@ -267,9 +283,9 @@
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
-    -webkit-box-shadow: #CCC 0 0 3px;
-    -moz-box-shadow: #CCC 0 0 3px;
-    box-shadow: #CCC 0 0 3px;
+    -webkit-box-shadow: #CCC 0 0 .25em;
+    -moz-box-shadow: #CCC 0 0 .25em;
+    box-shadow: #CCC 0 0 .25em;
     behavior: url(PIE.htc);
 }</code></pre>
         </div>
