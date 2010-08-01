@@ -74,7 +74,9 @@ function propChanged() {
  */
 function mouseEntered() {
     var el = event.srcElement;
-    el.className += ' ' + PIE.CLASS_PREFIX + 'hover';
+    if( PIE.isIE6 && el.tagName !== 'A' ) {
+        el.className += ' ' + PIE.CLASS_PREFIX + 'hover';
+    }
     //must delay this because the mouseleave event fires before the :hover styles are added.
     setTimeout( propChanged, 0 );
 }
@@ -83,7 +85,9 @@ function mouseEntered() {
  */
 function mouseLeft() {
     var el = event.srcElement;
-    el.className = el.className.replace( new RegExp( '\\b' + PIE.CLASS_PREFIX + 'hover\\b', 'g' ), '' );
+    if( PIE.isIE6 && el.tagName !== 'A' ) {
+        el.className = el.className.replace( PIE.hoverClassRE, '' );
+    }
     //must delay this because the mouseleave event fires before the :hover styles are removed.
     setTimeout( propChanged, 0 );
 }

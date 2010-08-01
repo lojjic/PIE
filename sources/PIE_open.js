@@ -13,6 +13,9 @@ if( !PIE ) {
 
         // IE6 can't access properties with leading dash, but can without it.
         PIE.CSS_PREFIX = PIE.CSS_PREFIX.replace( /^-/, '' );
+
+        // Regex object for removing pie_hover className
+        PIE.hoverClassRE = new RegExp( '\\b' + PIE.CLASS_PREFIX + 'hover\\b', 'g' );
     }
 
     // Detect IE8
