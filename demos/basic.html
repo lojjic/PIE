@@ -132,6 +132,7 @@
                 if( on ) {
                     css.push( 'background: -webkit-gradient(linear, 0 0, 0 bottom, from(' + color1 + '), to(' + color2 + '));' );
                     css.push( 'background: -moz-linear-gradient(' + color1 + ', ' + color2 + ');' );
+                    css.push( 'background: linear-gradient(' + color1 + ', ' + color2 + ');' );
                     if( $( '#pieToggle' ).is(':checked') ) {
                         css.push( '-pie-background: linear-gradient(' + color1 + ', ' + color2 + ');' );
                     }
