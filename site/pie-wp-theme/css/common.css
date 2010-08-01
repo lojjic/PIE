@@ -21,8 +21,10 @@ body {
     padding: 20px 0;
 }
 
-header, section, article, footer, nav {
+header, section, article, footer, nav, form {
     display: block;
+    margin: 0;
+    padding: 0;
 }
 
 img {
@@ -142,18 +144,18 @@ pre.long {
     /* workaround for weird bug where IE8 draws a 1px line outside the overflow:hidden container */
     clip: rect(0,250px,1000px,1px);
 }
-#mainNav ul,
-#mainNav li {
+#mainNav .menu,
+#mainNav .menu li {
     display: block;
     list-style: none;
     margin: 0 0 6px;
     padding: 0;
     width: 220px;
 }
-#mainNav ul {
+#mainNav .menu {
     margin-bottom: 20px;
 }
-#mainNav li a {
+#mainNav .menu li a {
     display: block;
     position: relative;
     color: #FFF;
@@ -164,15 +166,15 @@ pre.long {
     behavior: url(/PIE.htc);
     -pie-background: none;
 }
-#mainNav li a:hover {
+#mainNav .menu li a:hover {
     background: #008ECF;
     background: -webkit-gradient(linear,0 0,100% 0,from(#008ECF),to(#00AEEF));
     background: -moz-linear-gradient(left,#008ECF,#00AEEF);
     -pie-background: linear-gradient(left,#008ECF,#00AEEF);
 }
-#mainNav li.current_page_item a,
-#mainNav li.current-page-ancestor a,
-#mainNav li.current_page_parent a {
+#mainNav .menu li.current_page_item a,
+#mainNav .menu li.current-page-ancestor a,
+#mainNav .menu li.current_page_parent a {
     background: #FFF;
     -pie-background: #FFF;
     color: #000;
@@ -213,7 +215,7 @@ nav#mainNav .outbound {
     padding: 0;
 }
 #mainNav .outbound strong {
-    background: url(../img/icons.png) no-repeat 0 50%;
+    background: url(../img/icons.png) no-repeat 0 2px;
     padding-left: 30px;
     font-weight: normal;
 }
@@ -236,6 +238,45 @@ nav#mainNav .outbound {
 
 #mainNav p {
     margin: 0;
+}
+
+#mainNav .social,
+#mainNav .social li {
+    float: right;
+    display: inline;
+    margin-right: 10px;
+    margin-top: 10px;
+    list-style: none;
+}
+#mainNav .social a {
+    display: block;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #FFF;
+    background: #666 url(../img/icons.png) no-repeat 50% -45px;
+    white-space: nowrap;
+    text-indent: 30px;
+    overflow: hidden;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: #666 0 0 5px;
+    -moz-box-shadow: #666 0 0 5px;
+    box-shadow: #666 0 0 5px;
+    behavior: url(/PIE.htc);
+}
+#mainNav .social .rss a {
+    background-position: 50% -79px;
+}
+#mainNav .social a:hover {
+    background-color: #555;
+}
+#mainNav .social a ie6-mask {
+    /*workaround for text-indent making the link non-clickable*/
+    text-indent: 0;
+    padding-left: 30px;
 }
 
 #pageFooter {
@@ -389,7 +430,7 @@ body.home .more a {
     color: #FFF;
     position: relative;
     left: 34px;
-    background: url(../img/icons.png) no-repeat 100% 50%;
+    background: url(../img/icons.png) no-repeat 100% 0;
     text-decoration: none;
     padding-right: 40px;
 }
