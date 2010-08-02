@@ -167,6 +167,26 @@ function initAncestorPropChangeListeners() {
 
 
 /**
+ * If the target element is a first child, add a pie_first-child class to it. This allows using
+ * the added class as a workaround for the fact that PIE's rendering element breaks the :first-child
+ * pseudo-class selector.
+ */
+function initFirstChildPseudoClass() {
+    var el = element,
+        isFirst = 1;
+    while( el = el.previousSibling ) {
+        if( el.nodeType === 1 ) {
+            isFirst = 0;
+            break;
+        }
+    }
+    if( isFirst ) {
+        element.className += ' ' + PIE.CLASS_PREFIX + 'first-child';
+    }
+}
+
+
+/**
  * Initialize PIE for this element.
  */
 function init() {
@@ -182,6 +202,7 @@ function init() {
         if( !initializing ) {
             initializing = 1;
             el.runtimeStyle.zoom = 1;
+            initFirstChildPseudoClass();
         }
 
         // Check if the element is in the viewport; if not, delay initialization
