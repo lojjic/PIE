@@ -40,12 +40,9 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
 
             function getShadowShape( index, corner, xOff, yOff, color, blur, path ) {
                 var shape = me.getShape( 'shadow' + index + corner, 'fill', box, len - index ),
-                    ss = shape.style,
                     fill = shape.fill;
 
                 // Position and size
-                ss.left = xOff;
-                ss.top = yOff;
                 shape['coordsize'] = w * 2 + ',' + h * 2;
                 shape['coordorigin'] = '1,1';
 
@@ -63,6 +60,9 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
                 shape.path = path;
 
                 // This needs to go last for some reason, to prevent rendering at incorrect size
+                ss = shape.style;
+                ss.left = xOff;
+                ss.top = yOff;
                 ss.width = w;
                 ss.height = h;
 
