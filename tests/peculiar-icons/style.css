@@ -1,0 +1,106 @@
+
+body {
+background-color: #fee300;
+color: #292728;
+font-family: Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 13px;
+line-height: 20px;
+margin:0;
+padding:0;
+cursor:default;
+}
+
+* {
+margin:0;
+padding:0;
+}
+
+h1 {
+font-weight: normal;
+text-transform: uppercase;
+font-size: 24px;
+line-height: 24px;
+letter-spacing: -1px;
+}
+
+a {
+color: #292728;
+text-decoration:underline;
+}
+
+a:hover {
+color: #292728;
+text-decoration:none;
+}
+
+p {
+margin: 0 0 20px 0;
+}
+
+#container {
+margin: 0 auto;
+width: 500px;
+}
+
+#header {
+background: #292728;
+color: #fee300;
+margin: 0 0 20px 0;
+}
+
+.title {
+position: relative;
+width: 476px;
+margin: 0 auto;
+border-left: #fee300 1px solid;
+padding: 24px 12px;
+}
+
+.title h1 small {
+font-size: 10px;
+line-height: 10px;
+text-transform: uppercase;
+color: #fff;
+}
+
+.buy a {
+background: #292728;
+color: #fee300;
+display: block;
+font-size: 24px;
+line-height: 24px;
+text-align: center;
+padding: 24px 12px;
+position: absolute;
+border-left: #fee300 1px solid;
+border-right: #fee300 1px solid;
+top: 0;
+right: 0;
+text-decoration: none;
+}
+
+.buy a small {
+font-size: 10px;
+line-height: 10px;
+text-transform: uppercase;
+color: #fff;
+}
+
+.buy a:hover {
+background-color: #fee300;
+color: #292728;
+}
+
+.bar {
+background-color: #fff;
+height: 256px;
+margin: 20px 0;
+padding: 10px;
+font-size: 9px;
+line-height: 16px;
+border-top: #000 4px solid;
+}
+
+.bar .icon {
+float: left;
+}

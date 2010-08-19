@@ -1,0 +1,1934 @@
+/* Peculiar, pictograms created by Lucian Marin - lucianmarin.com */
+
+.icon {
+position: relative;
+width:16px;
+height:16px;
+margin: 16px;
+}
+.icon .name {
+width: 32px;
+position: absolute;
+text-align: center;
+top: 18px;
+left: -8px;
+}
+
+.icon-minus-circle {
+background-color: #000;
+border-radius:8px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+width: 16px;
+height: 16px;
+position: absolute;
+top:0;
+left:0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-minus-line {
+background-color: #fff;
+width: 8px;
+height: 2px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top:7px;
+left: 4px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-plus-circle {
+background-color: #000;
+border-radius:8px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+width: 16px;
+height: 16px;
+position: absolute;
+top:0;
+left:0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-plus-line-1 {
+background-color: #fff;
+width: 8px;
+height: 2px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top:7px;
+left: 4px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-plus-line-2 {
+background-color: #fff;
+width: 2px;
+height: 8px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top:4px;
+left: 7px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-disc-circle {
+background-color: #000;
+border-radius:8px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+width: 16px;
+height: 16px;
+position: absolute;
+top:0;
+left:0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-disc-dot {
+background-color: #fff;
+border-radius:2px;
+-webkit-border-radius:2px;
+-moz-border-radius:2px;
+width: 4px;
+height: 4px;
+position: absolute;
+top:6px;
+left:6px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-clock-circle {
+border-color: #000;
+border-style: solid;
+border-width: 2px;
+border-radius:8px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+width: 12px;
+height: 12px;
+position: absolute;
+top:0;
+left:0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-clock-line-1 {
+background-color: #000;
+width: 1px;
+height: 6px;
+position: absolute;
+top:3px;
+left:7px;
+}
+.icon-clock-line-2 {
+background-color: #000;
+width: 4px;
+height: 1px;
+position: absolute;
+top:8px;
+left:8px;
+}
+
+.icon-volume-rectangle {
+background-color: #000;
+width: 5px;
+height: 8px;
+/*CHANGED:
+border-top-left-radius: 2px;
+border-bottom-left-radius: 2px;
+*/
+border-radius: 2px 0 0 2px;
+-webkit-border-top-left-radius: 2px;
+-webkit-border-bottom-left-radius: 2px;
+-moz-border-radius-topleft: 2px;
+-moz-border-radius-bottomleft: 2px;
+position: absolute;
+top:4px;
+left:2px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-volume-triangle {
+border: 4px solid #000;
+border-left-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 8px;
+width: 0;
+position: absolute;
+top: 0;
+right: 4px;
+}
+.icon-volume-line {
+background-color: #000;
+width: 2px;
+height: 16px;
+position: absolute;
+top:0;
+right:2px;
+}
+
+.icon-pause-circle {
+background-color: #000;
+border-radius:8px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+width: 16px;
+height: 16px;
+position: absolute;
+top:0;
+left:0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-pause-line-1 {
+background-color: #fff;
+width: 2px;
+height: 8px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 4px;
+left: 5px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-pause-line-2 {
+background-color: #fff;
+width: 2px;
+height: 8px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 4px;
+left: 9px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-plasma-rectangle {
+border: #000 1px solid;
+border-radius:2px;
+-webkit-border-radius:2px;
+-moz-border-radius:2px;
+width: 14px;
+height: 8px;
+position: absolute;
+top:2px;
+left:0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-plasma-line-1 {
+background-color: #000;
+width: 4px;
+height: 1px;
+position: absolute;
+top:12px;
+left:6px;
+}
+.icon-plasma-line-2 {
+background-color: #000;
+width: 8px;
+height: 1px;
+position: absolute;
+top:13px;
+left:4px;
+}
+
+.icon-bulb-circle {
+border:#000 2px solid;
+border-radius:6px;
+-webkit-border-radius:6px;
+-moz-border-radius:6px;
+width: 8px;
+height: 8px;
+position: absolute;
+top: 0;
+left: 2px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-bulb-line-1 {
+background-color: #000;
+width: 4px;
+height: 3px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 10px;
+left: 6px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-bulb-line-2 {
+background-color: #000;
+width: 4px;
+height: 2px;
+position: absolute;
+border-bottom-left-radius: 1px;
+border-bottom-right-radius: 1px;
+-webkit-border-bottom-left-radius: 1px;
+-webkit-border-bottom-right-radius: 1px;
+-moz-border-radius: 1px;
+top: 14px;
+left: 6px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-iphone-rectangle-1 {
+background-color: #000;
+/* CHANGED:
+border-top-left-radius:2px;
+border-top-right-radius:2px;
+*/
+border-radius: 2px 2px 0 0;
+-webkit-border-top-left-radius:2px;
+-webkit-border-top-right-radius:2px;
+-moz-border-radius-topleft: 2px;
+-moz-border-radius-topright: 2px;
+width: 10px;
+height: 3px;
+position: absolute;
+top: 0;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-iphone-rectangle-2 {
+border: #000 1px solid;
+width: 8px;
+height: 9px;
+position: absolute;
+top: 2px;
+left: 3px;
+}
+.icon-iphone-rectangle-3 {
+background-color: #000;
+/* CHANGED:
+border-bottom-left-radius:2px;
+border-bottom-right-radius:2px;
+*/
+border-radius: 0 0 2px 2px;
+-webkit-border-bottom-left-radius:2px;
+-webkit-border-bottom-right-radius:2px;
+-moz-border-radius-bottomleft: 2px;
+-moz-border-radius-bottomright: 2px;
+width: 10px;
+height: 4px;
+position: absolute;
+top: 12px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-iphone-line {
+background-color: #fff;
+width: 4px;
+height: 1px;
+position: absolute;
+top: 1px;
+left: 6px;
+}
+.icon-iphone-dot {
+background-color: #fff;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+width: 2px;
+height: 2px;
+position: absolute;
+top: 13px;
+left: 7px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-battery-rectangle {
+border:#000 1px solid;
+width: 12px;
+height: 6px;
+position: absolute;
+top: 4px;
+left: 0;
+border-radius:1px;
+-webkit-border-radius:1px;
+-moz-border-radius:1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-battery-dot {
+background-color: #000;
+width: 2px;
+height: 4px;
+position: absolute;
+top: 6px;
+left: 14px;
+/* CHANGED:
+border-radius-top-right:1px;
+border-radius-bottom-right:1px;
+*/
+border-radius: 0 1px 1px 0;
+-webkit-border-radius-top-right:1px;
+-webkit-border-radius-bottom-right:1px;
+-moz-border-radius-topright: 1px;
+-moz-border-radius-bottomright: 1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-battery-line {
+background-color: #000;
+width: 10px;
+height: 4px;
+position: absolute;
+top: 6px;
+left: 2px;
+}
+
+.green .icon-battery-line {
+background-color: #ad2;
+}
+
+.red .icon-battery-line {
+background-color: #f00;
+width: 2px;
+-webkit-transition-property: width, background-color;
+-webkit-transition-duration: 0.333s;
+-webkit-transition-timing-function: linear;
+-moz-transition-property: width, background-color;
+-moz-transition-duration: 0.333s;
+-moz-transition-delay: 0;
+-moz-transition-timing-function: linear;
+}
+
+.red:hover .icon-battery-line {
+width: 10px;
+background-color: #ad2;
+}
+
+.icon-video-rectangle {
+background-color: #000;
+width: 12px;
+height: 10px;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+position: absolute;
+top: 3px;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-video-triangle {
+border: 4px solid #000;
+border-left-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 4px;
+right: 0;
+}
+
+.icon-paper-rectangle {
+border: #000 1px solid;
+width: 12px;
+height: 14px;
+position: absolute;
+top: 0;
+left: 1px;
+}
+.icon-paper-line-1 {
+background-color: #000;
+width: 4px;
+height: 1px;
+position: absolute;
+top: 2px;
+left: 3px;
+}
+.icon-paper-line-2 {
+background-color: #000;
+width: 4px;
+height: 1px;
+position: absolute;
+top: 4px;
+left: 3px;
+}
+.icon-paper-line-3 {
+background-color: #000;
+width: 4px;
+height: 1px;
+position: absolute;
+top: 6px;
+left: 3px;
+}
+.icon-paper-line-4 {
+background-color: #000;
+width: 5px;
+height: 7px;
+position: absolute;
+top: 2px;
+left: 8px;
+}
+.icon-paper-line-5 {
+background-color: #000;
+width: 10px;
+height: 4px;
+position: absolute;
+top: 10px;
+left: 3px;
+}
+
+.icon-smile-circle {
+background-color: #000;
+border-radius:8px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+width: 16px;
+height: 16px;
+position: absolute;
+top:0;
+left:0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-smile-dot-1 {
+background-color: #fff;
+/*ADDED:*/ border-radius: 2px;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+width: 2px;
+height: 3px;
+position: absolute;
+top: 4px;
+left: 4px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-smile-dot-2 {
+background-color: #fff;
+/*ADDED:*/ border-radius: 2px;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+width: 2px;
+height: 3px;
+position: absolute;
+top: 4px;
+left: 10px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-smile-line {
+background-color: #fff;
+/* CHANGED:
+border-bottom-left-radius: 8px;
+border-bottom-right-radius: 8px;
+*/
+border-radius: 0 0 8px 8px;
+-webkit-border-bottom-left-radius: 8px;
+-webkit-border-bottom-right-radius: 8px;
+-moz-border-radius-bottomleft: 8px;
+-moz-border-radius-bottomright: 8px;
+width: 8px;
+height: 3px;
+position: absolute;
+top: 9px;
+left: 4px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+/*ADDED:*/ -pie-watch-ancestors: 1;
+}
+
+.icon-smile .icon-smile-line {
+-webkit-transition-property: -webkit-border-bottom-left-radius, -webkit-border-bottom-right-radius, -webkit-border-top-left-radius, -webkit-border-top-right-radius;
+-webkit-transition-duration: 0.333s;
+-webkit-transition-timing-function: linear;
+-moz-transition-property: -moz-border-radius-bottomleft, -moz-border-radius-bottomright, -moz-border-radius-topleft, -moz-border-radius-topright;
+-moz-transition-duration: 0.333s;
+-moz-transition-delay: 0;
+-moz-transition-timing-function: linear;
+}
+.icon-smile:hover .icon-smile-line {
+-webkit-border-bottom-left-radius: 0;
+-webkit-border-bottom-right-radius: 0;
+-webkit-border-top-left-radius: 8px;
+-webkit-border-top-right-radius: 8px;
+-moz-border-radius-bottomleft: 0;
+-moz-border-radius-bottomright: 0;
+-moz-border-radius-topleft: 8px;
+-moz-border-radius-topright: 8px;
+/*ADDED:*/ border-radius: 8px 8px 0 0;
+}
+
+.icon-picture-rectangle {
+border: #000 1px solid;
+width: 14px;
+height: 10px;
+position: absolute;
+top: 2px;
+left: 0;
+}
+.icon-picture-dot {
+background-color: #000;
+width: 2px;
+height: 2px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 5px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-picture-dune-1 {
+background-color: #000;
+width: 4px;
+height: 2px;
+/* CHANGED:
+border-top-left-radius: 2px;
+border-top-right-radius: 2px;
+*/
+border-radius: 2px 2px 0 0;
+-webkit-border-top-left-radius: 2px;
+-webkit-border-top-right-radius: 2px;
+-moz-border-radius-topleft: 2px;
+-moz-border-radius-topright: 2px;
+position: absolute;
+top: 10px;
+left: 2px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-picture-dune-2 {
+background-color: #000;
+width: 8px;
+height: 4px;
+/* CHANGED:
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+*/
+border-radius: 4px 4px 0 0;
+-webkit-border-top-left-radius: 4px;
+-webkit-border-top-right-radius: 4px;
+-moz-border-radius-topleft: 4px;
+-moz-border-radius-topright: 4px;
+position: absolute;
+top: 8px;
+left: 6px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-comment-rectangle {
+background-color: #000;
+width: 16px;
+height: 10px;
+border-radius: 4px;
+-webkit-border-radius: 4px;
+-moz-border-radius: 4px;
+position: absolute;
+top: 2px;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-comment-triangle {
+border: 4px solid #000;
+border-right-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 8px;
+right: 0;
+}
+
+.icon-typing-rectangle {
+background-color: #000;
+width: 16px;
+height: 10px;
+border-radius: 4px;
+-webkit-border-radius: 4px;
+-moz-border-radius: 4px;
+position: absolute;
+top: 2px;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-typing-triangle {
+border: 4px solid #000;
+border-right-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 8px;
+right: 0;
+}
+.icon-typing-circle-1 {
+background-color: #fff;
+width: 2px;
+height: 2px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 6px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-typing-circle-2 {
+background-color: #fff;
+width: 2px;
+height: 2px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 6px;
+left: 7px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-typing-circle-3 {
+background-color: #fff;
+width: 2px;
+height: 2px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 6px;
+left: 11px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-screens-rectangle-1 {
+background-color: #fff;
+border:#000 1px solid;
+width: 11px;
+height: 7px;
+border-radius: 2px;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+position: absolute;
+top: 2px;
+right: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-screens-rectangle-2 {
+background-color: #fff;
+border:#000 1px solid;
+width: 11px;
+height: 7px;
+border-radius: 2px;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+position: absolute;
+bottom: 2px;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-play-circle {
+background-color: #000;
+border-radius:8px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+width: 16px;
+height: 16px;
+position: absolute;
+top:0;
+left:0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-play-triangle {
+border: 5px solid #fff;
+border-right-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 3px;
+left: 6px;
+}
+
+.icon-up-circle {
+background-color: #000;
+border-radius:8px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+width: 16px;
+height: 16px;
+position: absolute;
+top:0;
+left:0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-up-triangle {
+border: 4px solid #fff;
+border-right-color: transparent;
+border-left-color: transparent;
+border-top-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 0px;
+left: 4px;
+}
+.icon-up-line {
+background-color: #fff;
+border-radius:8px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+width: 2px;
+height: 6px;
+position: absolute;
+top:6px;
+left:7px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-down-circle {
+background-color: #000;
+border-radius:8px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+width: 16px;
+height: 16px;
+position: absolute;
+top:0;
+left:0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-down-triangle {
+border: 4px solid #fff;
+border-right-color: transparent;
+border-left-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+bottom: 0px;
+left: 4px;
+}
+.icon-down-line {
+background-color: #fff;
+border-radius:8px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+width: 2px;
+height: 6px;
+position: absolute;
+bottom:6px;
+left:7px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-back-triangle-1 {
+border: 6px solid #000;
+border-left-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 2px;
+right: 9px;
+}
+.icon-back-triangle-2 {
+border: 2px solid #000;
+border-right-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 2px;
+left: 7px;
+}
+.icon-back-triangle-3 {
+border: 2px solid #000;
+border-right-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+bottom: 2px;
+left: 7px;
+}
+.icon-back-line {
+background-color: #000;
+border-radius:1px;
+-webkit-border-radius:1px;
+-moz-border-radius:1px;
+width: 12px;
+height: 4px;
+position: absolute;
+top:6px;
+right:1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-forward-triangle-1 {
+border: 6px solid #000;
+border-right-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 2px;
+left: 9px;
+}
+.icon-forward-triangle-2 {
+border: 2px solid #000;
+border-left-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 2px;
+right: 7px;
+}
+.icon-forward-triangle-3 {
+border: 2px solid #000;
+border-left-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+bottom: 2px;
+right: 7px;
+}
+.icon-forward-line {
+background-color: #000;
+border-radius:1px;
+-webkit-border-radius:1px;
+-moz-border-radius:1px;
+width: 12px;
+height: 4px;
+position: absolute;
+top:6px;
+left:1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-camera-rectangle {
+background-color: #000;
+width: 16px;
+height: 10px;
+position: absolute;
+top: 4px;
+left: 0;
+border-radius:2px;
+-webkit-border-radius:2px;
+-moz-border-radius:2px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-camera-circle {
+background-color: #000;
+border: #fff 2px solid;
+border-radius: 4px;
+-webkit-border-radius: 4px;
+-moz-border-radius: 4px;
+width: 4px;
+height: 4px;
+position: absolute;
+top: 5px;
+left: 5px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-camera-line {
+background-color: #000;
+width: 4px;
+height: 4px;
+position: absolute;
+top: 2px;
+left: 3px;
+border-radius: 2px;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-yang-rectangle-1 {
+background-color: #fff;
+border: #000 2px solid;
+border-radius: 8px;
+-webkit-border-radius: 8px;
+-moz-border-radius: 8px;
+width: 12px;
+height: 12px;
+position: absolute;
+top: 0;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-yang-rectangle-2 {
+background-color: #000;
+width: 6px;
+height: 12px;
+/* CHANGED:
+border-top-right-radius: 6px;
+border-bottom-right-radius: 6px;
+*/
+border-radius: 0 6px 6px 0;
+-webkit-border-top-right-radius: 6px;
+-webkit-border-bottom-right-radius: 6px;
+-moz-border-radius-topright: 6px;
+-moz-border-radius-bottomright: 6px;
+position: absolute;
+top: 2px;
+right: 2px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-yang-circle-1 {
+background-color: #fff;
+width: 6px;
+height: 6px;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+position: absolute;
+bottom: 2px;
+left: 5px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-yang-circle-2 {
+background-color: #000;
+width: 6px;
+height: 6px;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+position: absolute;
+top: 2px;
+right: 5px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-yang-dot-1 {
+background-color: #fff;
+width: 2px;
+height: 2px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 4px;
+right: 7px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-yang-dot-2 {
+background-color: #000;
+width: 2px;
+height: 2px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+bottom: 4px;
+left: 7px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-profile-circle {
+background-color: #000;
+width: 6px;
+height: 6px;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+position: absolute;
+top: 1px;
+left: 5px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-profile-rectangle {
+background-color: #000;
+width: 10px;
+height: 7px;
+/* CHANGED:
+border-top-left-radius: 5px;
+border-top-right-radius: 5px;
+border-bottom-left-radius: 2px;
+border-bottom-right-radius: 2px;
+*/
+border-radius: 5px 5px 2px 2px;
+-webkit-border-top-left-radius: 5px;
+-webkit-border-top-right-radius: 5px;
+-webkit-border-bottom-left-radius: 2px;
+-webkit-border-bottom-right-radius: 2px;
+-moz-border-radius-topleft: 5px;
+-moz-border-radius-topright: 5px;
+-moz-border-radius-bottomleft: 2px;
+-moz-border-radius-bottomright: 2px;
+position: absolute;
+bottom: 1px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-folder-rectangle-1 {
+background-color: #000;
+width: 16px;
+height: 8px;
+/* CHANGED:
+border-bottom-left-radius: 2px;
+border-bottom-right-radius: 2px;
+*/
+border-radius: 0 0 2px 2px;
+-webkit-border-bottom-left-radius: 2px;
+-webkit-border-bottom-right-radius: 2px;
+-moz-border-radius-bottomleft: 2px;
+-moz-border-radius-bottomright: 2px;
+position: absolute;
+bottom: 2px;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-folder-rectangle-2 {
+background-color: #000;
+width: 8px;
+height: 2px;
+/* CHANGED:
+border-top-left-radius: 2px;
+border-top-right-radius: 2px;
+*/
+border-radius: 2px 2px 0 0;
+-webkit-border-top-left-radius: 2px;
+-webkit-border-top-right-radius: 2px;
+-moz-border-radius-topleft: 2px;
+-moz-border-radius-topright: 2px;
+position: absolute;
+top: 4px;
+right: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-folder-rectangle-3 {
+background-color: #000;
+width: 7px;
+height: 3px;
+/* CHANGED:
+border-top-left-radius: 2px;
+border-top-right-radius: 2px;
+*/
+border-radius: 2px 2px 0 0;
+-webkit-border-top-left-radius: 2px;
+-webkit-border-top-right-radius: 2px;
+-moz-border-radius-topleft: 2px;
+-moz-border-radius-topright: 2px;
+position: absolute;
+top: 2px;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-heart-triangle {
+border: 8px solid #000;
+border-left-color: transparent;
+border-right-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 6px;
+left: 0;
+}
+.icon-heart-circle-1 {
+background-color: #000;
+width: 8px;
+height: 4px;
+/* CHANGED:
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+*/
+border-radius: 4px 4px 0 0;
+-webkit-border-top-left-radius: 4px;
+-webkit-border-top-right-radius: 4px;
+-moz-border-radius-topleft: 4px;
+-moz-border-radius-topright: 4px;
+position: absolute;
+top: 2px;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-heart-circle-2 {
+background-color: #000;
+width: 8px;
+height: 4px;
+/* CHANGED:
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+*/
+border-radius: 4px 4px 0 0;
+-webkit-border-top-left-radius: 4px;
+-webkit-border-top-right-radius: 4px;
+-moz-border-radius-topleft: 4px;
+-moz-border-radius-topright: 4px;
+position: absolute;
+top: 2px;
+right: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-cmd-square {
+border: #000 2px solid;
+width: 2px;
+height: 2px;
+position: absolute;
+top: 5px;
+left: 5px;
+}
+.icon-cmd-circle-1 {
+border: #000 2px solid;
+width: 2px;
+height: 2px;
+/* CHANGED:
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+border-bottom-left-radius: 4px;
+*/
+border-radius: 4px 4px 0 4px;
+-webkit-border-top-left-radius: 4px;
+-webkit-border-top-right-radius: 4px;
+-webkit-border-bottom-left-radius: 4px;
+-moz-border-radius-topleft: 4px;
+-moz-border-radius-topright: 4px;
+-moz-border-radius-bottomleft: 4px;
+position: absolute;
+top: 1px;
+left: 1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-cmd-circle-2 {
+border: #000 2px solid;
+width: 2px;
+height: 2px;
+/* CHANGED:
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+border-bottom-right-radius: 4px;
+*/
+border-radius: 4px 4px 4px 0;
+-webkit-border-top-left-radius: 4px;
+-webkit-border-top-right-radius: 4px;
+-webkit-border-bottom-right-radius: 4px;
+-moz-border-radius-topleft: 4px;
+-moz-border-radius-topright: 4px;
+-moz-border-radius-bottomright: 4px;
+position: absolute;
+top: 1px;
+right: 1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-cmd-circle-3 {
+border: #000 2px solid;
+width: 2px;
+height: 2px;
+/* CHANGED:
+border-top-left-radius: 4px;
+border-bottom-left-radius: 4px;
+border-bottom-right-radius: 4px;
+*/
+border-radius: 4px 0 4px 4px;
+-webkit-border-top-left-radius: 4px;
+-webkit-border-bottom-left-radius: 4px;
+-webkit-border-bottom-right-radius: 4px;
+-moz-border-radius-topleft: 4px;
+-moz-border-radius-bottomleft: 4px;
+-moz-border-radius-bottomright: 4px;
+position: absolute;
+bottom: 1px;
+left: 1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-cmd-circle-4 {
+border: #000 2px solid;
+width: 2px;
+height: 2px;
+/* CHANGED:
+border-bottom-left-radius: 4px;
+border-top-right-radius: 4px;
+border-bottom-right-radius: 4px;
+*/
+border-radius: 0 4px 4px 4px;
+-webkit-border-bottom-left-radius: 4px;
+-webkit-border-top-right-radius: 4px;
+-webkit-border-bottom-right-radius: 4px;
+-moz-border-radius-bottomleft: 4px;
+-moz-border-radius-topright: 4px;
+-moz-border-radius-bottomright: 4px;
+position: absolute;
+bottom: 1px;
+right: 1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-mic-circle {
+border: #000 2px solid;
+border-top: transparent;
+/* CHANGED:
+border-bottom-left-radius: 6px;
+border-bottom-right-radius: 6px;
+*/
+border-radius: 0 0 6px 6px;
+-webkit-border-bottom-left-radius: 6px;
+-webkit-border-bottom-right-radius: 6px;
+-moz-border-radius-bottomleft: 6px;
+-moz-border-radius-bottomright: 6px;
+width: 8px;
+height: 8px;
+position: absolute;
+left: 2px;
+bottom: 2px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-mic-line {
+background-color: #000;
+width: 4px;
+height: 10px;
+border-radius: 2px;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+position: absolute;
+top: 0;
+left: 6px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-mic-dot {
+background-color: #000;
+width: 2px;
+height: 2px;
+/* CHANGED:
+border-bottom-left-radius: 1px;
+border-bottom-right-radius: 1px;
+*/
+border-radius: 0 0 1px 1px;
+-webkit-border-bottom-left-radius: 1px;
+-webkit-border-bottom-right-radius: 1px;
+-moz-border-radius-bottomleft: 1px;
+-moz-border-radius-bottomright: 1px;
+position: absolute;
+bottom: 0;
+left: 7px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-home-triangle {
+border: 8px solid #000;
+border-left-color: transparent;
+border-right-color: transparent;
+border-top-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+bottom: 7px;
+left: 0;
+}
+.icon-home-rectangle {
+background-color: #000;
+width: 10px;
+height: 8px;
+/* CHANGED:
+border-bottom-left-radius: 1px;
+border-bottom-right-radius: 1px;
+*/
+border-radius: 0 0 1px 1px;
+-webkit-border-bottom-left-radius: 1px;
+-webkit-border-bottom-right-radius: 1px;
+-moz-border-radius-bottomleft: 1px;
+-moz-border-radius-bottomright: 1px;
+position: absolute;
+bottom: 1px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-home-line {
+background-color: #000;
+width: 2px;
+height: 5px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 2px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-olympic-circle-1 {
+border: #09c 2px solid;
+width: 2px;
+height: 2px;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+position: absolute;
+top: 5px;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-olympic-circle-3 {
+border: #000 2px solid;
+width: 2px;
+height: 2px;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+position: absolute;
+top: 5px;
+left: 6px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-olympic-circle-5 {
+border: #f03 2px solid;
+width: 2px;
+height: 2px;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+position: absolute;
+top: 5px;
+left: 12px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-olympic-circle-2 {
+border: #fc0 2px solid;
+width: 2px;
+height: 2px;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+position: absolute;
+top: 8px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-olympic-circle-4 {
+border: #093 2px solid;
+width: 2px;
+height: 2px;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+position: absolute;
+top: 8px;
+left: 9px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-hd-rectangle {
+background-color: #000;
+width: 16px;
+height: 10px;
+border-radius: 2px;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+position: absolute;
+top: 3px;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-hd-line-1 {
+background-color: #fff;
+width: 1px;
+height: 6px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 5px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-hd-line-2 {
+background-color: #fff;
+width: 4px;
+height: 1px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 7px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-hd-line-3 {
+background-color: #fff;
+width: 1px;
+height: 6px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 5px;
+left: 6px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-hd-circle {
+border: #fff 1px solid;
+width: 2px;
+height: 4px;
+/* CHANGED:
+border-top-right-radius: 2px;
+border-bottom-right-radius: 2px;
+*/
+border-radius: 0 2px 2px 0;
+-webkit-border-top-right-radius: 2px;
+-webkit-border-bottom-right-radius: 2px;
+-moz-border-radius-topright: 2px;
+-moz-border-radius-bottomright: 2px;
+position: absolute;
+top: 5px;
+right: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-temp-circle {
+background-color: #000;
+width: 6px;
+height: 6px;
+border-radius: 4px;
+-webkit-border-radius: 4px;
+-moz-border-radius: 4px;
+position: absolute;
+bottom: 1px;
+left: 5px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-temp-line {
+border: #000 1px solid;
+width: 2px;
+height: 10px;
+border-radius: 4px;
+-webkit-border-radius: 4px;
+-moz-border-radius: 3px;
+position: absolute;
+top: 1px;
+left: 6px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-off-circle {
+border: #000 2px solid;
+width: 8px;
+height: 8px;
+border-radius: 8px;
+-webkit-border-radius: 8px;
+-moz-border-radius: 8px;
+position: absolute;
+bottom: 1px;
+left: 2px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-off-line {
+background-color: #000;
+border: #fff 1px solid;
+width: 2px;
+height: 6px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 1px;
+left: 6px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-cloud-rectangle {
+background-color: #000;
+width: 11px;
+height: 3px;
+position: absolute;
+bottom: 3px;
+left: 2px;
+}
+.icon-cloud-circle-1 {
+background-color: #000;
+width: 5px;
+height: 5px;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+position: absolute;
+bottom: 3px;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-cloud-circle-2 {
+background-color: #000;
+width: 8px;
+height: 8px;
+border-radius: 4px;
+-webkit-border-radius: 4px;
+-moz-border-radius: 4px;
+position: absolute;
+bottom: 4px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-cloud-circle-3 {
+background-color: #000;
+width: 7px;
+height: 7px;
+border-radius: 4px;
+-webkit-border-radius: 4px;
+-moz-border-radius: 4px;
+position: absolute;
+bottom: 3px;
+right: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-coffee-line {
+background-color: #000;
+width: 14px;
+height: 2px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+bottom: 1px;
+left: 1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-coffee-circle-1 {
+border: #000 2px solid;
+width: 6px;
+height: 6px;
+/* CHANGED:
+border-bottom-left-radius: 6px;
+border-bottom-right-radius: 6px;
+*/
+border-radius: 0 0 6px 6px;
+-webkit-border-bottom-left-radius: 6px;
+-webkit-border-bottom-right-radius: 6px;
+-moz-border-radius-bottomleft: 6px;
+-moz-border-radius-bottomright: 6px;
+position: absolute;
+top: 2px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-coffee-circle-2 {
+background-color: #000;
+width: 4px;
+height: 4px;
+border-radius: 2px;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+position: absolute;
+top: 4px;
+right: 1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-eye-triangle-1 {
+border: 4px solid #000;
+border-left-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 4px;
+right: 11px;
+}
+.icon-eye-triangle-2 {
+border: 4px solid #000;
+border-right-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 4px;
+left: 11px;
+}
+.icon-eye-circle-1 {
+border: #000 2px solid;
+width: 6px;
+height: 6px;
+border-radius: 6px;
+-webkit-border-radius: 8px;
+-moz-border-radius: 8px;
+position: absolute;
+top: 3px;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-eye-circle-2 {
+background-color: #000;
+width: 2px;
+height: 2px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 7px;
+left: 7px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-touch-line-1 {
+background-color: #000;
+width: 2px;
+height: 13px;
+/*ADDED:*/ border-radius: 1px 1px 0 0;
+-moz-border-radius-topleft: 1px;
+-moz-border-radius-topright: 1px;
+/*ADDED:*/ -webkit-border-radius-topleft: 1px;
+/*ADDED:*/ -webkit-border-radius-topright: 1px;
+position: absolute;
+bottom: 0;
+left: 4px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-touch-line-2 {
+background-color: #000;
+width: 2px;
+height: 7px;
+/*ADDED:*/ border-radius: 1px 1px 0 0;
+-moz-border-radius-topleft: 1px;
+-moz-border-radius-topright: 1px;
+/*ADDED:*/ -webkit-border-radius-topleft: 1px;
+/*ADDED:*/ -webkit-border-radius-topright: 1px;
+position: absolute;
+bottom: 0;
+left: 7px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-touch-line-3 {
+background-color: #000;
+width: 2px;
+height: 6px;
+/*ADDED:*/ border-radius: 1px 1px 0 0;
+-moz-border-radius-topleft: 1px;
+-moz-border-radius-topright: 1px;
+/*ADDED:*/ -webkit-border-radius-topleft: 1px;
+/*ADDED:*/ -webkit-border-radius-topright: 1px;
+position: absolute;
+bottom: 0;
+left: 10px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-touch-line-4 {
+background-color: #000;
+width: 2px;
+height: 4px;
+/*ADDED:*/ border-radius: 1px 1px 0 0;
+-moz-border-radius-topleft: 1px;
+-moz-border-radius-topright: 1px;
+/*ADDED:*/ -webkit-border-radius-topleft: 1px;
+/*ADDED:*/ -webkit-border-radius-topright: 1px;
+position: absolute;
+bottom: 0;
+left: 13px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-touch-circle {
+border: #000 1px solid;
+width: 6px;
+height: 6px;
+border-radius: 4px;
+-webkit-border-radius: 4px;
+-moz-border-radius: 4px;
+position: absolute;
+top: 0;
+left: 1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-repeat-triangle-1 {
+border: 3px solid #000;
+border-left-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+bottom: 1px;
+right: 13px;
+}
+.icon-repeat-rectangle-1 {
+border: 2px solid #000;
+border-left: transparent;
+border-top: transparent;
+/* CHANGED:
+border-bottom-right-radius: 4px;
+*/
+border-radius: 0 0 4px 0;
+-webkit-border-bottom-right-radius: 4px;
+-moz-border-radius-bottomright: 4px;
+width: 8px;
+height: 4px;
+position: absolute;
+bottom: 3px;
+left: 2px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-repeat-triangle-2 {
+border: 3px solid #000;
+border-right-color: transparent;
+border-top-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 1px;
+left: 13px;
+}
+.icon-repeat-rectangle-2 {
+border: 2px solid #000;
+border-right: transparent;
+border-bottom: transparent;
+/* CHANGED:
+border-top-left-radius: 4px;
+*/
+border-radius: 4px 0 0 0;
+-webkit-border-top-left-radius: 4px;
+-moz-border-radius-topleft: 4px;
+width: 8px;
+height: 4px;
+position: absolute;
+top: 3px;
+left: 4px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-eject-triangle {
+border: 6px solid #000;
+border-left-color: transparent;
+border-right-color: transparent;
+border-top-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+bottom: 6px;
+left: 2px;
+}
+.icon-eject-line {
+background-color: #000;
+width: 12px;
+height: 2px;
+position: absolute;
+bottom: 3px;
+left: 2px;
+}
+
+.icon-female-circle {
+border: #000 2px solid;
+width: 6px;
+height: 6px;
+border-radius: 5px;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+position: absolute;
+top: 0;
+left: 3px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-female-line-1 {
+background-color: #000;
+width: 2px;
+height: 8px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 8px;
+left: 7px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-female-line-2 {
+background-color: #000;
+width: 8px;
+height: 2px;
+border-radius: 1px;
+-webkit-border-radius: 1px;
+-moz-border-radius: 1px;
+position: absolute;
+top: 12px;
+left: 4px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-feed-dot {
+background-color: #000;
+width: 6px;
+height: 6px;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+position: absolute;
+bottom: 1px;
+left: 1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-feed-circle-1 {
+border: #000 2px solid;
+border-bottom-color: transparent;
+border-left-color: transparent;
+width: 6px;
+height: 6px;
+border-radius: 5px;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+position: absolute;
+bottom: 1px;
+left: 1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-feed-circle-2 {
+border: #000 2px solid;
+border-bottom-color: transparent;
+border-left-color: transparent;
+width: 10px;
+height: 10px;
+border-radius: 7px;
+-webkit-border-radius: 7px;
+-moz-border-radius: 7px;
+position: absolute;
+bottom: 1px;
+left: 1px;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+
+.icon-message-triangle-1 {
+border: 6px solid #000;
+border-left-color: transparent;
+border-right-color: transparent;
+border-bottom-color: transparent;
+height: 0;
+width: 0;
+position: absolute;
+top: 2px;
+left: 2px;
+}
+.icon-message-triangle-2 {
+border: 6px solid #000;
+border-top-color: transparent;
+border-left-color: transparent;
+/* CHANGED:
+border-bottom-right-radius: 2px;
+*/
+border-radius: 0 0 2px 0;
+-webkit-border-bottom-right-radius: 2px;
+-moz-border-radius-bottomright: 2px;
+height: 0;
+width: 0;
+position: absolute;
+bottom: 2px;
+right: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
+.icon-message-triangle-3 {
+border: 6px solid #000;
+border-top-color: transparent;
+border-right-color: transparent;
+/* CHANGED:
+border-bottom-left-radius: 2px;
+*/
+border-radius: 0 0 0 2px;
+-webkit-border-bottom-left-radius: 2px;
+-moz-border-radius-bottomleft: 2px;
+height: 0;
+width: 0;
+position: absolute;
+bottom: 2px;
+left: 0;
+/*ADDED:*/ behavior: url(../../build/PIE.htc);
+}
