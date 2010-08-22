@@ -7,10 +7,26 @@ if( !PIE ) {
         CLASS_PREFIX: 'pie_'
     };
 
-    // Detect IE6
-    if( !window.XMLHttpRequest ) {
-        PIE.isIE6 = true;
 
+    /*
+     * IE version detection approach by James Padolsey, with modifications -- from
+     * http://james.padolsey.com/javascript/detect-ie-in-js-using-conditional-comments/
+     */
+    PIE.ieVersion = function(){
+        var v = 4,
+            div = element.document.createElement('div'),
+            all = div.getElementsByTagName('i');
+
+        while (
+            div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+            all[0]
+        ) {}
+
+        return v;
+    }();
+
+    // Detect IE6
+    if( PIE.ieVersion === 6 ) {
         // IE6 can't access properties with leading dash, but can without it.
         PIE.CSS_PREFIX = PIE.CSS_PREFIX.replace( /^-/, '' );
 
@@ -19,5 +35,4 @@ if( !PIE ) {
     }
 
     // Detect IE8
-    PIE.ie8DocMode = element.document.documentMode;
-    PIE.isIE8 = !!PIE.ie8DocMode;
+    PIE.ie8DocMode = PIE.ieVersion === 8 && element.document.documentMode;

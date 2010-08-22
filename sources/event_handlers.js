@@ -74,7 +74,7 @@ function propChanged() {
  */
 function mouseEntered() {
     var el = event.srcElement;
-    if( PIE.isIE6 && el.tagName !== 'A' ) {
+    if( PIE.ieVersion === 6 && el.tagName !== 'A' ) {
         el.className += ' ' + PIE.CLASS_PREFIX + 'hover';
     }
     //must delay this because the mouseleave event fires before the :hover styles are added.
@@ -85,7 +85,7 @@ function mouseEntered() {
  */
 function mouseLeft() {
     var el = event.srcElement;
-    if( PIE.isIE6 && el.tagName !== 'A' ) {
+    if( PIE.ieVersion === 6 && el.tagName !== 'A' ) {
         el.className = el.className.replace( PIE.hoverClassRE, '' );
     }
     //must delay this because the mouseleave event fires before the :hover styles are removed.

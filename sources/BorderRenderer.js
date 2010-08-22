@@ -101,11 +101,11 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                 rs[ 'padding' + side ] = '';
                 rs[ 'padding' + side ] = ( new PIE.Length( cs[ 'padding' + side ] ) ).pixels( el ) +
                                          ( new PIE.Length( cs[ 'border' + side + 'Width' ] ) ).pixels( el ) +
-                                         ( !PIE.isIE8 && i % 2 ? 1 : 0 ); //needs an extra horizontal pixel to counteract the extra "inner border" going away
+                                         ( !PIE.ieVersion === 8 && i % 2 ? 1 : 0 ); //needs an extra horizontal pixel to counteract the extra "inner border" going away
             }
             rs.borderWidth = 0;
         }
-        else if( PIE.isIE6 ) {
+        else if( PIE.ieVersion === 6 ) {
             // Wrap all the element's children in a custom element, set the element to visiblity:hidden,
             // and set the wrapper element to visiblity:visible. This hides the outer element's decorations
             // (background and border) but displays all the contents.

@@ -150,7 +150,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 pxX, pxY,
                 clipT = 0, clipL = 0,
                 clipR = elW + 1, clipB = elH + 1, //make sure the default clip region is not inside the box (by a subpixel)
-                clipAdjust = PIE.isIE8 ? 0 : 1; //prior to IE8 requires 1 extra pixel in the image clip region
+                clipAdjust = PIE.ieVersion === 8 ? 0 : 1; //prior to IE8 requires 1 extra pixel in the image clip region
 
             // Positioning - find the pixel offset from the top/left and convert to a ratio
             // The position is shifted by half a pixel, to adjust for the half-pixel coordorigin shift which is
