@@ -5,6 +5,13 @@
  *                 been validated as a valid length or percentage syntax.
  */
 PIE.Length = (function() {
+
+    var lengthCalcEl = element.document.createElement( 'length-calc' ),
+        s = lengthCalcEl.style;
+    s.position = 'absolute';
+    s.top = s.left = -9999;
+
+
     function Length( val ) {
         this.val = val;
     }
@@ -83,22 +90,15 @@ PIE.Length = (function() {
          */
         getEmPixels: function( el ) {
             var fs = el.currentStyle.fontSize,
-                tester, s, px;
+                px;
 
             if( fs.indexOf( 'px' ) > 0 ) {
                 return parseFloat( fs );
             } else {
-                tester = this._tester;
-                if( !tester ) {
-                    tester = this._tester = el.document.createElement( 'length-calc' );
-                    s = tester.style;
-                    s.width = '1em';
-                    s.position = 'absolute';
-                    s.top = s.left = -9999;
-                }
-                el.appendChild( tester );
-                px = tester.offsetWidth;
-                el.removeChild( tester );
+                lengthCalcEl.style.width = '1em';
+                el.appendChild( lengthCalcEl );
+                px = lengthCalcEl.offsetWidth;
+                el.removeChild( lengthCalcEl );
                 return px;
             }
         }
@@ -107,19 +107,16 @@ PIE.Length = (function() {
     Length.conversions = (function() {
         var units = [ 'mm', 'cm', 'in', 'pt', 'pc' ],
             vals = {},
-            parent = element.parentNode,
-            i = 0, len = units.length, unit, el, s;
-        for( ; i < len; i++ ) {
+            parent = element.document.body,
+            i = units.length, unit;
+
+        parent.appendChild( lengthCalcEl );
+        while( i-- ) {
             unit = units[i];
-            el = element.document.createElement( 'length-calc' );
-            s = el.style;
-            s.position = 'absolute';
-            s.top = s.left = -9999;
-            s.width = '100' + unit;
-            parent.appendChild( el );
-            vals[ unit ] = el.offsetWidth / 100;
-            parent.removeChild( el );
+            lengthCalcEl.style.width = '100' + unit;
+            vals[ unit ] = lengthCalcEl.offsetWidth / 100;
         }
+        parent.removeChild( lengthCalcEl );
         return vals;
     })();
 
