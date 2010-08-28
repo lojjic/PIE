@@ -194,7 +194,7 @@ function init() {
         var el = element,
             doc = el.document,
             docEl = doc.documentElement || doc.body,
-            rect = el.getBoundingClientRect(),
+            rect,
             rootRenderer;
 
         // Force layout so move/resize events will fire. Set this as soon as possible to avoid layout changes
@@ -204,6 +204,8 @@ function init() {
             el.runtimeStyle.zoom = 1;
             initFirstChildPseudoClass();
         }
+
+        rect = el.getBoundingClientRect();
 
         // Check if the element is in the viewport; if not, delay initialization
         if( rect.top > docEl.clientHeight || rect.left > docEl.clientWidth || rect.bottom < 0 || rect.right < 0 ) {
