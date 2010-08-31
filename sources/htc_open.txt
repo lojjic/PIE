@@ -10,3 +10,4 @@ Dual-licensed for use under the Apache License Version 2.0 or the General Public
     <PUBLIC:ATTACH EVENT="ondetach" FOR="element" ONEVENT="cleanup()" />
 
     <script type="text/javascript">
+        var doc = element.document;

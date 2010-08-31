@@ -18,7 +18,7 @@ PIE.Util = {
         var vmlPrefix = 'css3vml',
             vmlDoc = PIE._vmlCreatorDoc;
         if( !vmlDoc ) {
-            vmlDoc = PIE._vmlCreatorDoc = element.document.createDocumentFragment();
+            vmlDoc = PIE._vmlCreatorDoc = doc.createDocumentFragment();
             vmlDoc.namespaces.add( vmlPrefix, 'urn:schemas-microsoft-com:vml' );
         }
         return vmlDoc.createElement( vmlPrefix + ':' + tag );

@@ -14,7 +14,7 @@ if( !PIE ) {
      */
     PIE.ieVersion = function(){
         var v = 4,
-            div = element.document.createElement('div'),
+            div = doc.createElement('div'),
             all = div.getElementsByTagName('i');
 
         while (
@@ -35,4 +35,4 @@ if( !PIE ) {
     }
 
     // Detect IE8
-    PIE.ie8DocMode = PIE.ieVersion === 8 && element.document.documentMode;
+    PIE.ie8DocMode = PIE.ieVersion === 8 && doc.documentMode;

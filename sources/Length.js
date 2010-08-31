@@ -6,7 +6,7 @@
  */
 PIE.Length = (function() {
 
-    var lengthCalcEl = element.document.createElement( 'length-calc' ),
+    var lengthCalcEl = doc.createElement( 'length-calc' ),
         s = lengthCalcEl.style;
     s.position = 'absolute';
     s.top = s.left = -9999;
@@ -107,7 +107,7 @@ PIE.Length = (function() {
     Length.conversions = (function() {
         var units = [ 'mm', 'cm', 'in', 'pt', 'pc' ],
             vals = {},
-            parent = element.document.body,
+            parent = doc.documentElement,
             i = units.length, unit;
 
         parent.appendChild( lengthCalcEl );
