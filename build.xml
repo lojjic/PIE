@@ -18,6 +18,7 @@
             <fileset file="${src_dir}/Observable.js" />
             <fileset file="${src_dir}/Heartbeat.js" />
             <fileset file="${src_dir}/OnScroll.js" />
+            <fileset file="${src_dir}/OnResize.js" />
             <fileset file="${src_dir}/Length.js" />
             <fileset file="${src_dir}/BgPosition.js" />
             <fileset file="${src_dir}/Angle.js" />
@@ -37,17 +38,26 @@
             <fileset file="${src_dir}/BorderImageRenderer.js" />
             <fileset file="${src_dir}/BoxShadowOutsetRenderer.js" />
             <fileset file="${src_dir}/BoxShadowInsetRenderer.js" />
+            <fileset file="${src_dir}/Element.js" />
+            <fileset file="${src_dir}/PIE_API.js" />
             <fileset file="${src_dir}/PIE_close.js" />
-            <fileset file="${src_dir}/event_handlers.js" />
         </concat>
 
         <concat destfile="${build_dir}/PIE_uncompressed.htc">
             <fileset file="${src_dir}/htc_open.txt" />
             <fileset file="${build_dir}/script_uncompressed.js" />
+            <fileset file="${src_dir}/htc_init.js" />
             <fileset file="${src_dir}/htc_close.txt" />
         </concat>
 
+        <concat destfile="${build_dir}/PIE_uncompressed.js">
+            <fileset file="${src_dir}/js_open.js" />
+            <fileset file="${build_dir}/script_uncompressed.js" />
+            <fileset file="${src_dir}/js_close.js" />
+        </concat>
+
         <replace file="${build_dir}/PIE_uncompressed.htc" token="$Version$" value="${version}"/>
+        <replace file="${build_dir}/PIE_uncompressed.js" token="$Version$" value="${version}"/>
     </target>
 
     <target name="build-compressed" depends="build-uncompressed">
@@ -71,10 +81,18 @@
         <concat destfile="${build_dir}/PIE.htc">
             <fileset file="${src_dir}/htc_open.txt" />
             <fileset file="${build_dir}/script_compressed.js" />
+            <fileset file="${src_dir}/htc_init.js" />
             <fileset file="${src_dir}/htc_close.txt" />
         </concat>
 
+        <concat destfile="${build_dir}/PIE.js">
+            <fileset file="${src_dir}/js_open.js" />
+            <fileset file="${build_dir}/script_compressed.js" />
+            <fileset file="${src_dir}/js_close.js" />
+        </concat>
+
         <replace file="${build_dir}/PIE.htc" token="$Version$" value="${version}"/>
+        <replace file="${build_dir}/PIE.js" token="$Version$" value="${version}"/>
 
         <delete file="${build_dir}/temp.js" />
         <delete file="${build_dir}/script_uncompressed.js" />

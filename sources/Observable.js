@@ -15,7 +15,7 @@ PIE.Observable = function() {
 PIE.Observable.prototype = {
 
     observe: function( fn ) {
-        var id = fn[ '_id' ] || ( fn[ '_id' ] = '' + new Date().getTime() + Math.random() ),
+        var id = PIE.Util.getUID( fn ),
             indexes = this.indexes,
             observers = this.observers;
         if( !( id in indexes ) ) {
@@ -25,7 +25,7 @@ PIE.Observable.prototype = {
     },
 
     unobserve: function( fn ) {
-        var id = fn[ '_id' ],
+        var id = PIE.Util.getUID( fn ),
             indexes = this.indexes;
         if( id && id in indexes ) {
             delete this.observers[ indexes[ id ] ];

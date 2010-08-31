@@ -26,6 +26,16 @@ PIE.Util = {
 
 
     /**
+     * Generate and return a unique ID for a given object. The generated ID is stored
+     * as a property of the object for future reuse.
+     * @param {Object} obj
+     */
+    getUID: function( obj ) {
+        return obj && obj[ '_pieId' ] || ( obj[ '_pieId' ] = +new Date() + Math.random() );
+    },
+
+
+    /**
      * Simple utility for merging objects
      * @param {Object} obj1 The main object into which all others will be merged
      * @param {...Object} var_args Other objects which will be merged into the first, in order
