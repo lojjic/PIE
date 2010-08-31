@@ -10,19 +10,19 @@ PIE.StyleInfoBase = {
             this.element = el;
         }
         PIE.Util.merge( StyleInfo.prototype, PIE.StyleInfoBase, proto );
+        StyleInfo._propsCache = {};
         return StyleInfo;
     },
 
     /**
-     * Get an object representation of the target CSS style, caching it as long as the
-     * underlying CSS value hasn't changed.
+     * Get an object representation of the target CSS style, caching it for each unique
+     * CSS value string.
      * @return {Object}
      */
     getProps: function() {
-        if( this.changed() ) {
-            this._props = this.parseCss( this._css = this.getCss() );
-        }
-        return this._props;
+        var css = this._lastCss = this.getCss(),
+            cache = this.constructor._propsCache;
+        return css ? ( css in cache ? cache[ css ] : ( cache[ css ] = this.parseCss( css ) ) ) : null;
     },
 
     /**
@@ -53,6 +53,6 @@ PIE.StyleInfoBase = {
      * @return {boolean}
      */
     changed: function() {
-        return this._css !== this.getCss();
+        return this._lastCss !== this.getCss();
     }
 };
