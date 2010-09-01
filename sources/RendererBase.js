@@ -6,8 +6,9 @@ PIE.RendererBase = {
      * @param proto
      */
     newRenderer: function( proto ) {
-        function Renderer( el, styleInfos, parent ) {
+        function Renderer( el, boundsInfo, styleInfos, parent ) {
             this.element = el;
+            this.boundsInfo = boundsInfo;
             this.styleInfos = styleInfos;
             this.parent = parent;
         }
@@ -147,8 +148,9 @@ PIE.RendererBase = {
      */
     getRadiiPixels: function( radii ) {
         var el = this.element,
-            w = el.offsetWidth,
-            h = el.offsetHeight,
+            bounds = this.boundsInfo.getBounds(),
+            w = bounds.w,
+            h = bounds.h,
             tlX, tlY, trX, trY, brX, brY, blX, blY, f;
 
         tlX = radii.x['tl'].pixels( el, w );
@@ -208,9 +210,9 @@ PIE.RendererBase = {
         mult = mult || 1;
 
         var r, str,
-            el = this.element,
-            w = el.offsetWidth * mult,
-            h = el.offsetHeight * mult,
+            bounds = this.boundsInfo.getBounds(),
+            w = bounds.w * mult,
+            h = bounds.h * mult,
             radInfo = this.styleInfos.borderRadiusInfo,
             floor = Math.floor, ceil = Math.ceil,
             shrinkT = shrink ? shrink.t * mult : 0,

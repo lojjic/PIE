@@ -30,8 +30,9 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
                 radii = styleInfos.borderRadiusInfo.getProps(),
                 len = shadowInfos.length,
                 i = len, j,
-                w = el.offsetWidth,
-                h = el.offsetHeight,
+                bounds = this.boundsInfo.getBounds(),
+                w = bounds.w,
+                h = bounds.h,
                 clipAdjust = PIE.ieVersion === 8 ? 1 : 0, //workaround for IE8 bug where VML leaks out top/left of clip region by 1px
                 corners = [ 'tl', 'tr', 'br', 'bl' ], corner,
                 shadowInfo, shape, fill, ss, xOff, yOff, spread, blur, shrink, color, alpha, path,

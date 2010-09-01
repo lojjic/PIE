@@ -17,8 +17,8 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
     isActive: function() {
         var si = this.styleInfos,
-            el = this.element;
-        return el.offsetWidth && el.offsetHeight && (
+            bounds = this.boundsInfo.getBounds();
+        return bounds.w && bounds.h && (
                si.borderImageInfo.isActive() ||
                si.borderRadiusInfo.isActive() ||
                si.backgroundInfo.isActive() ||
@@ -51,6 +51,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
      */
     drawBgColor: function() {
         var props = this.styleInfos.backgroundInfo.getProps(),
+            bounds = this.boundsInfo.getBounds(),
             el = this.element,
             color = props && props.color,
             shape, w, h, s, alpha;
@@ -59,8 +60,8 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             this.hideBackground();
 
             shape = this.getShape( 'bgColor', 'fill', this.getBox(), 1 );
-            w = el.offsetWidth;
-            h = el.offsetHeight;
+            w = bounds.w;
+            h = bounds.h;
             shape.stroked = false;
             shape.coordsize = w * 2 + ',' + h * 2;
             shape.coordorigin = '1,1';
@@ -84,15 +85,15 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
      */
     drawBgImages: function() {
         var props = this.styleInfos.backgroundInfo.getProps(),
+            bounds = this.boundsInfo.getBounds(),
             images = props && props.images,
-            img, el, shape, w, h, s, i;
+            img, shape, w, h, s, i;
 
         if( images ) {
             this.hideBackground();
 
-            el = this.element;
-            w = el.offsetWidth,
-            h = el.offsetHeight,
+            w = bounds.w;
+            h = bounds.h;
 
             i = images.length;
             while( i-- ) {
@@ -134,9 +135,9 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         PIE.Util.withImageSize( shape.fill.src, function( size ) {
             var fill = shape.fill,
                 el = this.element,
-                elW = el.offsetWidth,
-                elH = el.offsetHeight,
-                cs = el.currentStyle,
+                bounds = this.boundsInfo.getBounds(),
+                elW = bounds.w,
+                elH = bounds.h,
                 si = this.styleInfos,
                 border = si.borderInfo.getProps(),
                 bw = border && border.widths,
@@ -182,8 +183,9 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
      */
     addLinearGradient: function( shape, info ) {
         var el = this.element,
-            w = el.offsetWidth,
-            h = el.offsetHeight,
+            bounds = this.boundsInfo.getBounds(),
+            w = bounds.w,
+            h = bounds.h,
             fill = shape.fill,
             angle = info.angle,
             startPos = info.gradientStart,

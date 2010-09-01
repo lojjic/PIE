@@ -22,13 +22,14 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
     updateSize: function() {
         if( this.isActive() ) {
             var props = this.styleInfos.borderImageInfo.getProps(),
+                bounds = this.boundsInfo.getBounds(),
                 box = this.getBox(), //make sure pieces are created
                 el = this.element,
                 pieces = this.pieces;
 
             PIE.Util.withImageSize( props.src, function( imgSize ) {
-                var elW = el.offsetWidth,
-                    elH = el.offsetHeight,
+                var elW = bounds.w,
+                    elH = bounds.h,
 
                     widths = props.width,
                     widthT = widths.t.pixels( el ),

@@ -54,5 +54,13 @@ PIE.StyleInfoBase = {
      */
     changed: function() {
         return this._lastCss !== this.getCss();
+    },
+
+    lock: function() {
+        this._locked = 1;
+    },
+
+    unlock: function() {
+        this._locked = 0;
     }
 };

@@ -6,6 +6,7 @@ PIE.Element = (function() {
     function Element( el ) {
         var lastW, lastH, lastX, lastY,
             renderers,
+            boundsInfo,
             styleInfos,
             ancestors,
             initializing,
@@ -50,6 +51,7 @@ PIE.Element = (function() {
                     PIE.OnScroll.unobserve( init );
 
                     // Create the style infos and renderers
+                    boundsInfo = new PIE.BoundsInfo( el );
                     styleInfos = {
                         backgroundInfo: new PIE.BackgroundStyleInfo( el ),
                         borderInfo: new PIE.BorderStyleInfo( el ),
@@ -59,14 +61,14 @@ PIE.Element = (function() {
                         visibilityInfo: new PIE.VisibilityStyleInfo( el )
                     };
 
-                    rootRenderer = new PIE.RootRenderer( el, styleInfos );
+                    rootRenderer = new PIE.RootRenderer( el, boundsInfo, styleInfos );
                     renderers = [
                         rootRenderer,
-                        new PIE.BoxShadowOutsetRenderer( el, styleInfos, rootRenderer ),
-                        new PIE.BackgroundRenderer( el, styleInfos, rootRenderer ),
-                        new PIE.BoxShadowInsetRenderer( el, styleInfos, rootRenderer ),
-                        new PIE.BorderRenderer( el, styleInfos, rootRenderer ),
-                        new PIE.BorderImageRenderer( el, styleInfos, rootRenderer )
+                        new PIE.BoxShadowOutsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                        new PIE.BackgroundRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                        new PIE.BoxShadowInsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                        new PIE.BorderRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                        new PIE.BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
                     ];
 
                     // Add property change listeners to ancestors if requested
@@ -94,33 +96,27 @@ PIE.Element = (function() {
          */
         function update() {
             if( initialized ) {
-                /* TODO just using getBoundingClientRect may not always be accurate; it's possible that
-                   an element will actually move relative to its positioning parent, but its position
-                   relative to the viewport will stay the same. Need to come up with a better way to
-                   track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
-                   but that is a more expensive operation since it does some DOM walking, and we want this
-                   check to be as fast as possible. */
-                var rect = el.getBoundingClientRect(),
-                    x = rect.left,
-                    y = rect.top,
-                    w = rect.right - x,
-                    h = rect.bottom - y,
-                    i, len;
+                var i, len;
 
-                if( x !== lastX || y !== lastY ) {
+                boundsInfo.lock();
+                if( boundsInfo.positionChanged() ) {
+                    /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
+                       position changes may not always be accurate; it's possible that
+                       an element will actually move relative to its positioning parent, but its position
+                       relative to the viewport will stay the same. Need to come up with a better way to
+                       track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
+                       but that is a more expensive operation since it does some DOM walking, and we want this
+                       check to be as fast as possible. */
                     for( i = 0, len = renderers.length; i < len; i++ ) {
                         renderers[i].updatePos();
                     }
-                    lastX = x;
-                    lastY = y;
                 }
-                if( w !== lastW || h !== lastH ) {
+                if( boundsInfo.sizeChanged() ) {
                     for( i = 0, len = renderers.length; i < len; i++ ) {
                         renderers[i].updateSize();
                     }
-                    lastW = w;
-                    lastH = h;
                 }
+                boundsInfo.unlock();
             }
             else if( !initializing ) {
                 init();
@@ -134,6 +130,9 @@ PIE.Element = (function() {
             if( initialized ) {
                 var i, len,
                     toUpdate = [];
+
+                boundsInfo.lock();
+
                 for( i = 0, len = renderers.length; i < len; i++ ) {
                     if( renderers[i].needsUpdate() ) {
                         toUpdate.push( renderers[i] );
@@ -142,6 +141,8 @@ PIE.Element = (function() {
                 for( i = 0, len = toUpdate.length; i < len; i++ ) {
                     toUpdate[i].updateProps();
                 }
+
+                boundsInfo.unlock();
             }
             else if( !initializing ) {
                 init();

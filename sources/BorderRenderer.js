@@ -42,9 +42,10 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
     drawBorder: function() {
         var el = this.element,
             cs = el.currentStyle,
-            w = el.offsetWidth,
-            h = el.offsetHeight,
             props = this.styleInfos.borderInfo.getProps(),
+            bounds = this.boundsInfo.getBounds(),
+            w = bounds.w,
+            h = bounds.h,
             side, shape, stroke, s,
             segments, seg, i, len;
 
@@ -138,7 +139,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
      */
     getBorderSegments: function( mult ) {
         var el = this.element,
-            elW, elH,
+            bounds, elW, elH,
             borderInfo = this.styleInfos.borderInfo,
             segments = [],
             floor, ceil, wT, wR, wB, wL,
@@ -166,8 +167,9 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
             }
             else {
                 mult = mult || 1;
-                elW = el.offsetWidth;
-                elH = el.offsetHeight;
+                bounds = this.boundsInfo.getBounds();
+                elW = bounds.w;
+                elH = bounds.h;
 
                 wT = widths['t'].pixels( el );
                 wR = widths['r'].pixels( el );
