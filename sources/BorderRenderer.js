@@ -10,6 +10,29 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
     zIndex: 4,
     boxName: 'border',
 
+    /**
+     * Lookup table of elements which cannot take custom children.
+     */
+    childlessElements: {
+        'TABLE':1, //can obviously have children but not custom ones
+        'INPUT':1,
+        'TEXTAREA':1,
+        'SELECT':1,
+        'OPTION':1,
+        'IMG':1,
+        'HR':1,
+        'FIELDSET':1 //can take children but wrapping its children messes up its <legend>
+    },
+
+    /**
+     * Values of the type attribute for input elements displayed as buttons
+     */
+    inputButtonTypes: {
+        'submit':1,
+        'button':1,
+        'reset':1
+    },
+
     needsUpdate: function() {
         var si = this.styleInfos;
         return si.borderInfo.changed() || si.borderRadiusInfo.changed();
@@ -92,9 +115,11 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
             cs = el.currentStyle,
             rs = el.runtimeStyle,
             tag = el.tagName,
+            isIE6 = PIE.ieVersion === 6,
             sides, side, i;
 
-        if( tag === 'BUTTON' || ( tag === 'INPUT' && el.type in { 'submit':1, 'button':1, 'reset':1 } ) ) {
+        if( ( isIE6 && tag in this.childlessElements ) || tag === 'BUTTON' ||
+                ( tag === 'INPUT' && el.type in this.inputButtonTypes ) ) {
             rs.borderWidth = '';
             sides = this.styleInfos.borderInfo.sides;
             for( i = sides.length; i--; ) {
@@ -106,7 +131,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
             }
             rs.borderWidth = 0;
         }
-        else if( PIE.ieVersion === 6 ) {
+        else if( isIE6 ) {
             // Wrap all the element's children in a custom element, set the element to visiblity:hidden,
             // and set the wrapper element to visiblity:visible. This hides the outer element's decorations
             // (background and border) but displays all the contents.
