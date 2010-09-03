@@ -5,7 +5,11 @@
  */
 PIE.BgPosition = (function() {
 
-    var length_fifty = new PIE.Length( '50%' );
+    var length_fifty = new PIE.Length( '50%' ),
+        length_zero = PIE.Length.ZERO,
+        vert_idents = { 'top': 1, 'center': 1, 'bottom': 1 },
+        horiz_idents = { 'left': 1, 'center': 1, 'right': 1 },
+        vals = [ 'left', length_zero, 'top', length_zero ];
 
 
     function BgPosition( tokens ) {
@@ -24,14 +28,11 @@ PIE.BgPosition = (function() {
             if( !this._values ) {
                 var tokens = this.tokens,
                     len = tokens.length,
-                    length_zero = PIE.Length.ZERO,
-                    type_ident = PIE.Tokenizer.Type.IDENT,
-                    type_length = PIE.Tokenizer.Type.LENGTH,
-                    type_percent = PIE.Tokenizer.Type.PERCENT,
-                    type, value,
-                    vert_idents = { 'top': 1, 'center': 1, 'bottom': 1 },
-                    horiz_idents = { 'left': 1, 'center': 1, 'right': 1 },
-                    vals = [ 'left', length_zero, 'top', length_zero ];
+                    identType = PIE.Tokenizer.Type,
+                    type_ident = identType.IDENT,
+                    type_length = identType.LENGTH,
+                    type_percent = identType.PERCENT,
+                    type, value;
 
                 // If only one value, the second is assumed to be 'center'
                 if( len === 1 ) {
