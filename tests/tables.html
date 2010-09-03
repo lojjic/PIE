@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Tests for background gradients</title>
+
+    <style type="text/css">
+
+        table {
+            border: 1px solid blue;
+            background: #EEF;
+            margin: 30px;
+            -webkit-border-radius: 30px;
+            -moz-border-radius: 30px;
+            border-radius: 30px;
+
+            behavior: url(../build/PIE_uncompressed.htc);
+        }
+
+        th {
+            border: 1px solid red;
+            /*background: #FEE;*/
+            padding: .5em 2em;
+        }
+
+        td {
+            border: 1px solid green;
+            /*background: #EFE;*/
+            padding: .5em 2em;
+        }
+
+
+
+        #test1 {
+            border-collapse: separate;
+            border-spacing: 5px;
+        }
+
+        #test2 {
+            border-collapse: collapse;
+        }
+
+        .rounded {
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <table id="test1">
+        <thead>
+            <tr> <th>Head 1</th> <th>Head 2</th> <th>Head 3</th> </tr>
+        </thead>
+        <tfoot>
+            <tr> <th>Foot 1</th> <th>Foot 2</th> <th class="rounded">Foot 3</th> </tr>
+        </tfoot>
+        <tbody>
+            <tr> <td>Body 1</td> <td>Body 2</td> <td>Body 3</td> </tr>
+            <tr> <td class="rounded">Body 1</td> <td>Body 2</td> <td>Body 3</td> </tr>
+            <tr> <td>Body 1</td> <td>Body 2</td> <td>Body 3</td> </tr>
+        </tbody>
+    </table>
+
+    <table id="test2">
+        <thead>
+            <tr> <th>Head 1</th> <th>Head 2</th> <th>Head 3</th> </tr>
+        </thead>
+        <tfoot>
+            <tr> <th>Foot 1</th> <th>Foot 2</th> <th class="rounded">Foot 3</th> </tr>
+        </tfoot>
+        <tbody>
+            <tr> <td>Body 1</td> <td>Body 2</td> <td>Body 3</td> </tr>
+            <tr> <td class="rounded">Body 1</td> <td>Body 2</td> <td>Body 3</td> </tr>
+            <tr> <td>Body 1</td> <td>Body 2</td> <td>Body 3</td> </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

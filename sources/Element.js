@@ -1,7 +1,8 @@
 
 PIE.Element = (function() {
 
-    var wrappers = {};
+    var wrappers = {},
+        ignorePropertyNames = { 'background':1, 'bgColor':1 };
 
     function Element( el ) {
         var lastW, lastH, lastX, lastY,
@@ -127,25 +128,30 @@ PIE.Element = (function() {
          * Handle property changes to trigger update when appropriate.
          */
         function propChanged() {
-            if( initialized ) {
-                var i, len,
-                    toUpdate = [];
+            // Some elements like <table> fire onpropertychange events for old-school background properties
+            // ('background', 'bgColor') when runtimeStyle background properties are changed, which
+            // results in an infinite loop; therefore we filter out those property names.
+            if( !( event && event.propertyName in ignorePropertyNames ) ) {
+                if( initialized ) {
+                    var i, len,
+                        toUpdate = [];
 
-                boundsInfo.lock();
+                    boundsInfo.lock();
 
-                for( i = 0, len = renderers.length; i < len; i++ ) {
-                    if( renderers[i].needsUpdate() ) {
-                        toUpdate.push( renderers[i] );
+                    for( i = 0, len = renderers.length; i < len; i++ ) {
+                        if( renderers[i].needsUpdate() ) {
+                            toUpdate.push( renderers[i] );
+                        }
                     }
-                }
-                for( i = 0, len = toUpdate.length; i < len; i++ ) {
-                    toUpdate[i].updateProps();
-                }
+                    for( i = 0, len = toUpdate.length; i < len; i++ ) {
+                        toUpdate[i].updateProps();
+                    }
 
-                boundsInfo.unlock();
-            }
-            else if( !initializing ) {
-                init();
+                    boundsInfo.unlock();
+                }
+                else if( !initializing ) {
+                    init();
+                }
             }
         }
 
