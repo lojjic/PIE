@@ -4,6 +4,10 @@
  * @param {Array.<PIE.Tokenizer.Token>} tokens The tokens making up the background position value.
  */
 PIE.BgPosition = (function() {
+
+    var length_fifty = new PIE.Length( '50%' );
+
+
     function BgPosition( tokens ) {
         this.tokens = tokens;
     }
@@ -21,7 +25,6 @@ PIE.BgPosition = (function() {
                 var tokens = this.tokens,
                     len = tokens.length,
                     length_zero = PIE.Length.ZERO,
-                    length_fifty = new PIE.Length( '50%' ),
                     type_ident = PIE.Tokenizer.Type.IDENT,
                     type_length = PIE.Tokenizer.Type.LENGTH,
                     type_percent = PIE.Tokenizer.Type.PERCENT,
@@ -76,7 +79,8 @@ PIE.BgPosition = (function() {
         },
 
         /**
-         * Find the coordinates of the background image from the upper-left corner of the background area
+         * Find the coordinates of the background image from the upper-left corner of the background area.
+         * Note that these coordinate values are not rounded.
          * @param {Element} el
          * @param {number} width - the width for percentages (background area width minus image width)
          * @param {number} height - the height for percentages (background area height minus image height)
@@ -88,8 +92,8 @@ PIE.BgPosition = (function() {
                 pxY = vals[3].pixels( el, height );
 
             return {
-                x: Math.round( vals[0] === 'right' ? width - pxX : pxX ),
-                y: Math.round( vals[2] === 'bottom' ? height - pxY : pxY )
+                x: vals[0] === 'right' ? width - pxX : pxX,
+                y: vals[2] === 'bottom' ? height - pxY : pxY
             };
         }
     };

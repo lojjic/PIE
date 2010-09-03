@@ -13,6 +13,7 @@
             overflow: hidden;
             background:url(border.png);
             position: relative;
+            z-index: 0;
             zoom: 1;
         }
 
@@ -167,7 +168,18 @@
             -pie-background: linear-gradient(45deg, red, yellow, green, blue);
         }
 
-
+        #lineup p {
+            border: 0;
+            width: 40%;
+            height: 50px;
+            margin-right: 0;
+            border-radius: 0;
+            background: -moz-linear-gradient(center bottom,rgb(170,222,249) 0%,rgb(63,158,210) 100%);
+            -pie-background: linear-gradient(center bottom,rgb(170,222,249) 0%,rgb(63,158,210) 100%);
+        }
+        #lineup2 {
+            margin-left: 0;
+        }
 
 
     </style>
@@ -213,6 +225,12 @@
         <p id="multi4">linear-gradient(left, yellow 50%, blue, green)</p>
         <p id="multi5">linear-gradient(left, aqua, black, blue, fuchsia, gray, green, lime, maroon, navy, olive, purple, red, silver, teal, white, yellow );</p>
         <p id="multi6">linear-gradient(45deg, red, yellow, green, blue);</p>
+    </div>
+
+    <div class="section" id="lineup">
+        <h1>Lining up (<a href="http://github.com/lojjic/PIE/issues/issue/64">issue 64</a>)</h1>
+        <p id="lineup1">element 1</p>
+        <p id="lineup2">element 2</p>
     </div>
 
 </body>

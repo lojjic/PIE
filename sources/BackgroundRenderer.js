@@ -156,8 +156,8 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             // Positioning - find the pixel offset from the top/left and convert to a ratio
             // The position is shifted by half a pixel, to adjust for the half-pixel coordorigin shift which is
             // needed to fix antialiasing but makes the bg image fuzzy.
-            pxX = bgPos.x + bwL + 0.5;
-            pxY = bgPos.y + bwT + 0.5;
+            pxX = Math.round( bgPos.x ) + bwL + 0.5;
+            pxY = Math.round( bgPos.y ) + bwT + 0.5;
             fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
 
             // Repeating - clip the image shape
@@ -192,6 +192,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             stops = info.stops,
             stopCount = stops.length,
             PI = Math.PI,
+            UNDEF,
             startX, startY,
             endX, endY,
             startCornerX, startCornerY,
@@ -247,7 +248,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
         // Normalize the angle to a value between [0, 360)
         function normalizeAngle() {
-            if( angle < 0 ) {
+            while( angle < 0 ) {
                 angle += 360;
             }
             angle = angle % 360;
@@ -301,8 +302,14 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         deltaX = endX - startX;
         deltaY = endY - startY;
 
-        if( angle === undefined ) {
-            angle = -Math.atan2( deltaY, deltaX ) / PI * 180;
+        if( angle === UNDEF ) {
+            // Get the angle based on the change in x/y from start to end point. Checks first for horizontal
+            // or vertical angles so they get exact whole numbers rather than what atan2 gives.
+            angle = ( !deltaX ? ( deltaY < 0 ? 90 : 270 ) :
+                        ( !deltaY ? ( deltaX < 0 ? 180 : 0 ) :
+                            -Math.atan2( deltaY, deltaX ) / PI * 180
+                        )
+                    );
             normalizeAngle();
             findCorners();
         }
@@ -313,8 +320,9 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         // drawn diagonally from one corner to its opposite corner, which will only appear to the
         // viewer as 45 degrees if the shape is equilateral.  We adjust for this by taking the x/y deltas
         // between the start and end points, multiply one of them by the shape's aspect ratio,
-        // and get their arctangent, resulting in an appropriate VML angle.
-        vmlAngle = Math.atan2( deltaX * w / h, deltaY ) / PI * 180;
+        // and get their arctangent, resulting in an appropriate VML angle. If the angle is perfectly
+        // horizontal or vertical then we don't need to do this conversion.
+        vmlAngle = ( angle % 90 ) ? Math.atan2( deltaX * w / h, deltaY ) / PI * 180 : ( angle + 90 );
 
         // VML angles are 180 degrees offset from CSS angles
         vmlAngle += 180;
