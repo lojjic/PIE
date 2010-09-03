@@ -6,12 +6,12 @@
 PIE.VisibilityStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 
     getCss: function() {
-        var cs = this.element.currentStyle;
+        var cs = this.targetElement.currentStyle;
         return cs.visibility + '|' + cs.display;
     },
 
     parseCss: function() {
-        var el = this.element,
+        var el = this.targetElement,
             rs = el.runtimeStyle,
             cs = el.currentStyle,
             rsVis = rs.visibility,

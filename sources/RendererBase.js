@@ -7,7 +7,7 @@ PIE.RendererBase = {
      */
     newRenderer: function( proto ) {
         function Renderer( el, boundsInfo, styleInfos, parent ) {
-            this.element = el;
+            this.targetElement = el;
             this.boundsInfo = boundsInfo;
             this.styleInfos = styleInfos;
             this.parent = parent;
@@ -108,7 +108,7 @@ PIE.RendererBase = {
             if( group ) {
                 parent = this.getLayer( group );
                 if( !parent ) {
-                    this.addLayer( group, this.element.document.createElement( 'group' + group ) );
+                    this.addLayer( group, doc.createElement( 'group' + group ) );
                     parent = this.getLayer( group );
                 }
             }
@@ -147,7 +147,7 @@ PIE.RendererBase = {
      * @return {Object}
      */
     getRadiiPixels: function( radii ) {
-        var el = this.element,
+        var el = this.targetElement,
             bounds = this.boundsInfo.getBounds(),
             w = bounds.w,
             h = bounds.h,
@@ -257,14 +257,14 @@ PIE.RendererBase = {
      * Get the container element for the shapes, creating it if necessary.
      */
     getBox: function() {
-        var box = this.parent.getLayer( this.zIndex ), s;
+        var box = this.parent.getLayer( this.boxZIndex ), s;
 
         if( !box ) {
-            box = this.element.document.createElement( this.boxName );
+            box = doc.createElement( this.boxName );
             s = box.style;
             s.position = 'absolute';
             s.top = s.left = 0;
-            this.parent.addLayer( this.zIndex, box );
+            this.parent.addLayer( this.boxZIndex, box );
         }
 
         return box;
@@ -276,7 +276,7 @@ PIE.RendererBase = {
      * structures, but individual renderers may override as necessary.
      */
     destroy: function() {
-        this.parent.removeLayer( this.zIndex );
+        this.parent.removeLayer( this.boxZIndex );
         delete this._shapes;
         delete this._layers;
     }

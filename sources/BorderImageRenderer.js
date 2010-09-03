@@ -7,7 +7,7 @@
  */
 PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
 
-    zIndex: 5,
+    boxZIndex: 5,
     pieceNames: [ 't', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl', 'c' ],
 
     needsUpdate: function() {
@@ -24,7 +24,7 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
             var props = this.styleInfos.borderImageInfo.getProps(),
                 bounds = this.boundsInfo.getBounds(),
                 box = this.getBox(), //make sure pieces are created
-                el = this.element,
+                el = this.targetElement,
                 pieces = this.pieces;
 
             PIE.Util.withImageSize( props.src, function( imgSize ) {
@@ -105,7 +105,7 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
             len = pieceNames.length;
 
         if( !box ) {
-            box = this._box = this.element.document.createElement( 'border-image' );
+            box = this._box = doc.createElement( 'border-image' );
             s = box.style;
             s.position = 'absolute';
 
@@ -124,7 +124,7 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
                 box.appendChild( piece );
             }
 
-            this.parent.addLayer( this.zIndex, box )
+            this.parent.addLayer( this.boxZIndex, box )
         }
 
         return box;

@@ -7,7 +7,7 @@
  */
 PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
-    zIndex: 2,
+    boxZIndex: 2,
     boxName: 'background',
 
     needsUpdate: function() {
@@ -52,7 +52,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
     drawBgColor: function() {
         var props = this.styleInfos.backgroundInfo.getProps(),
             bounds = this.boundsInfo.getBounds(),
-            el = this.element,
+            el = this.targetElement,
             color = props && props.color,
             shape, w, h, s, alpha;
 
@@ -134,7 +134,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
     positionBgImage: function( shape, index ) {
         PIE.Util.withImageSize( shape.fill.src, function( size ) {
             var fill = shape.fill,
-                el = this.element,
+                el = this.targetElement,
                 bounds = this.boundsInfo.getBounds(),
                 elW = bounds.w,
                 elH = bounds.h,
@@ -182,7 +182,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
      * @param {Object} info The object holding the information about the gradient
      */
     addLinearGradient: function( shape, info ) {
-        var el = this.element,
+        var el = this.targetElement,
             bounds = this.boundsInfo.getBounds(),
             w = bounds.w,
             h = bounds.h,
@@ -379,14 +379,14 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
      * Hide the actual background image and color of the element.
      */
     hideBackground: function() {
-        var rs = this.element.runtimeStyle;
+        var rs = this.targetElement.runtimeStyle;
         rs.backgroundImage = 'url(about:blank)'; //ensures the background area reacts to mouse events
         rs.backgroundColor = 'transparent';
     },
 
     destroy: function() {
         PIE.RendererBase.destroy.call( this );
-        var rs = this.element.runtimeStyle;
+        var rs = this.targetElement.runtimeStyle;
         rs.backgroundImage = rs.backgroundColor = '';
     }
 

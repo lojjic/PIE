@@ -7,7 +7,7 @@
  */
 PIE.BoxShadowInsetRenderer = PIE.RendererBase.newRenderer( {
 
-    zIndex: 3,
+    boxZIndex: 3,
     boxName: 'inset-box-shadow',
 
     needsUpdate: function() {

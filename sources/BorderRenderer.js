@@ -7,7 +7,7 @@
  */
 PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
 
-    zIndex: 4,
+    boxZIndex: 4,
     boxName: 'border',
 
     /**
@@ -63,7 +63,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
      * Draw the border shape(s)
      */
     drawBorder: function() {
-        var el = this.element,
+        var el = this.targetElement,
             cs = el.currentStyle,
             props = this.styleInfos.borderInfo.getProps(),
             bounds = this.boundsInfo.getBounds(),
@@ -111,7 +111,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
      * by the border size.
      */
     hideBorder: function() {
-        var el = this.element,
+        var el = this.targetElement,
             cs = el.currentStyle,
             rs = el.runtimeStyle,
             tag = el.tagName,
@@ -140,7 +140,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
             // won't work for elements which cannot take children, e.g. input/button/textarea/img/etc. Look into
             // using a compositor filter or some other filter which masks the border.
             if( el.childNodes.length !== 1 || el.firstChild.tagName !== 'ie6-mask' ) {
-                var cont = el.document.createElement( 'ie6-mask' ),
+                var cont = doc.createElement( 'ie6-mask' ),
                     s = cont.style, child;
                 s.visibility = 'visible';
                 s.zoom = 1;
@@ -163,7 +163,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
      * @return {Array.<string>}
      */
     getBorderSegments: function( mult ) {
-        var el = this.element,
+        var el = this.targetElement,
             bounds, elW, elH,
             borderInfo = this.styleInfos.borderInfo,
             segments = [],
@@ -333,7 +333,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
 
     destroy: function() {
         PIE.RendererBase.destroy.call( this );
-        this.element.runtimeStyle.borderColor = '';
+        this.targetElement.runtimeStyle.borderColor = '';
     }
 
 

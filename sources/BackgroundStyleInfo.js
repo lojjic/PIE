@@ -51,7 +51,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      * @override
      */
     parseCss: function( css ) {
-        var el = this.element,
+        var el = this.targetElement,
             cs = el.currentStyle,
             rs = el.runtimeStyle,
             tokenizer, token, image,
@@ -241,7 +241,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      * @param fn
      */
     withActualBg: function( fn ) {
-        var rs = this.element.runtimeStyle,
+        var rs = this.targetElement.runtimeStyle,
             rsImage = rs.backgroundImage,
             rsColor = rs.backgroundColor,
             ret;
@@ -257,7 +257,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     },
 
     getCss: function() {
-        var cs = this.element.currentStyle;
+        var cs = this.targetElement.currentStyle;
         return this.getCss3() ||
                this.withActualBg( function() {
                    return cs.backgroundColor + ' ' + cs.backgroundImage + ' ' + cs.backgroundRepeat + ' ' +
@@ -266,7 +266,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     },
 
     getCss3: function() {
-        var el = this.element;
+        var el = this.targetElement;
         return el.style[ this.styleProperty ] || el.currentStyle.getAttribute( this.cssProperty );
     },
 

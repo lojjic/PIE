@@ -19,8 +19,7 @@ PIE.Element = (function() {
          */
         function init() {
             if( !initialized ) {
-                var doc = el.document,
-                    docEl = doc.documentElement || doc.body,
+                var docEl = doc.documentElement || doc.body,
                     rect,
                     rootRenderer;
 

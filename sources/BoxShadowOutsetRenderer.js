@@ -7,7 +7,7 @@
  */
 PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
 
-    zIndex: 1,
+    boxZIndex: 1,
     boxName: 'outset-box-shadow',
 
     needsUpdate: function() {
@@ -23,7 +23,7 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
     updateSize: function() {
         if( this.isActive() ) {
             var me = this,
-                el = this.element,
+                el = this.targetElement,
                 box = this.getBox(),
                 styleInfos = this.styleInfos,
                 shadowInfos = styleInfos.boxShadowInfo.getProps().outset,

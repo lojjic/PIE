@@ -129,7 +129,7 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                     distributeSides( widths, function( tok ) {
                         return tok.type & ( LENGTH | PERCENT ) ? new PIE.Length( tok.value ) : tok.value;
                     } ) :
-                    ( cs = this.element.currentStyle ) && {
+                    ( cs = this.targetElement.currentStyle ) && {
                         t: new PIE.Length( cs.borderTopWidth ),
                         r: new PIE.Length( cs.borderRightWidth ),
                         b: new PIE.Length( cs.borderBottomWidth ),

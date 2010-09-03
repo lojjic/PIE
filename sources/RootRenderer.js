@@ -22,7 +22,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
 
     updatePos: function() {
         if( this.isActive() ) {
-            var el = this.element,
+            var el = this.targetElement,
                 par = el,
                 docEl,
                 elRect, parRect,
@@ -41,7 +41,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                 x = elRect.left - parRect.left - ( parseFloat(cs.borderLeftWidth) || 0 );
                 y = elRect.top - parRect.top - ( parseFloat(cs.borderTopWidth) || 0 );
             } else {
-                docEl = el.document.documentElement;
+                docEl = doc.documentElement;
                 x = elRect.left + docEl.scrollLeft - docEl.clientLeft;
                 y = elRect.top + docEl.scrollTop - docEl.clientTop;
             }
@@ -72,8 +72,8 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
     getBox: function() {
         var box = this._box, el, s;
         if( !box ) {
-            el = this.element;
-            box = this._box = el.document.createElement( 'css3-container' );
+            el = this.targetElement;
+            box = this._box = doc.createElement( 'css3-container' );
             s = box.style;
 
             s.position = el.currentStyle.position === 'fixed' ? 'fixed' : 'absolute';

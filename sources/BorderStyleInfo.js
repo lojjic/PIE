@@ -22,7 +22,7 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             widthsSame = true;
 
         this.withActualBorder( function() {
-            var el = this.element,
+            var el = this.targetElement,
                 cs = el.currentStyle,
                 i = 0,
                 style, color, width, lastStyle, lastColor, lastWidth, side, ltr;
@@ -46,7 +46,7 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 c[ ltr ] = new PIE.Color( color );
 
                 width = w[ ltr ] = new PIE.Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ width ] || width ) );
-                if( width.pixels( this.element ) > 0 ) {
+                if( width.pixels( this.targetElement ) > 0 ) {
                     active = true;
                 }
             }
@@ -63,7 +63,7 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     },
 
     getCss: function() {
-        var el = this.element,
+        var el = this.targetElement,
             cs = el.currentStyle,
             css;
 
@@ -79,7 +79,7 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      * @param fn
      */
     withActualBorder: function( fn ) {
-        var rs = this.element.runtimeStyle,
+        var rs = this.targetElement.runtimeStyle,
             rsWidth = rs.borderWidth,
             rsStyle = rs.borderStyle,
             rsColor = rs.borderColor,

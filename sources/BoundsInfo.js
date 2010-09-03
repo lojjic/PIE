@@ -4,7 +4,7 @@
  * @param {Element} el the target element
  */
 PIE.BoundsInfo = function( el ) {
-    this.element = el;
+    this.targetElement = el;
 };
 PIE.BoundsInfo.prototype = {
 
@@ -23,7 +23,7 @@ PIE.BoundsInfo.prototype = {
     },
 
     getLiveBounds: function() {
-        var rect = this.element.getBoundingClientRect();
+        var rect = this.targetElement.getBoundingClientRect();
         return {
             x: rect.left,
             y: rect.top,

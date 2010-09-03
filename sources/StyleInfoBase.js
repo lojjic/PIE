@@ -7,7 +7,7 @@ PIE.StyleInfoBase = {
      */
     newStyleInfo: function( proto ) {
         function StyleInfo( el ) {
-            this.element = el;
+            this.targetElement = el;
         }
         PIE.Util.merge( StyleInfo.prototype, PIE.StyleInfoBase, proto );
         StyleInfo._propsCache = {};
@@ -30,7 +30,7 @@ PIE.StyleInfoBase = {
      * @return {string}
      */
     getCss: function() {
-        var el = this.element,
+        var el = this.targetElement,
             s = el.style,
             cs = el.currentStyle,
             cssProp = this.cssProperty,
