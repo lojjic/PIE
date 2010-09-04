@@ -7,6 +7,8 @@ if( !PIE ) {
         CLASS_PREFIX: 'pie_'
     };
 
+    // Force the background cache to be used. No reason it shouldn't be.
+    doc.execCommand( 'BackgroundImageCache', false, true );
 
     /*
      * IE version detection approach by James Padolsey, with modifications -- from
