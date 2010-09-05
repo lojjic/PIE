@@ -5,8 +5,7 @@ PIE.Element = (function() {
         ignorePropertyNames = { 'background':1, 'bgColor':1 };
 
     function Element( el ) {
-        var lastW, lastH, lastX, lastY,
-            renderers,
+        var renderers,
             boundsInfo,
             styleInfos,
             ancestors,
