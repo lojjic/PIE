@@ -8,18 +8,18 @@ PIE.BoundsInfo = function( el ) {
 };
 PIE.BoundsInfo.prototype = {
 
-    _lastBounds: {},
+    _locked: 0,
 
     positionChanged: function() {
         var last = this._lastBounds,
-            bounds = this.getBounds();
-        return !last || last.x !== bounds.x || last.y !== bounds.y;
+            bounds;
+        return !last || ( ( bounds = this.getBounds() ) && ( last.x !== bounds.x || last.y !== bounds.y ) );
     },
 
     sizeChanged: function() {
         var last = this._lastBounds,
-            bounds = this.getBounds();
-        return !last || last.w !== bounds.w || last.h !== bounds.h;
+            bounds;
+        return !last || ( ( bounds = this.getBounds() ) && ( last.w !== bounds.w || last.h !== bounds.h ) );
     },
 
     getLiveBounds: function() {
@@ -33,16 +33,19 @@ PIE.BoundsInfo.prototype = {
     },
 
     getBounds: function() {
-        return this._lockedBounds || this.getLiveBounds();
+        return this._locked ? 
+                ( this._lockedBounds || ( this._lockedBounds = this.getLiveBounds() ) ) :
+                this.getLiveBounds();
     },
 
     lock: function() {
-        this._lockedBounds = this.getLiveBounds();
+        this._locked++;
     },
 
     unlock: function() {
         this._lastBounds = this._lockedBounds;
         this._lockedBounds = null;
+        this._locked--;
     }
 
 };
