@@ -25,7 +25,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
             var el = this.targetElement,
                 par = el,
                 docEl,
-                elRect, parRect,
+                elBounds, parRect,
                 s = this.getBox().style, cs,
                 x = 0, y = 0;
 
@@ -34,16 +34,16 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
             do {
                 par = par.offsetParent;
             } while( par && par.currentStyle.position === 'static' );
-            elRect = el.getBoundingClientRect();
+            elBounds = this.boundsInfo.getBounds();
             if( par ) {
                 parRect = par.getBoundingClientRect();
                 cs = par.currentStyle;
-                x = elRect.left - parRect.left - ( parseFloat(cs.borderLeftWidth) || 0 );
-                y = elRect.top - parRect.top - ( parseFloat(cs.borderTopWidth) || 0 );
+                x = elBounds.x - parRect.left - ( parseFloat(cs.borderLeftWidth) || 0 );
+                y = elBounds.y - parRect.top - ( parseFloat(cs.borderTopWidth) || 0 );
             } else {
                 docEl = doc.documentElement;
-                x = elRect.left + docEl.scrollLeft - docEl.clientLeft;
-                y = elRect.top + docEl.scrollTop - docEl.clientTop;
+                x = elBounds.x + docEl.scrollLeft - docEl.clientLeft;
+                y = elBounds.y + docEl.scrollTop - docEl.clientTop;
             }
 
             s.left = x;
