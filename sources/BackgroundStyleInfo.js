@@ -232,7 +232,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             } );
         }
 
-        return props;
+        return ( props && ( props.color || props.images[0] ) ) ? props : null;
     },
 
     /**
