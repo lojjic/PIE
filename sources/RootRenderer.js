@@ -49,6 +49,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
             s.left = x;
             s.top = y;
             s.zIndex = el.currentStyle.position === 'static' ? -1 : el.currentStyle.zIndex;
+            this.isPositioned = true;
         }
     },
 

@@ -2,11 +2,12 @@
 PIE.Element = (function() {
 
     var wrappers = {},
+        lazyInitCssProp = PIE.CSS_PREFIX + 'lazy-init',
         ignorePropertyNames = { 'background':1, 'bgColor':1 };
 
     function Element( el ) {
         var renderers,
-            boundsInfo,
+            boundsInfo = new PIE.BoundsInfo( el ),
             styleInfos,
             ancestors,
             initializing,
@@ -18,8 +19,9 @@ PIE.Element = (function() {
          */
         function init() {
             if( !initialized ) {
-                var docEl = doc.documentElement || doc.body,
-                    rect,
+                var docEl,
+                    bounds,
+                    lazy = el.currentStyle.getAttribute( lazyInitCssProp ) === 'true',
                     rootRenderer;
 
                 // Force layout so move/resize events will fire. Set this as soon as possible to avoid layout changes
@@ -36,10 +38,11 @@ PIE.Element = (function() {
                     el.attachEvent( 'onmouseleave', mouseLeft );
                 }
 
-                rect = el.getBoundingClientRect();
+                boundsInfo.lock();
 
-                // Check if the element is in the viewport; if not, delay initialization
-                if( rect.top > docEl.clientHeight || rect.left > docEl.clientWidth || rect.bottom < 0 || rect.right < 0 ) {
+                // If the -pie-lazy-init:true flag is set, check if the element is outside the viewport and if so, delay initialization
+                if( lazy && ( bounds = boundsInfo.getBounds() ) && ( docEl = doc.documentElement || doc.body ) &&
+                        ( bounds.y > docEl.clientHeight || bounds.x > docEl.clientWidth || bounds.y + bounds.h < 0 || bounds.x + bounds.w < 0 ) ) {
                     if( !delayed ) {
                         delayed = 1;
                         PIE.OnScroll.observe( init );
@@ -50,7 +53,6 @@ PIE.Element = (function() {
                     PIE.OnScroll.unobserve( init );
 
                     // Create the style infos and renderers
-                    boundsInfo = new PIE.BoundsInfo( el );
                     styleInfos = {
                         backgroundInfo: new PIE.BackgroundStyleInfo( el ),
                         borderInfo: new PIE.BorderStyleInfo( el ),
@@ -84,6 +86,8 @@ PIE.Element = (function() {
                     // Trigger rendering
                     update();
                 }
+
+                boundsInfo.unlock();
             }
         }
 
@@ -137,6 +141,11 @@ PIE.Element = (function() {
                     boundsInfo.lock();
 
                     for( i = 0, len = renderers.length; i < len; i++ ) {
+                        // Make sure position is synced if the element hasn't already been renderered.
+                        // TODO this feels sloppy - look into merging propChanged and update functions
+                        if( !renderers[i].isPositioned ) {
+                            renderers[i].updatePos();
+                        }
                         if( renderers[i].needsUpdate() ) {
                             toUpdate.push( renderers[i] );
                         }

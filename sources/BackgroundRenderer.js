@@ -16,13 +16,11 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
     },
 
     isActive: function() {
-        var si = this.styleInfos,
-            bounds = this.boundsInfo.getBounds();
-        return bounds.w && bounds.h && (
-               si.borderImageInfo.isActive() ||
+        var si = this.styleInfos;
+        return si.borderImageInfo.isActive() ||
                si.borderRadiusInfo.isActive() ||
                si.backgroundInfo.isActive() ||
-               ( si.boxShadowInfo.isActive() && si.boxShadowInfo.getProps().inset ) );
+               ( si.boxShadowInfo.isActive() && si.boxShadowInfo.getProps().inset );
     },
 
     updateSize: function() {
@@ -42,8 +40,11 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
      * Draw the shapes
      */
     draw: function() {
-        this.drawBgColor();
-        this.drawBgImages();
+        var bounds = this.boundsInfo.getBounds();
+        if( bounds.w && bounds.h ) {
+            this.drawBgColor();
+            this.drawBgImages();
+        }
     },
 
     /**
