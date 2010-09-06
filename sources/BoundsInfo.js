@@ -39,13 +39,14 @@ PIE.BoundsInfo.prototype = {
     },
 
     lock: function() {
-        this._locked++;
+        ++this._locked;
     },
 
     unlock: function() {
-        this._lastBounds = this._lockedBounds;
-        this._lockedBounds = null;
-        this._locked--;
+        if( !--this._locked ) {
+            this._lastBounds = this._lockedBounds;
+            this._lockedBounds = null;
+        }
     }
 
 };
