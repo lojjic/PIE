@@ -53,7 +53,6 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     parseCss: function( css ) {
         var el = this.targetElement,
             cs = el.currentStyle,
-            rs = el.runtimeStyle,
             tokenizer, token, image,
             tok_type = PIE.Tokenizer.Type,
             type_operator = tok_type.OPERATOR,
@@ -246,29 +245,31 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             rsColor = rs.backgroundColor,
             ret;
 
-        rs.backgroundImage = rs.backgroundColor = '';
+        if( rsImage ) rs.backgroundImage = '';
+        if( rsColor ) rs.backgroundColor = '';
 
         ret = fn.call( this );
 
-        rs.backgroundImage = rsImage;
-        rs.backgroundColor = rsColor;
+        if( rsImage ) rs.backgroundImage = rsImage;
+        if( rsColor ) rs.backgroundColor = rsColor;
 
         return ret;
     },
 
-    getCss: function() {
-        var cs = this.targetElement.currentStyle;
+    getCss: PIE.StyleInfoBase.cacheWhenLocked( function() {
+        var el = this.targetElement;
         return this.getCss3() ||
                this.withActualBg( function() {
+                   var cs = el.currentStyle;
                    return cs.backgroundColor + ' ' + cs.backgroundImage + ' ' + cs.backgroundRepeat + ' ' +
                    cs.backgroundPositionX + ' ' + cs.backgroundPositionY;
                } );
-    },
+    } ),
 
-    getCss3: function() {
+    getCss3: PIE.StyleInfoBase.cacheWhenLocked( function() {
         var el = this.targetElement;
         return el.style[ this.styleProperty ] || el.currentStyle.getAttribute( this.cssProperty );
-    },
+    } ),
 
     /**
      * The isActive logic is slightly different, because getProps() always returns an object
@@ -276,8 +277,8 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      * to report is as being "active" if the -pie-background override property is present and
      * parses successfully.
      */
-    isActive: function() {
+    isActive: PIE.StyleInfoBase.cacheWhenLocked( function() {
         return this.getCss3() && !!this.getProps();
-    }
+    } )
 
 } );

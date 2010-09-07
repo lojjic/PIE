@@ -62,7 +62,7 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         } : null;
     },
 
-    getCss: function() {
+    getCss: PIE.StyleInfoBase.cacheWhenLocked( function() {
         var el = this.targetElement,
             cs = el.currentStyle,
             css;
@@ -71,7 +71,7 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             css = cs.borderWidth + '|' + cs.borderStyle + '|' + cs.borderColor;
         } );
         return css;
-    },
+    } ),
 
     /**
      * Execute a function with the actual border styles (not overridden with runtimeStyle
@@ -81,17 +81,16 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     withActualBorder: function( fn ) {
         var rs = this.targetElement.runtimeStyle,
             rsWidth = rs.borderWidth,
-            rsStyle = rs.borderStyle,
             rsColor = rs.borderColor,
             ret;
 
-        rs.borderWidth = rs.borderStyle = rs.borderColor = '';
+        if( rsWidth ) rs.borderWidth = '';
+        if( rsColor ) rs.borderColor = '';
 
         ret = fn.call( this );
 
-        rs.borderWidth = rsWidth;
-        rs.borderStyle = rsStyle;
-        rs.borderColor = rsColor;
+        if( rsWidth ) rs.borderWidth = rsWidth;
+        if( rsColor ) rs.borderColor = rsColor;
 
         return ret;
     }

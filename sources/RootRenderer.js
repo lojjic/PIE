@@ -7,9 +7,9 @@
 PIE.RootRenderer = PIE.RendererBase.newRenderer( {
 
     isActive: function() {
-        var infos = this.styleInfos;
-        for( var i in infos ) {
-            if( infos.hasOwnProperty( i ) && infos[ i ].isActive() ) {
+        var children = this.childRenderers;
+        for( var i in children ) {
+            if( children.hasOwnProperty( i ) && children[ i ].isActive() ) {
                 return true;
             }
         }

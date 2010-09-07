@@ -1,4 +1,21 @@
+(function() {
+
+function cacheWhenLocked( fn ) {
+    var uid = PIE.Util.getUID( fn );
+    return function() {
+        if( this._locked ) {
+            var cache = this._lockedValues || ( this._lockedValues = {} );
+            return ( uid in cache ) ? cache[ uid ] : ( cache[ uid ] = fn.call( this ) );
+        } else {
+            return fn.call( this );
+        }
+    }
+}
+
+
 PIE.StyleInfoBase = {
+
+    _locked: 0,
 
     /**
      * Create a new StyleInfo class, with the standard constructor, and augmented by
@@ -29,24 +46,25 @@ PIE.StyleInfoBase = {
      * Get the raw CSS value for the target style
      * @return {string}
      */
-    getCss: function() {
+    getCss: cacheWhenLocked( function() {
         var el = this.targetElement,
+            ctor = this.constructor,
             s = el.style,
             cs = el.currentStyle,
             cssProp = this.cssProperty,
             styleProp = this.styleProperty,
-            prefixedCssProp = this._prefixedCssProp || ( this._prefixedCssProp = PIE.CSS_PREFIX + cssProp ),
-            prefixedStyleProp = this._prefixedStyleProp || ( this._prefixedStyleProp = PIE.STYLE_PREFIX + styleProp.charAt(0).toUpperCase() + styleProp.substring(1) );
+            prefixedCssProp = ctor._prefixedCssProp || ( ctor._prefixedCssProp = PIE.CSS_PREFIX + cssProp ),
+            prefixedStyleProp = ctor._prefixedStyleProp || ( ctor._prefixedStyleProp = PIE.STYLE_PREFIX + styleProp.charAt(0).toUpperCase() + styleProp.substring(1) );
         return s[ prefixedStyleProp ] || cs.getAttribute( prefixedCssProp ) || s[ styleProp ] || cs.getAttribute( cssProp );
-    },
+    } ),
 
     /**
      * Determine whether the target CSS style is active.
      * @return {boolean}
      */
-    isActive: function() {
+    isActive: cacheWhenLocked( function() {
         return !!this.getProps();
-    },
+    } ),
 
     /**
      * Determine whether the target CSS style has changed since the last time it was parsed.
@@ -56,11 +74,17 @@ PIE.StyleInfoBase = {
         return this._lastCss !== this.getCss();
     },
 
+    cacheWhenLocked: cacheWhenLocked,
+
     lock: function() {
-        this._locked = 1;
+        ++this._locked;
     },
 
     unlock: function() {
-        this._locked = 0;
+        if( !--this._locked ) {
+            delete this._lockedValues;
+        }
     }
 };
+
+})();

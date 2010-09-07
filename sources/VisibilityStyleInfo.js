@@ -5,10 +5,10 @@
  */
 PIE.VisibilityStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 
-    getCss: function() {
+    getCss: PIE.StyleInfoBase.cacheWhenLocked( function() {
         var cs = this.targetElement.currentStyle;
         return cs.visibility + '|' + cs.display;
-    },
+    } ),
 
     parseCss: function() {
         var el = this.targetElement,

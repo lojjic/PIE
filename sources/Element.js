@@ -9,10 +9,13 @@ PIE.Element = (function() {
         var renderers,
             boundsInfo = new PIE.BoundsInfo( el ),
             styleInfos,
+            styleInfosArr,
             ancestors,
             initializing,
             initialized,
-            delayed;
+            eventsAttached,
+            delayed,
+            destroyed;
 
         /**
          * Initialize PIE for this element.
@@ -30,12 +33,6 @@ PIE.Element = (function() {
                     initializing = 1;
                     el.runtimeStyle.zoom = 1;
                     initFirstChildPseudoClass();
-
-                    el.attachEvent( 'onmove', update );
-                    el.attachEvent( 'onresize', update );
-                    el.attachEvent( 'onpropertychange', propChanged );
-                    el.attachEvent( 'onmouseenter', mouseEntered );
-                    el.attachEvent( 'onmouseleave', mouseLeft );
                 }
 
                 boundsInfo.lock();
@@ -61,16 +58,25 @@ PIE.Element = (function() {
                         boxShadowInfo: new PIE.BoxShadowStyleInfo( el ),
                         visibilityInfo: new PIE.VisibilityStyleInfo( el )
                     };
+                    styleInfosArr = [
+                        styleInfos.backgroundInfo,
+                        styleInfos.borderInfo,
+                        styleInfos.borderImageInfo,
+                        styleInfos.borderRadiusInfo,
+                        styleInfos.boxShadowInfo,
+                        styleInfos.visibilityInfo
+                    ];
 
                     rootRenderer = new PIE.RootRenderer( el, boundsInfo, styleInfos );
-                    renderers = [
-                        rootRenderer,
+                    var childRenderers = [
                         new PIE.BoxShadowOutsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
                         new PIE.BackgroundRenderer( el, boundsInfo, styleInfos, rootRenderer ),
                         new PIE.BoxShadowInsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
                         new PIE.BorderRenderer( el, boundsInfo, styleInfos, rootRenderer ),
                         new PIE.BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
                     ];
+                    rootRenderer.childRenderers = childRenderers; // circular reference, can't pass in constructor; TODO is there a cleaner way?
+                    renderers = [ rootRenderer ].concat( childRenderers );
 
                     // Add property change listeners to ancestors if requested
                     initAncestorPropChangeListeners();
@@ -80,14 +86,33 @@ PIE.Element = (function() {
                         PIE.Heartbeat.observe( update );
                     }
 
-                    // Listen for window resize events
-                    PIE.OnResize.observe( update );
-
                     // Trigger rendering
                     update();
                 }
 
+                if( !eventsAttached ) {
+                    eventsAttached = 1;
+                    el.attachEvent( 'onmove', handleMoveOrResize );
+                    el.attachEvent( 'onresize', handleMoveOrResize );
+                    el.attachEvent( 'onpropertychange', propChanged );
+                    el.attachEvent( 'onmouseenter', mouseEntered );
+                    el.attachEvent( 'onmouseleave', mouseLeft );
+                    PIE.OnResize.observe( handleMoveOrResize );
+                }
+
                 boundsInfo.unlock();
+            }
+        }
+
+
+        /**
+         * Event handler for onmove and onresize events. Invokes update() only if the element's
+         * bounds have previously been calculated, to prevent multiple runs during page load when
+         * the element has no initial CSS3 properties.
+         */
+        function handleMoveOrResize() {
+            if( boundsInfo && boundsInfo.hasBeenQueried() ) {
+                update();
             }
         }
 
@@ -99,27 +124,35 @@ PIE.Element = (function() {
          */
         function update() {
             if( initialized ) {
-                var i, len;
+                if( !destroyed ) {
+                    var i, len;
 
-                boundsInfo.lock();
-                if( boundsInfo.positionChanged() ) {
-                    /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
-                       position changes may not always be accurate; it's possible that
-                       an element will actually move relative to its positioning parent, but its position
-                       relative to the viewport will stay the same. Need to come up with a better way to
-                       track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
-                       but that is a more expensive operation since it does some DOM walking, and we want this
-                       check to be as fast as possible. */
-                    for( i = 0, len = renderers.length; i < len; i++ ) {
-                        renderers[i].updatePos();
+                    boundsInfo.lock();
+                    for( i = styleInfosArr.length; i--; ) {
+                        styleInfosArr[i].lock();
                     }
-                }
-                if( boundsInfo.sizeChanged() ) {
-                    for( i = 0, len = renderers.length; i < len; i++ ) {
-                        renderers[i].updateSize();
+                    if( boundsInfo.positionChanged() ) {
+                        /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
+                           position changes may not always be accurate; it's possible that
+                           an element will actually move relative to its positioning parent, but its position
+                           relative to the viewport will stay the same. Need to come up with a better way to
+                           track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
+                           but that is a more expensive operation since it does some DOM walking, and we want this
+                           check to be as fast as possible. */
+                        for( i = 0, len = renderers.length; i < len; i++ ) {
+                            renderers[i].updatePos();
+                        }
                     }
+                    if( boundsInfo.sizeChanged() ) {
+                        for( i = 0, len = renderers.length; i < len; i++ ) {
+                            renderers[i].updateSize();
+                        }
+                    }
+                    for( i = styleInfosArr.length; i--; ) {
+                        styleInfosArr[i].unlock();
+                    }
+                    boundsInfo.unlock();
                 }
-                boundsInfo.unlock();
             }
             else if( !initializing ) {
                 init();
@@ -206,15 +239,14 @@ PIE.Element = (function() {
         function destroy() {
             var i, len;
 
+            destroyed = 1;
+
             // destroy any active renderers
             if( renderers ) {
                 for( i = 0, len = renderers.length; i < len; i++ ) {
                     renderers[i].destroy();
                 }
-                renderers = null;
             }
-
-            styleInfos = null;
 
             // remove any ancestor propertychange listeners
             if( ancestors ) {
@@ -223,7 +255,6 @@ PIE.Element = (function() {
                     ancestors[i].detachEvent( 'onmouseenter', mouseEntered );
                     ancestors[i].detachEvent( 'onmouseleave', mouseLeft );
                 }
-                ancestors = null;
             }
 
             // Remove from list of polled elements in IE8
@@ -234,12 +265,15 @@ PIE.Element = (function() {
             PIE.OnScroll.unobserve( update );
             PIE.OnResize.unobserve( update );
 
+            // Remove event listeners
             el.detachEvent( 'onmove', update );
             el.detachEvent( 'onresize', update );
             el.detachEvent( 'onpropertychange', propChanged );
             el.detachEvent( 'onmouseenter', mouseEntered );
             el.detachEvent( 'onmouseleave', mouseLeft );
 
+            // Kill objects
+            renderers = boundsInfo = styleInfos = styleInfosArr = ancestors = null;
         }
 
 

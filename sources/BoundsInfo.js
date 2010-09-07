@@ -38,13 +38,17 @@ PIE.BoundsInfo.prototype = {
                 this.getLiveBounds();
     },
 
+    hasBeenQueried: function() {
+        return !!this._lastBounds;
+    },
+
     lock: function() {
         ++this._locked;
     },
 
     unlock: function() {
         if( !--this._locked ) {
-            this._lastBounds = this._lockedBounds;
+            if( this._lockedBounds ) this._lastBounds = this._lockedBounds;
             this._lockedBounds = null;
         }
     }
