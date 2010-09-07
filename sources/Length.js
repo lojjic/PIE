@@ -7,7 +7,9 @@
 PIE.Length = (function() {
 
     var lengthCalcEl = doc.createElement( 'length-calc' ),
-        s = lengthCalcEl.style;
+        s = lengthCalcEl.style,
+        numCache = {},
+        unitCache = {};
     s.position = 'absolute';
     s.top = s.left = -9999;
 
@@ -28,9 +30,10 @@ PIE.Length = (function() {
          * @return {number} The value
          */
         getNumber: function() {
-            var num = this._number;
-            if( num === undefined ) {
-                num = this._number = parseFloat( this.val );
+            var num = numCache[ this.val ],
+                UNDEF;
+            if( num === UNDEF ) {
+                num = numCache[ this.val ] = parseFloat( this.val );
             }
             return num;
         },
@@ -40,10 +43,10 @@ PIE.Length = (function() {
          * @return {string} The unit
          */
         getUnit: function() {
-            var unit = this._unit, m;
+            var unit = unitCache[ this.val ], m;
             if( !unit ) {
                 m = this.val.match( this.unitRE );
-                unit = this._unit = ( m && m[0] ) || 'px';
+                unit = unitCache[ this.val ] = ( m && m[0] ) || 'px';
             }
             return unit;
         },
