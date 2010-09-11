@@ -169,6 +169,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
             borderInfo = this.styleInfos.borderInfo,
             segments = [],
             floor, ceil, wT, wR, wB, wL,
+            round = Math.round,
             borderProps, radiusInfo, radii, widths, styles, colors;
 
         if( borderInfo.isActive() ) {
@@ -197,10 +198,10 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                 elW = bounds.w;
                 elH = bounds.h;
 
-                wT = widths['t'].pixels( el );
-                wR = widths['r'].pixels( el );
-                wB = widths['b'].pixels( el );
-                wL = widths['l'].pixels( el );
+                wT = round( widths['t'].pixels( el ) );
+                wR = round( widths['r'].pixels( el ) );
+                wB = round( widths['b'].pixels( el ) );
+                wL = round( widths['l'].pixels( el ) );
                 var pxWidths = {
                     't': wT,
                     'r': wR,
