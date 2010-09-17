@@ -272,19 +272,22 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     } ),
 
 	/**
-	 * Tests if style.PiePngFix or the -pie-png-fix property is set to true/on.
+	 * Tests if style.PiePngFix or the -pie-png-fix property is set to true in IE6.
 	 */
-	isPngFix: PIE.StyleInfoBase.cacheWhenLocked( function() {
+	isPngFix: function() {
+		if (PIE.ieVersion > 6) {
+			return false;
+		} 
         var el = this.targetElement;
-        var val = (el.style.PiePngFix || el.currentStyle.getAttribute( 'pie-png-fix' ));
-        return /^(true|on)$/i.test(val);
-    } ),
+        var val = (el.style.PiePngFix || el.currentStyle.getAttribute( PIE.CSS_PREFIX + 'png-fix' ));
+        return val === true || val == 'true';
+    },
     
     /**
      * The isActive logic is slightly different, because getProps() always returns an object
      * even if it is just falling back to the native background properties.  But we only want
      * to report is as being "active" if either the -pie-background override property is present
-     * and parses successfully or '-pie-png-fix' is set to true/on.
+     * and parses successfully or '-pie-png-fix' is set to true in IE6.
      */
     isActive: PIE.StyleInfoBase.cacheWhenLocked( function() {
         return (this.getCss3() || this.isPngFix()) && !!this.getProps();
