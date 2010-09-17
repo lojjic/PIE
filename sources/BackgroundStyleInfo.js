@@ -271,14 +271,23 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         return el.style[ this.styleProperty ] || el.currentStyle.getAttribute( this.cssProperty );
     } ),
 
+	/**
+	 * Tests if style.PiePngFix or the -pie-png-fix property is set to true/on.
+	 */
+	isPngFix: PIE.StyleInfoBase.cacheWhenLocked( function() {
+        var el = this.targetElement;
+        var val = (el.style.PiePngFix || el.currentStyle.getAttribute( 'pie-png-fix' ));
+        return /^(true|on)$/i.test(val);
+    } ),
+    
     /**
      * The isActive logic is slightly different, because getProps() always returns an object
      * even if it is just falling back to the native background properties.  But we only want
-     * to report is as being "active" if the -pie-background override property is present and
-     * parses successfully.
+     * to report is as being "active" if either the -pie-background override property is present
+     * and parses successfully or '-pie-png-fix' is set to true/on.
      */
     isActive: PIE.StyleInfoBase.cacheWhenLocked( function() {
-        return this.getCss3() && !!this.getProps();
+        return (this.getCss3() || this.isPngFix()) && !!this.getProps();
     } )
 
 } );
