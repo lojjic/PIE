@@ -8,8 +8,5 @@
         PIE.OnResize.fire();
     }
 
-    window.attachEvent( 'onresize', resized );
-    PIE.OnBeforeUnload.observe( function() {
-        window.detachEvent( 'onresize', resized );
-    } );
+    PIE.OnBeforeUnload.attachManagedEvent( window, 'onresize', resized );
 })();

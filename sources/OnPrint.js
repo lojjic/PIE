@@ -4,8 +4,7 @@
  */
 (function() {
 
-    var elements,
-        win = window;
+    var elements;
 
     function beforePrint() {
         elements = PIE.Element.destroyAll();
@@ -20,12 +19,7 @@
         }
     }
 
-    win.attachEvent( 'onbeforeprint', beforePrint );
-    win.attachEvent( 'onafterprint', afterPrint );
-
-    PIE.OnBeforeUnload.observe( function() {
-        win.detachEvent( 'onbeforeprint', beforePrint );
-        win.detachEvent( 'onafterprint', afterPrint );
-    } );
+    PIE.OnBeforeUnload.attachManagedEvent( window, 'onbeforeprint', beforePrint );
+    PIE.OnBeforeUnload.attachManagedEvent( window, 'onafterprint', afterPrint );
 
 })();
