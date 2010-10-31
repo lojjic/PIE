@@ -67,9 +67,12 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             cs = el.currentStyle,
             css;
 
-        this.withActualBorder( function() {
-            css = cs.borderWidth + '|' + cs.borderStyle + '|' + cs.borderColor;
-        } );
+        // Don't redraw or hide borders for cells in border-collapse:collapse tables
+        if( !( el.tagName in PIE.tableCellTags && el.offsetParent.currentStyle.borderCollapse === 'collapse' ) ) {
+            this.withActualBorder( function() {
+                css = cs.borderWidth + '|' + cs.borderStyle + '|' + cs.borderColor;
+            } );
+        }
         return css;
     } ),
 

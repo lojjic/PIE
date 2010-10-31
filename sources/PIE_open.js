@@ -4,7 +4,11 @@ if( !PIE ) {
     PIE = window['PIE'] = {
         CSS_PREFIX: '-pie-',
         STYLE_PREFIX: 'Pie',
-        CLASS_PREFIX: 'pie_'
+        CLASS_PREFIX: 'pie_',
+        tableCellTags: {
+            'TD': 1,
+            'TH': 1
+        }
     };
 
     // Force the background cache to be used. No reason it shouldn't be.

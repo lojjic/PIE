@@ -80,6 +80,10 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
             s.position = el.currentStyle.position === 'fixed' ? 'fixed' : 'absolute';
             this.updateVisibility();
 
+            // If it's a td/th element, insert the css3-container outside the table
+            if( el.tagName in PIE.tableCellTags ) {
+                el = el.offsetParent;
+            }
             el.parentNode.insertBefore( box, el );
         }
         return box;
