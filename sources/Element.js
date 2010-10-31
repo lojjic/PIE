@@ -87,7 +87,7 @@ PIE.Element = (function() {
                     }
 
                     // Trigger rendering
-                    update();
+                    update( 1 );
                 }
 
                 if( !eventsAttached ) {
@@ -122,7 +122,7 @@ PIE.Element = (function() {
          * this rather than the updatePos/Size functions because sometimes, particularly
          * during page load, one will fire but the other won't.
          */
-        function update() {
+        function update( force ) {
             if( initialized ) {
                 if( !destroyed ) {
                     var i, len;
@@ -131,7 +131,7 @@ PIE.Element = (function() {
                     for( i = styleInfosArr.length; i--; ) {
                         styleInfosArr[i].lock();
                     }
-                    if( boundsInfo.positionChanged() ) {
+                    if( force || boundsInfo.positionChanged() ) {
                         /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
                            position changes may not always be accurate; it's possible that
                            an element will actually move relative to its positioning parent, but its position
@@ -143,7 +143,7 @@ PIE.Element = (function() {
                             renderers[i].updatePos();
                         }
                     }
-                    if( boundsInfo.sizeChanged() ) {
+                    if( force || boundsInfo.sizeChanged() ) {
                         for( i = 0, len = renderers.length; i < len; i++ ) {
                             renderers[i].updateSize();
                         }
@@ -262,8 +262,7 @@ PIE.Element = (function() {
                 if( PIE.ie8DocMode === 8 ) {
                     PIE.Heartbeat.unobserve( update );
                 }
-                // Stop onscroll/onresize listening
-                PIE.OnScroll.unobserve( update );
+                // Stop onresize listening
                 PIE.OnResize.unobserve( update );
 
                 // Remove event listeners
