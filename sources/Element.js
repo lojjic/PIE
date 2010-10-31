@@ -237,43 +237,45 @@ PIE.Element = (function() {
          * is destroyed.
          */
         function destroy() {
-            var i, len;
+            if( !destroyed ) {
+                var i, len;
 
-            destroyed = 1;
+                destroyed = 1;
 
-            // destroy any active renderers
-            if( renderers ) {
-                for( i = 0, len = renderers.length; i < len; i++ ) {
-                    renderers[i].destroy();
+                // destroy any active renderers
+                if( renderers ) {
+                    for( i = 0, len = renderers.length; i < len; i++ ) {
+                        renderers[i].destroy();
+                    }
                 }
-            }
 
-            // remove any ancestor propertychange listeners
-            if( ancestors ) {
-                for( i = 0, len = ancestors.length; i < len; i++ ) {
-                    ancestors[i].detachEvent( 'onpropertychange', ancestorPropChanged );
-                    ancestors[i].detachEvent( 'onmouseenter', mouseEntered );
-                    ancestors[i].detachEvent( 'onmouseleave', mouseLeft );
+                // remove any ancestor propertychange listeners
+                if( ancestors ) {
+                    for( i = 0, len = ancestors.length; i < len; i++ ) {
+                        ancestors[i].detachEvent( 'onpropertychange', ancestorPropChanged );
+                        ancestors[i].detachEvent( 'onmouseenter', mouseEntered );
+                        ancestors[i].detachEvent( 'onmouseleave', mouseLeft );
+                    }
                 }
+
+                // Remove from list of polled elements in IE8
+                if( PIE.ie8DocMode === 8 ) {
+                    PIE.Heartbeat.unobserve( update );
+                }
+                // Stop onscroll/onresize listening
+                PIE.OnScroll.unobserve( update );
+                PIE.OnResize.unobserve( update );
+
+                // Remove event listeners
+                el.detachEvent( 'onmove', update );
+                el.detachEvent( 'onresize', update );
+                el.detachEvent( 'onpropertychange', propChanged );
+                el.detachEvent( 'onmouseenter', mouseEntered );
+                el.detachEvent( 'onmouseleave', mouseLeft );
+
+                // Kill objects
+                renderers = boundsInfo = styleInfos = styleInfosArr = ancestors = el = null;
             }
-
-            // Remove from list of polled elements in IE8
-            if( PIE.ie8DocMode === 8 ) {
-                PIE.Heartbeat.unobserve( update );
-            }
-            // Stop onscroll/onresize listening
-            PIE.OnScroll.unobserve( update );
-            PIE.OnResize.unobserve( update );
-
-            // Remove event listeners
-            el.detachEvent( 'onmove', update );
-            el.detachEvent( 'onresize', update );
-            el.detachEvent( 'onpropertychange', propChanged );
-            el.detachEvent( 'onmouseenter', mouseEntered );
-            el.detachEvent( 'onmouseleave', mouseLeft );
-
-            // Kill objects
-            renderers = boundsInfo = styleInfos = styleInfosArr = ancestors = null;
         }
 
 
@@ -321,11 +323,12 @@ PIE.Element = (function() {
         }
 
 
-        // Public methods - these are all already bound to this instance so there's no need to wrap them
-        // in a closure to maintain the 'this' scope object.
+        // These methods are all already bound to this instance so there's no need to wrap them
+        // in a closure to maintain the 'this' scope object when calling them.
         this.init = init;
         this.update = update;
         this.destroy = destroy;
+        this.el = el;
     }
 
     Element.getInstance = function( el ) {
@@ -342,16 +345,23 @@ PIE.Element = (function() {
         }
     };
 
-    // Destroy all Element objects when leaving the page
-    window.attachEvent( 'onbeforeunload', function() {
+    Element.destroyAll = function() {
+        var els = [], wrapper;
         if( wrappers ) {
             for( var w in wrappers ) {
                 if( wrappers.hasOwnProperty( w ) ) {
-                    wrappers[ w ].destroy();
+                    wrapper = wrappers[ w ];
+                    els.push( wrapper.el );
+                    wrapper.destroy();
                 }
             }
+            wrappers = {};
         }
-    } );
+        return els;
+    };
+
+    // Destroy all Element objects when leaving the page
+    PIE.OnBeforeUnload.observe( Element.destroyAll );
 
     return Element;
 })();

@@ -17,8 +17,10 @@
             <fileset file="${src_dir}/Util.js" />
             <fileset file="${src_dir}/Observable.js" />
             <fileset file="${src_dir}/Heartbeat.js" />
-            <fileset file="${src_dir}/OnScroll.js" />
+            <fileset file="${src_dir}/OnBeforeUnload.js" />
             <fileset file="${src_dir}/OnResize.js" />
+            <fileset file="${src_dir}/OnScroll.js" />
+            <fileset file="${src_dir}/OnPrint.js" />
             <fileset file="${src_dir}/Length.js" />
             <fileset file="${src_dir}/BgPosition.js" />
             <fileset file="${src_dir}/Angle.js" />
