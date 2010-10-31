@@ -271,16 +271,16 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         return el.style[ this.styleProperty ] || el.currentStyle.getAttribute( this.cssProperty );
     } ),
 
-	/**
-	 * Tests if style.PiePngFix or the -pie-png-fix property is set to true in IE6.
-	 */
-	isPngFix: function() {
-		if (PIE.ieVersion > 6) {
-			return false;
-		} 
-        var el = this.targetElement;
-        var val = (el.style.PiePngFix || el.currentStyle.getAttribute( PIE.CSS_PREFIX + 'png-fix' ));
-        return val === true || val == 'true';
+    /**
+     * Tests if style.PiePngFix or the -pie-png-fix property is set to true in IE6.
+     */
+    isPngFix: function() {
+        var val = 0, el;
+        if( PIE.ieVersion < 7 ) {
+            el = this.targetElement;
+            val = ( '' + ( el.style[ PIE.STYLE_PREFIX + 'PngFix' ] || el.currentStyle.getAttribute( PIE.CSS_PREFIX + 'png-fix' ) ) === 'true' );
+        }
+        return val;
     },
     
     /**
