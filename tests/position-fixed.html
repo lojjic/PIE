@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Testing position:fixed</title>
+
+    <style>
+
+        #forceScroll {
+            height: 10000px;
+            background: url(background1.gif)
+        }
+
+
+        .fixed {
+            position: fixed;
+            top: 100px;
+            background: #EEE;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+            -webkit-box-shadow: #000 0 0 20px;
+            -moz-box-shadow: #000 0 0 20px;
+            box-shadow: #000 0 0 20px;
+            padding: 20px;
+            width: 60px;
+            border: 1px solid;
+            behavior: url(../build/PIE.htc);
+        }
+
+        #test1 {
+            left: 20px;
+        }
+
+        #test2Cont {
+            position: absolute;
+            border: 1px solid red;
+            top: 300px;
+            left: 10px;
+            background: #FFF;
+        }
+        #test2 {
+            left: 160px;
+        }
+
+        #test3 {
+            right: 100px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <p>This document tests position:fixed. The rounded boxes should stay in place when scrolling.
+       This won't work in IE6 of course as it does not support position:fixed.</p>
+
+    <div id="forceScroll"></div>
+
+    <div class="fixed" id="test1">Child of body</div>
+
+    <div id="test2Cont">
+        Container
+        <div class="fixed" id="test2">Child of container</div>
+    </div>
+
+    <div class="fixed" id="test3">From right</div>
+
+
+</body>
+</html>
