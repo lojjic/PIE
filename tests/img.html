@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>&lt;img&gt; elements</title>
+
+    <style type="text/css">
+
+        img {
+            border-radius: 40px;
+            behavior: url(../build/PIE_uncompressed.htc);
+            border: 0;
+        }
+
+        #shadow {
+            -webkit-box-shadow: 0 0 10px red;
+            -moz-box-shadow: 0 0 10px red;
+            box-shadow: 0 0 10px red;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <h1>Images</h1>
+
+    <h2>Rounded corners</h2>
+    <img src="photo.jpg" />
+
+    <h2>Rounded, scaled down</h2>
+    <img src="photo.jpg" width="100" height="100" />
+
+    <h2>With shadow</h2>
+    <img src="photo.jpg" id="shadow" width="320" height="240" />
+
+    <h2>In link (should remain clickable)</h2>
+    <a href="#" onclick="alert('clicked'); return false;"><img src="photo.jpg" width="320" height="240" /></a>
+
+    <h2>With border</h2>
+    <img src="border.png" style="border:10px solid red;" />
+
+</body>
+</html>

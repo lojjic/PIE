@@ -75,6 +75,9 @@ PIE.Element = (function() {
                         new PIE.BorderRenderer( el, boundsInfo, styleInfos, rootRenderer ),
                         new PIE.BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
                     ];
+                    if( el.tagName === 'IMG' ) {
+                        childRenderers.push( new PIE.ImgRenderer( el, boundsInfo, styleInfos, rootRenderer ) );
+                    }
                     rootRenderer.childRenderers = childRenderers; // circular reference, can't pass in constructor; TODO is there a cleaner way?
                     renderers = [ rootRenderer ].concat( childRenderers );
 
