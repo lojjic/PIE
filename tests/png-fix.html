@@ -6,22 +6,45 @@
 
     <style>
 
+        body {
+            background: url(background2.gif);
+        }
+
+        p {
+            background: #FFF;
+        }
 
         #test1 {
             position: relative;
-            -pie-png-fix: true;
             background: url(icon-ie.png);
-            behavior: url(../build/PIE.htc);
             padding: 2em;
+            -pie-png-fix: true;
+            behavior: url(../build/PIE.htc);
+            margin-bottom: 5em;
         }
 
+        #test2 img {
+            position: relative;
+            -pie-png-fix: true;
+            behavior: url(../build/PIE.htc);
+        }
 
 
     </style>
 </head>
 <body>
 
-    <div id="test1" class="test">Load this in IE6; the box's background image should be transparent through to the body, not gray.</div>
+    <div id="test1" class="test">
+        <p>In IE6, this box's background image should be transparent through to the body, not gray.</p>
+    </div>
+
+    <div id="test2">
+        <p>These &lt;img&gt; elements should also be transparent in IE6.</p>
+        <img src="icon-ie.png" />
+        <img src="icon-ie.png" width="128" height="128" />
+        <img src="icon-ie.png" width="640" height="128" />
+        <img src="icon-ie.png" width="64" height="256" />
+    </div>
 
 </body>
 </html>
