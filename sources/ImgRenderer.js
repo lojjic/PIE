@@ -52,6 +52,7 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
         shape.stroked = false;
         fill.type = 'frame';
         fill.src = src;
+        fill.position = (0.5 / w) + ',' + (0.5 / h);
         shape.coordsize = w * 2 + ',' + h * 2;
         shape.coordorigin = '1,1';
         shape.path = this.getBoxPath( borderWidths ? {
