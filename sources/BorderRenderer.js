@@ -46,24 +46,10 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                si.borderInfo.isActive(); //check BorderStyleInfo last because it's the most expensive
     },
 
-    updateSize: function() {
-        if( this.isActive() ) {
-            this.drawBorder();
-        }
-    },
-
-    updateProps: function() {
-        this.destroy();
-        if( this.isActive() ) {
-            this.drawBorder();
-        }
-    },
-
-
     /**
      * Draw the border shape(s)
      */
-    drawBorder: function() {
+    draw: function() {
         var el = this.targetElement,
             cs = el.currentStyle,
             props = this.styleInfos.borderInfo.getProps(),

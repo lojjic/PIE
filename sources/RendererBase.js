@@ -34,6 +34,10 @@ PIE.RendererBase = {
      * Tell the renderer to update based on modified properties
      */
     updateProps: function() {
+        this.destroy();
+        if( this.isActive() ) {
+            this.draw();
+        }
     },
 
     /**
@@ -47,6 +51,11 @@ PIE.RendererBase = {
      * Tell the renderer to update based on modified element dimensions
      */
     updateSize: function() {
+        if( this.isActive() ) {
+            this.draw();
+        } else {
+            this.destroy();
+        }
     },
 
 

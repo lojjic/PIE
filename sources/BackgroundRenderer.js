@@ -23,19 +23,6 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                ( si.boxShadowInfo.isActive() && si.boxShadowInfo.getProps().inset );
     },
 
-    updateSize: function() {
-        if( this.isActive() ) {
-            this.draw();
-        }
-    },
-
-    updateProps: function() {
-        this.destroy();
-        if( this.isActive() ) {
-            this.draw();
-        }
-    },
-
     /**
      * Draw the shapes
      */

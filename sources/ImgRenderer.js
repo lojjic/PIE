@@ -21,19 +21,6 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
         return si.borderRadiusInfo.isActive() || si.backgroundInfo.isPngFix();
     },
 
-    updateSize: function() {
-        if( this.isActive() ) {
-            this.draw();
-        }
-    },
-
-    updateProps: function() {
-        this.destroy();
-        if( this.isActive() ) {
-            this.draw();
-        }
-    },
-
     draw: function() {
         this.hideActualImg();
 

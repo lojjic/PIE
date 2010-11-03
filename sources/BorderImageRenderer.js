@@ -19,84 +19,73 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
         return this.styleInfos.borderImageInfo.isActive();
     },
 
-    updateSize: function() {
-        if( this.isActive() ) {
-            var props = this.styleInfos.borderImageInfo.getProps(),
-                bounds = this.boundsInfo.getBounds(),
-                box = this.getBox(), //make sure pieces are created
-                el = this.targetElement,
-                pieces = this.pieces;
+    draw: function() {
+        var props = this.styleInfos.borderImageInfo.getProps(),
+            bounds = this.boundsInfo.getBounds(),
+            box = this.getBox(), //make sure pieces are created
+            el = this.targetElement,
+            pieces = this.pieces;
 
-            PIE.Util.withImageSize( props.src, function( imgSize ) {
-                var elW = bounds.w,
-                    elH = bounds.h,
+        PIE.Util.withImageSize( props.src, function( imgSize ) {
+            var elW = bounds.w,
+                elH = bounds.h,
 
-                    widths = props.width,
-                    widthT = widths.t.pixels( el ),
-                    widthR = widths.r.pixels( el ),
-                    widthB = widths.b.pixels( el ),
-                    widthL = widths.l.pixels( el ),
-                    slices = props.slice,
-                    sliceT = slices.t.pixels( el ),
-                    sliceR = slices.r.pixels( el ),
-                    sliceB = slices.b.pixels( el ),
-                    sliceL = slices.l.pixels( el );
+                widths = props.width,
+                widthT = widths.t.pixels( el ),
+                widthR = widths.r.pixels( el ),
+                widthB = widths.b.pixels( el ),
+                widthL = widths.l.pixels( el ),
+                slices = props.slice,
+                sliceT = slices.t.pixels( el ),
+                sliceR = slices.r.pixels( el ),
+                sliceB = slices.b.pixels( el ),
+                sliceL = slices.l.pixels( el );
 
-                // Piece positions and sizes
-                function setSizeAndPos( piece, w, h, x, y ) {
-                    var s = pieces[piece].style;
-                    s.width = w;
-                    s.height = h;
-                    s.left = x;
-                    s.top = y;
+            // Piece positions and sizes
+            function setSizeAndPos( piece, w, h, x, y ) {
+                var s = pieces[piece].style;
+                s.width = w;
+                s.height = h;
+                s.left = x;
+                s.top = y;
+            }
+            setSizeAndPos( 'tl', widthL, widthT, 0, 0 );
+            setSizeAndPos( 't', elW - widthL - widthR, widthT, widthL, 0 );
+            setSizeAndPos( 'tr', widthR, widthT, elW - widthR, 0 );
+            setSizeAndPos( 'r', widthR, elH - widthT - widthB, elW - widthR, widthT );
+            setSizeAndPos( 'br', widthR, widthB, elW - widthR, elH - widthB );
+            setSizeAndPos( 'b', elW - widthL - widthR, widthB, widthL, elH - widthB );
+            setSizeAndPos( 'bl', widthL, widthB, 0, elH - widthB );
+            setSizeAndPos( 'l', widthL, elH - widthT - widthB, 0, widthT );
+            setSizeAndPos( 'c', elW - widthL - widthR, elH - widthT - widthB, widthL, widthT );
+
+
+            // image croppings
+            function setCrops( sides, crop, val ) {
+                for( var i=0, len=sides.length; i < len; i++ ) {
+                    pieces[ sides[i] ]['imagedata'][ crop ] = val;
                 }
-                setSizeAndPos( 'tl', widthL, widthT, 0, 0 );
-                setSizeAndPos( 't', elW - widthL - widthR, widthT, widthL, 0 );
-                setSizeAndPos( 'tr', widthR, widthT, elW - widthR, 0 );
-                setSizeAndPos( 'r', widthR, elH - widthT - widthB, elW - widthR, widthT );
-                setSizeAndPos( 'br', widthR, widthB, elW - widthR, elH - widthB );
-                setSizeAndPos( 'b', elW - widthL - widthR, widthB, widthL, elH - widthB );
-                setSizeAndPos( 'bl', widthL, widthB, 0, elH - widthB );
-                setSizeAndPos( 'l', widthL, elH - widthT - widthB, 0, widthT );
-                setSizeAndPos( 'c', elW - widthL - widthR, elH - widthT - widthB, widthL, widthT );
+            }
 
+            // corners
+            setCrops( [ 'tl', 't', 'tr' ], 'cropBottom', ( imgSize.h - sliceT ) / imgSize.h );
+            setCrops( [ 'tl', 'l', 'bl' ], 'cropRight', ( imgSize.w - sliceL ) / imgSize.w );
+            setCrops( [ 'bl', 'b', 'br' ], 'cropTop', ( imgSize.h - sliceB ) / imgSize.h );
+            setCrops( [ 'tr', 'r', 'br' ], 'cropLeft', ( imgSize.w - sliceR ) / imgSize.w );
 
-                // image croppings
-                function setCrops( sides, crop, val ) {
-                    for( var i=0, len=sides.length; i < len; i++ ) {
-                        pieces[ sides[i] ]['imagedata'][ crop ] = val;
-                    }
-                }
+            // edges and center
+            if( props.repeat.v === 'stretch' ) {
+                setCrops( [ 'l', 'r', 'c' ], 'cropTop', sliceT / imgSize.h );
+                setCrops( [ 'l', 'r', 'c' ], 'cropBottom', sliceB / imgSize.h );
+            }
+            if( props.repeat.h === 'stretch' ) {
+                setCrops( [ 't', 'b', 'c' ], 'cropLeft', sliceL / imgSize.w );
+                setCrops( [ 't', 'b', 'c' ], 'cropRight', sliceR / imgSize.w );
+            }
 
-                // corners
-                setCrops( [ 'tl', 't', 'tr' ], 'cropBottom', ( imgSize.h - sliceT ) / imgSize.h );
-                setCrops( [ 'tl', 'l', 'bl' ], 'cropRight', ( imgSize.w - sliceL ) / imgSize.w );
-                setCrops( [ 'bl', 'b', 'br' ], 'cropTop', ( imgSize.h - sliceB ) / imgSize.h );
-                setCrops( [ 'tr', 'r', 'br' ], 'cropLeft', ( imgSize.w - sliceR ) / imgSize.w );
-
-                // edges and center
-                if( props.repeat.v === 'stretch' ) {
-                    setCrops( [ 'l', 'r', 'c' ], 'cropTop', sliceT / imgSize.h );
-                    setCrops( [ 'l', 'r', 'c' ], 'cropBottom', sliceB / imgSize.h );
-                }
-                if( props.repeat.h === 'stretch' ) {
-                    setCrops( [ 't', 'b', 'c' ], 'cropLeft', sliceL / imgSize.w );
-                    setCrops( [ 't', 'b', 'c' ], 'cropRight', sliceR / imgSize.w );
-                }
-
-                // center fill
-                pieces['c'].style.display = props.fill ? '' : 'none';
-            }, this );
-        } else {
-            this.destroy();
-        }
-    },
-
-    updateProps: function() {
-        this.destroy();
-        if( this.isActive() ) {
-            this.updateSize();
-        }
+            // center fill
+            pieces['c'].style.display = props.fill ? '' : 'none';
+        }, this );
     },
 
     getBox: function() {
