@@ -11,12 +11,22 @@
             border-radius: 40px;
             behavior: url(../build/PIE_uncompressed.htc);
             border: 0;
+            position: relative;
         }
 
         #shadow {
             -webkit-box-shadow: 0 0 10px red;
             -moz-box-shadow: 0 0 10px red;
             box-shadow: 0 0 10px red;
+        }
+
+        #pngfixCont {
+            padding: 10px;
+            background: url(background1.gif);
+        }
+        #pngfix {
+            border-radius: 0;
+            -pie-png-fix: true;
         }
 
     </style>
@@ -40,6 +50,11 @@
 
     <h2>With border</h2>
     <img src="border.png" style="border:10px solid red;" />
+
+    <h2>-pie-png-fix - in IE6 the image should be transparent</h2>
+    <div id="pngfixCont">
+        <img src="icon-ie.png" width="128" height="128" id="pngfix" />
+    </div>
 
 </body>
 </html>
