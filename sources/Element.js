@@ -101,6 +101,8 @@ PIE.Element = (function() {
                     el.attachEvent( 'onmouseenter', mouseEntered );
                     el.attachEvent( 'onmouseleave', mouseLeft );
                     PIE.OnResize.observe( handleMoveOrResize );
+
+                    PIE.OnBeforeUnload.observe( removeEventListeners );
                 }
 
                 boundsInfo.unlock();
@@ -236,12 +238,40 @@ PIE.Element = (function() {
 
 
         /**
+         * Remove all event listeners from the element and any monitoried ancestors.
+         */
+        function removeEventListeners() {
+            if (eventsAttached) {
+                if( ancestors ) {
+                    for( var i = 0, len = ancestors.length; i < len; i++ ) {
+                        ancestors[i].detachEvent( 'onpropertychange', ancestorPropChanged );
+                        ancestors[i].detachEvent( 'onmouseenter', mouseEntered );
+                        ancestors[i].detachEvent( 'onmouseleave', mouseLeft );
+                    }
+                }
+
+                // Remove event listeners
+                el.detachEvent( 'onmove', update );
+                el.detachEvent( 'onresize', update );
+                el.detachEvent( 'onpropertychange', propChanged );
+                el.detachEvent( 'onmouseenter', mouseEntered );
+                el.detachEvent( 'onmouseleave', mouseLeft );
+
+                PIE.OnBeforeUnload.unobserve( removeEventListeners );
+                eventsAttached = 0;
+            }
+        }
+
+
+        /**
          * Clean everything up when the behavior is removed from the element, or the element
-         * is destroyed.
+         * is manually destroyed.
          */
         function destroy() {
             if( !destroyed ) {
                 var i, len;
+
+                removeEventListeners();
 
                 destroyed = 1;
 
@@ -252,15 +282,6 @@ PIE.Element = (function() {
                     }
                 }
 
-                // remove any ancestor propertychange listeners
-                if( ancestors ) {
-                    for( i = 0, len = ancestors.length; i < len; i++ ) {
-                        ancestors[i].detachEvent( 'onpropertychange', ancestorPropChanged );
-                        ancestors[i].detachEvent( 'onmouseenter', mouseEntered );
-                        ancestors[i].detachEvent( 'onmouseleave', mouseLeft );
-                    }
-                }
-
                 // Remove from list of polled elements in IE8
                 if( PIE.ie8DocMode === 8 ) {
                     PIE.Heartbeat.unobserve( update );
@@ -268,14 +289,7 @@ PIE.Element = (function() {
                 // Stop onresize listening
                 PIE.OnResize.unobserve( update );
 
-                // Remove event listeners
-                el.detachEvent( 'onmove', update );
-                el.detachEvent( 'onresize', update );
-                el.detachEvent( 'onpropertychange', propChanged );
-                el.detachEvent( 'onmouseenter', mouseEntered );
-                el.detachEvent( 'onmouseleave', mouseLeft );
-
-                // Kill objects
+                // Kill references
                 renderers = boundsInfo = styleInfos = styleInfosArr = ancestors = el = null;
             }
         }
@@ -361,9 +375,6 @@ PIE.Element = (function() {
         }
         return els;
     };
-
-    // Destroy all Element objects when leaving the page
-    PIE.OnBeforeUnload.observe( Element.destroyAll );
 
     return Element;
 })();
