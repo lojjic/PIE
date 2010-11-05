@@ -126,8 +126,8 @@ PIE.Element = (function() {
          * during page load, one will fire but the other won't.
          */
         function update( force ) {
-            if( initialized ) {
-                if( !destroyed ) {
+            if( !destroyed ) {
+                if( initialized ) {
                     var i, len;
 
                     boundsInfo.lock();
@@ -156,9 +156,9 @@ PIE.Element = (function() {
                     }
                     boundsInfo.unlock();
                 }
-            }
-            else if( !initializing ) {
-                init();
+                else if( !initializing ) {
+                    init();
+                }
             }
         }
 
@@ -169,7 +169,7 @@ PIE.Element = (function() {
             // Some elements like <table> fire onpropertychange events for old-school background properties
             // ('background', 'bgColor') when runtimeStyle background properties are changed, which
             // results in an infinite loop; therefore we filter out those property names.
-            if( !( event && event.propertyName in ignorePropertyNames ) ) {
+            if( !destroyed && !( event && event.propertyName in ignorePropertyNames ) ) {
                 if( initialized ) {
                     var i, len,
                         toUpdate = [];
