@@ -22,7 +22,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
 
     updatePos: function() {
         if( this.isActive() ) {
-            var el = this.targetElement,
+            var el = this.getPositioningElement(),
                 par = el,
                 docEl,
                 parRect,
@@ -42,7 +42,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                 // getBoundingClientRect for accuracy and speed.
                 do {
                     par = par.offsetParent;
-                } while( par && par.currentStyle.position === 'static' );
+                } while( par && ( par.currentStyle.position === 'static' ) );
                 if( par ) {
                     parRect = par.getBoundingClientRect();
                     cs = par.currentStyle;
@@ -81,27 +81,28 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
         }
     },
 
+    getPositioningElement: function() {
+        var el = this.targetElement;
+        return el.tagName in PIE.tableCellTags ? el.offsetParent : el;
+    },
+
     getBox: function() {
         var box = this._box, el;
         if( !box ) {
-            el = this.targetElement;
+            el = this.getPositioningElement();
             box = this._box = doc.createElement( 'css3-container' );
 
             this.updateVisibility();
 
-            // If it's a td/th element, insert the css3-container outside the table
-            if( el.tagName in PIE.tableCellTags ) {
-                el = el.offsetParent;
-            }
             el.parentNode.insertBefore( box, el );
         }
         return box;
     },
 
     destroy: function() {
-        var box = this._box;
-        if( box && box.parentNode ) {
-            box.parentNode.removeChild( box );
+        var box = this._box, par;
+        if( box && ( par = box.parentNode ) ) {
+            par.removeChild( box );
         }
         delete this._box;
         delete this._layers;
