@@ -8,7 +8,9 @@
  * @param {Element} el
  */
 PIE[ 'attach' ] = function( el ) {
-    PIE.Element.getInstance( el ).init();
+    if (PIE.ieVersion < 9) {
+        PIE.Element.getInstance( el ).init();
+    }
 };
 
 
