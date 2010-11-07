@@ -257,10 +257,9 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     },
 
     getCss: PIE.StyleInfoBase.cacheWhenLocked( function() {
-        var el = this.targetElement;
         return this.getCss3() ||
                this.withActualBg( function() {
-                   var cs = el.currentStyle;
+                   var cs = this.targetElement.currentStyle;
                    return cs.backgroundColor + ' ' + cs.backgroundImage + ' ' + cs.backgroundRepeat + ' ' +
                    cs.backgroundPositionX + ' ' + cs.backgroundPositionY;
                } );
