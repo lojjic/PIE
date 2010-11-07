@@ -11,10 +11,7 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
     pieceNames: [ 't', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl', 'c' ],
 
     needsUpdate: function() {
-        var si = this.styleInfos;
-        var tmp = si.borderImageInfo.changed();
-        console.log(tmp);
-        return tmp;
+        return this.styleInfos.borderImageInfo.changed();
     },
 
     isActive: function() {
