@@ -36,6 +36,51 @@
             background: #9F9;
         }
 
+
+        /* Menu */
+        #menu {
+            clear: both;
+            padding: 20px 20px 20px 0;
+            width: 220px;
+            background: #00AEEF;
+        }
+        #menu li {
+            display: block;
+            list-style: none;
+            margin: 0 0 6px;
+            padding: 0;
+            width: 220px;
+        }
+        #menu li a {
+            color: #FFFFFF;
+            display: block;
+            font-size: 15px;
+            padding: 2px 20px 1px;
+            position: relative;
+            text-decoration: none;
+            behavior: url(../build/PIE_uncompressed.htc);
+        }
+        #menu li a:hover,
+        #menu li a.pie_hover {
+            /*background: #008ECF;*/
+            background: -webkit-gradient(linear, 0 0, 100% 0, from(#008ECF) to(#00AEEF));
+            background: -moz-linear-gradient(left, #008ECF, #00AEEF);
+            background: linear-gradient(left, #008ECF, #00AEEF);
+            -pie-background: linear-gradient(left, #008ECF, #00AEEF);
+        }
+        #menu li.active a {
+            background: #FFF;
+            -pie-background: #FFF;
+            color: #000;
+            -webkit-box-shadow: #777 0 0 10px;
+            -moz-box-shadow: #777 0 0 10px;
+            box-shadow: #777 0 0 10px;
+            -webkit-border-top-right-radius: 3px;
+            -webkit-border-bottom-right-radius: 3px;
+            -moz-border-radius: 0 3px 3px 0;
+            border-radius: 0 3px 3px 0;
+        }
+
     </style>
 
 </head>
@@ -46,6 +91,17 @@
     </p>
 
     <div class="tester" id="test2">Non-link</div>
+
+    <ul id="menu"><li><a href="http://css3pie.com/">Home</a></li>
+        <li><a href="http://css3pie.com/about/">About</a></li>
+        <li><a href="http://css3pie.com/documentation/">Documentation</a></li>
+        <li><a href="http://css3pie.com/demos/">Demos</a></li>
+        <li><a href="http://css3pie.com/contact/">Contact</a></li>
+        <li><a href="http://css3pie.com/forum/">User Forum</a></li>
+        <li class="active"><a href="http://css3pie.com/blog/">Blog</a></li>
+        <li><a href="http://github.com/lojjic/PIE">Project @ GitHub</a></li>
+    </ul>
+    
 
 </body>
 </html>
