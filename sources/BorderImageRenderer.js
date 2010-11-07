@@ -12,7 +12,9 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
 
     needsUpdate: function() {
         var si = this.styleInfos;
-        return si.borderImageInfo.changed() || si.borderImageInfo.changed();
+        var tmp = si.borderImageInfo.changed();
+        console.log(tmp);
+        return tmp;
     },
 
     isActive: function() {
@@ -89,12 +91,13 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
     },
 
     getBox: function() {
-        var box = this._box, s, piece, i,
+        var box = this.parent.getLayer( this.boxZIndex ),
+            s, piece, i,
             pieceNames = this.pieceNames,
             len = pieceNames.length;
 
         if( !box ) {
-            box = this._box = doc.createElement( 'border-image' );
+            box = doc.createElement( 'border-image' );
             s = box.style;
             s.position = 'absolute';
 
@@ -113,7 +116,7 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
                 box.appendChild( piece );
             }
 
-            this.parent.addLayer( this.boxZIndex, box )
+            this.parent.addLayer( this.boxZIndex, box );
         }
 
         return box;
