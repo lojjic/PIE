@@ -3,6 +3,8 @@ PIE.Element = (function() {
 
     var wrappers = {},
         lazyInitCssProp = PIE.CSS_PREFIX + 'lazy-init',
+        hoverClass = ' ' + PIE.CLASS_PREFIX + 'hover',
+        hoverClassRE = new RegExp( '\\b' + PIE.CLASS_PREFIX + 'hover\\b', 'g' ),
         ignorePropertyNames = { 'background':1, 'bgColor':1 };
 
     function Element( el ) {
@@ -190,27 +192,29 @@ PIE.Element = (function() {
         }
 
 
+        function addHoverClass() {
+            el.className += hoverClass;
+        }
+
+        function removeHoverClass() {
+            el.className = el.className.replace( hoverClassRE, '' );
+        }
+
         /**
          * Handle mouseenter events. Adds a custom class to the element to allow IE6 to add
-         * hover styles to non-link elements.
+         * hover styles to non-link elements, and to trigger a propertychange update.
          */
         function mouseEntered() {
-            if( PIE.ieVersion === 6 && el.tagName !== 'A' ) {
-                el.className += ' ' + PIE.CLASS_PREFIX + 'hover';
-            }
-            //must delay this because the mouseleave event fires before the :hover styles are added.
-            setTimeout( propChanged, 0 );
+            //must delay this because the mouseenter event fires before the :hover styles are added.
+            setTimeout( addHoverClass, 0 );
         }
 
         /**
          * Handle mouseleave events
          */
         function mouseLeft() {
-            if( PIE.ieVersion === 6 && el.tagName !== 'A' ) {
-                el.className = el.className.replace( PIE.hoverClassRE, '' );
-            }
             //must delay this because the mouseleave event fires before the :hover styles are removed.
-            setTimeout( propChanged, 0 );
+            setTimeout( removeHoverClass, 0 );
         }
 
 
