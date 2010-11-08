@@ -132,10 +132,7 @@ PIE.Element = (function() {
                 if( initialized ) {
                     var i, len;
 
-                    boundsInfo.lock();
-                    for( i = styleInfosArr.length; i--; ) {
-                        styleInfosArr[i].lock();
-                    }
+                    lockAll();
                     if( force || boundsInfo.positionChanged() ) {
                         /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
                            position changes may not always be accurate; it's possible that
@@ -153,10 +150,7 @@ PIE.Element = (function() {
                             renderers[i].updateSize();
                         }
                     }
-                    for( i = styleInfosArr.length; i--; ) {
-                        styleInfosArr[i].unlock();
-                    }
-                    boundsInfo.unlock();
+                    unlockAll();
                 }
                 else if( !initializing ) {
                     init();
@@ -173,26 +167,21 @@ PIE.Element = (function() {
             // results in an infinite loop; therefore we filter out those property names.
             if( !destroyed && !( event && event.propertyName in ignorePropertyNames ) ) {
                 if( initialized ) {
-                    var i, len,
-                        toUpdate = [];
+                    var i, len, renderer;
 
-                    boundsInfo.lock();
-
+                    lockAll();
                     for( i = 0, len = renderers.length; i < len; i++ ) {
-                        // Make sure position is synced if the element hasn't already been renderered.
+                        renderer = renderers[i];
+                        // Make sure position is synced if the element hasn't already been rendered.
                         // TODO this feels sloppy - look into merging propChanged and update functions
-                        if( !renderers[i].isPositioned ) {
-                            renderers[i].updatePos();
+                        if( !renderer.isPositioned ) {
+                            renderer.updatePos();
                         }
-                        if( renderers[i].needsUpdate() ) {
-                            toUpdate.push( renderers[i] );
+                        if( renderer.needsUpdate() ) {
+                            renderer.updateProps();
                         }
                     }
-                    for( i = 0, len = toUpdate.length; i < len; i++ ) {
-                        toUpdate[i].updateProps();
-                    }
-
-                    boundsInfo.unlock();
+                    unlockAll();
                 }
                 else if( !initializing ) {
                     init();
@@ -234,6 +223,20 @@ PIE.Element = (function() {
             if( name === 'className' || name === 'id' ) {
                 propChanged();
             }
+        }
+
+        function lockAll() {
+            boundsInfo.lock();
+            for( var i = styleInfosArr.length; i--; ) {
+                styleInfosArr[i].lock();
+            }
+        }
+
+        function unlockAll() {
+            for( var i = styleInfosArr.length; i--; ) {
+                styleInfosArr[i].unlock();
+            }
+            boundsInfo.unlock();
         }
 
 

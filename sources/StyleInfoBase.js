@@ -37,7 +37,7 @@ PIE.StyleInfoBase = {
      * @return {Object}
      */
     getProps: function() {
-        var css = this._lastCss = this.getCss(),
+        var css = this.getCss(),
             cache = this.constructor._propsCache;
         return css ? ( css in cache ? cache[ css ] : ( cache[ css ] = this.parseCss( css ) ) ) : null;
     },
@@ -67,12 +67,15 @@ PIE.StyleInfoBase = {
     } ),
 
     /**
-     * Determine whether the target CSS style has changed since the last time it was parsed.
+     * Determine whether the target CSS style has changed since the last time it was used.
      * @return {boolean}
      */
-    changed: function() {
-        return this._lastCss !== this.getCss();
-    },
+    changed: cacheWhenLocked( function() {
+        var currentCss = this.getCss(),
+            changed = currentCss !== this._lastCss;
+        this._lastCss = currentCss;
+        return changed;
+    } ),
 
     cacheWhenLocked: cacheWhenLocked,
 
