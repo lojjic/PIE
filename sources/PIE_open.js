@@ -12,7 +12,9 @@ if( !PIE ) {
     };
 
     // Force the background cache to be used. No reason it shouldn't be.
-    doc.execCommand( 'BackgroundImageCache', false, true );
+    try {
+        doc.execCommand( 'BackgroundImageCache', false, true );
+    } catch(e) {}
 
     /*
      * IE version detection approach by James Padolsey, with modifications -- from
