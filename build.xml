@@ -68,24 +68,20 @@
         <exec executable="java">
             <arg line='-jar tools/compiler.jar
                        --js ${build_dir}/script_uncompressed.js
+                       --js ${src_dir}/htc_init.js
                        --js ${src_dir}/closure_preservefunctions.js
                        --module "script_compressed:1"
+                       --module "htc_init_compressed:1"
                        --module "temp:1"
                        --module_output_path_prefix ${build_dir}/
                        --compilation_level ADVANCED_OPTIMIZATIONS
                        --externs ${src_dir}/closure_externs.js' />
         </exec>
 
-        <!--
-        <exec executable="yuicompressor">
-            <arg line="${build_dir}/script_uncompressed.js -o ${build_dir}/script_compressed.js" />
-        </exec>
-        -->
-
         <concat destfile="${build_dir}/PIE.htc">
             <fileset file="${src_dir}/htc_open.txt" />
             <fileset file="${build_dir}/script_compressed.js" />
-            <fileset file="${src_dir}/htc_init.js" />
+            <fileset file="${build_dir}/htc_init_compressed.js" />
             <fileset file="${src_dir}/htc_close.txt" />
         </concat>
 
@@ -99,6 +95,7 @@
         <replace file="${build_dir}/PIE.js" token="$Version$" value="${version}"/>
 
         <delete file="${build_dir}/temp.js" />
+        <delete file="${build_dir}/htc_init_compressed.js" />
         <delete file="${build_dir}/script_uncompressed.js" />
         <delete file="${build_dir}/script_compressed.js" />
     </target>

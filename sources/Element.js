@@ -7,6 +7,16 @@ PIE.Element = (function() {
         hoverClassRE = new RegExp( '\\b' + PIE.CLASS_PREFIX + 'hover\\b', 'g' ),
         ignorePropertyNames = { 'background':1, 'bgColor':1 };
 
+
+    function addListener( el, type, handler ) {
+        el.attachEvent( type, handler );
+    }
+
+    function removeListener( el, type, handler ) {
+        el.detachEvent( type, handler );
+    }
+
+
     function Element( el ) {
         var renderers,
             boundsInfo = new PIE.BoundsInfo( el ),
@@ -97,11 +107,11 @@ PIE.Element = (function() {
 
                 if( !eventsAttached ) {
                     eventsAttached = 1;
-                    el.attachEvent( 'onmove', handleMoveOrResize );
-                    el.attachEvent( 'onresize', handleMoveOrResize );
-                    el.attachEvent( 'onpropertychange', propChanged );
-                    el.attachEvent( 'onmouseenter', mouseEntered );
-                    el.attachEvent( 'onmouseleave', mouseLeft );
+                    addListener( el, 'onmove', handleMoveOrResize );
+                    addListener( el, 'onresize', handleMoveOrResize );
+                    addListener( el, 'onpropertychange', propChanged );
+                    addListener( el, 'onmouseenter', mouseEntered );
+                    addListener( el, 'onmouseleave', mouseLeft );
                     PIE.OnResize.observe( handleMoveOrResize );
 
                     PIE.OnBeforeUnload.observe( removeEventListeners );
@@ -110,6 +120,8 @@ PIE.Element = (function() {
                 boundsInfo.unlock();
             }
         }
+
+
 
 
         /**
@@ -164,13 +176,14 @@ PIE.Element = (function() {
          * Handle property changes to trigger update when appropriate.
          */
         function propChanged() {
+            var i, len, renderer,
+                e = event;
+
             // Some elements like <table> fire onpropertychange events for old-school background properties
             // ('background', 'bgColor') when runtimeStyle background properties are changed, which
             // results in an infinite loop; therefore we filter out those property names.
-            if( !destroyed && !( event && event.propertyName in ignorePropertyNames ) ) {
+            if( !destroyed && !( e && e.propertyName in ignorePropertyNames ) ) {
                 if( initialized ) {
-                    var i, len, renderer;
-
                     lockAll();
                     for( i = 0, len = renderers.length; i < len; i++ ) {
                         renderer = renderers[i];
@@ -250,19 +263,20 @@ PIE.Element = (function() {
         function removeEventListeners() {
             if (eventsAttached) {
                 if( ancestors ) {
-                    for( var i = 0, len = ancestors.length; i < len; i++ ) {
-                        ancestors[i].detachEvent( 'onpropertychange', ancestorPropChanged );
-                        ancestors[i].detachEvent( 'onmouseenter', mouseEntered );
-                        ancestors[i].detachEvent( 'onmouseleave', mouseLeft );
+                    for( var i = 0, len = ancestors.length, a; i < len; i++ ) {
+                        a = ancestors[i];
+                        removeListener( a, 'onpropertychange', ancestorPropChanged );
+                        removeListener( a, 'onmouseenter', mouseEntered );
+                        removeListener( a, 'onmouseleave', mouseLeft );
                     }
                 }
 
                 // Remove event listeners
-                el.detachEvent( 'onmove', update );
-                el.detachEvent( 'onresize', update );
-                el.detachEvent( 'onpropertychange', propChanged );
-                el.detachEvent( 'onmouseenter', mouseEntered );
-                el.detachEvent( 'onmouseleave', mouseLeft );
+                removeListener( el, 'onmove', update );
+                removeListener( el, 'onresize', update );
+                removeListener( el, 'onpropertychange', propChanged );
+                removeListener( el, 'onmouseenter', mouseEntered );
+                removeListener( el, 'onmouseleave', mouseLeft );
 
                 PIE.OnBeforeUnload.unobserve( removeEventListeners );
                 eventsAttached = 0;
@@ -317,9 +331,9 @@ PIE.Element = (function() {
                 a = el.parentNode;
                 while( a && ( watch === 'NaN' || i++ < watch ) ) {
                     ancestors.push( a );
-                    a.attachEvent( 'onpropertychange', ancestorPropChanged );
-                    a.attachEvent( 'onmouseenter', mouseEntered );
-                    a.attachEvent( 'onmouseleave', mouseLeft );
+                    addListener( a, 'onpropertychange', ancestorPropChanged );
+                    addListener( a, 'onmouseenter', mouseEntered );
+                    addListener( a, 'onmouseleave', mouseLeft );
                     a = a.parentNode;
                 }
             }
