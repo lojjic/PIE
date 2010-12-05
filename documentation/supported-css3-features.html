@@ -3,24 +3,33 @@
 <head>
   
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>PIE Documentation: Supported CSS3 Properties and Values</title>
+  <title>PIE Documentation: Supported CSS3 Features</title>
 
 </head>
 <body>
 
-<h1>Supported CSS3 properties and values</h1>
+<h1>Supported CSS3 Features</h1>
 
-<p>The following sections describe in detail the exact levels of support PIE has for certain CSS3 properties.</p>
 
-<h2>border-radius</h2>
+
+<!-- noformat on -->
+
+<p>The following sections describe in detail the exact levels of support PIE has for certain CSS3 properties
+and value types.</p>
+
+
+
+<h2 id="border-radius">border-radius</h2>
 
 <p>PIE fully supports the border-radius property as defined in the CSS3
 Backgrounds and Borders module specification.</p>
 
-<pre>border-radius: [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} [ / [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} ]?</pre>
+<pre class="long">border-radius: [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} [ / [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} ]?</pre>
 
 <p>Only the shorthand version is supported; the longhand
-border-top-left-radius etc. properties are not.</p>
+border-top-left-radius etc. properties are not. The shorthand syntax does support different radii per corner, though:</p>
+
+<p><code>border-radius: 5px 10px 15px 20px;</code> (top-left, top-right, bottom-right, bottom-left).</p>
 
 <p>The rounded corners are applied to the element's background area
 (including solid background colors, background images, and background
@@ -50,22 +59,17 @@ also does not support percentage values at all. (TODO: check this in
 WebKit nightlies and recent Chrome, I think these may now match the
 spec and drop the prefix.)</p>
 
-<h2>box-shadow</h2>
 
-<p>PIE supports the box-shadow property syntax as of its last
-appearance in the CSS3 Backgrounds and Borders module. It was removed
-from the spec due to, as far as I can tell, some questions around how
-it should behave in conjunction with semi-transparent background
-images. The plan seems to be to add it back in at some point in another
-(perhaps new) CSS3 module, but I have not yet seen that happen.
-Regardless, this is an extremely useful property which has widespread
-support (via prefixed properties) in other browsers, so PIE includes
-support as best it can.</p>
 
-<pre>box-shadow: none | &lt;shadow&gt; [,&lt;shadow&gt;]*
+<h2 id="box-shadow">box-shadow</h2>
+
+<p>PIE supports the <a href="http://dev.w3.org/csswg/css3-background/#box-shadow">box-shadow property syntax</a>
+as currently defined in the CSS3 Backgrounds &amp; Borders module.</p>
+
+<pre class="long">box-shadow: none | &lt;shadow&gt; [,&lt;shadow&gt;]*
     where &lt;shadow&gt; = inset? &amp;&amp; [ &lt;offset-x&gt; &lt;offset-y&gt; &lt;blur-radius&gt;? &lt;spread-radius&gt;? &amp;&amp; &lt;color&gt;? ]</pre>
 
-<p>Both the (ex-)standard box-shadow property name as well as a custom
+<p>Both the standard box-shadow property name as well as a custom
 prefixed -pie-box-shadow property name are recognized; if both are
 present the prefixed value will take precedence. It is recommended to
 use the non-prefixed property when possible, since there are no known
@@ -89,16 +93,42 @@ planned in a future version (see <a href="http://github.com/lojjic/PIE/issues#is
 <p>See the compatibility chart at the bottom of
 <a href="https://developer.mozilla.org/En/CSS/-moz-box-shadow">https://developer.mozilla.org/En/CSS/-moz-box-shadow</a></p>
 
-<h2>border-image</h2>
+
+
+<h2 id="border-image">border-image</h2>
 
 <p>PIE has preliminary support for the border-image property. This property allows
 you to specify an image which gets divided into nine squares which are then drawn as
 the corners, sides, and center of the target element. The sides and center will stretch
 to match the size of the element.</p>
 
-<p>TODO syntax, caveats, browser compatibility notes</p>
+<p>There are currently several limitations of PIE's implementation, including:</p>
+<ol>
+    <li>It only supports the 'stretch' scheme. I'd like to support the others in the future but performance
+        is a big concern as it seems it will require creating a separate VML shape for each tile.</li>
+    <li>It doesn't support the <a href="http://dev.w3.org/csswg/css3-background/#border-image-outset">outset parameter</a>
+        described in the Backgrounds &amp; Borders module spec, though other browsers don't seem to support
+        that yet either.</li>
+    <li>It doesn't support the <a href="http://dev.w3.org/csswg/css3-background/#border-image-width">width override
+        parameter</a> to the border-image shorthand; it will only use the element's border-width for determining
+        the slice widths (again, support for this in other browsers is spotty too).</li>
+    <li>Related to #3, if the element's <code>border-style</code> is 'none' it will treat that as
+        <code>border-width:0</code>.</li>
+    <li>It requires the 'fill' keyword to be present for the center area to be filled in. This is correct
+        behavior according to the spec but other browsers don't require it and some even fail if 'fill' is 
+        present, so it's a bit tricky making it work consistently across browsers.</li>
+    <li>It doesn't hide the element's normal border when border-image is specified. In conjunction with #4
+        above, this means you have to set the border-style to 'solid' (or something other than 'none')
+        <strong>and</strong> set the border-color to transparent.</li>
+    <li>It seems there are on rare occasion rounding errors which cause 1px gaps between slices of the
+        image. I've seen these gaps occur in other browsers too, though.</li>
+</ol>
 
-<h2>-pie-background</h2>
+<p>These issues will be addressed in a future release.</p>
+
+
+
+<h2 id="pie-background">-pie-background</h2>
 
 <p>PIE supports CSS3 multiple background images, linear gradients as
 background images, and some of the new CSS3 background aspects such as
@@ -109,25 +139,24 @@ value internally and not allow us access to the original value string.
 Therefore we use a custom -pie-background property for holding these
 values.</p>
 
-<p>Only the single -pie-background shorthand value is recognized; there
-are no supported corresponding longhand values (e.g.
--pie-background-origin).</p>
+<p>Only the single -pie-background shorthand value is recognized; longhand values (e.g.
+-pie-background-origin) are ignored.</p>
 
 <p>For backward-compatibility with browsers which do not support CSS3
 backgrounds, be sure to include appropriate fallbacks. For example:</p>
 
-<pre>#myElement {
+<pre class="long"><code>#myElement {
     background: url(bg-image.png) no-repeat #CCC; /*non-CSS3 browsers will use this*/
-    background: url(bg-image.png) no-repeat, -moz-linear-gradient(90deg, #CCC, #EEE); /*gecko*/
-    background: url(bg-image.png) no-repeat, -webkit-gradient(linear, left bottom, left top, from(#CCC) to(#EEE)); /*webkit*/
-    -pie-background: url(bg-image.png) no-repeat, linear-gradient(90deg, #CCC, #EEE); /*PIE*/
-}</pre>
+    background: url(bg-image.png) no-repeat, -moz-linear-gradient(#CCC, #EEE); /*gecko*/
+    background: url(bg-image.png) no-repeat, -webkit-gradient(linear, 0 0, 0 100%, from(#CCC) to(#EEE)); /*webkit*/
+    background: url(bg-image.png) no-repeat, linear-gradient(#CCC, #EEE); /*future CSS3 browsers*/
+    -pie-background: url(bg-image.png) no-repeat, linear-gradient(#CCC, #EEE); /*PIE*/
+}</code></pre>
 
 <p>While the PIE parser will allow them, the following aspects of the
 background shorthand will currently be ignored when rendering:</p>
 
 <ul>
-
   <li>background-attachment (will always use 'scroll' even if 'fixed'
 or 'local' are specified)</li>
   <li>background-size (will always use the image's intrinsic size)</li>
@@ -138,17 +167,18 @@ values are supported)</li>
 
 <p>Support for these items will be added in future versions as possible.</p>
 
-<p>PNG background images specified using <code>-pie-background</code> will be rendered with
-correct alpha transparency in IE6. (This will also be the case when using just
-the normal <code>background-image</code> property in conjunction with any other property
-which invokes PIE re-rendering of the background, e.g. border-radius or border-image.)</p>
+<p>Note that PNG background images specified using <code>-pie-background</code> will be
+rendered with correct alpha channel transparency in IE6. See the section below regarding
+<a href="#pie-png-fix">PNG alpha transparency</a> for more information.</p>
 
 <p>Notes on other browsers:</p>
 
 <p>Firefox supports multiple backgrounds as of version 3.6. Safari supports them as of version 1.3.
 See <a href="https://developer.mozilla.org/en/CSS/Multiple_backgrounds">https://developer.mozilla.org/en/CSS/Multiple_backgrounds</a></p>
 
-<h2>-pie-watch-ancestors</h2>
+
+
+<h2 id="pie-watch-ancestors">-pie-watch-ancestors</h2>
 
 <p>PIE automatically listens for any attribute or style property
 changes on the element to which the behavior is applied. This means
@@ -156,7 +186,7 @@ that if you have scripting which modifies any of the recognized CSS3
 properties on the fly, those changes will automatically be picked up
 and the rendering will be updated to match. For example:</p>
 
-<pre>/* JS: */
+<pre><code>/* JS: */
 myElement.onclick = function() {
     this.style.borderRadius = '20px';
 };
@@ -165,7 +195,7 @@ myElement.onclick = function() {
 #myElement {
     behavior: url(PIE.htc);
     border-radius: 10px;
-}</pre>
+}</code></pre>
 
 <p>Assuming myElement has the PIE.htc behavior attached to it, the
 above code will work as expected without any extra effort from the
@@ -178,7 +208,7 @@ add/remove elements' class names, letting the actual styles
 corresponding to those class names be maintained in the CSS. So
 reworking the above example:</p>
 
-<pre>/* JS: */
+<pre><code>/* JS: */
 myElement.onclick = function() {
     this.className += ' poked';
 }
@@ -190,7 +220,7 @@ myElement.onclick = function() {
 }
 #myElement.poked {
     border-radius: 20px;
-}</pre>
+}</code></pre>
 
 <p>Again, since the className is being changed on the element to which
 the behavior is applied, PIE will automatically be notified of the
@@ -199,7 +229,7 @@ change and update the border-radius rendering to match the new value.</p>
 <p>However, what if the className is changed not on the element itself
 but on one of its ancestors?</p>
 
-<pre>/* JS: */
+<pre><code>/* JS: */
 myElement.onclick = function() {
     this.parentNode.className += ' poked';
 }
@@ -211,7 +241,7 @@ myElement.onclick = function() {
 }
 .poked #myElement {
     border-radius: 20px;
-}</pre>
+}</code></pre>
 
 <p>This is a very common pattern which allows a lot of flexibility.
 However, in this case, PIE will not be automatically notified of the
@@ -222,7 +252,7 @@ PIE-targeted element, but that would be bad for performance and memory
 usage. So instead, we have introduced a custom CSS property which
 allows authors to tell PIE that certain ancestors should be watched:</p>
 
-<pre>/* JS: */
+<pre><code>/* JS: */
 myElement.onclick = function() {
     this.parentNode.className += ' poked';
 }
@@ -235,7 +265,7 @@ myElement.onclick = function() {
 }
 .poked #myElement {
     border-radius: 20px;
-}</pre>
+}</code></pre>
 
 <p>This tells PIE that it should watch for changes on ancestors one
 level up from the element. It will attach the propertychange listener
@@ -243,7 +273,9 @@ to the element's parent and therefore be notified when the parent's
 className gets changed, and update the rendering correctly.
 </p>
 
-<h2>rgba color values</h2>
+
+
+<h2 id="rgba">rgba color values</h2>
 
 <p>PIE parses RGBA color values wherever they are allowed. However it
 is only able to successfully render their opacity value in a few
@@ -252,18 +284,20 @@ RGB color, but fully opaque. Here are the supported contexts in which
 the opacity will be rendered correctly:</p>
 
 <ul>
-  <li>The solid background-color as specified in the -pie-background property</li>
-  <li>The color value of box-shadow</li>
+  <li>The solid background-color as specified in the -pie-background property.</li>
+  <li>The color value of box-shadow, if the shadow has no blur.</li>
 </ul>
 
-<h2>gradients</h2>
+
+
+<h2 id="gradients">gradients</h2>
 
 <p>PIE currently supports linear-gradient image values when used in the
 -pie-background property. Use in any contexts other than the background
 are not supported. The supported syntax matches that of the current
 CSS3 Image Values module.</p>
 
-<pre>linear-gradient([&lt;bg-position&gt; || &lt;angle&gt;,]? &lt;color-stop&gt;, &lt;color-stop&gt;[, &lt;color-stop&gt;]*);</pre>
+<pre class="long">linear-gradient([&lt;bg-position&gt; || &lt;angle&gt;,]? &lt;color-stop&gt;, &lt;color-stop&gt;[, &lt;color-stop&gt;]*);</pre>
 
 <p>Currently all color stops are rendered fully opaque, even if
 specifying an rgba color value. This is due to a limitation in VML's
@@ -281,12 +315,52 @@ but it may turn out to be impossible to implement due to VML's strange radial gr
 <p>Notes on other browsers:</p>
 
 <p>WebKit's gradient syntax is drastically different than that of the
-CSS3 spec. See the Safari documentation for their syntax:
-<a href="http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/Gradients/Gradients.html">http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/Gradients/Gradients.html</a></p>
+CSS3 spec. See the
+<a href="http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/Gradients/Gradients.html">Safari documentation</a> for their syntax</p>
 
 <p>Mozilla only supports gradients (via the -moz-linear-gradient
-property) as of Firefox 3.6.</p>
+function) as of Firefox 3.6.</p>
 
 <p>Opera currently has no support for CSS gradients.</p>
 
-</body></html>
+
+
+<h2 id="pie-png-fix">PNG alpha transparency and -pie-png-fix</h2>
+
+<p>A nice side-effect of PIE's use of VML for rendering is that it causes PNG images
+with alpha channel transparency to be correctly displayed in IE6 when they are rendered
+by PIE's engine. This includes:</p>
+<ul>
+    <li>Background images specified using the <a href="#pie-background">-pie-background</a> property</li>
+    <li>Background images specified using the standard <code>background-image</code> style, when used
+        in conjunction with other CSS3 properties that trigger re-rendering of the background
+        (border-radius, border-image)</li>
+    <li>&lt;img> elements that have border-radius applied</li>
+</ul>
+
+<p>Sometimes you might want the benefit of the fixed PNG transparency, on elements that do not meet
+the criteria above. In that case, you can add the custom property <code>-pie-png-fix: true;</code> to
+force re-rendering of the background-image or &lt;img>. (The PIE.htc behavior must also be
+attached to the element.)</p>
+
+
+
+<h2 id="pie-lazy-init">Lazy Initialization</h2>
+
+<p>While PIE has been optimized for speed, there is still a small cost in rendering performance for each element
+it is applied to. When you have dozens or hundreds of elements on your page with CSS3 styles applied, this
+can add up to a noticeable rendering delay.</p>
+
+<p>When you have that many elements on one page, chances are that only a small number of them are visible
+in the browser viewport initially, as viewing the rest would require scrolling. PIE allows an optional
+optimization for this case: if you apply the custom <code>-pie-lazy-init:true;</code> property to elements
+PIE will delay the initialization of their CSS3 rendering until they are scrolled into the viewport. This
+keeps the initial page load snappy without severely limiting the number of elements you can render.</p>
+
+
+<!-- noformat off -->
+
+
+
+</body>
+</html>
