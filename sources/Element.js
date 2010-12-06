@@ -5,7 +5,7 @@ PIE.Element = (function() {
         lazyInitCssProp = PIE.CSS_PREFIX + 'lazy-init',
         hoverClass = ' ' + PIE.CLASS_PREFIX + 'hover',
         hoverClassRE = new RegExp( '\\b' + PIE.CLASS_PREFIX + 'hover\\b', 'g' ),
-        ignorePropertyNames = { 'background':1, 'bgColor':1 };
+        ignorePropertyNames = { 'background':1, 'bgColor':1, 'display': 1 };
 
 
     function addListener( el, type, handler ) {
@@ -181,7 +181,9 @@ PIE.Element = (function() {
 
             // Some elements like <table> fire onpropertychange events for old-school background properties
             // ('background', 'bgColor') when runtimeStyle background properties are changed, which
-            // results in an infinite loop; therefore we filter out those property names.
+            // results in an infinite loop; therefore we filter out those property names. Also, 'display'
+            // is ignored because size calculations don't work correctly immediately when its onpropertychange
+            // event fires, and because it will trigger an onresize event anyway.
             if( !destroyed && !( e && e.propertyName in ignorePropertyNames ) ) {
                 if( initialized ) {
                     lockAll();

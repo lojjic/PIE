@@ -101,7 +101,9 @@ PIE.Length = (function() {
                 lengthCalcEl.style.width = '1em';
                 el.appendChild( lengthCalcEl );
                 px = lengthCalcEl.offsetWidth;
-                el.removeChild( lengthCalcEl );
+                if( lengthCalcEl.parentNode !== el ) { //not sure how this happens but it does
+                    el.removeChild( lengthCalcEl );
+                }
                 return px;
             }
         }
