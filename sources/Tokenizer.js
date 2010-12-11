@@ -84,7 +84,7 @@ PIE.Tokenizer = (function() {
          * @return {PIE.Tokenizer.Token}
          */
         next: function( forget ) {
-            var css, ch, firstChar, match, type, val,
+            var css, ch, firstChar, match, val,
                 me = this;
 
             function newToken( type, value ) {
@@ -170,7 +170,7 @@ PIE.Tokenizer = (function() {
                 this.ch += val.length;
 
                 // Named colors
-                if( val.toLowerCase() in this.colorNames ) {
+                if( val.toLowerCase() in PIE.Color.names || val === 'currentColor' ) {
                     return newToken( Type.COLOR, val );
                 }
 
