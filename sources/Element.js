@@ -208,11 +208,15 @@ PIE.Element = (function() {
 
 
         function addHoverClass() {
-            el.className += hoverClass;
+            if( el ) {
+                el.className += hoverClass;
+            }
         }
 
         function removeHoverClass() {
-            el.className = el.className.replace( hoverClassRE, '' );
+            if( el ) {
+                el.className = el.className.replace( hoverClassRE, '' );
+            }
         }
 
         /**
