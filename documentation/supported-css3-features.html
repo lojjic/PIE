@@ -17,6 +17,21 @@
 <p>The following sections describe in detail the exact levels of support PIE has for certain CSS3 properties
 and value types.</p>
 
+<ul>
+    <li><a href="#border-radius">border-radius</a></li>
+    <li><a href="#box-shadow">box-shadow</a></li>
+    <li><a href="#border-image">border-image</a></li>
+    <li><a href="#pie-background">CSS3 Backgrounds (-pie-background)</a></li>
+    <li><a href="#gradients">Gradients</a></li>
+    <li><a href="#rgba">RGBA Color Values</a></li>
+    <li><a href="#custom">PIE Custom Properties</a>
+        <ul>
+            <li><a href="#pie-watch-ancestors">-pie-watch-ancestors</a></li>
+            <li><a href="#pie-png-fix">PNG alpha transparency and -pie-png-fix</a></li>
+            <li><a href="#pie-lazy-init">Lazy Initialization (-pie-lazy-init)</a></li>
+        </ul>
+    </li>
+</ul>
 
 
 <h2 id="border-radius">border-radius</h2>
@@ -128,7 +143,7 @@ to match the size of the element.</p>
 
 
 
-<h2 id="pie-background">-pie-background</h2>
+<h2 id="pie-background">CSS3 Backgrounds (-pie-background)</h2>
 
 <p>PIE supports CSS3 multiple background images, linear gradients as
 background images, and some of the new CSS3 background aspects such as
@@ -178,7 +193,58 @@ See <a href="https://developer.mozilla.org/en/CSS/Multiple_backgrounds">https://
 
 
 
-<h2 id="pie-watch-ancestors">-pie-watch-ancestors</h2>
+<h2 id="gradients">Gradients</h2>
+
+<p>PIE currently supports <code>linear-gradient</code> image values when used in the
+-pie-background property. Uses in any contexts other than the background
+are not supported. The supported syntax matches that of the current
+<a href="http://dev.w3.org/csswg/css3-images/#linear-gradients">CSS3 Image Values module</a> draft.</p>
+
+<pre class="long">linear-gradient([&lt;bg-position&gt; || &lt;angle&gt;,]? &lt;color-stop&gt;, &lt;color-stop&gt;[, &lt;color-stop&gt;]*);</pre>
+
+<p>Currently all color stops are rendered fully opaque, even if
+specifying an rgba color value. This is due to a limitation in VML's
+linear gradient syntax which does not allow setting opacity for
+individual color stops. (See <a href="http://github.com/lojjic/PIE/issues#issue/7">issue #7</a>)</p>
+
+<p>Gradients containing color-stops which lie outside the bounding area
+of the element are not currently supported, due to limitations in VML's
+gradient rendering.</p>
+
+<p>Radial gradients are not supported at this time; this feature is planned
+for a future release (see <a href="http://github.com/lojjic/PIE/issues#issue/2">issue #2</a>)
+but it may turn out to be impossible to implement due to VML's strange radial gradient behavior.</p>
+
+<p>Notes on other browsers:</p>
+
+<p>WebKit's gradient syntax is drastically different than that of the
+CSS3 spec. See the
+<a href="http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/Gradients/Gradients.html">Safari documentation</a> for their syntax</p>
+
+<p>Mozilla only supports gradients (via the -moz-linear-gradient
+function) as of Firefox 3.6.</p>
+
+<p>Opera currently has no support for CSS gradients, though you can use SVG to generate gradients instead.</p>
+
+
+<h2 id="rgba">RGBA Color Values</h2>
+
+<p>PIE parses RGBA color values wherever they are allowed. However it
+is only able to successfully render their opacity value in a few
+contexts. In all other contexts they will be rendered with the correct
+RGB color, but fully opaque. Here are the supported contexts in which
+the opacity will be rendered correctly:</p>
+
+<ul>
+  <li>The solid background-color as specified in the -pie-background property.</li>
+  <li>The color value of box-shadow, if the shadow has no blur.</li>
+</ul>
+
+
+
+<h2 id="custom">PIE custom properties</h2>
+
+<h3 id="pie-watch-ancestors">-pie-watch-ancestors</h3>
 
 <p>PIE automatically listens for any attribute or style property
 changes on the element to which the behavior is applied. This means
@@ -275,57 +341,7 @@ className gets changed, and update the rendering correctly.
 
 
 
-<h2 id="rgba">rgba color values</h2>
-
-<p>PIE parses RGBA color values wherever they are allowed. However it
-is only able to successfully render their opacity value in a few
-contexts. In all other contexts they will be rendered with the correct
-RGB color, but fully opaque. Here are the supported contexts in which
-the opacity will be rendered correctly:</p>
-
-<ul>
-  <li>The solid background-color as specified in the -pie-background property.</li>
-  <li>The color value of box-shadow, if the shadow has no blur.</li>
-</ul>
-
-
-
-<h2 id="gradients">gradients</h2>
-
-<p>PIE currently supports linear-gradient image values when used in the
--pie-background property. Use in any contexts other than the background
-are not supported. The supported syntax matches that of the current
-CSS3 Image Values module.</p>
-
-<pre class="long">linear-gradient([&lt;bg-position&gt; || &lt;angle&gt;,]? &lt;color-stop&gt;, &lt;color-stop&gt;[, &lt;color-stop&gt;]*);</pre>
-
-<p>Currently all color stops are rendered fully opaque, even if
-specifying an rgba color value. This is due to a limitation in VML's
-linear gradient syntax which does not allow setting opacity for
-individual color stops. (See <a href="http://github.com/lojjic/PIE/issues#issue/7">issue #7</a>)</p>
-
-<p>Gradients containing color-stops which lie outside the bounding area
-of the element are not currently supported, due to limitations in VML's
-gradient rendering.</p>
-
-<p>Radial gradients are not supported at this time; this feature is planned
-for a future release (see <a href="http://github.com/lojjic/PIE/issues#issue/2">issue #2</a>)
-but it may turn out to be impossible to implement due to VML's strange radial gradient behvior.</p>
-
-<p>Notes on other browsers:</p>
-
-<p>WebKit's gradient syntax is drastically different than that of the
-CSS3 spec. See the
-<a href="http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/Gradients/Gradients.html">Safari documentation</a> for their syntax</p>
-
-<p>Mozilla only supports gradients (via the -moz-linear-gradient
-function) as of Firefox 3.6.</p>
-
-<p>Opera currently has no support for CSS gradients.</p>
-
-
-
-<h2 id="pie-png-fix">PNG alpha transparency and -pie-png-fix</h2>
+<h3 id="pie-png-fix">PNG alpha transparency and -pie-png-fix</h3>
 
 <p>A nice side-effect of PIE's use of VML for rendering is that it causes PNG images
 with alpha channel transparency to be correctly displayed in IE6 when they are rendered
@@ -345,7 +361,7 @@ attached to the element.)</p>
 
 
 
-<h2 id="pie-lazy-init">Lazy Initialization</h2>
+<h3 id="pie-lazy-init">Lazy Initialization (-pie-lazy-init)</h3>
 
 <p>While PIE has been optimized for speed, there is still a small cost in rendering performance for each element
 it is applied to. When you have dozens or hundreds of elements on your page with CSS3 styles applied, this
