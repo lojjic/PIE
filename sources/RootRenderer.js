@@ -91,6 +91,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
         if( !box ) {
             el = this.getPositioningElement();
             box = this._box = doc.createElement( 'css3-container' );
+            box.style['direction'] = 'ltr'; //fix positioning bug in rtl environments
 
             this.updateVisibility();
 
