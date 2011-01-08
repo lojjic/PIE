@@ -22,6 +22,7 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
     },
 
     draw: function() {
+        this._lastSrc = src;
         this.hideActualImg();
 
         var shape = this.getShape( 'img', 'fill', this.getBox() ),
@@ -39,7 +40,7 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
         shape.stroked = false;
         fill.type = 'frame';
         fill.src = src;
-        fill.position = (0.5 / w) + ',' + (0.5 / h);
+        fill.position = (w ? 0.5 / w : 0) + ',' + (h ? 0.5 / h : 0);
         shape.coordsize = w * 2 + ',' + h * 2;
         shape.coordorigin = '1,1';
         shape.path = this.getBoxPath( borderWidths ? {
@@ -51,8 +52,6 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
         s = shape.style;
         s.width = w;
         s.height = h;
-
-        this._lastSrc = src;
     },
 
     hideActualImg: function() {
