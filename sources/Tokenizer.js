@@ -208,7 +208,7 @@ PIE.Tokenizer = (function() {
                         return failure();
                     }
 
-                    return newToken( Type.FUNCTION, val + '(' );
+                    return newToken( Type.FUNCTION, val );
                 }
 
                 // Other identifier
