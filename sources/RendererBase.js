@@ -220,10 +220,14 @@ PIE.RendererBase = {
      * @param {number=} mult If specified, all coordinates will be multiplied by this number
      * @param {Object=} radii If specified, this will be used for the corner radii instead of the properties
      *        from this renderer's borderRadiusInfo object.
+     * @param {number=} xOffset If specified, all points will be shifted by this amount on the x-axis
+     * @param {number=} yOffset If specified, all points will be shifted by this amount on the y-axis
      * @return {string} the VML path
      */
-    getBoxPath: function( shrink, mult, radii ) {
-        mult = mult || 1;
+    getBoxPath: function( shrink, mult, radii, xOffset, yOffset ) {
+        mult || ( mult = 1 );
+        xOffset = ( xOffset || 0 ) * mult;
+        yOffset = ( yOffset || 0 ) * mult;
 
         var r, str,
             bounds = this.boundsInfo.getBounds(),
@@ -249,20 +253,20 @@ PIE.RendererBase = {
             blX = r.x['bl'] * mult;
             blY = r.y['bl'] * mult;
 
-            str = 'm' + floor( shrinkL ) + ',' + floor( tlY ) +
-                'qy' + floor( tlX ) + ',' + floor( shrinkT ) +
-                'l' + ceil( w - trX ) + ',' + floor( shrinkT ) +
-                'qx' + ceil( w - shrinkR ) + ',' + floor( trY ) +
-                'l' + ceil( w - shrinkR ) + ',' + ceil( h - brY ) +
-                'qy' + ceil( w - brX ) + ',' + ceil( h - shrinkB ) +
-                'l' + floor( blX ) + ',' + ceil( h - shrinkB ) +
-                'qx' + floor( shrinkL ) + ',' + ceil( h - blY ) + ' x e';
+            str = 'm' + ( floor( shrinkL ) + xOffset ) + ',' + ( floor( tlY ) + yOffset ) +
+                'qy' + ( floor( tlX ) + xOffset ) + ',' + ( floor( shrinkT ) + yOffset ) +
+                'l' + ( ceil( w - trX ) + xOffset ) + ',' + ( floor( shrinkT ) + yOffset ) +
+                'qx' + ( ceil( w - shrinkR ) + xOffset ) + ',' + ( floor( trY ) + yOffset ) +
+                'l' + ( ceil( w - shrinkR ) + xOffset ) + ',' + ( ceil( h - brY ) + yOffset ) +
+                'qy' + ( ceil( w - brX ) + xOffset ) + ',' + ( ceil( h - shrinkB ) + yOffset ) +
+                'l' + ( floor( blX ) + xOffset ) + ',' + ( ceil( h - shrinkB ) + yOffset ) +
+                'qx' + ( floor( shrinkL ) + xOffset ) + ',' + ( ceil( h - blY ) + yOffset ) + ' x e';
         } else {
             // simplified path for non-rounded box
-            str = 'm' + floor( shrinkL ) + ',' + floor( shrinkT ) +
-                  'l' + ceil( w - shrinkR ) + ',' + floor( shrinkT ) +
-                  'l' + ceil( w - shrinkR ) + ',' + ceil( h - shrinkB ) +
-                  'l' + floor( shrinkL ) + ',' + ceil( h - shrinkB ) +
+            str = 'm' + ( floor( shrinkL ) + xOffset ) + ',' + ( floor( shrinkT ) + yOffset ) +
+                  'l' + ( ceil( w - shrinkR ) + xOffset ) + ',' + ( floor( shrinkT ) + yOffset ) +
+                  'l' + ( ceil( w - shrinkR ) + xOffset ) + ',' + ( ceil( h - shrinkB ) + yOffset ) +
+                  'l' + ( floor( shrinkL ) + xOffset ) + ',' + ( ceil( h - shrinkB ) + yOffset ) +
                   'xe';
         }
         return str;

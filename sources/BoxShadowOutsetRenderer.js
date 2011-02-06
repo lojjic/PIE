@@ -34,11 +34,11 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
             h = bounds.h,
             clipAdjust = PIE.ieVersion === 8 ? 1 : 0, //workaround for IE8 bug where VML leaks out top/left of clip region by 1px
             corners = [ 'tl', 'tr', 'br', 'bl' ], corner,
-            shadowInfo, shape, fill, ss, xOff, yOff, spread, blur, shrink, color, alpha, path,
+            shadowInfo, shape, fill, ss, spread, blur, shrink, color, alpha, path,
             totalW, totalH, focusX, focusY, isBottom, isRight;
 
 
-        function getShadowShape( index, corner, xOff, yOff, color, blur, path ) {
+        function getShadowShape( index, corner, color, blur, path ) {
             var shape = me.getShape( 'shadow' + index + corner, 'fill', box, len - index ),
                 fill = shape.fill;
 
@@ -61,8 +61,6 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
 
             // This needs to go last for some reason, to prevent rendering at incorrect size
             ss = shape.style;
-            ss.left = xOff;
-            ss.top = yOff;
             ss.width = w;
             ss.height = h;
 
@@ -72,8 +70,6 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
 
         while( i-- ) {
             shadowInfo = shadowInfos[ i ];
-            xOff = shadowInfo.xOffset.pixels( el );
-            yOff = shadowInfo.yOffset.pixels( el );
             spread = shadowInfo.spread.pixels( el ),
             blur = shadowInfo.blur.pixels( el );
             color = shadowInfo.color;
@@ -84,7 +80,8 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
                 // round the corners of the expanded shadow shape rather than squaring them off.
                 radii = PIE.BorderRadiusStyleInfo.ALL_ZERO;
             }
-            path = this.getBoxPath( { t: shrink, r: shrink, b: shrink, l: shrink }, 2, radii );
+            path = this.getBoxPath( { t: shrink, r: shrink, b: shrink, l: shrink }, 2, radii,
+                    shadowInfo.xOffset.pixels( el ), shadowInfo.yOffset.pixels( el ) );
 
             if( blur ) {
                 totalW = ( spread + blur ) * 2 + w;
@@ -101,7 +98,7 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
                         corner = corners[j];
                         isBottom = corner.charAt( 0 ) === 'b';
                         isRight = corner.charAt( 1 ) === 'r';
-                        shape = getShadowShape( i, corner, xOff, yOff, color, blur, path );
+                        shape = getShadowShape( i, corner, color, blur, path );
                         fill = shape.fill;
                         fill['focusposition'] = ( isRight ? 1 - focusX : focusX ) + ',' +
                                                 ( isBottom ? 1 - focusY : focusY );
@@ -116,13 +113,13 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
                     }
                 } else {
                     // TODO delete old quadrant shapes if resizing expands past the barrier
-                    shape = getShadowShape( i, '', xOff, yOff, color, blur, path );
+                    shape = getShadowShape( i, '', color, blur, path );
                     fill = shape.fill;
                     fill['focusposition'] = focusX + ',' + focusY;
                     fill['focussize'] = ( 1 - focusX * 2 ) + ',' + ( 1 - focusY * 2 );
                 }
             } else {
-                shape = getShadowShape( i, '', xOff, yOff, color, blur, path );
+                shape = getShadowShape( i, '', color, blur, path );
                 alpha = color.alpha();
                 if( alpha < 1 ) {
                     // shape.style.filter = 'alpha(opacity=' + ( alpha * 100 ) + ')';

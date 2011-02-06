@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS3 2D Transforms</title>
+
+    <style type="text/css">
+        .cont {
+            border: 100px solid #EEF;
+            width: 200px;
+            height: 200px;
+            margin: 50px;
+            float: left;
+        }
+
+        .test {
+            width: 180px;
+            height: 180px;
+            border: 1px solid #CCC;
+            padding: 9px;
+            background: rgba(200, 255, 200, 0.2);
+            -moz-border-radius: 10px;
+            -webkit-border-radius: 10px;
+            border-radius: 10px;
+        }
+
+        .shadow .test {
+            -moz-box-shadow: 0 3px 5px #000;
+            -webkit-box-shadow: 0 3px 5px #000;
+            box-shadow: 0 3px 5px #000;
+        }
+
+        .gradient .test {
+            background: -webkit-gradient(linear, 0 0, 100% 0, from(#FCC), to(#CCF));
+            background: -moz-linear-gradient(left, #FCC, #CCF);
+            background: linear-gradient(left, #FCC, #CCF);
+            -pie-background: linear-gradient(left, #FCC, #CCF);
+        }
+
+        .matrix {
+            display: block;
+            color: #999;
+            font-size: 10px;
+            margin-top: 1em;
+        }
+
+        #controls {
+            position: fixed;
+            top: 1em;
+            right: 1em;
+        }
+    </style>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            var divs = document.getElementsByTagName("div"),
+                i = 0, len = divs.length;
+            for( ; i < len; i++ ) {
+                if (divs[i].className.match(/\btest\b/)) {
+                    divs[i].style.MozTransform = divs[i].innerHTML;
+                    divs[i].style.webkitTransform = divs[i].innerHTML;
+                    divs[i].style.transform = divs[i].innerHTML;
+
+                    divs[i].innerHTML += '<span class="matrix">' + (
+                            getComputedStyle(divs[i], null).getPropertyValue('transform') ||
+                            getComputedStyle(divs[i], null).getPropertyValue('-webkit-transform') ||
+                            getComputedStyle(divs[i], null).getPropertyValue('-moz-transform') ||
+                            'could not get matrix value'
+                        ) + '</span>'
+                }
+            }
+        };
+
+        function toggleBodyClass(cls) {
+            var re = new RegExp("\\b" + cls + "\\b", 'g'),
+                body = document.body;
+            if (re.test(body.className)) {
+                body.className = body.className.replace(re, '');
+            } else {
+                body.className += ' ' + cls;
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <p id="controls">
+        <button onclick="toggleBodyClass('shadow')">Toggle Shadow</button>
+        <button onclick="toggleBodyClass('gradient')">Toggle Gradient</button>
+    </p>
+
+    <div class="cont"><div class="test">rotate(45deg)</div></div>
+    <div class="cont"><div class="test">rotate(1rad)</div></div>
+
+    <div class="cont"><div class="test">scale(1.5)</div></div>
+    <div class="cont"><div class="test">scaleX(1.5)</div></div>
+    <div class="cont"><div class="test">scaleY(1.5)</div></div>
+
+    <div class="cont"><div class="test">skew(25deg,25deg)</div></div>
+    <div class="cont"><div class="test">skewX(25deg)</div></div>
+    <div class="cont"><div class="test">skewY(25deg)</div></div>
+
+    <div class="cont"><div class="test">translate(100px,100px)</div></div>
+    <div class="cont"><div class="test">translateX(100px)</div></div>
+    <div class="cont"><div class="test">translateY(100px)</div></div>
+    <div class="cont"><div class="test">translate(2em, 50%)</div></div>
+
+    <div class="cont"><div class="test">translate(50px) rotate(45deg)</div></div>
+    <div class="cont"><div class="test">rotate(45deg) translate(50px)</div></div>
+
+    <!--<div class="cont"><div class="test"></div></div>-->
+
+</body>
+</html>
