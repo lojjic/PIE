@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head xmlns:v="urn:">
+    <title>VML Playground</title>
+
+    <style type="text/css">
+        #input {
+            width: 90%;
+            height: 200px;
+            margin: 10px;
+        }
+
+        #output {
+            margin: 10px;
+            height: 400px;
+            position: relative;
+            border: 1px solid #CCC;
+        }
+
+        v\:*, v\:* * {
+            behavior: url(#default#VML);
+            position: absolute;
+        }
+    </style>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            var input = document.getElementById('input'),
+                output = document.getElementById('output'),
+                timer;
+
+            function update() {
+                output.innerHTML = input.value;
+            }
+
+            input.onkeyup = function() {
+                if (timer) {
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(update, 500);
+            };
+
+            update();
+        }
+    </script>
+
+</head>
+<body>
+
+    <textarea id="input">
+<outset-box-shadow style="POSITION: absolute; TOP: 0px; LEFT: 0px">
+  <group1>
+    <v:shape coordsize="408,208" coordorigin="1,1" path=" m-16,32 qy32,-16 l376,-16 qx424,32 l424,176 qy376,224 l32,224 qx-16,176 x e" stroked="false" filled="true"
+        style="POSITION: absolute; WIDTH: 204px; HEIGHT: 104px; TOP: 4px; LEFT: 0px">
+      <v:fill type="gradientTitle" color="#999" color2="#999" colors="" opacity="0" src="" position="0,0" angle="0" method="any" focusposition="4766f,8738f" focussize="56003f,48059f" />
+      <v:stroke color="black" weight="0.75" dashstyle="" linestyle="single" />
+    </v:shape>
+  </group1>
+</outset-box-shadow>
+<background style="POSITION: absolute; TOP: 0px; LEFT: 0px">
+  <group2>
+    <v:shape coordsize="408,208" coordorigin="1,1" path=" m0,32 qy32,0 l376,0 qx408,32 l408,176 qy376,208 l32,208 qx0,176 x e" stroked="false" filled="true"
+        style="POSITION: absolute; WIDTH: 204px; HEIGHT: 104px; TOP: 0px; LEFT: 0px">
+      <v:fill type="gradient" color="#9cf" color2="#03c" colors="" opacity="1" src="" position="0,0" angle="180" method="sigma" focusposition="0,0" focussize="0,0" />
+      <v:stroke color="black" weight="0.75" dashstyle="" linestyle="single" />
+    </v:shape>
+  </group2>
+</background>
+<border style="POSITION: absolute; TOP: 0px; LEFT: 0px">
+    <v:shape coordsize="408,208" coordorigin="1,1" path=" m2,32 qy32,2 l376,2 qx406,32 l406,176 qy376,206 l32,206 qx2,176 x e" stroked="true" filled="false"
+        style="POSITION: absolute; WIDTH: 204px; HEIGHT: 104px; TOP: 0px; LEFT: 0px">
+      <v:fill type="solid" color="white" color2="white" colors="" opacity="1" src="" position="0,0" angle="0" method="any" focusposition="0,0" focussize="0,0" />
+      <v:stroke color="#00c" weight="1.5" dashstyle="solid" linestyle="single" />
+    </v:shape>
+</border>
+<!-- <v:skew on="t" origin="0,0" matrix="1 0 0 1 0 0" /> -->
+    </textarea>
+
+    <div id="output">
+        <!-- VML will get inserted here -->
+    </div>
+
+</body>
+</html>
