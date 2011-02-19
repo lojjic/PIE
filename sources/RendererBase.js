@@ -231,6 +231,7 @@ PIE.RendererBase = {
             h = bounds.h * mult,
             radInfo = this.styleInfos.borderRadiusInfo,
             floor = Math.floor, ceil = Math.ceil,
+            min = Math.min, max = Math.max,
             shrinkT = shrink ? shrink.t * mult : 0,
             shrinkR = shrink ? shrink.r * mult : 0,
             shrinkB = shrink ? shrink.b * mult : 0,
@@ -249,6 +250,7 @@ PIE.RendererBase = {
             blX = r.x['bl'] * mult;
             blY = r.y['bl'] * mult;
 
+/*
             str = 'm' + floor( shrinkL ) + ',' + floor( tlY ) +
                 'qy' + floor( tlX ) + ',' + floor( shrinkT ) +
                 'l' + ceil( w - trX ) + ',' + floor( shrinkT ) +
@@ -257,6 +259,15 @@ PIE.RendererBase = {
                 'qy' + ceil( w - brX ) + ',' + ceil( h - shrinkB ) +
                 'l' + floor( blX ) + ',' + ceil( h - shrinkB ) +
                 'qx' + floor( shrinkL ) + ',' + ceil( h - blY ) + ' x e';
+*/
+            str = 'm' + floor( shrinkL ) + ',' + floor( max( tlY, shrinkT ) ) +
+                ( shrinkT < tlY ? 'qy' + floor( tlX ) + ',' + floor( shrinkT ) : '' ) +
+                'l' + ceil( w - max( trX, shrinkR ) ) + ',' + floor( shrinkT ) +
+                ( shrinkR < trX ? 'qx' + ceil( w - shrinkR ) + ',' + floor( trY ) : '' ) +
+                'l' + ceil( w - shrinkR ) + ',' + ceil( h - max( brY, shrinkB ) ) +
+                ( shrinkB < brY ? 'qy' + ceil( w - brX ) + ',' + ceil( h - shrinkB ) : '' ) +
+                'l' + floor( max( blX, shrinkL ) ) + ',' + ceil( h - shrinkB ) +
+                ( shrinkL < blX ? 'qx' + floor( shrinkL ) + ',' + ceil( h - blY ) : '' ) + 'xe';
         } else {
             // simplified path for non-rounded box
             str = 'm' + floor( shrinkL ) + ',' + floor( shrinkT ) +
