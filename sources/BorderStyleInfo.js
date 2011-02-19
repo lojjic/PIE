@@ -7,9 +7,9 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 
     sides: [ 'Top', 'Right', 'Bottom', 'Left' ],
     namedWidths: {
-        thin: '1px',
-        medium: '3px',
-        thick: '5px'
+        'thin': '1px',
+        'medium': '3px',
+        'thick': '5px'
     },
 
     parseCss: function( css ) {
