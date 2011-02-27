@@ -1,23 +1,33 @@
 /**
- * Wrapper for length and percentage style values
+ * Wrapper for length and percentage style values. The value is immutable. A singleton instance per unique
+ * value is returned from PIE.getLength() - always use that instead of instantiating directly.
  * @constructor
  * @param {string} val The CSS string representing the length. It is assumed that this will already have
  *                 been validated as a valid length or percentage syntax.
  */
 PIE.Length = (function() {
-
     var lengthCalcEl = doc.createElement( 'length-calc' ),
+        parent = doc.documentElement,
         s = lengthCalcEl.style,
-        numCache = {},
-        unitCache = {};
+        conversions = {},
+        units = [ 'mm', 'cm', 'in', 'pt', 'pc' ],
+        i = units.length,
+        instances = {};
+
     s.position = 'absolute';
-    s.top = s.left = -9999;
+    s.top = s.left = '-9999px';
+
+    parent.appendChild( lengthCalcEl );
+    while( i-- ) {
+        lengthCalcEl.style.width = '100' + units[i];
+        conversions[ units[i] ] = lengthCalcEl.offsetWidth / 100;
+    }
+    parent.removeChild( lengthCalcEl );
 
 
     function Length( val ) {
         this.val = val;
     }
-
     Length.prototype = {
         /**
          * Regular expression for matching the length unit
@@ -30,10 +40,10 @@ PIE.Length = (function() {
          * @return {number} The value
          */
         getNumber: function() {
-            var num = numCache[ this.val ],
+            var num = this.num,
                 UNDEF;
             if( num === UNDEF ) {
-                num = numCache[ this.val ] = parseFloat( this.val );
+                num = this.num = parseFloat( this.val );
             }
             return num;
         },
@@ -43,10 +53,11 @@ PIE.Length = (function() {
          * @return {string} The unit
          */
         getUnit: function() {
-            var unit = unitCache[ this.val ], m;
+            var unit = this.unit,
+                m;
             if( !unit ) {
                 m = this.val.match( this.unitRE );
-                unit = unitCache[ this.val ] = ( m && m[0] ) || 'px';
+                unit = this.unit = ( m && m[0] ) || 'px';
             }
             return unit;
         },
@@ -78,7 +89,7 @@ PIE.Length = (function() {
                 case "ex":
                     return num * this.getEmPixels( el ) / 2;
                 default:
-                    return num * Length.conversions[ unit ];
+                    return num * conversions[ unit ];
             }
         },
 
@@ -109,23 +120,15 @@ PIE.Length = (function() {
         }
     };
 
-    Length.conversions = (function() {
-        var units = [ 'mm', 'cm', 'in', 'pt', 'pc' ],
-            vals = {},
-            parent = doc.documentElement,
-            i = units.length, unit;
 
-        parent.appendChild( lengthCalcEl );
-        while( i-- ) {
-            unit = units[i];
-            lengthCalcEl.style.width = '100' + unit;
-            vals[ unit ] = lengthCalcEl.offsetWidth / 100;
-        }
-        parent.removeChild( lengthCalcEl );
-        return vals;
-    })();
-
-    Length.ZERO = new Length( '0' );
+    /**
+     * Retrieve a PIE.Length instance for the given value. A shared singleton instance is returned for each unique value.
+     * @param {string} val The CSS string representing the length. It is assumed that this will already have
+     *                 been validated as a valid length or percentage syntax.
+     */
+    PIE.getLength = function( val ) {
+        return instances[ val ] || ( instances[ val ] = new Length( val ) );
+    };
 
     return Length;
 })();

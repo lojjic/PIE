@@ -68,7 +68,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         }
 
         function sizeToken( token ) {
-            return ( token.isLengthOrPercent() && new PIE.Length( token.value ) ) || ( token.value === 'auto' && 'auto' );
+            return ( token.isLengthOrPercent() && PIE.getLength( token.value ) ) || ( token.value === 'auto' && 'auto' );
         }
 
         // If the CSS3-specific -pie-background property is present, parse it
@@ -111,12 +111,12 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                             }
 
                             stop = {
-                                color: new PIE.Color( tokVal )
+                                color: PIE.getColor( tokVal )
                             };
                             // check for offset following color
                             token = tokenizer.next();
                             if( token.isLengthOrPercent() ) {
-                                stop.offset = new PIE.Length( token.value );
+                                stop.offset = PIE.getLength( token.value );
                             } else {
                                 tokenizer.prev();
                             }
@@ -172,7 +172,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                     }
                 }
                 else if( tokType & type_color && !props.color ) {
-                    props.color = new PIE.Color( tokVal );
+                    props.color = PIE.getColor( tokVal );
                 }
                 else if( tokType & type_operator ) {
                     // background size
@@ -218,7 +218,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 
                 props = {};
                 if( color !== 'transparent' ) {
-                    props.color = new PIE.Color( color )
+                    props.color = PIE.getColor( color )
                 }
                 if( img !== 'none' ) {
                     props.images = [ {

@@ -1,9 +1,12 @@
 /**
- * Abstraction for colors values. Allows detection of rgba values.
+ * Abstraction for colors values. Allows detection of rgba values. A singleton instance per unique
+ * value is returned from PIE.getColor() - always use that instead of instantiating directly.
  * @constructor
  * @param {string} val The raw CSS string value for the color
  */
 PIE.Color = (function() {
+    var instances = {};
+
     function Color( val ) {
         this.val = val;
     }
@@ -108,6 +111,16 @@ PIE.Color = (function() {
             this.parse();
             return this._alpha;
         }
+    };
+
+
+    /**
+     * Retrieve a PIE.Color instance for the given value. A shared singleton instance is returned for each unique value.
+     * @param {string} val The CSS string representing the color. It is assumed that this will already have
+     *                 been validated as a valid color syntax.
+     */
+    PIE.getColor = function(val) {
+        return instances[ val ] || ( instances[ val ] = new Color( val ) );
     };
 
     return Color;

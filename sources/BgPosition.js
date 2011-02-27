@@ -5,7 +5,7 @@
  */
 PIE.BgPosition = (function() {
 
-    var length_fifty = new PIE.Length( '50%' ),
+    var length_fifty = PIE.getLength( '50%' ),
         vert_idents = { 'top': 1, 'center': 1, 'bottom': 1 },
         horiz_idents = { 'left': 1, 'center': 1, 'right': 1 };
 
@@ -27,7 +27,7 @@ PIE.BgPosition = (function() {
                 var tokens = this.tokens,
                     len = tokens.length,
                     identType = PIE.Tokenizer.Type,
-                    length_zero = PIE.Length.ZERO,
+                    length_zero = PIE.getLength( '0' ),
                     type_ident = identType.IDENT,
                     type_length = identType.LENGTH,
                     type_percent = identType.PERCENT,
@@ -55,7 +55,7 @@ PIE.BgPosition = (function() {
                         }
                     }
                     else if( tokens[0].isLengthOrPercent() ) {
-                        vals[1] = new PIE.Length( tokens[0].value );
+                        vals[1] = PIE.getLength( tokens[0].value );
                     }
                     if( tokens[1].type & type_ident ) {
                         if( tokens[1].value === 'center' ) {
@@ -65,7 +65,7 @@ PIE.BgPosition = (function() {
                         }
                     }
                     else if( tokens[1].isLengthOrPercent() ) {
-                        vals[3] = new PIE.Length( tokens[1].value );
+                        vals[3] = PIE.getLength( tokens[1].value );
                     }
                 }
 

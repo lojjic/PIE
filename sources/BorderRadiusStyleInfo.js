@@ -15,17 +15,13 @@ PIE.BorderRadiusStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             tokenizer, token, length,
             hasNonZero = false;
 
-        function newLength( v ) {
-            return new PIE.Length( v );
-        }
-
         if( css ) {
             tokenizer = new PIE.Tokenizer( css );
 
             function collectLengths() {
                 var arr = [], num;
                 while( ( token = tokenizer.next() ) && token.isLengthOrPercent() ) {
-                    length = newLength( token.value );
+                    length = PIE.getLength( token.value );
                     num = length.getNumber();
                     if( num < 0 ) {
                         return null;
@@ -65,8 +61,8 @@ PIE.BorderRadiusStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     }
 } );
 
-var ZERO = PIE.Length.ZERO,
-    zeros = { 'tl': ZERO, 'tr': ZERO, 'br': ZERO, 'bl': ZERO };
+var zero = PIE.getLength( '0' ),
+    zeros = { 'tl': zero, 'tr': zero, 'br': zero, 'bl': zero };
 PIE.BorderRadiusStyleInfo.ALL_ZERO = { x: zeros, y: zeros };
 
 })();

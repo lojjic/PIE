@@ -43,9 +43,9 @@ PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 lastColor = color;
                 lastWidth = width;
 
-                c[ ltr ] = new PIE.Color( color );
+                c[ ltr ] = PIE.getColor( color );
 
-                width = w[ ltr ] = new PIE.Length( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ width ] || width ) );
+                width = w[ ltr ] = PIE.getLength( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ width ] || width ) );
                 if( width.pixels( this.targetElement ) > 0 ) {
                     active = true;
                 }

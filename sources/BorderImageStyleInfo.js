@@ -122,22 +122,22 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             }
 
             p.slice = distributeSides( slices, function( tok ) {
-                return new PIE.Length( ( tok.type & NUMBER ) ? tok.value + 'px' : tok.value );
+                return PIE.getLength( ( tok.type & NUMBER ) ? tok.value + 'px' : tok.value );
             } );
 
             p.width = widths && widths.length > 0 ?
                     distributeSides( widths, function( tok ) {
-                        return tok.type & ( LENGTH | PERCENT ) ? new PIE.Length( tok.value ) : tok.value;
+                        return tok.type & ( LENGTH | PERCENT ) ? PIE.getLength( tok.value ) : tok.value;
                     } ) :
                     ( cs = this.targetElement.currentStyle ) && {
-                        t: new PIE.Length( cs.borderTopWidth ),
-                        r: new PIE.Length( cs.borderRightWidth ),
-                        b: new PIE.Length( cs.borderBottomWidth ),
-                        l: new PIE.Length( cs.borderLeftWidth )
+                        t: PIE.getLength( cs.borderTopWidth ),
+                        r: PIE.getLength( cs.borderRightWidth ),
+                        b: PIE.getLength( cs.borderBottomWidth ),
+                        l: PIE.getLength( cs.borderLeftWidth )
                     };
 
             p.outset = distributeSides( outsets || [ 0 ], function( tok ) {
-                return tok.type & LENGTH ? new PIE.Length( tok.value ) : tok.value;
+                return tok.type & LENGTH ? PIE.getLength( tok.value ) : tok.value;
             } );
         }
 

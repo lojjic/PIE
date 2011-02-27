@@ -10,7 +10,7 @@ PIE.BoxShadowStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 
     parseCss: function( css ) {
         var props,
-            Length = PIE.Length,
+            getLength = PIE.getLength,
             Type = PIE.Tokenizer.Type,
             tokenizer;
 
@@ -48,11 +48,11 @@ PIE.BoxShadowStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 len = lengths && lengths.length;
                 if( len > 1 && len < 5 ) {
                     ( inset ? props.inset : props.outset ).push( {
-                        xOffset: new Length( lengths[0].value ),
-                        yOffset: new Length( lengths[1].value ),
-                        blur: new Length( lengths[2] ? lengths[2].value : '0' ),
-                        spread: new Length( lengths[3] ? lengths[3].value : '0' ),
-                        color: new PIE.Color( color || 'currentColor' )
+                        xOffset: getLength( lengths[0].value ),
+                        yOffset: getLength( lengths[1].value ),
+                        blur: getLength( lengths[2] ? lengths[2].value : '0' ),
+                        spread: getLength( lengths[3] ? lengths[3].value : '0' ),
+                        color: PIE.getColor( color || 'currentColor' )
                     } );
                     return true;
                 }
