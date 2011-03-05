@@ -16,28 +16,33 @@ if( !PIE ) {
         doc.execCommand( 'BackgroundImageCache', false, true );
     } catch(e) {}
 
-    /*
-     * IE version detection approach by James Padolsey, with modifications -- from
-     * http://james.padolsey.com/javascript/detect-ie-in-js-using-conditional-comments/
-     */
-    PIE.ieVersion = function(){
-        var v = 4,
+    (function() {
+        /*
+         * IE version detection approach by James Padolsey, with modifications -- from
+         * http://james.padolsey.com/javascript/detect-ie-in-js-using-conditional-comments/
+         */
+        var ieVersion = 4,
             div = doc.createElement('div'),
-            all = div.getElementsByTagName('i');
-
+            all = div.getElementsByTagName('i'),
+            shape;
         while (
-            div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+            div.innerHTML = '<!--[if gt IE ' + (++ieVersion) + ']><i></i><![endif]-->',
             all[0]
         ) {}
+        PIE.ieVersion = ieVersion;
 
-        return v;
-    }();
+        // Detect IE6
+        if( ieVersion === 6 ) {
+            // IE6 can't access properties with leading dash, but can without it.
+            PIE.CSS_PREFIX = PIE.CSS_PREFIX.replace( /^-/, '' );
+        }
 
-    // Detect IE6
-    if( PIE.ieVersion === 6 ) {
-        // IE6 can't access properties with leading dash, but can without it.
-        PIE.CSS_PREFIX = PIE.CSS_PREFIX.replace( /^-/, '' );
-    }
+        // Detect IE8
+        PIE.ie8DocMode = ieVersion === 8 && doc.documentMode;
 
-    // Detect IE8
-    PIE.ie8DocMode = PIE.ieVersion === 8 && doc.documentMode;
+        // Detect VML support (a small number of IE installs don't have a working VML engine)
+        div.innerHTML = '<v:shape adj="1"/>';
+        shape = div.firstChild;
+        shape.style['behavior'] = 'url(#default#VML)';
+        PIE.supportsVML = (typeof shape['adj'] === "object");
+    }());
