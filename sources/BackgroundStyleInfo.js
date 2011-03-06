@@ -81,8 +81,8 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 tokType = token.type;
                 tokVal = token.value;
 
-                if( !image.type && tokType & tok_type.FUNCTION && tokVal === 'linear-gradient(' ) {
-                    gradient = { stops: [], type: 'linear-gradient' };
+                if( !image.type && tokType & tok_type.FUNCTION && tokVal === 'linear-gradient' ) {
+                    gradient = { stops: [], type: tokVal };
                     stop = {};
                     while( token = tokenizer.next() ) {
                         tokType = token.type;
