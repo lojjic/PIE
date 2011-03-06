@@ -19,9 +19,10 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
     },
 
     draw: function() {
+        this.getBox(); //make sure pieces are created
+
         var props = this.styleInfos.borderImageInfo.getProps(),
             bounds = this.boundsInfo.getBounds(),
-            box = this.getBox(), //make sure pieces are created
             el = this.targetElement,
             pieces = this.pieces;
 
@@ -42,9 +43,10 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
 
             // Piece positions and sizes
             function setSizeAndPos( piece, w, h, x, y ) {
-                var s = pieces[piece].style;
-                s.width = w;
-                s.height = h;
+                var s = pieces[piece].style,
+                    max = Math.max;
+                s.width = max(w, 0);
+                s.height = max(h, 0);
                 s.left = x;
                 s.top = y;
             }
