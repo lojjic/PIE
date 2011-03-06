@@ -25,16 +25,16 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             p = {};
 
             function isSlash( token ) {
-                return token && ( token.type & Type.OPERATOR ) && ( token.value === '/' );
+                return token && ( token.tokenType & Type.OPERATOR ) && ( token.tokenValue === '/' );
             }
 
             function isFillIdent( token ) {
-                return token && ( token.type & IDENT ) && ( token.value === 'fill' );
+                return token && ( token.tokenType & IDENT ) && ( token.tokenValue === 'fill' );
             }
 
             function collectSlicesEtc() {
                 slices = tokenizer.until( function( tok ) {
-                    return !( tok.type & ( NUMBER | PERCENT ) );
+                    return !( tok.tokenType & ( NUMBER | PERCENT ) );
                 } );
 
                 if( isFillIdent( tokenizer.next() ) && !p.fill ) {
@@ -46,13 +46,13 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 if( isSlash( tokenizer.next() ) ) {
                     slashCount++;
                     widths = tokenizer.until( function( tok ) {
-                        return !( token.type & ( NUMBER | PERCENT | LENGTH ) ) && !( ( token.type & IDENT ) && token.value === 'auto' );
+                        return !( token.tokenType & ( NUMBER | PERCENT | LENGTH ) ) && !( ( token.tokenType & IDENT ) && token.tokenValue === 'auto' );
                     } );
 
                     if( isSlash( tokenizer.next() ) ) {
                         slashCount++;
                         outsets = tokenizer.until( function( tok ) {
-                            return !( token.type & ( NUMBER | LENGTH ) );
+                            return !( token.tokenType & ( NUMBER | LENGTH ) );
                         } );
                     }
                 } else {
@@ -61,8 +61,8 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             }
 
             while( token = tokenizer.next() ) {
-                type = token.type;
-                value = token.value;
+                type = token.tokenType;
+                value = token.tokenValue;
 
                 // Numbers and/or 'fill' keyword: slice values. May be followed optionally by width values, followed optionally by outset values
                 if( type & ( NUMBER | PERCENT ) && !slices ) {
@@ -78,8 +78,8 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 else if( ( type & IDENT ) && this.repeatIdents[value] && !p.repeat ) {
                     p.repeat = { h: value };
                     if( token = tokenizer.next() ) {
-                        if( ( token.type & IDENT ) && this.repeatIdents[token.value] ) {
-                            p.repeat.v = token.value;
+                        if( ( token.tokenType & IDENT ) && this.repeatIdents[token.tokenValue] ) {
+                            p.repeat.v = token.tokenValue;
                         } else {
                             tokenizer.prev();
                         }
@@ -122,12 +122,12 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             }
 
             p.slice = distributeSides( slices, function( tok ) {
-                return PIE.getLength( ( tok.type & NUMBER ) ? tok.value + 'px' : tok.value );
+                return PIE.getLength( ( tok.tokenType & NUMBER ) ? tok.tokenValue + 'px' : tok.tokenValue );
             } );
 
             p.width = widths && widths.length > 0 ?
                     distributeSides( widths, function( tok ) {
-                        return tok.type & ( LENGTH | PERCENT ) ? PIE.getLength( tok.value ) : tok.value;
+                        return tok.tokenType & ( LENGTH | PERCENT ) ? PIE.getLength( tok.tokenValue ) : tok.tokenValue;
                     } ) :
                     ( cs = this.targetElement.currentStyle ) && {
                         t: PIE.getLength( cs.borderTopWidth ),
@@ -137,7 +137,7 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                     };
 
             p.outset = distributeSides( outsets || [ 0 ], function( tok ) {
-                return tok.type & LENGTH ? PIE.getLength( tok.value ) : tok.value;
+                return tok.tokenType & LENGTH ? PIE.getLength( tok.tokenValue ) : tok.tokenValue;
             } );
         }
 

@@ -21,7 +21,7 @@ PIE.BorderRadiusStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             function collectLengths() {
                 var arr = [], num;
                 while( ( token = tokenizer.next() ) && token.isLengthOrPercent() ) {
-                    length = PIE.getLength( token.value );
+                    length = PIE.getLength( token.tokenValue );
                     num = length.getNumber();
                     if( num < 0 ) {
                         return null;
@@ -43,7 +43,7 @@ PIE.BorderRadiusStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             if( x = collectLengths() ) {
                 // See if there is a slash followed by more lengths, for the y-axis radii
                 if( token ) {
-                    if( token.type & PIE.Tokenizer.Type.OPERATOR && token.value === '/' ) {
+                    if( token.tokenType & PIE.Tokenizer.Type.OPERATOR && token.tokenValue === '/' ) {
                         y = collectLengths();
                     }
                 } else {

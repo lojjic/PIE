@@ -37,15 +37,15 @@ PIE.Tokenizer = (function() {
      * @param {string} value The value of the token
      */
     Tokenizer.Token = function( type, value ) {
-        this.type = type;
-        this.value = value;
+        this.tokenType = type;
+        this.tokenValue = value;
     };
     Tokenizer.Token.prototype = {
         isLength: function() {
-            return this.type & Type.LENGTH || ( this.type & Type.NUMBER && this.value === '0' );
+            return this.tokenType & Type.LENGTH || ( this.tokenType & Type.NUMBER && this.tokenValue === '0' );
         },
         isLengthOrPercent: function() {
-            return this.isLength() || this.type & Type.PERCENT;
+            return this.isLength() || this.tokenType & Type.PERCENT;
         }
     };
 
@@ -181,13 +181,13 @@ PIE.Tokenizer = (function() {
                     // Color values in function format: rgb, rgba, hsl, hsla
                     if( val.toLowerCase() in this.colorFunctions ) {
                         function isNum( tok ) {
-                            return tok && tok.type & Type.NUMBER;
+                            return tok && tok.tokenType & Type.NUMBER;
                         }
                         function isNumOrPct( tok ) {
-                            return tok && ( tok.type & ( Type.NUMBER | Type.PERCENT ) );
+                            return tok && ( tok.tokenType & ( Type.NUMBER | Type.PERCENT ) );
                         }
                         function isValue( tok, val ) {
-                            return tok && tok.value === val;
+                            return tok && tok.tokenValue === val;
                         }
                         function next() {
                             return me.next( 1 );

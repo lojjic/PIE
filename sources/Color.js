@@ -97,7 +97,7 @@ PIE.Color = (function() {
          * @param {Element} el The context element, used to get 'currentColor' keyword value.
          * @return {string} Color value
          */
-        value: function( el ) {
+        colorValue: function( el ) {
             this.parse();
             return this._color === 'currentColor' ? el.currentStyle.color : this._color;
         },

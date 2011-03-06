@@ -57,7 +57,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             s = shape.style;
             s.width = w;
             s.height = h;
-            shape.fill.color = color.value( el );
+            shape.fill.color = color.colorValue( el );
 
             alpha = color.alpha();
             if( alpha < 1 ) {
@@ -74,7 +74,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
     drawBgImages: function() {
         var props = this.styleInfos.backgroundInfo.getProps(),
             bounds = this.boundsInfo.getBounds(),
-            images = props && props.images,
+            images = props && props.bgImages,
             img, shape, w, h, s, i;
 
         if( images ) {
@@ -98,11 +98,11 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 s.width = w;
                 s.height = h;
 
-                if( img.type === 'linear-gradient' ) {
+                if( img.imgType === 'linear-gradient' ) {
                     this.addLinearGradient( shape, img );
                 }
                 else {
-                    shape.fill.src = img.url;
+                    shape.fill.src = img.imgUrl;
                     this.positionBgImage( shape, i );
                 }
             }
@@ -133,9 +133,9 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 bwR = bw ? bw['r'].pixels( el ) : 0,
                 bwB = bw ? bw['b'].pixels( el ) : 0,
                 bwL = bw ? bw['l'].pixels( el ) : 0,
-                bg = si.backgroundInfo.getProps().images[ index ],
-                bgPos = bg.position ? bg.position.coords( el, elW - size.w - bwL - bwR, elH - size.h - bwT - bwB ) : { x:0, y:0 },
-                repeat = bg.repeat,
+                bg = si.backgroundInfo.getProps().bgImages[ index ],
+                bgPos = bg.bgPosition ? bg.bgPosition.coords( el, elW - size.w - bwL - bwR, elH - size.h - bwT - bwB ) : { x:0, y:0 },
+                repeat = bg.imgRepeat,
                 pxX, pxY,
                 clipT = 0, clipL = 0,
                 clipR = elW + 1, clipB = elH + 1, //make sure the default clip region is not inside the box (by a subpixel)
@@ -348,7 +348,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         // Convert to percentage along the VML gradient line and add to the VML 'colors' value
         for( i = 0; i < stopCount; i++ ) {
             vmlColors.push(
-                ( vmlOffsetPct + ( stopPx[ i ] / vmlGradientLength * 100 ) ) + '% ' + stops[i].color.value( el )
+                ( vmlOffsetPct + ( stopPx[ i ] / vmlGradientLength * 100 ) ) + '% ' + stops[i].color.colorValue( el )
             );
         }
 
@@ -357,8 +357,8 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         fill['angle'] = vmlAngle;
         fill['type'] = 'gradient';
         fill['method'] = 'sigma';
-        fill['color'] = stops[0].color.value( el );
-        fill['color2'] = stops[stopCount - 1].color.value( el );
+        fill['color'] = stops[0].color.colorValue( el );
+        fill['color2'] = stops[stopCount - 1].color.colorValue( el );
         fill['colors'].value = vmlColors.join( ',' );
     },
 

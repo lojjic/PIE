@@ -49,7 +49,7 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
             // Color and opacity
             shape['stroked'] = false;
             shape['filled'] = true;
-            fill.color = color.value( el );
+            fill.color = color.colorValue( el );
             if( blur ) {
                 fill['type'] = 'gradienttitle'; //makes the VML gradient follow the shape's outline - hooray for undocumented features?!?!
                 fill['color2'] = fill.color;

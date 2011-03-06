@@ -22,8 +22,8 @@ PIE.BoxShadowStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 var token, type, value, color, lengths, inset, len;
 
                 while( token = tokenizer.next() ) {
-                    value = token.value;
-                    type = token.type;
+                    value = token.tokenValue;
+                    type = token.tokenType;
 
                     if( type & Type.OPERATOR && value === ',' ) {
                         break;
@@ -48,10 +48,10 @@ PIE.BoxShadowStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 len = lengths && lengths.length;
                 if( len > 1 && len < 5 ) {
                     ( inset ? props.inset : props.outset ).push( {
-                        xOffset: getLength( lengths[0].value ),
-                        yOffset: getLength( lengths[1].value ),
-                        blur: getLength( lengths[2] ? lengths[2].value : '0' ),
-                        spread: getLength( lengths[3] ? lengths[3].value : '0' ),
+                        xOffset: getLength( lengths[0].tokenValue ),
+                        yOffset: getLength( lengths[1].tokenValue ),
+                        blur: getLength( lengths[2] ? lengths[2].tokenValue : '0' ),
+                        spread: getLength( lengths[3] ? lengths[3].tokenValue : '0' ),
                         color: PIE.getColor( color || 'currentColor' )
                     } );
                     return true;

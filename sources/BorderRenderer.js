@@ -78,11 +78,11 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                 if( seg.stroke ) {
                     stroke = shape.stroke;
                     stroke['weight'] = seg.weight + 'px';
-                    stroke.color = seg.color.value( el );
+                    stroke.color = seg.color.colorValue( el );
                     stroke['dashstyle'] = seg.stroke === 'dashed' ? '2 2' : seg.stroke === 'dotted' ? '1 1' : 'solid';
                     stroke['linestyle'] = seg.stroke === 'double' && seg.weight > 2 ? 'ThinThin' : 'Single';
                 } else {
-                    shape.fill.color = seg.fill.value( el );
+                    shape.fill.color = seg.fill.colorValue( el );
                 }
             }
 

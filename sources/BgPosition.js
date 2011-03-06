@@ -26,7 +26,8 @@ PIE.BgPosition = (function() {
             if( !this._values ) {
                 var tokens = this.tokens,
                     len = tokens.length,
-                    identType = PIE.Tokenizer.Type,
+                    Tokenizer = PIE.Tokenizer,
+                    identType = Tokenizer.Type,
                     length_zero = PIE.getLength( '0' ),
                     type_ident = identType.IDENT,
                     type_length = identType.LENGTH,
@@ -36,36 +37,36 @@ PIE.BgPosition = (function() {
 
                 // If only one value, the second is assumed to be 'center'
                 if( len === 1 ) {
-                    tokens.push( { type: type_ident, value: 'center' } );
+                    tokens.push( new Tokenizer.Token( type_ident, 'center' ) );
                     len++;
                 }
 
                 // Two values - CSS2
                 if( len === 2 ) {
                     // If both idents, they can appear in either order, so switch them if needed
-                    if( type_ident & ( tokens[0].type | tokens[1].type ) &&
-                        tokens[0].value in vert_idents && tokens[1].value in horiz_idents ) {
+                    if( type_ident & ( tokens[0].tokenType | tokens[1].tokenType ) &&
+                        tokens[0].tokenValue in vert_idents && tokens[1].tokenValue in horiz_idents ) {
                         tokens.push( tokens.shift() );
                     }
-                    if( tokens[0].type & type_ident ) {
-                        if( tokens[0].value === 'center' ) {
+                    if( tokens[0].tokenType & type_ident ) {
+                        if( tokens[0].tokenValue === 'center' ) {
                             vals[1] = length_fifty;
                         } else {
-                            vals[0] = tokens[0].value;
+                            vals[0] = tokens[0].tokenValue;
                         }
                     }
                     else if( tokens[0].isLengthOrPercent() ) {
-                        vals[1] = PIE.getLength( tokens[0].value );
+                        vals[1] = PIE.getLength( tokens[0].tokenValue );
                     }
-                    if( tokens[1].type & type_ident ) {
-                        if( tokens[1].value === 'center' ) {
+                    if( tokens[1].tokenType & type_ident ) {
+                        if( tokens[1].tokenValue === 'center' ) {
                             vals[3] = length_fifty;
                         } else {
-                            vals[2] = tokens[1].value;
+                            vals[2] = tokens[1].tokenValue;
                         }
                     }
                     else if( tokens[1].isLengthOrPercent() ) {
-                        vals[3] = PIE.getLength( tokens[1].value );
+                        vals[3] = PIE.getLength( tokens[1].tokenValue );
                     }
                 }
 

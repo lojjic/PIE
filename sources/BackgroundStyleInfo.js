@@ -25,19 +25,19 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      * Format of return object:
      * {
      *     color: <PIE.Color>,
-     *     images: [
+     *     bgImages: [
      *         {
-     *             type: 'image',
-     *             url: 'image.png',
-     *             repeat: <'no-repeat' | 'repeat-x' | 'repeat-y' | 'repeat'>,
-     *             position: <PIE.BgPosition>,
+     *             imgType: 'image',
+     *             imgUrl: 'image.png',
+     *             imgRepeat: <'no-repeat' | 'repeat-x' | 'repeat-y' | 'repeat'>,
+     *             bgPosition: <PIE.BgPosition>,
      *             attachment: <'scroll' | 'fixed' | 'local'>,
-     *             origin: <'border-box' | 'padding-box' | 'content-box'>,
+     *             bgOrigin: <'border-box' | 'padding-box' | 'content-box'>,
      *             clip: <'border-box' | 'padding-box'>,
      *             size: <'contain' | 'cover' | { w: <'auto' | PIE.Length>, h: <'auto' | PIE.Length> }>
      *         },
      *         {
-     *             type: 'linear-gradient',
+     *             imgType: 'linear-gradient',
      *             gradientStart: <PIE.BgPosition>,
      *             angle: <PIE.Angle>,
      *             stops: [
@@ -64,29 +64,29 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             props = null;
 
         function isBgPosToken( token ) {
-            return token.isLengthOrPercent() || ( token.type & type_ident && token.value in positionIdents );
+            return token.isLengthOrPercent() || ( token.tokenType & type_ident && token.tokenValue in positionIdents );
         }
 
         function sizeToken( token ) {
-            return ( token.isLengthOrPercent() && PIE.getLength( token.value ) ) || ( token.value === 'auto' && 'auto' );
+            return ( token.isLengthOrPercent() && PIE.getLength( token.tokenValue ) ) || ( token.tokenValue === 'auto' && 'auto' );
         }
 
         // If the CSS3-specific -pie-background property is present, parse it
         if( this.getCss3() ) {
             tokenizer = new PIE.Tokenizer( css );
-            props = { images: [] };
+            props = { bgImages: [] };
             image = {};
 
             while( token = tokenizer.next() ) {
-                tokType = token.type;
-                tokVal = token.value;
+                tokType = token.tokenType;
+                tokVal = token.tokenValue;
 
-                if( !image.type && tokType & tok_type.FUNCTION && tokVal === 'linear-gradient' ) {
-                    gradient = { stops: [], type: tokVal };
+                if( !image.imgType && tokType & tok_type.FUNCTION && tokVal === 'linear-gradient' ) {
+                    gradient = { stops: [], imgType: tokVal };
                     stop = {};
                     while( token = tokenizer.next() ) {
-                        tokType = token.type;
-                        tokVal = token.value;
+                        tokType = token.tokenType;
+                        tokVal = token.tokenValue;
 
                         // If we reached the end of the function and had at least 2 stops, flush the info
                         if( tokType & tok_type.CHARACTER && tokVal === ')' ) {
@@ -104,7 +104,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                             // if we already have an angle/position, make sure that the previous token was a comma
                             if( gradient.angle || gradient.gradientStart ) {
                                 token = tokenizer.prev();
-                                if( token.type !== type_operator ) {
+                                if( token.tokenType !== type_operator ) {
                                     break; //fail
                                 }
                                 tokenizer.next();
@@ -116,14 +116,14 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                             // check for offset following color
                             token = tokenizer.next();
                             if( token.isLengthOrPercent() ) {
-                                stop.offset = PIE.getLength( token.value );
+                                stop.offset = PIE.getLength( token.tokenValue );
                             } else {
                                 tokenizer.prev();
                             }
                         }
                         // Angle - can only appear in first spot
                         else if( tokType & tok_type.ANGLE && !gradient.angle && !stop.color && !gradient.stops.length ) {
-                            gradient.angle = new PIE.Angle( token.value );
+                            gradient.angle = new PIE.Angle( token.tokenValue );
                         }
                         else if( isBgPosToken( token ) && !gradient.gradientStart && !stop.color && !gradient.stops.length ) {
                             tokenizer.prev();
@@ -145,13 +145,13 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                         }
                     }
                 }
-                else if( !image.type && tokType & tok_type.URL ) {
-                    image.url = tokVal;
-                    image.type = 'image';
+                else if( !image.imgType && tokType & tok_type.URL ) {
+                    image.imgUrl = tokVal;
+                    image.imgType = 'image';
                 }
                 else if( isBgPosToken( token ) && !image.size ) {
                     tokenizer.prev();
-                    image.position = new PIE.BgPosition(
+                    image.bgPosition = new PIE.BgPosition(
                         tokenizer.until( function( t ) {
                             return !isBgPosToken( t );
                         }, false )
@@ -159,10 +159,10 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 }
                 else if( tokType & type_ident ) {
                     if( tokVal in this.repeatIdents ) {
-                        image.repeat = tokVal;
+                        image.imgRepeat = tokVal;
                     }
                     else if( tokVal in this.originIdents ) {
-                        image.origin = tokVal;
+                        image.bgOrigin = tokVal;
                         if( tokVal in this.clipIdents ) {
                             image.clip = tokVal;
                         }
@@ -178,8 +178,8 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                     // background size
                     if( tokVal === '/' ) {
                         token = tokenizer.next();
-                        tokType = token.type;
-                        tokVal = token.value;
+                        tokType = token.tokenType;
+                        tokVal = token.tokenValue;
                         if( tokType & type_ident && tokVal in this.sizeIdents ) {
                             image.size = tokVal;
                         }
@@ -191,8 +191,8 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                         }
                     }
                     // new layer
-                    else if( tokVal === ',' && image.type ) {
-                        props.images.push( image );
+                    else if( tokVal === ',' && image.imgType ) {
+                        props.bgImages.push( image );
                         image = {};
                     }
                 }
@@ -203,8 +203,8 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             }
 
             // leftovers
-            if( image.type ) {
-                props.images.push( image );
+            if( image.imgType ) {
+                props.bgImages.push( image );
             }
         }
 
@@ -221,17 +221,17 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                     props.color = PIE.getColor( color )
                 }
                 if( img !== 'none' ) {
-                    props.images = [ {
-                        type: 'image',
-                        url: new PIE.Tokenizer( img ).next().value,
-                        repeat: cs.backgroundRepeat,
-                        position: new PIE.BgPosition( new PIE.Tokenizer( posX + ' ' + posY ).all() )
+                    props.bgImages = [ {
+                        imgType: 'image',
+                        imgUrl: new PIE.Tokenizer( img ).next().tokenValue,
+                        imgRepeat: cs.backgroundRepeat,
+                        bgPosition: new PIE.BgPosition( new PIE.Tokenizer( posX + ' ' + posY ).all() )
                     } ];
                 }
             } );
         }
 
-        return ( props && ( props.color || ( props.images && props.images[0] ) ) ) ? props : null;
+        return ( props && ( props.color || ( props.bgImages && props.bgImages[0] ) ) ) ? props : null;
     },
 
     /**
