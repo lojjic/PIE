@@ -67,14 +67,24 @@
          * @param {Object} ctx A context object which will be used as the 'this' value within the executed callback function
          */
         withImageSize: function( src, func, ctx ) {
-            var size = imageSizes[ src ], img;
+            var size = imageSizes[ src ], img, queue;
             if( size ) {
-                func.call( ctx, size );
+                // If we have a queue, add to it
+                if( Object.prototype.toString.call( size ) === '[object Array]' ) {
+                    size.push( [ func, ctx ] );
+                }
+                // Already have the size cached, call func right away
+                else {
+                    func.call( ctx, size );
+                }
             } else {
+                queue = imageSizes[ src ] = [ [ func, ctx ] ]; //create queue
                 img = new Image();
                 img.onload = function() {
                     size = imageSizes[ src ] = { w: img.width, h: img.height };
-                    func.call( ctx, size );
+                    for( var i = 0, len = queue.length; i < len; i++ ) {
+                        queue[ i ][ 0 ].call( queue[ i ][ 1 ], size );
+                    }
                     img.onload = null;
                 };
                 img.src = src;
