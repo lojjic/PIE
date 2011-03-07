@@ -130,7 +130,7 @@ to match the size of the element.</p>
     <li>Related to #3, if the element's <code>border-style</code> is 'none' it will treat that as
         <code>border-width:0</code>.</li>
     <li>It requires the 'fill' keyword to be present for the center area to be filled in. This is correct
-        behavior according to the spec but other browsers don't require it and some even fail if 'fill' is 
+        behavior according to the spec but other browsers don't require it and some even fail if 'fill' is
         present, so it's a bit tricky making it work consistently across browsers.</li>
     <li>It doesn't hide the element's normal border when border-image is specified. In conjunction with #4
         above, this means you have to set the border-style to 'solid' (or something other than 'none')
@@ -177,6 +177,7 @@ or 'local' are specified)</li>
   <li>background-size (will always use the image's intrinsic size)</li>
   <li>background-repeat values of 'space' or 'round' (the other repeat
 values are supported)</li>
+  <li>background-origin (will always use 'padding-box')</li>
   <li>background-position values with more than 2 parts</li>
 </ul>
 
