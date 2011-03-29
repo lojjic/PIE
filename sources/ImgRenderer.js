@@ -52,6 +52,8 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
         s = shape.style;
         s.width = w;
         s.height = h;
+        this.applyBehavior(shape);
+        this.applyBehavior(fill);
     },
 
     hideActualImg: function() {

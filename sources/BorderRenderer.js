@@ -84,6 +84,10 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                 } else {
                     shape.fill.color = seg.fill.colorValue( el );
                 }
+		        this.applyBehavior(shape);      
+		        if (seg.stroke=='fill') {
+			        this.applyBehavior(fill);
+			    }
             }
 
             // remove any previously-created border shapes which didn't get used above

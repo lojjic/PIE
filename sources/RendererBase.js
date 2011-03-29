@@ -134,11 +134,24 @@ PIE.RendererBase = {
             s = shape.style;
             s.position = 'absolute';
             s.left = s.top = 0;
-            s['behavior'] = 'url(#default#VML)';
+            // set behavior for everything but fills, workaround for ie buggy implementation of opacity2
+            if (subElName != 'fill') {
+            	this.applyBehavior(shape);
+            }
         }
         return shape;
     },
-
+    /**
+     * Applys the default VML behavior to a shape
+     * Fixes buggy implementation of opacity2 in gradient fills. IE recognizes the o:opacity2
+     * only if it is set before the behavior is set. Either way it ignores opcaity2 without the leading o:
+     * @param {Element} shape The shape element that needs the default VML behvior attribute
+     */
+    
+	applyBehavior:function(shape) {
+            var s = shape.style;
+            s['behavior'] = 'url(#default#VML)';
+	},
     /**
      * Delete a named shape which was created by getShape(). Returns true if a shape with the
      * given name was found and deleted, or false if there was no shape of that name.
