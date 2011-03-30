@@ -10,7 +10,7 @@ function init() {
 function cleanup() {
     if( p ) {
         if( p['detach'] ) { // This is to cope with the following error in IE9: Object doesn't support property or method 'detach'
-	        p['detach']( el );
+            p['detach']( el );
         }
         p = el = 0;
     }
