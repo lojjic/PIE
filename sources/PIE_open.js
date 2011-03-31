@@ -40,4 +40,4 @@ if( !PIE ) {
     }
 
     // Detect IE8
-    PIE.ie8DocMode = PIE.ieVersion === 8 && doc.documentMode;
+    PIE.ieDocMode = doc.documentMode || PIE.ieVersion;

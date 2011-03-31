@@ -4,7 +4,7 @@
  * times every second to make sure the elements have the correct position and size.
  */
 
-if( PIE.ie8DocMode === 8 ) {
+if( PIE.ieDocMode === 8 ) {
     PIE.Heartbeat = new PIE.Observable();
     setInterval( function() { PIE.Heartbeat.fire() }, 250 );
 }

@@ -97,7 +97,7 @@ PIE.Element = (function() {
                     initAncestorPropChangeListeners();
 
                     // Add to list of polled elements in IE8
-                    if( PIE.ie8DocMode === 8 ) {
+                    if( PIE.ieDocMode === 8 ) {
                         PIE.Heartbeat.observe( update );
                     }
 
@@ -310,7 +310,7 @@ PIE.Element = (function() {
                 }
 
                 // Remove from list of polled elements in IE8
-                if( PIE.ie8DocMode === 8 ) {
+                if( PIE.ieDocMode === 8 ) {
                     PIE.Heartbeat.unobserve( update );
                 }
                 // Stop onresize listening
