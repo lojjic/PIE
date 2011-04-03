@@ -3,6 +3,7 @@ PIE.Element = (function() {
 
     var wrappers = {},
         lazyInitCssProp = PIE.CSS_PREFIX + 'lazy-init',
+        pollCssProp = PIE.CSS_PREFIX + 'poll',
         hoverClass = ' ' + PIE.CLASS_PREFIX + 'hover',
         hoverClassRE = new RegExp( '\\b' + PIE.CLASS_PREFIX + 'hover\\b', 'g' ),
         ignorePropertyNames = { 'background':1, 'bgColor':1, 'display': 1 };
@@ -27,7 +28,8 @@ PIE.Element = (function() {
             initialized,
             eventsAttached,
             delayed,
-            destroyed;
+            destroyed,
+            poll;
 
         /**
          * Initialize PIE for this element.
@@ -36,8 +38,13 @@ PIE.Element = (function() {
             if( !initialized ) {
                 var docEl,
                     bounds,
-                    lazy = el.currentStyle.getAttribute( lazyInitCssProp ) === 'true',
+                    cs = el.currentStyle,
+                    lazy = cs.getAttribute( lazyInitCssProp ) === 'true',
                     rootRenderer;
+
+                // Polling for size/position changes: default to on in IE8, off otherwise, overridable by -pie-poll
+                poll = cs.getAttribute( pollCssProp );
+                poll = PIE.ieDocMode === 8 ? poll !== 'false' : poll === 'true';
 
                 // Force layout so move/resize events will fire. Set this as soon as possible to avoid layout changes
                 // after load, but make sure it only gets called the first time through to avoid recursive calls to init().
@@ -97,8 +104,9 @@ PIE.Element = (function() {
                     initAncestorPropChangeListeners();
 
                     // Add to list of polled elements in IE8
-                    if( PIE.ieDocMode === 8 ) {
+                    if( poll ) {
                         PIE.Heartbeat.observe( update );
+                        PIE.Heartbeat.run();
                     }
 
                     // Trigger rendering
@@ -310,7 +318,7 @@ PIE.Element = (function() {
                 }
 
                 // Remove from list of polled elements in IE8
-                if( PIE.ieDocMode === 8 ) {
+                if( poll ) {
                     PIE.Heartbeat.unobserve( update );
                 }
                 // Stop onresize listening
