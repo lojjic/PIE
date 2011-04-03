@@ -75,7 +75,7 @@
                 // verify tokens in forward order
                 while( token = tokenizer.next() ) {
                     actualTokens.push( token );
-                    document.write( '<li>type=' + token.type + ', value=' + token.value + '</li>' );
+                    document.write( '<li>type=' + token.tokenType + ', value=' + token.tokenValue + '</li>' );
                 }
                 checkMatch( '' );
 
