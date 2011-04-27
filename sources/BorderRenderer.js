@@ -11,20 +11,6 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
     boxName: 'border',
 
     /**
-     * Lookup table of elements which cannot take custom children.
-     */
-    childlessElements: {
-        'TABLE':1, //can obviously have children but not custom ones
-        'INPUT':1,
-        'TEXTAREA':1,
-        'SELECT':1,
-        'OPTION':1,
-        'IMG':1,
-        'HR':1,
-        'FIELDSET':1 //can take children but wrapping its children messes up its <legend>
-    },
-
-    /**
      * Values of the type attribute for input elements displayed as buttons
      */
     inputButtonTypes: {
@@ -105,8 +91,8 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
             isIE6 = PIE.ieVersion === 6,
             sides, side, i;
 
-        if( ( isIE6 && tag in this.childlessElements ) || tag === 'BUTTON' ||
-                ( tag === 'INPUT' && el.type in this.inputButtonTypes ) ) {
+        if( ( isIE6 && ( tag in PIE.childlessElements || tag === 'FIELDSET' ) ) ||
+                tag === 'BUTTON' || ( tag === 'INPUT' && el.type in this.inputButtonTypes ) ) {
             rs.borderWidth = '';
             sides = this.styleInfos.borderInfo.sides;
             for( i = sides.length; i--; ) {

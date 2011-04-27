@@ -8,6 +8,23 @@ if( !PIE ) {
         tableCellTags: {
             'TD': 1,
             'TH': 1
+        },
+
+        /**
+         * Lookup table of elements which cannot take custom children.
+         */
+        childlessElements: {
+            'TABLE':1,
+            'THEAD':1,
+            'TBODY':1,
+            'TFOOT':1,
+            'TR':1,
+            'INPUT':1,
+            'TEXTAREA':1,
+            'SELECT':1,
+            'OPTION':1,
+            'IMG':1,
+            'HR':1
         }
     };
 

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <style type="text/css">
+
+        html, body {
+            font: 10px sans-serif;
+        }
+        div, input {
+            font-family: sans-serif;
+        }
+
+        .section {
+            clear: both;
+            padding: 20px;
+        }
+        h2 {
+            font-size: 14px;
+        }
+
+        .tester {
+            behavior: url(../build/PIE.htc);
+            float: left;
+            margin: 0 10px;
+            padding: 10px;
+            border: 0;
+            background: #CCC;
+        }
+
+        input::-moz-focus-inner {
+            border: 0;
+            padding: 0;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="section">
+    <h2>font-size: 10px;</h2>
+
+    <div class="tester" style="border-radius: 15px; font-size: 10px;">
+        div, border-radius: 10px;
+    </div>
+
+    <div class="tester" style="border-radius: 1.5em; font-size: 10px;">
+        div, border-radius: 1.5em;
+    </div>
+
+    <input class="tester" type="button" style="border-radius: 15px; font-size: 10px;" value="input, border-radius: 15px;" />
+
+    <input class="tester" type="button" style="border-radius: 1.5em; font-size: 10px;" value="input, border-radius: 1.5em;" />
+</div>
+
+<div class="section" style="font-size: 20px;">
+    <h2>font-size: .5em;</h2>
+
+    <div class="tester" style="border-radius: 15px; font-size: .5em;">
+        div, border-radius: 10px;
+    </div>
+
+    <div class="tester" style="border-radius: 1.5em; font-size: .5em;">
+        div, border-radius: 1.5em;
+    </div>
+
+    <input class="tester" type="button" style="border-radius: 15px; font-size: .5em;" value="input, border-radius: 15px;" />
+
+    <input class="tester" type="button" style="border-radius: 1.5em; font-size: .5em;" value="input, border-radius: 1.5em;" />
+</div>
+
+<div class="section" style="font-size: 20px;">
+    <h2>font-size: 50%;</h2>
+
+    <div class="tester" style="border-radius: 15px; font-size: 50%;">
+        div, border-radius: 10px;
+    </div>
+
+    <div class="tester" style="border-radius: 1.5em; font-size: 50%;">
+        div, border-radius: 1.5em;
+    </div>
+
+    <input class="tester" type="button" style="border-radius: 15px; font-size: 50%;" value="input, border-radius: 15px;" />
+
+    <input class="tester" type="button" style="border-radius: 1.5em; font-size: 50%;" value="input, border-radius: 1.5em;" />
+</div>
+
+</body>
+</html>

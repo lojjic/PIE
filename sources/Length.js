@@ -24,6 +24,9 @@ PIE.Length = (function() {
     }
     parent.removeChild( lengthCalcEl );
 
+    // All calcs from here on will use 1em
+    lengthCalcEl.style.width = '1em';
+
 
     function Length( val ) {
         this.val = val;
@@ -98,18 +101,27 @@ PIE.Length = (function() {
          * however if the font-size is set using non-pixel units then we get that value
          * rather than a pixel conversion. To get around this, we keep a floating element
          * with width:1em which we insert into the target element and then read its offsetWidth.
-         * But if the font-size *is* specified in pixels, then we use that directly to avoid
-         * the expensive DOM manipulation.
-         * @param el
+         * For elements that won't accept a child we insert into the parent node and perform
+         * additional calculation. If the font-size *is* specified in pixels, then we use that
+         * directly to avoid the expensive DOM manipulation.
+         * @param {Element} el
+         * @return {number}
          */
         getEmPixels: function( el ) {
             var fs = el.currentStyle.fontSize,
-                px;
+                px, parent, me;
 
             if( fs.indexOf( 'px' ) > 0 ) {
                 return parseFloat( fs );
-            } else {
-                lengthCalcEl.style.width = '1em';
+            }
+            else if( el.tagName in PIE.childlessElements ) {
+                me = this;
+                parent = el.parentNode;
+                return PIE.getLength( fs ).pixels( parent, function() {
+                    return me.getEmPixels( parent );
+                } );
+            }
+            else {
                 el.appendChild( lengthCalcEl );
                 px = lengthCalcEl.offsetWidth;
                 if( lengthCalcEl.parentNode === el ) { //not sure how this could be false but it sometimes is
