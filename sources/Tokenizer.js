@@ -66,12 +66,6 @@ PIE.Tokenizer = (function() {
             'deg': Type.ANGLE, 'rad': Type.ANGLE, 'grad': Type.ANGLE
         },
 
-        colorNames: {
-            'aqua':1, 'black':1, 'blue':1, 'fuchsia':1, 'gray':1, 'green':1, 'lime':1, 'maroon':1,
-            'navy':1, 'olive':1, 'purple':1, 'red':1, 'silver':1, 'teal':1, 'white':1, 'yellow': 1,
-            'currentColor': 1
-        },
-
         colorFunctions: {
             'rgb': 1, 'rgba': 1, 'hsl': 1, 'hsla': 1
         },
