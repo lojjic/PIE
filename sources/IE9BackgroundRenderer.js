@@ -220,6 +220,8 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
         return svg.join( '' );
     },
 
-    destroy: function() {}
+    destroy: function() {
+        this.targetElement.runtimeStyle.background = '';
+    }
 
 } );
