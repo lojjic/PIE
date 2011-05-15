@@ -19,7 +19,7 @@ PIE[ 'supportsVML' ] = PIE.supportsVML;
  * @param {Element} el
  */
 PIE[ 'attach' ] = function( el ) {
-    if (PIE.ieDocMode < 9 && PIE.supportsVML) {
+    if (PIE.ieDocMode < 10 && PIE.supportsVML) {
         PIE.Element.getInstance( el ).init();
     }
 };

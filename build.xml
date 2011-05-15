@@ -42,6 +42,7 @@
             <fileset file="${src_dir}/BoxShadowOutsetRenderer.js" />
             <!--<fileset file="${src_dir}/BoxShadowInsetRenderer.js" />-->
             <fileset file="${src_dir}/ImgRenderer.js" />
+            <fileset file="${src_dir}/IE9BackgroundRenderer.js" />
             <fileset file="${src_dir}/Element.js" />
             <fileset file="${src_dir}/PIE_API.js" />
             <fileset file="${src_dir}/PIE_close.js" />

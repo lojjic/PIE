@@ -38,13 +38,14 @@ PIE.Element = (function() {
             if( !initialized ) {
                 var docEl,
                     bounds,
+                    ieDocMode = PIE.ieDocMode,
                     cs = el.currentStyle,
                     lazy = cs.getAttribute( lazyInitCssProp ) === 'true',
-                    rootRenderer;
+                    rootRenderer, childRenderers;
 
                 // Polling for size/position changes: default to on in IE8, off otherwise, overridable by -pie-poll
                 poll = cs.getAttribute( pollCssProp );
-                poll = PIE.ieDocMode === 8 ? poll !== 'false' : poll === 'true';
+                poll = ieDocMode === 8 ? poll !== 'false' : poll === 'true';
 
                 // Force layout so move/resize events will fire. Set this as soon as possible to avoid layout changes
                 // after load, but make sure it only gets called the first time through to avoid recursive calls to init().
@@ -69,36 +70,49 @@ PIE.Element = (function() {
                     PIE.OnScroll.unobserve( init );
 
                     // Create the style infos and renderers
-                    styleInfos = {
-                        backgroundInfo: new PIE.BackgroundStyleInfo( el ),
-                        borderInfo: new PIE.BorderStyleInfo( el ),
-                        borderImageInfo: new PIE.BorderImageStyleInfo( el ),
-                        borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
-                        boxShadowInfo: new PIE.BoxShadowStyleInfo( el ),
-                        visibilityInfo: new PIE.VisibilityStyleInfo( el )
-                    };
-                    styleInfosArr = [
-                        styleInfos.backgroundInfo,
-                        styleInfos.borderInfo,
-                        styleInfos.borderImageInfo,
-                        styleInfos.borderRadiusInfo,
-                        styleInfos.boxShadowInfo,
-                        styleInfos.visibilityInfo
-                    ];
+                    if ( ieDocMode === 9 ) {
+                        styleInfos = {
+                            backgroundInfo: new PIE.BackgroundStyleInfo( el )
+                        };
+                        styleInfosArr = [
+                            styleInfos.backgroundInfo
+                        ];
+                        renderers = [
+                            new PIE.IE9BackgroundRenderer( el, boundsInfo, styleInfos )
+                        ];
+                    } else {
 
-                    rootRenderer = new PIE.RootRenderer( el, boundsInfo, styleInfos );
-                    var childRenderers = [
-                        new PIE.BoxShadowOutsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
-                        new PIE.BackgroundRenderer( el, boundsInfo, styleInfos, rootRenderer ),
-                        //new PIE.BoxShadowInsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
-                        new PIE.BorderRenderer( el, boundsInfo, styleInfos, rootRenderer ),
-                        new PIE.BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
-                    ];
-                    if( el.tagName === 'IMG' ) {
-                        childRenderers.push( new PIE.ImgRenderer( el, boundsInfo, styleInfos, rootRenderer ) );
+                        styleInfos = {
+                            backgroundInfo: new PIE.BackgroundStyleInfo( el ),
+                            borderInfo: new PIE.BorderStyleInfo( el ),
+                            borderImageInfo: new PIE.BorderImageStyleInfo( el ),
+                            borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
+                            boxShadowInfo: new PIE.BoxShadowStyleInfo( el ),
+                            visibilityInfo: new PIE.VisibilityStyleInfo( el )
+                        };
+                        styleInfosArr = [
+                            styleInfos.backgroundInfo,
+                            styleInfos.borderInfo,
+                            styleInfos.borderImageInfo,
+                            styleInfos.borderRadiusInfo,
+                            styleInfos.boxShadowInfo,
+                            styleInfos.visibilityInfo
+                        ];
+
+                        rootRenderer = new PIE.RootRenderer( el, boundsInfo, styleInfos );
+                        childRenderers = [
+                            new PIE.BoxShadowOutsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                            new PIE.BackgroundRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                            //new PIE.BoxShadowInsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                            new PIE.BorderRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                            new PIE.BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
+                        ];
+                        if( el.tagName === 'IMG' ) {
+                            childRenderers.push( new PIE.ImgRenderer( el, boundsInfo, styleInfos, rootRenderer ) );
+                        }
+                        rootRenderer.childRenderers = childRenderers; // circular reference, can't pass in constructor; TODO is there a cleaner way?
+                        renderers = [ rootRenderer ].concat( childRenderers );
                     }
-                    rootRenderer.childRenderers = childRenderers; // circular reference, can't pass in constructor; TODO is there a cleaner way?
-                    renderers = [ rootRenderer ].concat( childRenderers );
 
                     // Add property change listeners to ancestors if requested
                     initAncestorPropChangeListeners();

@@ -34,7 +34,8 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      *             attachment: <'scroll' | 'fixed' | 'local'>,
      *             bgOrigin: <'border-box' | 'padding-box' | 'content-box'>,
      *             clip: <'border-box' | 'padding-box'>,
-     *             size: <'contain' | 'cover' | { w: <'auto' | PIE.Length>, h: <'auto' | PIE.Length> }>
+     *             size: <'contain' | 'cover' | { w: <'auto' | PIE.Length>, h: <'auto' | PIE.Length> }>,
+     *             origString: 'url(img.png) no-repeat top left'
      *         },
      *         {
      *             imgType: 'linear-gradient',
@@ -59,6 +60,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             type_ident = tok_type.IDENT,
             type_color = tok_type.COLOR,
             tokType, tokVal,
+            beginCharIndex = 0,
             positionIdents = this.positionIdents,
             gradient, stop,
             props = null;
@@ -192,6 +194,8 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                     }
                     // new layer
                     else if( tokVal === ',' && image.imgType ) {
+                        image.origString = css.substring( beginCharIndex, tokenizer.ch - 1 );
+                        beginCharIndex = tokenizer.ch;
                         props.bgImages.push( image );
                         image = {};
                     }
