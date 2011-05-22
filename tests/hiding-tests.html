@@ -69,11 +69,31 @@
     </div>
 
     <div class="section">
+        <h2>Toggle parent display, hidden initially</h2>
+
+        <button type="button" onclick="toggleDisplay('test3')">Toggle</button>
+
+        <div id="test3" style="display:none;">
+            <div class="test">Hello PIE</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Toggle parent display, shown initially</h2>
+
+        <button type="button" onclick="toggleDisplay('test4')">Toggle</button>
+
+        <div id="test4">
+            <div class="test">Hello PIE</div>
+        </div>
+    </div>
+
+    <div class="section">
         <h2>Toggle visibility, hidden initially</h2>
 
-        <button type="button" onclick="toggleVisibility('test3')">Toggle</button>
+        <button type="button" onclick="toggleVisibility('test5')">Toggle</button>
 
-        <div class="test" id="test3" style="visibility: hidden">
+        <div class="test" id="test5" style="visibility: hidden">
             Hello PIE
         </div>
     </div>
@@ -81,10 +101,30 @@
     <div class="section">
         <h2>Toggle visibility, shown initially</h2>
 
-        <button type="button" onclick="toggleVisibility('test4')">Toggle</button>
+        <button type="button" onclick="toggleVisibility('test6')">Toggle</button>
 
-        <div class="test" id="test4">
+        <div class="test" id="test6">
             Hello PIE
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Toggle parent visibility, hidden initially</h2>
+
+        <button type="button" onclick="toggleVisibility('test7')">Toggle</button>
+
+        <div id="test7" style="visibility: hidden">
+            <div class="test">Hello PIE</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Toggle parent visibility, shown initially</h2>
+
+        <button type="button" onclick="toggleVisibility('test8')">Toggle</button>
+
+        <div id="test8">
+            <div class="test">Hello PIE</div>
         </div>
     </div>
 
