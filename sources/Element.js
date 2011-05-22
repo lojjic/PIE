@@ -45,7 +45,7 @@ PIE.Element = (function() {
 
                 // Polling for size/position changes: default to on in IE8, off otherwise, overridable by -pie-poll
                 poll = cs.getAttribute( pollCssProp );
-                poll = ieDocMode === 8 ? poll !== 'false' : poll === 'true';
+                poll = ieDocMode > 7 ? poll !== 'false' : poll === 'true';
 
                 // Force layout so move/resize events will fire. Set this as soon as possible to avoid layout changes
                 // after load, but make sure it only gets called the first time through to avoid recursive calls to init().
