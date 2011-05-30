@@ -45,6 +45,7 @@ the recommended approach for most users:</p>
     <li>You have to wait until the page's DOM has completely loaded before applying PIE.js to elements, whereas
         the .htc behavior applies itself while the page is still loading. This means the "flash of unstyled content"
         problem is much greater with PIE.js.</li>
+
     <li>PIE.js cannot automatically attach and detach itself from elements which are dynamically added to/removed from
         the page's DOM, so you have to write code to handle that yourself.</li>
 </ul>
@@ -58,16 +59,20 @@ the recommended approach for most users:</p>
 to work with, for example allowing the use of CSS selectors to match a set of elements.</em></p>
 
 <ol>
-    <li>Include the PIE.js script in your page:
-        <pre><code>&lt;script type="text/javascript" src="path/to/PIE.js">&lt;/script></code></pre>
+    <li>Include the PIE.js script in your page, surrounded by a conditional comment to prevent it from being downloaded in other browsers:
+        <pre><code>&lt;!--[if lt IE 10]>
+&lt;script type="text/javascript" src="path/to/PIE.js">&lt;/script>
+&lt;![endif]--></code></pre>
     </li>
 
     <li>Invoke the <code>PIE.attach(el)</code> function for each element that needs CSS3 styling. Make sure you do this
         after the page's DOM has been fully loaded. For example, using jQuery:
         <pre><code>$(function() {
-    $('.rounded').each(function() {
-        PIE.attach(this);
-    });
+    if (window.PIE) {
+        $('.rounded').each(function() {
+            PIE.attach(this);
+        });
+    }
 });</code></pre>
     </li>
 </ol>
