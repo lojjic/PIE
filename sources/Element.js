@@ -72,13 +72,16 @@ PIE.Element = (function() {
                     // Create the style infos and renderers
                     if ( ieDocMode === 9 ) {
                         styleInfos = {
-                            backgroundInfo: new PIE.BackgroundStyleInfo( el )
+                            backgroundInfo: new PIE.BackgroundStyleInfo( el ),
+                            borderImageInfo: new PIE.BorderImageStyleInfo( el )
                         };
                         styleInfosArr = [
-                            styleInfos.backgroundInfo
+                            styleInfos.backgroundInfo,
+                            styleInfos.borderImageInfo
                         ];
                         renderers = [
-                            new PIE.IE9BackgroundRenderer( el, boundsInfo, styleInfos )
+                            new PIE.IE9BackgroundRenderer( el, boundsInfo, styleInfos ),
+                            new PIE.IE9BorderImageRenderer( el, boundsInfo, styleInfos )
                         ];
                     } else {
 
@@ -129,7 +132,9 @@ PIE.Element = (function() {
 
                 if( !eventsAttached ) {
                     eventsAttached = 1;
-                    addListener( el, 'onmove', handleMoveOrResize );
+                    if( ieDocMode < 9 ) {
+                        addListener( el, 'onmove', handleMoveOrResize );
+                    }
                     addListener( el, 'onresize', handleMoveOrResize );
                     addListener( el, 'onpropertychange', propChanged );
                     addListener( el, 'onmouseenter', mouseEntered );

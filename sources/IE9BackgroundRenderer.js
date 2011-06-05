@@ -112,7 +112,7 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
     },
 
     destroy: function() {
-        this.targetElement.runtimeStyle.background = '';
+//        this.targetElement.runtimeStyle.background = '';
     }
 
 } );
