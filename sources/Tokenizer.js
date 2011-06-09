@@ -192,7 +192,7 @@ PIE.Tokenizer = (function() {
                             isNumOrPct( next() ) &&
                             isValue( next(), ',' ) &&
                             isNumOrPct( next() ) &&
-                            ( val === 'rgb' || val === 'hsa' || (
+                            ( val === 'rgb' || val === 'hsl' || (
                                 isValue( next(), ',' ) &&
                                 isNum( next() )
                             ) ) &&
