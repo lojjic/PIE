@@ -20,6 +20,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         return si.borderImageInfo.isActive() ||
                si.borderRadiusInfo.isActive() ||
                si.backgroundInfo.isActive() ||
+               si.textShadowInfo.isActive() ||
                ( si.boxShadowInfo.isActive() && si.boxShadowInfo.getProps().inset );
     },
 

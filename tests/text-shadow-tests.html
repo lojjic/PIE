@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Basic CSS3 Demos</title>
+
+    <style type="text/css">
+        body {
+            font-size: 18px;
+            font-family: Arial;
+        }
+
+        /* From http://www.w3.org/Style/Examples/007/text-shadow */
+        #w3c-tests div {
+            float: left;
+            padding: .5em;
+            margin: .25em;
+            font-size: 20px;
+            /*border-radius: 3px;*/
+            behavior: url(../build/PIE_uncompressed.htc);
+        }
+        #w3c1 {background: #CCF; color: blue; text-shadow: #333 0.1em 0.1em}
+        #w3c2 {background: #CCF; color: blue; text-shadow: #333 0.1em 0.1em 0.05em}
+        #w3c3 {background: #CCF; color: blue; text-shadow: black 0.1em 0.1em 0.2em}
+        #w3c4 {background: #EEE; color: white; text-shadow: black 0.1em 0.1em 0.2em}
+        #w3c5 {color: blue; text-shadow: 0.2em 0.5em 0.1em #600, -0.3em 0.1em 0.1em #006600, 0.4em -0.3em 0.1em #006}
+        #w3c6 {background: #CCC; color: #D1D1D1; text-shadow: -1px -1px white, 1px 1px #333; letter-spacing: 2px}
+        #w3c7 {background: #CCC; color: #C8C8C8; text-shadow: 1px 1px white, -1px -1px #444; letter-spacing: 2px}
+        #w3c8 {background: #CCF; color: blue;  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black}
+        #w3c9 {background: #CCF; color: #BBE; text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black}
+        #w3c10 {text-shadow: 0 0 0.2em #8F7}
+        #w3c11 {text-shadow: 0 0 0.2em #F87, 0 0 0.2em #F87}
+        /*#w3c12 {color: #fff; text-shadow: -2px -2px 2px #0000FF, 2px 2px 2px #FF0000, 0 -2px 2px #0000FF, 0 2px 2px #FF0000}*/
+        #w3c12 {text-shadow: 0 0 0.2em #87F, 0 0 0.2em #87F, 0 0 0.2em #87F}
+
+
+        .tester {
+            behavior: url(../build/PIE_uncompressed.htc);
+            padding: 5px;
+            clear: both;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="w3c-tests">
+    <div id="w3c1">PIE</div>
+    <div id="w3c2">PIE</div>
+    <div id="w3c3">PIE</div>
+    <div id="w3c4">PIE</div>
+    <div id="w3c5">PIE</div>
+    <div id="w3c6">PIE</div>
+    <div id="w3c7">PIE</div>
+    <div id="w3c8">PIE</div>
+    <div id="w3c9">PIE</div>
+    <div id="w3c10">PIE</div>
+    <div id="w3c11">PIE</div>
+    <div id="w3c12">PIE</div>
+</div>
+
+
+<script type="text/javascript">
+    for(var i=1; i<10; i++) {
+        document.write('<div class="tester" style="text-shadow: 4px 4px ' + i + 'px #000">Text shadow blur radius ' + i + '</div>')
+    }
+    for(var i=1; i<10; i++) {
+        document.write('<div class="tester" style="text-shadow: 0 0 ' + i + 'px #F00">Text shadow blur radius ' + i + '</div>')
+    }
+    for(var i=1; i<10; i++) {
+        document.write('<div class="tester" style="text-shadow: 0 0 ' + i + 'px #00F">Text shadow blur radius ' + i + '</div>')
+    }
+    for(var i=1; i<10; i++) {
+        document.write('<div class="tester" style="text-shadow: 0 0 ' + i + 'px #0F0">Text shadow blur radius ' + i + '</div>')
+    }
+</script>
+
+</body>
+</html>

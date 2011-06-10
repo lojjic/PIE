@@ -12,6 +12,7 @@ PIE.BoxShadowStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         var props,
             getLength = PIE.getLength,
             Type = PIE.Tokenizer.Type,
+            isTextShadow = this.isTextShadow,
             tokenizer;
 
         if( css ) {
@@ -38,6 +39,10 @@ PIE.BoxShadowStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                         color = value;
                     }
                     else if( type & Type.IDENT && value === 'inset' && !inset ) {
+                        if (isTextShadow) {
+                            // text-shadow does not allow 'inset' keyword
+                            return false;
+                        }
                         inset = true;
                     }
                     else { //encountered an unrecognized token; fail.
@@ -46,7 +51,7 @@ PIE.BoxShadowStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 }
 
                 len = lengths && lengths.length;
-                if( len > 1 && len < 5 ) {
+                if( len > 1 && len < ( isTextShadow ? 4 : 5 ) ) {
                     ( inset ? props.inset : props.outset ).push( {
                         xOffset: getLength( lengths[0].tokenValue ),
                         yOffset: getLength( lengths[1].tokenValue ),
