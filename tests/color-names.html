@@ -4,6 +4,8 @@
 <head>
     <title>Tests for background gradients</title>
 
+    <script type="text/javascript" src="../build/PIE_uncompressed.js"></script>
+
     <style type="text/css">
 
         .test {
@@ -14,17 +16,71 @@
             border-radius: 10px;
             border: 3px solid;
             margin: 5px;
-            behavior: url(../build/PIE.htc);
         }
 
     </style>
 </head>
 <body>
 
+    <div style="display: none; color: red;" id="currentColorTester">tester for currentColor</div>
+
     <script type="text/javascript">
+        // Some simple unit tests of color parsing
+        var colorValueTests = {
+                'aqua': '#0FF',
+                'beige': '#F5F5DC',
+                '#123456': '#123456',
+                '#123': '#123',
+                'rgb(0, 0, 255)': '#0000ff',
+                'rgba(0, 0, 255, 0.5)': '#0000ff',
+                'rgba(0, 0, 255, .5)': '#0000ff',
+                'hsl(0, 100%, 50%)': '#ff0000',
+                'hsla(0, 100%, 50%, 0.5)': '#ff0000',
+                'hsla(0, 100%, 50%, .5)': '#ff0000',
+                'currentColor': '#F00',
+                'transparent': 'transparent'
+            },
+            hexValueTests = {
+                'aqua': '#00FFFF',
+                'beige': '#F5F5DC',
+                '#123456': '#123456',
+                '#123': '#112233',
+                'rgb(0, 0, 255)': '#0000ff',
+                'rgba(0, 0, 255, 0.5)': '#0000ff',
+                'rgba(0, 0, 255, .5)': '#0000ff',
+                'hsl(0, 100%, 50%)': '#ff0000',
+                'hsla(0, 100%, 50%, 0.5)': '#ff0000',
+                'hsla(0, 100%, 50%, .5)': '#ff0000',
+                'currentColor': '#FF0000',
+                'transparent': '#000000'
+            },
+            currentColorTester = document.getElementById('currentColorTester'),
+            failed = false,
+            c, val;
+        for (c in colorValueTests) {
+            val = PIE.getColor( c ).colorValue( currentColorTester );
+            if ( val !== colorValueTests[ c ] ) {
+                document.write('<p style="color:red">PIE.Color#colorValue() failed for "' + c + '": got "' + val + '", expected "' + colorValueTests[c] + '"</p>')
+                failed = true;
+            }
+        }
+        for (c in hexValueTests) {
+            val = PIE.getColor( c ).hexValue( currentColorTester );
+            if ( val !== hexValueTests[ c ] ) {
+                document.write('<p style="color:red">PIE.Color#hexValue() failed for "' + c + '": got "' + val + '", expected "' + hexValueTests[c] + '"</p>')
+                failed = true;
+            }
+        }
+        if (!failed) {
+            document.write('<p style="color:#090">Color parsing tests all passed</p>')
+        }
+
+
+        // Visual test of color names
         var colors = ["aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "beige", "bisque", "black", "blanchedalmond", "blue", "blueviolet", "brown", "burlywood", "cadetblue", "chartreuse", "chocolate", "coral", "cornflowerblue", "cornsilk", "crimson", "cyan", "darkblue", "darkcyan", "darkgoldenrod", "darkgray", "darkgreen", "darkkhaki", "darkmagenta", "darkolivegreen", "darkorange", "darkorchid", "darkred", "darksalmon", "darkseagreen", "darkslateblue", "darkslategray", "darkturquoise", "darkviolet", "deeppink", "deepskyblue", "dimgray", "dodgerblue", "firebrick", "floralwhite", "forestgreen", "fuchsia", "gainsboro", "ghostwhite", "gold", "goldenrod", "gray", "green", "greenyellow", "honeydew", "hotpink", "indianred", "indigo", "ivory", "khaki", "lavender", "lavenderblush", "lawngreen", "lemonchiffon", "lightblue", "lightcoral", "lightcyan", "lightgoldenrodyellow", "lightgreen", "lightgrey", "lightpink", "lightsalmon", "lightseagreen", "lightskyblue", "lightslategray", "lightsteelblue", "lightyellow", "lime", "limegreen", "linen", "magenta", "maroon", "mediumauqamarine", "mediumblue", "mediumorchid", "mediumpurple", "mediumseagreen", "mediumslateblue", "mediumspringgreen", "mediumturquoise", "mediumvioletred", "midnightblue", "mintcream", "mistyrose", "moccasin", "navajowhite", "navy", "oldlace", "olive", "olivedrab", "orange", "orangered", "orchid", "palegoldenrod", "palegreen", "paleturquoise", "palevioletred", "papayawhip", "peachpuff", "peru", "pink", "plum", "powderblue", "purple", "red", "rosybrown", "royalblue", "saddlebrown", "salmon", "sandybrown", "seagreen", "seashell", "sienna", "silver", "skyblue", "slateblue", "slategray", "snow", "springgreen", "steelblue", "tan", "teal", "thistle", "tomato", "turquoise", "violet", "wheat", "white", "whitesmoke", "yellow", "yellowgreen"];
         for( var i=0, len=colors.length; i < len; i++ ) {
-            document.write('<div class="test" style="border-color:' + colors[i] + ';">' + colors[i] + '</div>');
+            document.write('<div class="test" id="test' + i + '" style="border-color:' + colors[i] + ';">' + colors[i] + '</div>');
+            PIE.attach( document.getElementById('test' + i) );
         }
     </script>
 
