@@ -17,7 +17,7 @@
             padding: .5em;
             margin: .25em;
             font-size: 20px;
-            /*border-radius: 3px;*/
+            border-radius: 3px;
             behavior: url(../build/PIE_uncompressed.htc);
         }
         #w3c1 {background: #CCF; color: blue; text-shadow: #333 0.1em 0.1em}
@@ -62,17 +62,18 @@
 
 
 <script type="text/javascript">
-    for(var i=1; i<10; i++) {
-        document.write('<div class="tester" style="text-shadow: 4px 4px ' + i + 'px #000">Text shadow blur radius ' + i + '</div>')
+    var n = 25;
+    for(var i=1; i<n; i++) {
+        document.write('<div class="tester" style="height: 25px; text-shadow: 4px 4px ' + i + 'px #000">Text shadow blur radius ' + i + '</div>')
     }
-    for(var i=1; i<10; i++) {
-        document.write('<div class="tester" style="text-shadow: 0 0 ' + i + 'px #F00">Text shadow blur radius ' + i + '</div>')
+    for(var i=1; i<n; i++) {
+        document.write('<div class="tester" style="height: 25px; text-shadow: 4px 4px ' + i + 'px #F00">Text shadow blur radius ' + i + '</div>')
     }
-    for(var i=1; i<10; i++) {
-        document.write('<div class="tester" style="text-shadow: 0 0 ' + i + 'px #00F">Text shadow blur radius ' + i + '</div>')
+    for(var i=1; i<n; i++) {
+        document.write('<div class="tester" style="height: 25px; text-shadow: 0 0 ' + i + 'px #00F">Text shadow blur radius ' + i + '</div>')
     }
-    for(var i=1; i<10; i++) {
-        document.write('<div class="tester" style="text-shadow: 0 0 ' + i + 'px #0F0">Text shadow blur radius ' + i + '</div>')
+    for(var i=1; i<n; i++) {
+        document.write('<div class="tester" style="height: 25px; text-shadow: 0 0 ' + i + 'px #0F0">Text shadow blur radius ' + i + '</div>')
     }
 </script>
 
