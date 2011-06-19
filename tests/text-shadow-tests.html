@@ -11,6 +11,10 @@
             font-family: Arial;
         }
 
+        * {
+            -pie-poll: false;
+        }
+
         /* From http://www.w3.org/Style/Examples/007/text-shadow */
         #w3c-tests div {
             float: left;
@@ -34,6 +38,29 @@
         /*#w3c12 {color: #fff; text-shadow: -2px -2px 2px #0000FF, 2px 2px 2px #FF0000, 0 -2px 2px #0000FF, 0 2px 2px #FF0000}*/
         #w3c12 {text-shadow: 0 0 0.2em #87F, 0 0 0.2em #87F, 0 0 0.2em #87F}
 
+        #mixedMarkup {
+            behavior: url(../build/PIE_uncompressed.htc);
+            text-shadow: 1px 1px 2px #666;
+            clear: both;
+            width: 350px;
+            text-indent: 0.5em;
+        }
+        #mixedMarkup em {
+            text-shadow: 0 0 5px red;
+        }
+        #mixedMarkup .nested {
+            text-shadow: 0 -2px 4px blue;
+        }
+        #mixedMarkup .nested span {
+            text-shadow: 0 2px 2px green, 0 4px 2px yellow;
+        }
+        #mixedMarkup .multiline {
+            color: #FFF;
+            text-shadow: -1px 0 purple, 0 1px purple, 1px 0 purple, 0 -1px purple;
+        }
+        #mixedMarkup strong {
+            text-shadow: none;
+        }
 
         .tester {
             behavior: url(../build/PIE_uncompressed.htc);
@@ -58,6 +85,12 @@
     <div id="w3c10">PIE</div>
     <div id="w3c11">PIE</div>
     <div id="w3c12">PIE</div>
+</div>
+
+<div id="mixedMarkup">
+    This is an example of <em>mixed markup</em>.
+    It can be <span class="nested">deeply <span>nested</span> too</span> and can <span class="multiline">span across multiple lines</span>.
+    The shadow can also be <strong>removed entirely</strong> from nested nodes.
 </div>
 
 
