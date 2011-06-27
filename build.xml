@@ -15,6 +15,7 @@
         <concat destfile="${build_dir}/script_uncompressed.js">
             <fileset file="${src_dir}/PIE_open.js" />
             <fileset file="${src_dir}/Util.js" />
+            <fileset file="${src_dir}/GradientUtil.js" />
             <fileset file="${src_dir}/Observable.js" />
             <fileset file="${src_dir}/Heartbeat.js" />
             <fileset file="${src_dir}/OnBeforeUnload.js" />
