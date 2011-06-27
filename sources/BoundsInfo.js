@@ -23,12 +23,16 @@ PIE.BoundsInfo.prototype = {
     },
 
     getLiveBounds: function() {
-        var rect = this.targetElement.getBoundingClientRect();
+        var el = this.targetElement,
+            rect = el.getBoundingClientRect(),
+            isIE9 = PIE.ieDocMode === 9;
         return {
             x: rect.left,
             y: rect.top,
-            w: rect.right - rect.left,
-            h: rect.bottom - rect.top
+            // In some cases scrolling the page will cause IE9 to report incorrect dimensions
+            // in the rect returned by getBoundingClientRect, so we must query offsetWidth/Height instead
+            w: isIE9 ? el.offsetWidth : rect.right - rect.left,
+            h: isIE9 ? el.offsetHeight : rect.bottom - rect.top
         };
     },
 
