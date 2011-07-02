@@ -164,7 +164,7 @@ PIE.Tokenizer = (function() {
                 this.ch += val.length;
 
                 // Named colors
-                if( val.toLowerCase() in PIE.Color.names || val === 'currentColor' ) {
+                if( val.toLowerCase() in PIE.Color.names || val === 'currentColor' || val === 'transparent' ) {
                     return newToken( Type.COLOR, val );
                 }
 
