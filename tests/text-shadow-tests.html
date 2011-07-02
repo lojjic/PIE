@@ -110,5 +110,438 @@
     }
 </script>
 
+
+<style type="text/css">
+#content h2 {
+
+	margin: 0 0 10px 0 !important;
+}
+
+#intro {
+	color: #d6e2fc;
+	background: black;
+	width: 300px;
+	height: 166px;
+	line-height: 60px;
+	margin-top: 4px;
+	margin-right: 10px;
+	float: left;
+	font-family: "Fritz-Quad", "Garamond", serif;
+	font-size: 50px;
+	text-align: center;
+	padding-top: 40px;
+	text-transform: uppercase;
+}
+/*
+#intro a {
+	color: #d6e2fc;
+	text-decoration: none;
+}
+
+#intro a:hover {
+	color: white;
+}
+*/
+#css3And {
+	-sand-chroma-override: #666666;
+	text-shadow: -4px 0px 0px #0f1128,
+		-8px 0px 4px rgb(50, 152, 234),
+		-10px 0px 4px rgba(50, 152, 234, 0.3),
+		-8px -4px 4px rgba(50, 152, 234, 0.6),
+		-8px 4px 4px rgba(50, 152, 234, 0.6)
+		;
+}
+#html5 {
+	-sand-chroma-override: #222222;
+	text-shadow: -4px 0px 0px #0f1128,
+		-8px 0px 4px rgb(143, 14, 18),
+		-10px 0px 4px rgba(143, 14, 18, 0.3),
+		-8px -4px 4px rgba(143, 14, 18, 0.6),
+		-8px 4px 4px rgba(143, 14, 18, 0.6)
+		;
+}
+
+
+table.dataTable {
+	border-collapse: separate;
+}
+
+table.dataTable th {
+
+}
+
+table.dataTable td img {
+	border: none !important;
+	margin: 0 !important;
+
+}
+
+table.dataTable tr td.example span {
+    behavior: url(../build/PIE_uncompressed.htc);
+    position: relative;
+}
+table.dataTable tr td.example {
+	font-size: 31px;
+	vertical-align: top;
+	text-align: center;
+	padding-top: 30px;
+	padding-bottom: 12px;
+	height: 52px;
+	line-height: 35px;
+}
+
+table.dataTable tr td.example + td, table.dataTable tr td.example + td + td {
+	margin: 0;
+    max-width: 151px;
+	width: 140px;
+	min-width: 140px;
+    overflow: hidden;
+    padding: 0;
+}
+
+body.ie9 table.dataTable tr td.example {
+
+}
+
+table.dataTable td {
+	border: solid 1px #ccccce !important;
+
+}
+
+table.dataTable td {
+	padding: 0;
+}
+
+table.dataTable td.code {
+	vertical-align: middle;
+	background-color: white !important;
+	background-image: none;
+}
+
+table.dataTable td.code pre {
+	font-family: "Droid Sans Mono", "Consolas", "Courier New", monospace;
+	font-size: 12px;
+	padding-left: 10px;
+	line-height: 18px;
+}
+
+#example1 .example span {
+	text-shadow: 2px 2px 0 #E51919;
+	-sand-chroma-override: white;
+}
+
+#example2 .example span{
+	text-shadow: 3px 3px 3px #B24C4C;
+	-sand-chroma-override: white;
+}
+
+#example3 .example
+ {
+ 	border: white;
+ 	color: black;
+	background-image: -sand-gradient(linear, center top, center bottom, from(#ffffff), to(#999999));
+
+}
+
+#example3 .example span {
+	text-shadow: 0px 1px 0px white;
+	-sand-chroma-override: #cccccc;
+
+}
+
+#example4
+
+ {
+	background: black;
+}
+
+#example4 .example span {
+	color: white;
+	text-shadow: 0 0 4px white,
+		0 -5px 4px #FFFF33,
+		2px -10px 6px #FFDD33,
+		-2px -15px 11px #FF8800,
+		2px -25px 18px #FF2200;
+	-sand-chroma-override: black;
+
+}
+
+#example5  {
+	background: black;
+}
+
+#example5 .example span {
+	color: white;
+	text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff, 0 0 4px #ff00de, 0 0 7px #ff00de, 0 0 8px #ff00de, 0 0 10px #ff00de, 0 0 15px #ff00de;
+	-sand-chroma-override: #333333;
+}
+
+#example6 {
+	background: black;
+}
+
+#example6 .example span {
+	color: transparent;
+	text-shadow: 0 0 3px #fff;
+}
+
+#example7 {
+	background: black;
+}
+
+#example7 .example span {
+	color: black;
+	text-shadow:0 0 20px yellow, 0 0 60px yellow;
+	-sand-chroma-override: white;
+}
+
+#example8 {
+	background:#cccccc;
+}
+
+
+#example8 .example span {
+
+	background:#cccccc;
+	-sand-chroma-override: #cccccc;
+	color:#cccccd;
+	text-shadow: -1px -1px white, 1px 1px #333333;
+}
+
+#example9 {
+	background:#cccccc;
+
+}
+
+#example9 .example span {
+
+	background:#cccccc;
+	-sand-chroma-override: #cccccc;
+	color:#ccccce;
+	text-shadow: 1px 1px white,
+				-1px -1px #444;
+}
+
+#example8 td, #example9 td {
+	border-color: white !important;
+}
+
+#example8 td.code, #example9 td.code {
+	border-color: #cccccc !important;
+}
+
+#example10 .example {
+	background: black;
+	color: #ffd924;
+	font-weight: bold;
+	text-shadow: 1px 1px rgba(255,128,0,.7),
+				 2px 2px rgba(255,128,0,.7),
+				 3px 3px rgba(255,128,0,.7),
+				 4px 4px rgba(255,128,0,.7),
+				 5px 5px rgba(255,128,0,.7);
+	-sand-chroma-override: #ff8088; /* fills in cracks in the shadow */
+}
+
+
+
+.detailedScreenshots td {
+
+	background: black;
+}
+
+.detailedScreenshots img {
+	float: right;
+}
+
+#pageContainer {
+	min-width: 800px;
+}
+
+#content, #sidenav {
+	line-height: 22px;
+}
+
+table.dataTable td {
+	line-height: 31px !important;
+}
+
+#content, #sideNav {
+    line-height: 22px;
+}
+
+#content {
+    font-size: 14px;
+}
+</style>
+<table class="dataTable">
+<thead>
+<tr>
+<th style="text-shadow: 1px 1px 5px rgb(0, 0, 0);">
+Live CSS/HTML
+</th>
+<th class="screenshot" style="text-shadow: 1px 1px 5px rgb(0, 0, 0);">
+IE9
+</th>
+<th class="screenshot" style="text-shadow: 1px 1px 5px rgb(0, 0, 0);">
+Firefox
+</th>
+<th style="text-shadow: 1px 1px 5px rgb(0, 0, 0);">
+Text-Shadow Syntax<br>
+</th></tr>
+</thead>
+<tbody>
+<tr id="example1">
+<td class="example">
+<span data-csssandpaper-chroma="#ffffff" style="text-shadow: 2px 2px 0pt rgb(229, 25, 25);"><strong>Simple</strong></span>
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ie01.png">
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ff01.png">
+</td>
+<td class="code">
+<pre>2px 2px 0 #E51919
+</pre>
+</td>
+</tr>
+<tr id="example2">
+<td class="example">
+<span data-csssandpaper-chroma="#ffffff" style="text-shadow: 3px 3px 3px rgb(178, 76, 76);">Blurred</span>
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ie02.png">
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ff02.png">
+</td>
+<td class="code">
+<pre>3px 3px 3px #B24C4C
+</pre>
+</td>
+</tr>
+<tr id="example3">
+<td class="example cssSandpaper-IEuseGradientFilter" style="background-image: url(&quot;data:image/png;base64,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&quot;);">
+<span data-csssandpaper-chroma="#cccccc" style="text-shadow: 0px 1px 0px white;">Etched</span>
+</td>
+<td class="cssSandpaper-IEuseGradientFilter">
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ie03.png">
+</td>
+<td class="cssSandpaper-IEuseGradientFilter">
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ff03.png">
+</td>
+<td class="code">
+<pre>0px 1px 0px white
+</pre>
+</td>
+</tr>
+<tr id="example4">
+<td class="example">
+<span data-csssandpaper-chroma="#000000" style="text-shadow: 0pt 0pt 4px white, 0pt -5px 4px rgb(255, 255, 51), 2px -10px 6px rgb(255, 221, 51), -2px -15px 11px rgb(255, 136, 0), 2px -25px 18px rgb(255, 34, 0);">Flaming</span>
+</td>
+<td><img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ie04.png"></td>
+<td><img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ff04.png"></td>
+<td class="code">
+<pre>0px   0px  4px white,    0px  -5px  4px #FFFF33,
+2px -10px  6px #FFDD33, -2px -15px 11px #FF8800,
+2px -25px 18px #FF2200 </pre>
+</td>
+</tr>
+<tr id="example5">
+<td class="example">
+<span data-csssandpaper-chroma="#333333" style="text-shadow: 0pt 0pt 1px rgb(255, 255, 255), 0pt 0pt 2px rgb(255, 255, 255), 0pt 0pt 3px rgb(255, 255, 255), 0pt 0pt 4px rgb(255, 0, 222), 0pt 0pt 7px rgb(255, 0, 222), 0pt 0pt 8px rgb(255, 0, 222), 0pt 0pt 10px rgb(255, 0, 222), 0pt 0pt 15px rgb(255, 0, 222);">Neon</span>
+</td>
+<td><img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ie05.png"></td>
+<td><img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ff05.png"></td>
+<td class="code">
+<pre>0 0 1px  #ffffff, 0 0 2px  #ffffff,
+0 0 3px  #ffffff, 0 0 4px  #ff00de,
+0 0 7px  #ff00de, 0 0 8px  #ff00de,
+0 0 10px #ff00de, 0 0 15px #ff00de;
+</pre>
+</td>
+</tr>
+<tr id="example6">
+<td class="example">
+<span style="text-shadow: 0pt 0pt 3px rgb(255, 255, 255);">Unfocused</span>
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ie06.png">
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ff06.png">
+</td>
+<td class="code">
+<pre>0 0 3px #fff
+</pre>
+</td>
+</tr>
+<tr id="example7">
+<td class="example">
+<span data-csssandpaper-chroma="#ffffff" style="text-shadow: 0pt 0pt 20px yellow, 0pt 0pt 60px yellow;">Glowing</span>
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ie07.png">
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ff07.png">
+</td>
+<td class="code">
+<pre>0 0 20px yellow, 0 0 60px yellow
+</pre>
+</td>
+</tr>
+<tr id="example8">
+<td class="example">
+<span data-csssandpaper-chroma="#cccccc" style="text-shadow: -1px -1px white, 1px 1px rgb(51, 51, 51);">Embossed</span>
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ie08.png">
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ff08.png">
+</td>
+<td class="code">
+<pre>-1px -1px white, 1px 1px #333333
+</pre>
+</td>
+</tr>
+<tr id="example9">
+<td class="example">
+<span data-csssandpaper-chroma="#cccccc" style="text-shadow: 1px 1px white, -1px -1px rgb(68, 68, 68);">Pillow</span>
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ie09.png">
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ff09.png">
+</td>
+<td class="code">
+<pre>1px 1px white, -1px -1px #444
+</pre>
+</td>
+</tr>
+<tr id="example10">
+<td class="example" data-csssandpaper-chroma="#ff8088" style="text-shadow: 1px 1px rgba(255, 128, 0, 0.7), 2px 2px rgba(255, 128, 0, 0.7), 3px 3px rgba(255, 128, 0, 0.7), 4px 4px rgba(255, 128, 0, 0.7), 5px 5px rgba(255, 128, 0, 0.7);">
+<span>Fake 3D</span>
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ie10.png">
+</td>
+<td>
+<img alt="" src="http://www.useragentman.com/blog/wp-content/uploads/2011/06/ff10.png">
+</td>
+<td class="code">
+<pre>1px 1px rgba(255,128,0,.7),
+2px 2px rgba(255,128,0,.7),
+3px 3px rgba(255,128,0,.7),
+4px 4px rgba(255,128,0,.7),
+5px 5px rgba(255,128,0,.7)
+</pre>
+</td>
+</tr>
+</tbody>
+</table>
+
 </body>
 </html>
