@@ -163,8 +163,11 @@ backgrounds, be sure to include appropriate fallbacks. For example:</p>
 
 <pre class="long"><code>#myElement {
     background: url(bg-image.png) no-repeat #CCC; /*non-CSS3 browsers will use this*/
+    background: url(bg-image.png) no-repeat, -webkit-gradient(linear, 0 0, 0 100%, from(#CCC) to(#EEE)); /*old webkit*/
+    background: url(bg-image.png) no-repeat, -webkit-linear-gradient(#CCC, #EEE); /*new webkit*/
     background: url(bg-image.png) no-repeat, -moz-linear-gradient(#CCC, #EEE); /*gecko*/
-    background: url(bg-image.png) no-repeat, -webkit-gradient(linear, 0 0, 0 100%, from(#CCC) to(#EEE)); /*webkit*/
+    background: url(bg-image.png) no-repeat, -ms-linear-gradient(#CCC, #EEE); /*IE10 preview*/
+    background: url(bg-image.png) no-repeat, -o-linear-gradient(#CCC, #EEE); /*opera 11.10+*/
     background: url(bg-image.png) no-repeat, linear-gradient(#CCC, #EEE); /*future CSS3 browsers*/
     -pie-background: url(bg-image.png) no-repeat, linear-gradient(#CCC, #EEE); /*PIE*/
 }</code></pre>
@@ -219,14 +222,31 @@ but it may turn out to be impossible to implement due to VML's strange radial gr
 
 <p>Notes on other browsers:</p>
 
-<p>WebKit's gradient syntax is drastically different than that of the
-CSS3 spec. See the
+<p>Most other browsers require a vendor prefix on the linear-gradient name, e.g. -moz-linear-gradient for Firefox
+(supported in version 3.6+ only), -webkit-linear-gradient for recent WebKit browsers, -o-linear-gradient for Opera
+(supported in version 11.10+ only), and -ms-linear-gradient for IE10 (currently only in pre-release).</p>
+
+<p>In addition, WebKit browsers older than Chrome 10 and Safari 5.1 require a gradient syntax which is
+drastically different than that of the CSS3 spec. See the
 <a href="http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/Gradients/Gradients.html">Safari documentation</a> for their syntax</p>
 
-<p>Mozilla only supports gradients (via the -moz-linear-gradient
-function) as of Firefox 3.6.</p>
+<p>Adding in PIE's required -pie-background property, you will need a set of styles similar to the following
+to get consistent linear gradient backgrounds across browsers:</p>
 
-<p>Opera currently has no support for CSS gradients, though you can use SVG to generate gradients instead.</p>
+<pre class="long"><code>#myElement {
+    background: #CCC; /*fallback for non-CSS3 browsers*/
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(#CCC) to(#EEE)); /*old webkit*/
+    background: -webkit-linear-gradient(#CCC, #EEE); /*new webkit*/
+    background: -moz-linear-gradient(#CCC, #EEE); /*gecko*/
+    background: -ms-linear-gradient(#CCC, #EEE); /*IE10*/
+    background: -o-linear-gradient(#CCC, #EEE); /*opera 11.10+*/
+    background: linear-gradient(#CCC, #EEE); /*future CSS3 browsers*/
+    -pie-background: linear-gradient(#CCC, #EEE); /*PIE*/
+    behavior: url(PIE.htc);
+}</code></pre>
+
+<p>For more detailed information on the current state of linear-gradient across browsers, see this
+<a href="http://www.webdirections.org/blog/css3-linear-gradients/">article by John Allsopp</a>.</p>
 
 
 <h2 id="rgba">RGBA Color Values</h2>

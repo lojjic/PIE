@@ -34,7 +34,10 @@
             -moz-box-shadow: #666 0 2px 3px;
             box-shadow: #666 0 2px 3px;
             background: -webkit-gradient(linear, 0 0, 0 bottom, from(#9F9), to(#393));
+            background: -webkit-linear-gradient(#9F9, #393);
             background: -moz-linear-gradient(#9F9, #393);
+            background: -ms-linear-gradient(#9F9, #393);
+            background: -o-linear-gradient(#9F9, #393);
             -pie-background: linear-gradient(#9F9, #393);*/
         }
 
@@ -131,7 +134,10 @@
                     css = [ 'background: ' + color1 + ';' ];
                 if( on ) {
                     css.push( 'background: -webkit-gradient(linear, 0 0, 0 bottom, from(' + color1 + '), to(' + color2 + '));' );
+                    css.push( 'background: -webkit-linear-gradient(' + color1 + ', ' + color2 + ');' );
                     css.push( 'background: -moz-linear-gradient(' + color1 + ', ' + color2 + ');' );
+                    css.push( 'background: -ms-linear-gradient(' + color1 + ', ' + color2 + ');' );
+                    css.push( 'background: -o-linear-gradient(' + color1 + ', ' + color2 + ');' );
                     css.push( 'background: linear-gradient(' + color1 + ', ' + color2 + ');' );
                     if( $( '#pieToggle' ).is(':checked') ) {
                         css.push( '-pie-background: linear-gradient(' + color1 + ', ' + color2 + ');' );
