@@ -28,7 +28,7 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
             if ( images ) {
                 while( img = images[ i++ ] ) {
                     bg.push( img.imgType === 'linear-gradient' ?
-                        'url(data:image/svg+xml,' + escape( this.getGradientSvg( img ) ) + ')' :
+                        'url(data:image/svg+xml,' + escape( this.getGradientSvg( img ) ) + ') ' + ( img.imgRepeat || '' ) :
                         img.origString
                     );
                 }
@@ -45,11 +45,12 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
     getGradientSvg: function( info ) {
         var el = this.targetElement,
             bounds = this.boundsInfo.getBounds(),
-            w = bounds.w,
-            h = bounds.h,
             stopsInfo = info.stops,
             stopCount = stopsInfo.length,
-            metrics = PIE.GradientUtil.getGradientMetrics( el, bounds, info ),
+            bgSize = ( info.bgSize || PIE.BgSize.DEFAULT ).pixels( el, bounds.w, bounds.h, bounds.w, bounds.h ),
+            w = bgSize.w,
+            h = bgSize.h,
+            metrics = PIE.GradientUtil.getGradientMetrics( el, w, h, info ),
             startX = metrics.startX,
             startY = metrics.startY,
             endX = metrics.endX,

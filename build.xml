@@ -24,6 +24,7 @@
             <fileset file="${src_dir}/OnPrint.js" />
             <fileset file="${src_dir}/Length.js" />
             <fileset file="${src_dir}/BgPosition.js" />
+            <fileset file="${src_dir}/BgSize.js" />
             <fileset file="${src_dir}/Angle.js" />
             <fileset file="${src_dir}/Color.js" />
             <fileset file="${src_dir}/Tokenizer.js" />

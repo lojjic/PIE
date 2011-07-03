@@ -3,10 +3,8 @@
  */
 PIE.GradientUtil = {
 
-    getGradientMetrics: function( el, bounds, gradientInfo ) {
-        var w = bounds.w,
-            h = bounds.h,
-            angle = gradientInfo.angle,
+    getGradientMetrics: function( el, width, height, gradientInfo ) {
+        var angle = gradientInfo.angle,
             startPos = gradientInfo.gradientStart,
             startX, startY,
             endX, endY,
@@ -19,10 +17,10 @@ PIE.GradientUtil = {
         // This is used below to find the start/end positions of the CSS3 gradient-line, and also in finding
         // the total length of the VML rendered gradient-line corner to corner.
         function findCorners() {
-            startCornerX = ( angle >= 90 && angle < 270 ) ? w : 0;
-            startCornerY = angle < 180 ? h : 0;
-            endCornerX = w - startCornerX;
-            endCornerY = h - startCornerY;
+            startCornerX = ( angle >= 90 && angle < 270 ) ? width : 0;
+            startCornerY = angle < 180 ? height : 0;
+            endCornerX = width - startCornerX;
+            endCornerY = height - startCornerY;
         }
 
         // Normalize the angle to a value between [0, 360)
@@ -35,7 +33,7 @@ PIE.GradientUtil = {
 
         // Find the start and end points of the gradient
         if( startPos ) {
-            startPos = startPos.coords( el, w, h );
+            startPos = startPos.coords( el, width, height );
             startX = startPos.x;
             startY = startPos.y;
         }
@@ -59,13 +57,13 @@ PIE.GradientUtil = {
         }
         else if( startPos ) {
             // Start position but no angle specified: find the end point by rotating 180deg around the center
-            endX = w - startX;
-            endY = h - startY;
+            endX = width - startX;
+            endY = height - startY;
         }
         else {
             // Neither position nor angle specified; create vertical gradient from top to bottom
             startX = startY = endX = 0;
-            endY = h;
+            endY = height;
         }
         deltaX = endX - startX;
         deltaY = endY - startY;

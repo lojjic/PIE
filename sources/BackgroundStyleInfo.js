@@ -31,10 +31,10 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      *             imgUrl: 'image.png',
      *             imgRepeat: <'no-repeat' | 'repeat-x' | 'repeat-y' | 'repeat'>,
      *             bgPosition: <PIE.BgPosition>,
-     *             attachment: <'scroll' | 'fixed' | 'local'>,
+     *             bgAttachment: <'scroll' | 'fixed' | 'local'>,
      *             bgOrigin: <'border-box' | 'padding-box' | 'content-box'>,
-     *             clip: <'border-box' | 'padding-box'>,
-     *             size: <'contain' | 'cover' | { w: <'auto' | PIE.Length>, h: <'auto' | PIE.Length> }>,
+     *             bgClip: <'border-box' | 'padding-box'>,
+     *             bgSize: <PIE.BgSize>,
      *             origString: 'url(img.png) no-repeat top left'
      *         },
      *         {
@@ -62,7 +62,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             tokType, tokVal,
             beginCharIndex = 0,
             positionIdents = this.positionIdents,
-            gradient, stop,
+            gradient, stop, width, height,
             props = null;
 
         function isBgPosToken( token ) {
@@ -151,7 +151,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                     image.imgUrl = tokVal;
                     image.imgType = 'image';
                 }
-                else if( isBgPosToken( token ) && !image.size ) {
+                else if( isBgPosToken( token ) && !image.bgPosition ) {
                     tokenizer.prev();
                     image.bgPosition = new PIE.BgPosition(
                         tokenizer.until( function( t ) {
@@ -160,45 +160,50 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                     );
                 }
                 else if( tokType & type_ident ) {
-                    if( tokVal in this.repeatIdents ) {
+                    if( tokVal in this.repeatIdents && !image.imgRepeat ) {
                         image.imgRepeat = tokVal;
                     }
                     else if( tokVal in this.originIdents ) {
+                        // TODO add validation here
                         image.bgOrigin = tokVal;
                         if( tokVal in this.clipIdents ) {
-                            image.clip = tokVal;
+                            image.bgClip = tokVal;
                         }
                     }
-                    else if( tokVal in this.attachIdents ) {
-                        image.attachment = tokVal;
+                    else if( tokVal in this.attachIdents && !image.bgAttachment ) {
+                        image.bgAttachment = tokVal;
+                    }
+                    else {
+                        return null;
                     }
                 }
                 else if( tokType & type_color && !props.color ) {
                     props.color = PIE.getColor( tokVal );
                 }
-                else if( tokType & type_operator ) {
+                else if( tokType & type_operator && tokVal === '/' && !image.bgSize ) {
                     // background size
-                    if( tokVal === '/' ) {
-                        token = tokenizer.next();
-                        tokType = token.tokenType;
-                        tokVal = token.tokenValue;
-                        if( tokType & type_ident && tokVal in this.sizeIdents ) {
-                            image.size = tokVal;
-                        }
-                        else if( tokVal = sizeToken( token ) ) {
-                            image.size = {
-                                w: tokVal,
-                                h: sizeToken( tokenizer.next() ) || ( tokenizer.prev() && tokVal )
-                            };
-                        }
+                    token = tokenizer.next();
+                    if( token.tokenType & type_ident && token.tokenValue in this.sizeIdents ) {
+                        image.bgSize = new PIE.BgSize( token.tokenValue );
                     }
-                    // new layer
-                    else if( tokVal === ',' && image.imgType ) {
-                        image.origString = css.substring( beginCharIndex, tokenizer.ch - 1 );
-                        beginCharIndex = tokenizer.ch;
-                        props.bgImages.push( image );
-                        image = {};
+                    else if( width = sizeToken( token ) ) {
+                        height = sizeToken( tokenizer.next() );
+                        if ( !height ) {
+                            height = width;
+                            tokenizer.prev();
+                        }
+                        image.bgSize = new PIE.BgSize( width, height );
                     }
+                    else {
+                        return null;
+                    }
+                }
+                // new layer
+                else if( tokType & type_operator && tokVal === ',' && image.imgType ) {
+                    image.origString = css.substring( beginCharIndex, tokenizer.ch - 1 );
+                    beginCharIndex = tokenizer.ch;
+                    props.bgImages.push( image );
+                    image = {};
                 }
                 else {
                     // Found something unrecognized; chuck everything
