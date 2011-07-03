@@ -66,11 +66,11 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             props = null;
 
         function isBgPosToken( token ) {
-            return token.isLengthOrPercent() || ( token.tokenType & type_ident && token.tokenValue in positionIdents );
+            return token && token.isLengthOrPercent() || ( token.tokenType & type_ident && token.tokenValue in positionIdents );
         }
 
         function sizeToken( token ) {
-            return ( token.isLengthOrPercent() && PIE.getLength( token.tokenValue ) ) || ( token.tokenValue === 'auto' && 'auto' );
+            return token && ( ( token.isLengthOrPercent() && PIE.getLength( token.tokenValue ) ) || ( token.tokenValue === 'auto' && 'auto' ) );
         }
 
         // If the CSS3-specific -pie-background property is present, parse it
