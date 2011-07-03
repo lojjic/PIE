@@ -7,150 +7,7 @@
             font-family: Georgia, serif;    
         }
         
-        .stripes {
-            height: 250px;
-            width: 375px;
-            float: left;
-            
-            margin: 10px;
-            
-            -webkit-background-size: 50px 50px;
-            -moz-background-size: 50px 50px;
-            background-size: 50px 50px; /* Controls the size of the stripes */
-
-            -moz-box-shadow: 1px 1px 8px gray;
-            -webkit-box-shadow: 1px 1px 8px gray;
-            box-shadow: 1px 1px 8px gray;
-
-            behavior: url(../build/PIE_uncompressed.htc);
-        }
-        
-        .angled {
-            background-color: #ac0;
-            background-image: -webkit-gradient(linear, 0 100%, 100% 0,
-                                    color-stop(.25, rgba(255, 255, 255, .2)), color-stop(.25, transparent),
-                                    color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .2)),
-                                    color-stop(.75, rgba(255, 255, 255, .2)), color-stop(.75, transparent),
-                                     to(transparent));
-            background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent);
-            background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent);
-            background-image: -ms-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent);
-            background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent);
-            background-image: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent);
-            -pie-background: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent) 0 0 / 50px 50px #ac0;
-        }
-
-        .angled-135 {
-            background-color: #c16;
-            background-image: -webkit-gradient(linear, 0 0, 100% 100%,
-                                    color-stop(.25, rgba(255, 255, 255, .2)), color-stop(.25, transparent),
-                                    color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .2)),
-                                    color-stop(.75, rgba(255, 255, 255, .2)), color-stop(.75, transparent),
-                                     to(transparent));
-            background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent);
-            background-image: -moz-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent);
-            background-image: -ms-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent);
-            background-image: -o-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent);
-            background-image: linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent);
-            -pie-background: linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-                                transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-                                transparent 75%, transparent) 0 0 / 50px 50px, #c16;
-        }
-
-        .horizontal {
-            background-color: #0ae;
-            background-image: -webkit-gradient(linear, 0 0, 0 100%, color-stop(.5, rgba(255, 255, 255, .2)), color-stop(.5, transparent), to(transparent));
-            background-image: -webkit-linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
-            background-image: -moz-linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
-            background-image: -ms-linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
-            background-image: -o-linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
-            background-image: linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
-            -pie-background: linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent) 0 0 / 50px 50px #0ae;
-        }
-
-        .vertical {
-            background-color: #f90;
-            background-image: -webkit-gradient(linear, 0 0, 100% 0, color-stop(.5, rgba(255, 255, 255, .2)), color-stop(.5, transparent), to(transparent));
-            background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
-            background-image: -moz-linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
-            background-image: -ms-linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
-            background-image: -o-linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
-            background-image: linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
-            -pie-background: linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent) 0 0 / 50px 50px #f90;
-        }
-
-        .checkered {
-            background-image: -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.25, #555), color-stop(.25, transparent), to(transparent)),
-                              -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.25, #555), color-stop(.25, transparent), to(transparent)),
-                              -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.75, transparent), color-stop(.75, #555)),
-                                -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.75, transparent), color-stop(.75, #555));
-            background-image: -webkit-linear-gradient(45deg, #555 25%, transparent 25%, transparent),
-                              -webkit-linear-gradient(-45deg, #555 25%, transparent 25%, transparent),
-                              -webkit-linear-gradient(45deg, transparent 75%, #555 75%),
-                                -webkit-linear-gradient(-45deg, transparent 75%, #555 75%);
-            background-image: -moz-linear-gradient(45deg, #555 25%, transparent 25%, transparent),
-                              -moz-linear-gradient(-45deg, #555 25%, transparent 25%, transparent),
-                              -moz-linear-gradient(45deg, transparent 75%, #555 75%),
-                                -moz-linear-gradient(-45deg, transparent 75%, #555 75%);
-            background-image: -ms-linear-gradient(45deg, #555 25%, transparent 25%, transparent),
-                              -ms-linear-gradient(-45deg, #555 25%, transparent 25%, transparent),
-                              -ms-linear-gradient(45deg, transparent 75%, #555 75%),
-                                -ms-linear-gradient(-45deg, transparent 75%, #555 75%);
-            background-image: -o-linear-gradient(45deg, #555 25%, transparent 25%, transparent),
-                              -o-linear-gradient(-45deg, #555 25%, transparent 25%, transparent),
-                              -o-linear-gradient(45deg, transparent 75%, #555 75%),
-                                -o-linear-gradient(-45deg, transparent 75%, #555 75%);
-            background-image: linear-gradient(45deg, #555 25%, transparent 25%, transparent),
-                              linear-gradient(-45deg, #555 25%, transparent 25%, transparent),
-                              linear-gradient(45deg, transparent 75%, #555 75%),
-                                linear-gradient(-45deg, transparent 75%, #555 75%);
-            -pie-background: linear-gradient(45deg, #555 25%, transparent 25%, transparent) 0 0 / 50px 50px,
-                              linear-gradient(-45deg, #555 25%, transparent 25%, transparent) 0 0 / 50px 50px,
-                              linear-gradient(45deg, transparent 75%, #555 75%) 0 0 / 50px 50px,
-                                linear-gradient(-45deg, transparent 75%, #555 75%) 0 0 / 50px 50px;
-        }
-
-        .picnic {
-            background-color:white;
-            background-image: -webkit-gradient(linear, 0 0, 0 100%, color-stop(.5, transparent), color-stop(.5, rgba(200, 0, 0, .5)), to(rgba(200, 0, 0, .5))),
-                              -webkit-gradient(linear, 0 0, 100% 0, color-stop(.5, transparent), color-stop(.5, rgba(200, 0, 0, .5)), to(rgba(200, 0, 0, .5)));
-            background-image: -webkit-linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)),
-                        -webkit-linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5));
-            background-image: -moz-linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)),
-                        -moz-linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5));
-            background-image: -ms-linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)),
-                        -ms-linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5));
-            background-image: -o-linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)),
-                        -o-linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5));
-            background-image: linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)),
-                        linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5));
-            -pie-background: linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)) 0 0 / 50px 50px,
-                        linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)) 0 0 / 50px 50px white;
-        }
-        
-        #footer {
+        .footer {
             text-align: center;
             clear: both;
             padding-top: .5em;
@@ -160,17 +17,451 @@
     </style>    
 </head>
 <body>
-    <h1>Stripes &amp; other patterns with CSS3 &mdash; no images</h1>
+    <div id="simplePatterns">
+        <h1>Stripes &amp; other patterns with CSS3 &mdash; no images</h1>
+
+        <style type="text/css">
+            .stripes {
+                height: 250px;
+                width: 375px;
+                float: left;
+
+                margin: 10px;
+
+                -webkit-background-size: 50px 50px;
+                -moz-background-size: 50px 50px;
+                background-size: 50px 50px; /* Controls the size of the stripes */
+
+                -moz-box-shadow: 1px 1px 8px gray;
+                -webkit-box-shadow: 1px 1px 8px gray;
+                box-shadow: 1px 1px 8px gray;
+
+                behavior: url(../build/PIE.htc);
+            }
+
+            .angled {
+                background-color: #ac0;
+                background-image: -webkit-gradient(linear, 0 100%, 100% 0,
+                                        color-stop(.25, rgba(255, 255, 255, .2)), color-stop(.25, transparent),
+                                        color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .2)),
+                                        color-stop(.75, rgba(255, 255, 255, .2)), color-stop(.75, transparent),
+                                         to(transparent));
+                background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent);
+                background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent);
+                background-image: -ms-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent);
+                background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent);
+                background-image: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent);
+                -pie-background: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent) 0 0 / 50px 50px #ac0;
+            }
+
+            .angled-135 {
+                background-color: #c16;
+                background-image: -webkit-gradient(linear, 0 0, 100% 100%,
+                                        color-stop(.25, rgba(255, 255, 255, .2)), color-stop(.25, transparent),
+                                        color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .2)),
+                                        color-stop(.75, rgba(255, 255, 255, .2)), color-stop(.75, transparent),
+                                         to(transparent));
+                background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent);
+                background-image: -moz-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent);
+                background-image: -ms-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent);
+                background-image: -o-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent);
+                background-image: linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent);
+                -pie-background: linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                    transparent 75%, transparent) 0 0 / 50px 50px, #c16;
+            }
+
+            .horizontal {
+                background-color: #0ae;
+                background-image: -webkit-gradient(linear, 0 0, 0 100%, color-stop(.5, rgba(255, 255, 255, .2)), color-stop(.5, transparent), to(transparent));
+                background-image: -webkit-linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+                background-image: -moz-linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+                background-image: -ms-linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+                background-image: -o-linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+                background-image: linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+                -pie-background: linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent) 0 0 / 50px 50px #0ae;
+            }
+
+            .vertical {
+                background-color: #f90;
+                background-image: -webkit-gradient(linear, 0 0, 100% 0, color-stop(.5, rgba(255, 255, 255, .2)), color-stop(.5, transparent), to(transparent));
+                background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+                background-image: -moz-linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+                background-image: -ms-linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+                background-image: -o-linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+                background-image: linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+                -pie-background: linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent) 0 0 / 50px 50px #f90;
+            }
+
+            .checkered {
+                background-image: -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.25, #555), color-stop(.25, transparent), to(transparent)),
+                                  -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.25, #555), color-stop(.25, transparent), to(transparent)),
+                                  -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.75, transparent), color-stop(.75, #555)),
+                                    -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.75, transparent), color-stop(.75, #555));
+                background-image: -webkit-linear-gradient(45deg, #555 25%, transparent 25%, transparent),
+                                  -webkit-linear-gradient(-45deg, #555 25%, transparent 25%, transparent),
+                                  -webkit-linear-gradient(45deg, transparent 75%, #555 75%),
+                                    -webkit-linear-gradient(-45deg, transparent 75%, #555 75%);
+                background-image: -moz-linear-gradient(45deg, #555 25%, transparent 25%, transparent),
+                                  -moz-linear-gradient(-45deg, #555 25%, transparent 25%, transparent),
+                                  -moz-linear-gradient(45deg, transparent 75%, #555 75%),
+                                    -moz-linear-gradient(-45deg, transparent 75%, #555 75%);
+                background-image: -ms-linear-gradient(45deg, #555 25%, transparent 25%, transparent),
+                                  -ms-linear-gradient(-45deg, #555 25%, transparent 25%, transparent),
+                                  -ms-linear-gradient(45deg, transparent 75%, #555 75%),
+                                    -ms-linear-gradient(-45deg, transparent 75%, #555 75%);
+                background-image: -o-linear-gradient(45deg, #555 25%, transparent 25%, transparent),
+                                  -o-linear-gradient(-45deg, #555 25%, transparent 25%, transparent),
+                                  -o-linear-gradient(45deg, transparent 75%, #555 75%),
+                                    -o-linear-gradient(-45deg, transparent 75%, #555 75%);
+                background-image: linear-gradient(45deg, #555 25%, transparent 25%, transparent),
+                                  linear-gradient(-45deg, #555 25%, transparent 25%, transparent),
+                                  linear-gradient(45deg, transparent 75%, #555 75%),
+                                    linear-gradient(-45deg, transparent 75%, #555 75%);
+                -pie-background: linear-gradient(45deg, #555 25%, transparent 25%, transparent) 0 0 / 50px 50px,
+                                  linear-gradient(-45deg, #555 25%, transparent 25%, transparent) 0 0 / 50px 50px,
+                                  linear-gradient(45deg, transparent 75%, #555 75%) 0 0 / 50px 50px,
+                                    linear-gradient(-45deg, transparent 75%, #555 75%) 0 0 / 50px 50px;
+            }
+
+            .picnic {
+                background-color:white;
+                background-image: -webkit-gradient(linear, 0 0, 0 100%, color-stop(.5, transparent), color-stop(.5, rgba(200, 0, 0, .5)), to(rgba(200, 0, 0, .5))),
+                                  -webkit-gradient(linear, 0 0, 100% 0, color-stop(.5, transparent), color-stop(.5, rgba(200, 0, 0, .5)), to(rgba(200, 0, 0, .5)));
+                background-image: -webkit-linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)),
+                            -webkit-linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5));
+                background-image: -moz-linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)),
+                            -moz-linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5));
+                background-image: -ms-linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)),
+                            -ms-linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5));
+                background-image: -o-linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)),
+                            -o-linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5));
+                background-image: linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)),
+                            linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5));
+                -pie-background: linear-gradient(transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)) 0 0 / 50px 50px,
+                            linear-gradient(0deg, transparent 50%, rgba(200, 0, 0, .5) 50%, rgba(200, 0, 0, .5)) 0 0 / 50px 50px white;
+            }
+        </style>
+
+        <div class="horizontal stripes"></div>
+        <div class="vertical stripes"></div>
+        <div class="picnic stripes"></div>
+        <div class="angled stripes"></div>
+        <div class="angled-135 stripes"></div>
+        <div class="checkered stripes"></div>
+
+        <p class="footer">By <a href="http://leaverou.me">Lea Verou</a>
+            &bull; From post <a href="http://leaverou.me/2010/12/checkered-stripes-other-background-patterns-with-css3-gradients/">Checkerboard, striped &amp; other background patterns with CSS3 gradients</a>
+        </p>
+    </div>
+
+
+
+
+    <div id="patternGallery">
+        <h1>CSS3 Pattern Gallery</h1>
+
+        <style type="text/css">
+            #patternGallery li {
+                -webkit-border-radius: 150px;
+                -moz-border-radius: 150px;
+                border-radius: 150px;
+                float: left;
+                width: 300px;
+                height: 300px;
+                list-style: none;
+                margin: 40px;
+                position: relative;
+                behavior: url(../build/PIE.htc);
+            }
+        </style>
+
+        <ul>
+            <li data-bg="
+                linear-gradient(63deg, #151515 5px, transparent 5px) 0 5px / 20px,
+                linear-gradient(243deg, #151515 5px, transparent 5px) 10px 0px / 20px,
+                linear-gradient(63deg, #222 5px, transparent 5px) 0px 10px / 20px,
+                linear-gradient(243deg, #222 5px, transparent 5px) 10px 5px / 20px,
+                linear-gradient(0deg, #1b1b1b 10px, transparent 10px) / 20px,
+                linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424) / 20px,
+                #131313
+            " title="Carbon" data-author="Atle Mo (design), Sbastien Grosjean (code)" data-author-url="http://www.zencocoon.com/"></li>
+
+    <!--
+            <li style="background:
+      radial-gradient(black 15%, transparent 16%) 0 0,
+      radial-gradient(black 15%, transparent 16%) 8px 8px,
+      radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+      radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+    background-color:#282828;
+    background-size:16px 16px;" title="Carbon fibre" data-author="Atle Mo (design), Lea Verou (code)" data-author-url="http://subtlepatterns.com/#post-22"></li>
+
+            <li style="background:
+      radial-gradient(60% 43%, closest-side circle, #b03 26%, rgba(187,0,51,0) 27%),
+      radial-gradient(40% 43%, closest-side circle, #b03 26%, rgba(187,0,51,0) 27%),
+      radial-gradient(40% 22%, closest-side circle, #d35 45%, rgba(221,51,85,0) 46%),
+      radial-gradient(60% 22%, closest-side circle, #d35 45%, rgba(221,51,85,0) 46%),
+      radial-gradient(50% 35%, closest-side circle, #d35 30%, rgba(221,51,85,0) 31%),
+
+      radial-gradient(60% 43%, closest-side circle, #b03 26%, rgba(187,0,51,0) 27%) 50px 50px,
+      radial-gradient(40% 43%, closest-side circle, #b03 26%, rgba(187,0,51,0) 27%) 50px 50px,
+      radial-gradient(40% 22%, closest-side circle, #d35 45%, rgba(221,51,85,0) 46%) 50px 50px,
+      radial-gradient(60% 22%, closest-side circle, #d35 45%, rgba(221,51,85,0) 46%) 50px 50px,
+      radial-gradient(50% 35%, closest-side circle, #d35 30%, rgba(221,51,85,0) 31%) 50px 50px;
+    background-color:#b03;
+    background-size:100px 100px;" title="Hearts"></li>
+    -->
+
+<!--
+            <li data-bg="
+                repeating-linear-gradient(-30deg, rgba(255,255,255,.1), rgba(255,255,255,.1) 1px, transparent 1px, transparent 60px) 0 0 / 70px,
+                repeating-linear-gradient(30deg, rgba(255,255,255,.1), rgba(255,255,255,.1) 1px, transparent 1px, transparent 60px) 0 0 / 120px,
+                linear-gradient(30deg, rgba(0,0,0,.1) 25%, transparent 25%, transparent 75%, rgba(0,0,0,.1) 75%, rgba(0,0,0,.1)) 0 0 / 70px,
+                linear-gradient(-30deg, rgba(0,0,0,.1) 25%, transparent 25%, transparent 75%, rgba(0,0,0,.1) 75%, rgba(0,0,0,.1)) 0 0 / 120px,
+                #6d695c"
+            title="Argyle" data-author="Anna Kassner" data-author-url="http://annamation.ca/"></li>
+-->
+
+            <li data-bg="
+                linear-gradient(115deg, #C90032 23px, transparent 23px) 0 2px / 58px,
+                linear-gradient(295deg, #C90032 23px, transparent 23px) 4px 35px / 58px,
+                linear-gradient(115deg, #C90032 23px, transparent 23px) 29px 31px / 58px,
+                linear-gradient(295deg, #C90032 23px, transparent 23px) 33px 6px / 58px,
+
+                linear-gradient(115deg, #C90032 10px, transparent 10px) 0 36px / 58px,
+                linear-gradient(295deg, #C90032 10px, transparent 10px) 4px 2px / 58px,
+                linear-gradient(115deg, #C90032 10px, transparent 10px) 29px 6px / 58px,
+                linear-gradient(295deg, #C90032 10px, transparent 10px) 33px 30px / 58px,
+                #FF7D9D
+            " title="Steps" data-author="Nicolas Gallagher" data-author-url="http://nicolasgallagher.com/"></li>
+
+    <!--
+            <li style="background:
+      radial-gradient(100% 50%, circle, transparent 20%, rgba(255,255,255,.3) 21%, rgba(255,255,255,.3) 34%, transparent 35%, transparent),
+      radial-gradient(0% 50%, circle, transparent 20%, rgba(255,255,255,.3) 21%, rgba(255,255,255,.3) 34%, transparent 35%, transparent) 0 -50px;
+    background-color: slategray;
+    background-size:75px 100px;" title="Waves"></li>
+    -->
+
+<!--
+            <li data-bg="
+                radial-gradient(circle, transparent 20%, slategray 20%, slategray 80%, transparent 80%, transparent) 0 0 / 100px,
+                radial-gradient(circle, transparent 20%, slategray 20%, slategray 80%, transparent 80%, transparent) 50px 50px / 100px,
+                linear-gradient(#A8B1BB 8px, transparent 8px) 0 -4px / 50px,
+                linear-gradient(0, #A8B1BB 8px, transparent 8px) -4px 0 / 50px,
+                slategray
+            " title="Cross"></li>
+-->
+
+    <!--
+            <li style="background:
+      radial-gradient(50% 59%, circle, #D2CAAB 3%, #364E27 4%, #364E27 11%, rgba(54,78,39,0) 12%, rgba(54,78,39,0)) 50px 0,
+      radial-gradient(50% 41%, circle, #364E27 3%, #D2CAAB 4%, #D2CAAB 11%, rgba(210,202,171,0) 12%, rgba(210,202,171,0)) 50px 0,
+      radial-gradient(50% 59%, circle, #D2CAAB 3%, #364E27 4%, #364E27 11%, rgba(54,78,39,0) 12%, rgba(54,78,39,0)) 0 50px,
+      radial-gradient(50% 41%, circle, #364E27 3%, #D2CAAB 4%, #D2CAAB 11%, rgba(210,202,171,0) 12%, rgba(210,202,171,0)) 0 50px,
+      radial-gradient(100% 50%, circle, #D2CAAB 16%, rgba(210,202,171,0) 17%),
+      radial-gradient(0% 50%, circle, #364E27 16%, rgba(54,78,39,0) 17%),
+      radial-gradient(100% 50%, circle, #D2CAAB 16%, rgba(210,202,171,0) 17%) 50px 50px,
+      radial-gradient(0% 50%, circle, #364E27 16%, rgba(54,78,39,0) 17%) 50px 50px;
+    background-color:#63773F;
+    background-size:100px 100px;" title="Yin Yang"></li>
+    -->
+
+
+            <li data-bg="
+                linear-gradient(126deg, #232927 4%,   transparent 4%) -70px 43px / 100px,
+                linear-gradient( 54deg, #232927 4%,   transparent 4%) 30px 43px / 100px,
+                linear-gradient( 18deg, #e3d7bf 8.5%, transparent 8.5%) 30px 43px / 100px,
+                linear-gradient(162deg, #e3d7bf 8.5%, transparent 8.5%) -70px 43px / 100px,
+                linear-gradient(234deg, #e3d7bf 7.5%, transparent 7.5%) -70px 23px / 100px,
+                linear-gradient(-54deg, #e3d7bf 7.5%, transparent 7.5%) 30px 23px / 100px,
+
+                linear-gradient(126deg, #232927 4%,   transparent 4%) -20px 93px / 100px,
+                linear-gradient( 54deg, #232927 4%,   transparent 4%) 80px 93px / 100px,
+                linear-gradient( 18deg, #e3d7bf 8.5%, transparent 8.5%) 80px 93px / 100px,
+                linear-gradient(162deg, #e3d7bf 8.5%, transparent 8.5%) -20px 93px / 100px,
+                linear-gradient(234deg, #e3d7bf 7.5%, transparent 7.5%) -20px 73px / 100px,
+                linear-gradient(-54deg, #e3d7bf 7.5%, transparent 7.5%) 80px 73px / 100px,
+                #232927
+            " title="Stars" data-author="Nicolas Gallagher" data-author-url="http://nicolasgallagher.com/"></li>
+
+    <!--
+            <li style="background-image:
+        radial-gradient(closest-side, transparent 0%, transparent 75%, #B6CC66 76%, #B6CC66 85%, #EDFFDB 86%, #EDFFDB 94%, #FFFFFF 95%, #FFFFFF 103%, #D9E6A7 104%, #D9E6A7 112%, #798B3C 113%, #798B3C 121%, #FFFFFF 122%, #FFFFFF 130%, #E0EAD7 131%, #E0EAD7 140%),
+        radial-gradient(closest-side, transparent 0%, transparent 75%, #B6CC66 76%, #B6CC66 85%, #EDFFDB 86%, #EDFFDB 94%, #FFFFFF 95%, #FFFFFF 103%, #D9E6A7 104%, #D9E6A7 112%, #798B3C 113%, #798B3C 121%, #FFFFFF 122%, #FFFFFF 130%, #E0EAD7 131%, #E0EAD7 140%);
+    background-size: 110px 110px;
+    background-color: #C8D3A7;
+    background-position: 0 0, 55px 55px;" title="Brady Bunch" data-author="Estelle Weyl" data-author-url="http://www.standardista.com"></li>
+
+            <li style="background-color:#def;
+    background-image: radial-gradient(closest-side, transparent 98%, rgba(0,0,0,.3) 99%),
+        radial-gradient(closest-side, transparent 98%, rgba(0,0,0,.3) 99%);
+    background-size:80px 80px;
+    background-position:0 0, 40px 40px;" title="Shippo"></li>
+    -->
+
+            <li data-bg="
+                linear-gradient(115deg, #b00 23px, transparent 23px) 0 2px / 58px,
+                linear-gradient(295deg, #d00 23px, transparent 23px) 4px 35px / 58px,
+                linear-gradient(115deg, #b00 23px, transparent 23px) 29px 31px / 58px,
+                linear-gradient(295deg, #d00 23px, transparent 23px) 34px 6px / 58px
+            " title="Bricks" data-author="Tab Atkins Jr" data-author-url="http://www.xanthir.com/blog/"></li>
+
+    <!--
+            <li style="background-color:silver;
+    background-image:
+        radial-gradient(100% 150%, circle, silver 24%, white 25%, white 28%, silver 29%, silver 36%, white 36%, white 40%, transparent 40%, transparent),
+        radial-gradient(0    150%, circle, silver 24%, white 25%, white 28%, silver 29%, silver 36%, white 36%, white 40%, transparent 40%, transparent),
+        radial-gradient(50%  100%, circle, white 10%, silver 11%, silver 23%, white 24%, white 30%, silver 31%, silver 43%, white 44%, white 50%, silver 51%, silver 63%, white 64%, white 71%, transparent 71%, transparent),
+        radial-gradient(100% 50%,  circle, white 5%, silver 6%, silver 15%, white 16%, white 20%, silver 21%, silver 30%, white 31%, white 35%, silver 36%, silver 45%, white 46%, white 49%, transparent 50%, transparent),
+        radial-gradient(0    50%,  circle, white 5%, silver 6%, silver 15%, white 16%, white 20%, silver 21%, silver 30%, white 31%, white 35%, silver 36%, silver 45%, white 46%, white 49%, transparent 50%, transparent);
+    background-size:100px 50px;" title="Seigaiha"></li>
+    -->
+
+            <li data-bg="
+                linear-gradient(60deg, #445 12%, transparent 12.5%, transparent 87%, #445 87.5%, #445) 0 0 / 80px 140px,
+                linear-gradient(-60deg, #445 12%, transparent 12.5%, transparent 87%, #445 87.5%, #445) 0 0 / 80px 140px,
+                linear-gradient(60deg, #445 12%, transparent 12.5%, transparent 87%, #445 87.5%, #445) 40px 70px / 80px 140px,
+                linear-gradient(-60deg, #445 12%, transparent 12.5%, transparent 87%, #445 87.5%, #445) 40px 70px / 80px 140px,
+                linear-gradient(30deg, #99a 25%, transparent 25.5%, transparent 75%, #99a 75%, #99a) 0 0 / 80px 140px,
+                linear-gradient(30deg, #99a 25%, transparent 25.5%, transparent 75%, #99a 75%, #99a) 40px 70px / 80px 140px,
+                #556
+            " title="Japanese cube"></li>
+
+    <!--
+            <li style="background-color:#001;
+    background-image: radial-gradient(white 15%, transparent 16%),
+        radial-gradient(white 15%, transparent 16%);
+    background-size:60px 60px;
+    background-position: 0 0, 30px 30px;" title="Polka dot"></li>
+    -->
+
+            <li data-bg="
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black) 0 0 / 60px,
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black) 30px 30px / 60px,
+                #eee
+            " title="Checkerboard"></li>
+
+            <li data-bg="
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black) 0 0 / 60px,
+                linear-gradient(-45deg, black 25%, transparent 25%, transparent 75%, black 75%, black) 0 0 / 60px,
+                #eee
+            " title="Diagonal checkerboard"></li>
+
+<!--
+            <li data-bg="
+                repeating-linear-gradient(transparent, transparent 50px, rgba(0,0,0,.4) 50px, rgba(0,0,0,.4) 53px, transparent 53px, transparent 63px, rgba(0,0,0,.4) 63px, rgba(0,0,0,.4) 66px, transparent 66px, transparent 116px, rgba(0,0,0,.5) 116px, rgba(0,0,0,.5) 166px, rgba(255,255,255,.2) 166px, rgba(255,255,255,.2) 169px, rgba(0,0,0,.5) 169px, rgba(0,0,0,.5) 179px, rgba(255,255,255,.2) 179px, rgba(255,255,255,.2) 182px, rgba(0,0,0,.5) 182px, rgba(0,0,0,.5) 232px, transparent 232px),
+                repeating-linear-gradient(180deg, transparent, transparent 50px, rgba(0,0,0,.4) 50px, rgba(0,0,0,.4) 53px, transparent 53px, transparent 63px, rgba(0,0,0,.4) 63px, rgba(0,0,0,.4) 66px, transparent 66px, transparent 116px, rgba(0,0,0,.5) 116px, rgba(0,0,0,.5) 166px, rgba(255,255,255,.2) 166px, rgba(255,255,255,.2) 169px, rgba(0,0,0,.5) 169px, rgba(0,0,0,.5) 179px, rgba(255,255,255,.2) 179px, rgba(255,255,255,.2) 182px, rgba(0,0,0,.5) 182px, rgba(0,0,0,.5) 232px, transparent 232px),
+                repeating-linear-gradient(-35deg, transparent, transparent 2px, rgba(0,0,0,.2) 2px, rgba(0,0,0,.2) 3px, transparent 3px, transparent 5px, rgba(0,0,0,.2) 5px),
+                hsl(2, 57%, 40%)
+            " title="Tartan" data-author="Marta Armada" data-author-url="http://swwweet.com"></li>
+
+            <li data-bg="
+                repeating-linear-gradient(45deg, transparent 5px, hsla(197, 62%, 11%, 0.5) 5px, hsla(197, 62%, 11%, 0.5) 10px,
+                    hsla(5, 53%, 63%, 0) 10px, hsla(5, 53%, 63%, 0) 35px, hsla(5, 53%, 63%, 0.5) 35px, hsla(5, 53%, 63%, 0.5) 40px,
+                    hsla(197, 62%, 11%, 0.5) 40px, hsla(197, 62%, 11%, 0.5) 50px, hsla(197, 62%, 11%, 0) 50px, hsla(197, 62%, 11%, 0) 60px,
+                    hsla(5, 53%, 63%, 0.5) 60px, hsla(5, 53%, 63%, 0.5) 70px, hsla(35, 91%, 65%, 0.5) 70px, hsla(35, 91%, 65%, 0.5) 80px,
+                    hsla(35, 91%, 65%, 0) 80px, hsla(35, 91%, 65%, 0) 90px, hsla(5, 53%, 63%, 0.5) 90px, hsla(5, 53%, 63%, 0.5) 110px,
+                    hsla(5, 53%, 63%, 0) 110px, hsla(5, 53%, 63%, 0) 120px, hsla(197, 62%, 11%, 0.5) 120px, hsla(197, 62%, 11%, 0.5) 140px
+                ),
+                repeating-linear-gradient(135deg, transparent 5px, hsla(197, 62%, 11%, 0.5) 5px, hsla(197, 62%, 11%, 0.5) 10px,
+                    hsla(5, 53%, 63%, 0) 10px, hsla(5, 53%, 63%, 0) 35px, hsla(5, 53%, 63%, 0.5) 35px, hsla(5, 53%, 63%, 0.5) 40px,
+                    hsla(197, 62%, 11%, 0.5) 40px, hsla(197, 62%, 11%, 0.5) 50px, hsla(197, 62%, 11%, 0) 50px, hsla(197, 62%, 11%, 0) 60px,
+                    hsla(5, 53%, 63%, 0.5) 60px, hsla(5, 53%, 63%, 0.5) 70px, hsla(35, 91%, 65%, 0.5) 70px, hsla(35, 91%, 65%, 0.5) 80px,
+                    hsla(35, 91%, 65%, 0) 80px, hsla(35, 91%, 65%, 0) 90px, hsla(5, 53%, 63%, 0.5) 90px, hsla(5, 53%, 63%, 0.5) 110px,
+                    hsla(5, 53%, 63%, 0) 110px, hsla(5, 53%, 63%, 0) 140px, hsla(197, 62%, 11%, 0.5) 140px, hsla(197, 62%, 11%, 0.5) 160px
+                ),
+                hsl(34, 53%, 82%);
+            " title="Madras" data-author="Divya Manian" data-author-url="http://nimbupani.com"></li>
+-->
+
+            <li data-bg="
+                linear-gradient(0deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px) 0 0 / 100% 1.2em,
+                linear-gradient(#eee .05em, transparent .05em) 0 0 / 100% 1.2em,
+                #FFF
+            " title="Lined paper" data-author="Sarah Backhouse" data-author-url="http://www.jadu.net"></li>
+
+            <li data-bg="
+                linear-gradient(white 2px, transparent 2px) -2px -2px / 100px,
+                linear-gradient(0, white 2px, transparent 2px) -2px -2px / 100px,
+                linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px) -1px -1px / 20px,
+                linear-gradient(0, rgba(255,255,255,.3) 1px, transparent 1px) -1px -1px / 20px,
+                #269
+            " title="Blueprint grid"></li>
+
+            <li data-bg="
+                linear-gradient(0, rgba(200,0,0,.5) 50%, transparent 50%) 0 0 / 50px,
+                linear-gradient(rgba(200,0,0,.5) 50%, transparent 50%) 0 0 / 50px,
+                white
+            " title="Tablecloth"></li>
+
+<!--
+            <li data-bg="
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px) gray
+            " title="Diagonal stripes"></li>
+-->
+
+            <li data-bg="
+                linear-gradient(0, rgba(255,255,255,.07) 50%, transparent 50%) 0 0 / 13px,
+                linear-gradient(0, rgba(255,255,255,.13) 50%, transparent 50%) 0 0 / 29px,
+                linear-gradient(0, transparent 50%, rgba(255,255,255,.17) 50%) 0 0 / 37px,
+                linear-gradient(0, transparent 50%, rgba(255,255,255,.19) 50%) 0 0 / 53px,
+                #026873
+            " title="Cicada stripes" data-author="Randy Merrill" data-author-url="http://forthedeveloper.com/"></li>
+
+            <li data-bg="
+                linear-gradient(0, transparent 50%, rgba(255,255,255,.5) 50%) gray 0 0 / 50px
+            " title="Vertical stripes"></li>
+
+            <li data-bg="
+                linear-gradient(transparent 50%, rgba(255,255,255,.5) 50%) gray 0 0 / 50px
+            " title="Horizontal stripes"></li>
+
+        </ul>
+
+        <p class="footer">From Lea Verou's <a href="http://leaverou.me/css3patterns/">CSS3 Pattern Gallery</a></p>
+
+        <script>
+            (function() {
+                var lis = document.querySelectorAll('#patternGallery li'),
+                    i = 0, len = lis.length,
+                    li, bg, css;
+                for(; i < len; i++) {
+                    li = lis[i];
+                    bg = li.getAttribute('data-bg').replace(/\s+/g, ' ');
+                    css = 'background: ' + bg +
+                          '; background: ' + bg.replace(/linear-gradient/g, '-webkit-linear-gradient') +
+                          '; background: ' + bg.replace(/linear-gradient/g, '-moz-linear-gradient') +
+                          '; background: ' + bg.replace(/linear-gradient/g, '-ms-linear-gradient') +
+                          '; background: ' + bg.replace(/linear-gradient/g, '-o-linear-gradient') +
+                          '; -pie-background: ' + bg;
+                    li.style.cssText = css;
+                }
+            })();
+        </script>
+    </div>
     
-    <div class="horizontal stripes"></div>
-    <div class="vertical stripes"></div>
-    <div class="picnic stripes"></div>
-    <div class="angled stripes"></div>
-    <div class="angled-135 stripes"></div>
-    <div class="checkered stripes"></div>
-    
-    <p id="footer">By <a href="http://leaverou.me">Lea Verou</a>
-        &bull; From post <a href="http://leaverou.me/2010/12/checkered-stripes-other-background-patterns-with-css3-gradients/">Checkerboard, striped &amp; other background patterns with CSS3 gradients</a>
-    </p>
 </body>
 </html>
