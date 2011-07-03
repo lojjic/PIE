@@ -180,7 +180,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 else if( tokType & type_color && !props.color ) {
                     props.color = PIE.getColor( tokVal );
                 }
-                else if( tokType & type_operator && tokVal === '/' && !image.bgSize ) {
+                else if( tokType & type_operator && tokVal === '/' && !image.bgSize && image.bgPosition ) {
                     // background size
                     token = tokenizer.next();
                     if( token.tokenType & type_ident && token.tokenValue in this.sizeIdents ) {
