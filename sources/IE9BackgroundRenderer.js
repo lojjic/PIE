@@ -28,7 +28,8 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
             if ( images ) {
                 while( img = images[ i++ ] ) {
                     bg.push( img.imgType === 'linear-gradient' ?
-                        'url(data:image/svg+xml,' + escape( this.getGradientSvg( img ) ) + ') ' + ( img.imgRepeat || '' ) :
+                        'url(data:image/svg+xml,' + escape( this.getGradientSvg( img ) ) + ') ' +
+                            ( img.imgRepeat || '' ) + ' ' + this.bgPositionToString( img.bgPosition ) :
                         img.origString
                     );
                 }
@@ -40,6 +41,12 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
             this.targetElement.runtimeStyle.background = bg.join(', ');
         }
+    },
+
+    bgPositionToString: function( bgPosition ) {
+        return bgPosition ? bgPosition.tokens.map(function(token) {
+            return token.tokenValue;
+        }).join(' ') : '';
     },
 
     getGradientSvg: function( info ) {
