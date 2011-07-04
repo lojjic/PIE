@@ -171,9 +171,12 @@ PIE.Element = (function() {
         function update( force ) {
             if( !destroyed ) {
                 if( initialized ) {
-                    var i, len;
+                    var i, len = renderers.length;
 
                     lockAll();
+                    for( i = 0; i < len; i++ ) {
+                        renderers[i].prepareUpdate();
+                    }
                     if( force || boundsInfo.positionChanged() ) {
                         /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
                            position changes may not always be accurate; it's possible that
@@ -182,12 +185,12 @@ PIE.Element = (function() {
                            track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
                            but that is a more expensive operation since it does some DOM walking, and we want this
                            check to be as fast as possible. */
-                        for( i = 0, len = renderers.length; i < len; i++ ) {
+                        for( i = 0; i < len; i++ ) {
                             renderers[i].updatePos();
                         }
                     }
                     if( force || boundsInfo.sizeChanged() ) {
-                        for( i = 0, len = renderers.length; i < len; i++ ) {
+                        for( i = 0; i < len; i++ ) {
                             renderers[i].updateSize();
                         }
                     }
@@ -203,7 +206,8 @@ PIE.Element = (function() {
          * Handle property changes to trigger update when appropriate.
          */
         function propChanged() {
-            var i, len, renderer,
+            var i, len = renderers.length,
+                renderer,
                 e = event;
 
             // Some elements like <table> fire onpropertychange events for old-school background properties
@@ -214,7 +218,10 @@ PIE.Element = (function() {
             if( !destroyed && !( e && e.propertyName in ignorePropertyNames ) ) {
                 if( initialized ) {
                     lockAll();
-                    for( i = 0, len = renderers.length; i < len; i++ ) {
+                    for( i = 0; i < len; i++ ) {
+                        renderers[i].prepareUpdate();
+                    }
+                    for( i = 0; i < len; i++ ) {
                         renderer = renderers[i];
                         // Make sure position is synced if the element hasn't already been rendered.
                         // TODO this feels sloppy - look into merging propChanged and update functions

@@ -29,12 +29,14 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
         PIE.Util.withImageSize( props.src, function( imgSize ) {
             var elW = bounds.w,
                 elH = bounds.h,
+                getLength = PIE.getLength,
+                cs = el.currentStyle,
 
                 widths = props.width,
-                widthT = widths.t.pixels( el ),
-                widthR = widths.r.pixels( el ),
-                widthB = widths.b.pixels( el ),
-                widthL = widths.l.pixels( el ),
+                widthT = ( widths ? widths.t : getLength( cs.borderTopWidth ) ).pixels( el ),
+                widthR = ( widths ? widths.r : getLength( cs.borderRightWidth ) ).pixels( el ),
+                widthB = ( widths ? widths.b : getLength( cs.borderBottomWidth ) ).pixels( el ),
+                widthL = ( widths ? widths.l : getLength( cs.borderLeftWidth ) ).pixels( el ),
                 slices = props.slice,
                 sliceT = slices.t.pixels( el ),
                 sliceR = slices.r.pixels( el ),
@@ -119,6 +121,32 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
         }
 
         return box;
+    },
+
+    prepareUpdate: function() {
+        if (this.isActive()) {
+            var me = this,
+                rs = me.targetElement.runtimeStyle,
+                el = me.targetElement,
+                widths = me.styleInfos.borderImageInfo.getProps().width;
+
+            // Force border to solid transparent
+            rs.borderColor = 'transparent';
+            rs.borderStyle = 'solid';
+
+            // If widths specified in border-image shorthand, override border-width
+            if ( widths ) {
+                rs.borderTopWidth = widths.t.pixels( el ) + 'px';
+                rs.borderRightWidth = widths.r.pixels( el ) + 'px';
+                rs.borderBottomWidth = widths.b.pixels( el ) + 'px';
+                rs.borderLeftWidth = widths.l.pixels( el ) + 'px';
+            }
+        }
+    },
+
+    destroy: function() {
+        var rs = this.targetElement.runtimeStyle;
+        rs.borderColor = rs.borderStyle = rs.borderWidth = '';
     }
 
 } );

@@ -31,6 +31,13 @@ PIE.RendererBase = {
     },
 
     /**
+     * Run any preparation logic that would affect the main update logic of this
+     * renderer or any of the other renderers, e.g. things that might affect the
+     * element's size or style properties.
+     */
+    prepareUpdate: function() {},
+
+    /**
      * Tell the renderer to update based on modified properties
      */
     updateProps: function() {

@@ -26,13 +26,16 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
             repeat = props.repeat,
             repeatH = repeat.h,
             repeatV = repeat.v,
-            el = me.targetElement;
+            el = me.targetElement,
+            cs = el.currentStyle,
+            rs = el.runtimeStyle;
 
         PIE.Util.withImageSize( props.src, function( imgSize ) {
             var elW = bounds.w,
                 elH = bounds.h,
                 imgW = imgSize.w,
                 imgH = imgSize.h,
+                getLength = PIE.getLength,
 
                 // The image cannot be referenced as a URL directly in the SVG because IE9 throws a strange
                 // security exception (perhaps due to cross-origin policy within data URIs?) Therefore we
@@ -47,10 +50,10 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
                 ceil = Math.ceil,
 
                 widths = props.width,
-                widthT = widths.t.pixels( el ),
-                widthR = widths.r.pixels( el ),
-                widthB = widths.b.pixels( el ),
-                widthL = widths.l.pixels( el ),
+                widthT = ( widths ? widths.t : getLength( cs.borderTopWidth ) ).pixels( el ),
+                widthR = ( widths ? widths.r : getLength( cs.borderRightWidth ) ).pixels( el ),
+                widthB = ( widths ? widths.b : getLength( cs.borderBottomWidth ) ).pixels( el ),
+                widthL = ( widths ? widths.l : getLength( cs.borderLeftWidth ) ).pixels( el ),
                 slices = props.slice,
                 sliceT = slices.t.pixels( el ),
                 sliceR = slices.r.pixels( el ),
@@ -109,8 +112,9 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
             addImage( widthL, 0, centerW, widthT, sliceL, 0, imgCenterW, sliceT, tileSizeT, widthT ); // top center
             addImage( elW - widthR, 0, widthR, widthT, imgW - sliceR, 0, sliceR, sliceT, widthR, widthT ); // top right
             addImage( 0, widthT, widthL, middleH, 0, sliceT, sliceL, imgMiddleH, widthL, tileSizeL ); // middle left
-            if ( props.fill ) {
-                addImage( widthL, widthT, centerW, middleH, sliceL, sliceT, imgCenterW, imgMiddleH, tileSizeT, tileSizeL ); // center fill
+            if ( props.fill ) { // center fill
+                addImage( widthL, widthT, centerW, middleH, sliceL, sliceT, imgCenterW, imgMiddleH, 
+                          tileSizeT || tileSizeB || imgCenterW, tileSizeL || tileSizeR || imgMiddleH );
             }
             addImage( elW - widthR, widthT, widthR, middleH, imgW - sliceR, sliceT, sliceR, imgMiddleH, widthR, tileSizeR ); // middle right
             addImage( 0, elH - widthB, widthL, widthB, 0, imgH - sliceB, sliceL, sliceB, widthL, widthB ); // bottom left
@@ -125,8 +129,7 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
                 '</svg>'
             );
 
-            el.runtimeStyle.background = 'url(data:image/svg+xml,' + escape( svg.join( '' ) ) + ') no-repeat border-box border-box';
-            el.runtimeStyle.borderColor = 'transparent';
+            rs.background = 'url(data:image/svg+xml,' + escape( svg.join( '' ) ) + ') no-repeat border-box border-box';
         }, me );
     },
 
@@ -151,9 +154,11 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
         }
     })(),
 
+    prepareUpdate: PIE.BorderImageRenderer.prototype.prepareUpdate,
+
     destroy: function() {
         var rs = this.targetElement.runtimeStyle;
-        rs.background = rs.borderColor = '';
+        rs.background = rs.borderColor = rs.borderStyle = rs.borderWidth = '';
     }
 
 } );

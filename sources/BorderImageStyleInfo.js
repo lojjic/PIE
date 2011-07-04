@@ -13,11 +13,10 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     parseCss: function( css ) {
         var p = null, tokenizer, token, type, value,
             slices, widths, outsets,
-            slashCount = 0, cs,
+            slashCount = 0,
             Type = PIE.Tokenizer.Type,
             IDENT = Type.IDENT,
             NUMBER = Type.NUMBER,
-            LENGTH = Type.LENGTH,
             PERCENT = Type.PERCENT;
 
         if( css ) {
@@ -45,14 +44,14 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 
                 if( isSlash( tokenizer.next() ) ) {
                     slashCount++;
-                    widths = tokenizer.until( function( tok ) {
-                        return !( token.tokenType & ( NUMBER | PERCENT | LENGTH ) ) && !( ( token.tokenType & IDENT ) && token.tokenValue === 'auto' );
+                    widths = tokenizer.until( function( token ) {
+                        return !token.isLengthOrPercent() && !( ( token.tokenType & IDENT ) && token.tokenValue === 'auto' );
                     } );
 
                     if( isSlash( tokenizer.next() ) ) {
                         slashCount++;
-                        outsets = tokenizer.until( function( tok ) {
-                            return !( token.tokenType & ( NUMBER | LENGTH ) );
+                        outsets = tokenizer.until( function( token ) {
+                            return !token.isLength();
                         } );
                     }
                 } else {
@@ -125,22 +124,20 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 return PIE.getLength( ( tok.tokenType & NUMBER ) ? tok.tokenValue + 'px' : tok.tokenValue );
             } );
 
-            p.width = widths && widths.length > 0 ?
-                    distributeSides( widths, function( tok ) {
-                        return tok.tokenType & ( LENGTH | PERCENT ) ? PIE.getLength( tok.tokenValue ) : tok.tokenValue;
-                    } ) :
-                    ( cs = this.targetElement.currentStyle ) && {
-                        t: PIE.getLength( cs.borderTopWidth ),
-                        r: PIE.getLength( cs.borderRightWidth ),
-                        b: PIE.getLength( cs.borderBottomWidth ),
-                        l: PIE.getLength( cs.borderLeftWidth )
-                    };
+            if( widths && widths[0] ) {
+                p.width = distributeSides( widths, function( tok ) {
+                    return tok.isLengthOrPercent() ? PIE.getLength( tok.tokenValue ) : tok.tokenValue;
+                } );
+            }
 
-            p.outset = distributeSides( outsets || [ 0 ], function( tok ) {
-                return tok.tokenType & LENGTH ? PIE.getLength( tok.tokenValue ) : tok.tokenValue;
-            } );
+            if( outsets && outsets[0] ) {
+                p.outset = distributeSides( outsets, function( tok ) {
+                    return tok.isLength() ? PIE.getLength( tok.tokenValue ) : tok.tokenValue;
+                } );
+            }
         }
 
         return p;
     }
+
 } );
