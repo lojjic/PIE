@@ -1,0 +1,4 @@
+These test cases come from the layout reftests in the Mozilla source tree.
+They are modified to work with PIE where necessary.
+
+http://mxr.mozilla.org/mozilla-central/source/layout/reftests/
