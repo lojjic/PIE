@@ -225,8 +225,9 @@ PIE.RendererBase = {
     getBoxPath: function( shrink, mult, radii ) {
         mult = mult || 1;
 
-        var r, str,
-            bounds = this.boundsInfo.getBounds(),
+        var r, str, box,
+        	m = this.styleInfos.transformInfo.getProps().m,
+            bounds = m.getTransformedBounds(this.boundsInfo.getBounds()),
             w = bounds.w * mult,
             h = bounds.h * mult,
             radInfo = this.styleInfos.borderRadiusInfo,
@@ -234,37 +235,71 @@ PIE.RendererBase = {
             shrinkT = shrink ? shrink.t * mult : 0,
             shrinkR = shrink ? shrink.r * mult : 0,
             shrinkB = shrink ? shrink.b * mult : 0,
-            shrinkL = shrink ? shrink.l * mult : 0,
-            tlX, tlY, trX, trY, brX, brY, blX, blY;
-
+            shrinkL = shrink ? shrink.l * mult : 0;
+        	
         if( radii || radInfo.isActive() ) {
-            r = this.getRadiiPixels( radii || radInfo.getProps() );
+        	var start, end, corner1, corner2, min = Math.min, max = Math.max;
+        	r = this.getRadiiPixels( radii || radInfo.getProps() );
+        	
+        	function getArcBox(cor1, cor2) {
+        		var b = {};
+        		
+        		b.tl = m.applyToPoint(min(cor1.x, cor2.x), min(cor1.y, cor2.y));
+        		b.tr = m.applyToPoint(max(cor1.x, cor2.x), min(cor1.y, cor2.y));
+        		b.bl = m.applyToPoint(max(cor1.x, cor2.x), max(cor1.y, cor2.y));
+        		b.br = m.applyToPoint(min(cor1.x, cor2.x), max(cor1.y, cor2.y));
+        		
+        		return {t: floor(min(b.tl.y, b.tr.y, b.bl.y, b.br.y)), 
+        			l: floor(min(b.tl.x, b.tr.x, b.bl.x, b.br.x)),
+        			b: ceil(max(b.tl.y, b.tr.y, b.bl.y, b.br.y)),
+        			r: ceil(max(b.tl.x, b.tr.x, b.bl.x, b.br.x))};
+        	}
+        	
+        	start = m.applyToPoint(0 - shrinkT * mult, (r.y['tl'] - shrinkL) * mult);
+        	end = m.applyToPoint((r.x['tl'] - shrinkT) * mult, -shrinkL * mult);
+        	box = getArcBox({x: 0 - shrinkT * mult, y: -shrinkL * mult}, 
+        			{x:(r.x['tl'] - shrinkT) * 2 * mult, y: (r.y['tl'] - shrinkL) * 2 * mult});
+        	str = 'm' + floor(start.x) + ',' + floor(start.y) + 
+        		'wa' + box.l + ',' + box.t + ',' + box.r + ',' + box.b + ',' +
+        		floor(start.x) + ',' + floor(start.y) + ',' + ceil(end.x) + ',' + floor(end.y);
+        	
+        	start = m.applyToPoint(bounds.w - (shrinkT + r.x['tr']) * mult, -shrinkR * mult);
+        	end = m.applyToPoint(bounds.w - shrinkT * mult, (r.y['tr'] - shrinkR) * mult);
+        	box = getArcBox({x: bounds.w - (shrinkT + r.x['tr']) * 2 * mult, y: -shrinkR * mult},
+        			{x: bounds.w - shrinkT * mult, y: (r.y['tr'] - shrinkR) * 2 * mult});
+        	str += 'l' + ceil(start.x) + ',' + ceil(start.y) + 
+        		'wa' + box.l + ',' + box.t + ',' + box.r + ',' + box.b + ',' +
+        		ceil(start.x) + ',' + ceil(start.y) + ',' + ceil(end.x) + ',' + ceil(end.y);
+        		
+        	start = m.applyToPoint(bounds.w - shrinkB * mult, bounds.h - (shrinkR + r.y['br']) * mult);
+        	end = m.applyToPoint(bounds.w - (shrinkB + r.x['br']) * mult, bounds.h - shrinkR * mult);
+        	box = getArcBox({x: bounds.w - shrinkB * mult, y: bounds.h - (shrinkR + r.y['br']) * 2 * mult},
+        			{x: bounds.w - (shrinkB + r.x['br']) * 2 * mult, y: bounds.h - shrinkR * mult});
+        	str += 'l' + ceil(start.x) + ',' + ceil(start.y) + 
+        		'wa' + box.l + ',' + box.t + ',' + box.r + ',' + box.b + ',' +
+        		ceil(start.x) + ',' + ceil(start.y) + ',' + ceil(end.x) + ',' + ceil(end.y);
 
-            tlX = r.x['tl'] * mult;
-            tlY = r.y['tl'] * mult;
-            trX = r.x['tr'] * mult;
-            trY = r.y['tr'] * mult;
-            brX = r.x['br'] * mult;
-            brY = r.y['br'] * mult;
-            blX = r.x['bl'] * mult;
-            blY = r.y['bl'] * mult;
-
-            str = 'm' + floor( shrinkL ) + ',' + floor( tlY ) +
-                'qy' + floor( tlX ) + ',' + floor( shrinkT ) +
-                'l' + ceil( w - trX ) + ',' + floor( shrinkT ) +
-                'qx' + ceil( w - shrinkR ) + ',' + floor( trY ) +
-                'l' + ceil( w - shrinkR ) + ',' + ceil( h - brY ) +
-                'qy' + ceil( w - brX ) + ',' + ceil( h - shrinkB ) +
-                'l' + floor( blX ) + ',' + ceil( h - shrinkB ) +
-                'qx' + floor( shrinkL ) + ',' + ceil( h - blY ) + ' x e';
+        	start = m.applyToPoint((r.x['bl'] - shrinkB) * mult, bounds.h - shrinkL * mult);
+        	end = m.applyToPoint(-shrinkB * mult, bounds.h - (shrinkL + r.y['bl']) * mult);
+        	box = getArcBox({x: (r.x['bl'] - shrinkB) * 2 * mult, y: bounds.h - shrinkL * mult},
+        			{x: -shrinkB * mult, y: bounds.h - (shrinkL + r.y['bl']) * 2 * mult});
+        	str += 'l' + ceil(start.x) + ',' + ceil(start.y) + 
+        		'wa' + box.l + ',' + box.t + ',' + box.r + ',' + box.b + ',' +
+        		ceil(start.x) + ',' + ceil(start.y) + ',' + ceil(end.x) + ',' + ceil(end.y) + ' x e';
         } else {
-            // simplified path for non-rounded box
-            str = 'm' + floor( shrinkL ) + ',' + floor( shrinkT ) +
-                  'l' + ceil( w - shrinkR ) + ',' + floor( shrinkT ) +
-                  'l' + ceil( w - shrinkR ) + ',' + ceil( h - shrinkB ) +
-                  'l' + floor( shrinkL ) + ',' + ceil( h - shrinkB ) +
+            tl = m.applyToPoint(0 - shrinkT * mult, 0 - shrinkL * mult);
+            tr = m.applyToPoint(bounds.w - shrinkT * mult, 0 - shrinkR * mult);
+            br = m.applyToPoint(bounds.w - shrinkB * mult, bounds.h - shrinkR * mult);
+            bl = m.applyToPoint(0 - shrinkB * mult, bounds.h - shrinkL * mult);
+            
+        	// simplified path for non-rounded box
+            str = 'm' + floor( tl.x ) + ',' + floor( tl.y ) +
+                  'l' + ceil( tr.x ) + ',' + floor( tr.y ) +
+                  'l' + ceil( br.x ) + ',' + ceil( br.y ) +
+                  'l' + floor( bl.x ) + ',' + ceil( bl.y ) +
                   'xe';
         }
+
         return str;
     },
 

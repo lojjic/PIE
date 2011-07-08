@@ -25,6 +25,7 @@
             <fileset file="${src_dir}/BgPosition.js" />
             <fileset file="${src_dir}/Angle.js" />
             <fileset file="${src_dir}/Color.js" />
+            <fileset file="${src_dir}/Matrix.js" />
             <fileset file="${src_dir}/Tokenizer.js" />
             <fileset file="${src_dir}/BoundsInfo.js" />
             <fileset file="${src_dir}/StyleInfoBase.js" />
@@ -33,6 +34,7 @@
             <fileset file="${src_dir}/BorderRadiusStyleInfo.js" />
             <fileset file="${src_dir}/BorderImageStyleInfo.js" />
             <fileset file="${src_dir}/BoxShadowStyleInfo.js" />
+            <fileset file="${src_dir}/TransformStyleInfo.js" />
             <fileset file="${src_dir}/VisibilityStyleInfo.js" />
             <fileset file="${src_dir}/RendererBase.js" />
             <fileset file="${src_dir}/RootRenderer.js" />
@@ -40,6 +42,7 @@
             <fileset file="${src_dir}/BorderRenderer.js" />
             <fileset file="${src_dir}/BorderImageRenderer.js" />
             <fileset file="${src_dir}/BoxShadowOutsetRenderer.js" />
+            <fileset file="${src_dir}/TransformRenderer.js" />
             <!--<fileset file="${src_dir}/BoxShadowInsetRenderer.js" />-->
             <fileset file="${src_dir}/ImgRenderer.js" />
             <fileset file="${src_dir}/IE9BackgroundRenderer.js" />

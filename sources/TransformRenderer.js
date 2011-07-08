@@ -17,17 +17,17 @@ PIE.TransformRenderer = PIE.RendererBase.newRenderer( {
 	*/
 	draw: function() {
 		var el = this.targetElement,
-			props = this.styleInfos.transformInfo.getProps(),
-			matrix = props.matrix,
+			rotate = this.styleInfos.transformInfo.getProps().rotate, 
+			m = this.styleInfos.transformInfo.getProps().m,
 			oH = el.offsetHeight,
-			oW = el.offsetWidth, m, origin;
-		/**
-		 * TODO: Correct for transformation origin
-		 m = [1,0,-oW/2,0,1,-oH/2,0,0,1];
-		m = this.styleInfos.transformInfo.matrixMult(m, matrix);
-		*/
-		m = matrix;
-		el.style.filter = 'progid:DXImageTransform.Microsoft.Matrix( M11=' + m[0] + ', M12=' + m[1] + ', M21=' + m[3] + ', M22=' + m[4] + ', Dx=' + m[2] + ', Dy=' + m[5] + ', sizingMethod=\'auto expand\')';
+			oW = el.offsetWidth, origin;
+
+		this.boundsInfo.lock();
+		var b = this.boundsInfo.getBounds();
+		//alert(b.x+','+b.y+','+b.w+','+b.h);
+		
+		m = m.rotate(-2*rotate);
+		el.style.filter = 'progid:DXImageTransform.Microsoft.Matrix( M11=' + m['a'] + ', M12=' + m['b'] + ', M21=' + m['c'] + ', M22=' + m['d'] + ', Dx=' + m['e'] + ', Dy=' + m['f'] + ', sizingMethod=\'auto expand\')';
 
 		el._PIE = true;
 	},
