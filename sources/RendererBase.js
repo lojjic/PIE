@@ -241,47 +241,87 @@ PIE.RendererBase = {
         	var start, end, corner1, corner2, min = Math.min, max = Math.max,abs=Math.abs,s,e,rad,c,round = Math.round;
         	r = this.getRadiiPixels( radii || radInfo.getProps() );
         	
-        	function getArcBox(ra, ce, st, en) {
-        		var b = {};
+        	function getArcBox(st1,st2,en1,en2) {
+        		var b = {}, rad,ort1 = {}, ort2 = {}, center = {};
         		
-        		ce = m.applyToPoint(ce.x, ce.y);
+        		st1 = m.applyToPoint(st1.x, st1.y);
+        		st2 = m.applyToPoint(st2.x, st2.y);
         		
-        		return {l: ceil(ce.x - ra.x), t: ceil(ce.y - ra.y),
-        				r: ceil(ce.x + ra.x), b: ceil(ce.y + ra.y),
-        				start: m.applyToPoint(st.x, st.y), end: m.applyToPoint(en.x, en.y)};
+        		en1 = m.applyToPoint(en1.x, en1.y);
+        		en2 = m.applyToPoint(en2.x, en2.y);
+        		
+        		b.start = st1;
+        		b.end = en1;
+        		
+        		ort1.x = st2.x - ((st1.x*st2.x + st1.y*st2.y)/(st1.x*st1.x+st1.y*st1.y))*st1.x;
+        		ort1.y = st2.y - ((st1.x*st2.x + st1.y*st2.y)/(st1.x*st1.x+st1.y*st1.y))*st1.y;
+        		
+        		ort2.x = en2.x - ((en1.x*en2.x + en1.y*en2.y)/(en1.x*en1.x+en1.y*en1.y))*en1.x;
+        		ort2.y = en2.y - ((en1.x*en2.x + en1.y*en2.y)/(en1.x*en1.x+en1.y*en1.y))*en1.y;
+
+        	    //copied from sylvester
+            var PsubQ1 = st1.x - en1.x, PsubQ2 = st1.y - en1.y;
+            var XdotQsubP = - ort1.x*PsubQ1 - ort1.y*PsubQ2;
+            var YdotPsubQ = ort2.x*PsubQ1 + ort2.y*PsubQ2;
+            var XdotX = ort1.x*ort1.x + ort1.y*ort1.y;
+            var YdotY = ort2.x*ort2.x + ort2.y*ort2.y;
+            var XdotY = ort1.x*ort2.x + ort1.y*ort2.y;
+            var k = (XdotQsubP * YdotY / XdotX + XdotY * YdotPsubQ) / (YdotY - XdotY * XdotY);
+            center = {x:st1.x + k*ort1.x, y:st1.y + k*ort1.y};
+            	var val1, val2;
+            	if((center.x < 0 && st1.x > 0) || (center.x > 0 && st1.x < 0)) {
+            		val1 = Math.abs(center.x) + Math.abs(st1.x); 
+            	} else {
+            		val1 = Math.abs(center.x - st1.x);
+            	}
+            	
+            	if((center.y < 0 && st1.y > 0) || (center.y > 0 && st1.y < 0)) {
+            		val2 = Math.abs(center.y) + Math.abs(st1.y); 
+            	} else {
+            		val2 = Math.abs(center.y - st1.y);
+            	}
+            	
+            	rad = Math.sqrt(val1*val1+val2*val2);
+            	
+            	b.l = round(center.x-rad);
+            	b.t = round(center.y-rad);
+            	b.r = round(center.x+rad);
+            	b.b = round(center.y+rad);
+        		
+        		return b;
         	}
-        	s = {x: -shrinkT * mult, y: (r.y['tl'] - shrinkL) * mult};
-        	e = {x: (r.x['tl'] - shrinkT) * mult, y: -shrinkL * mult};
-        	rad = {x: e.x - s.x, y: s.y - e.y};
-        	c = {x: e.x, y: s.y};
-        	box = getArcBox(rad,c,s,e);
+        	s1 = {x: -shrinkT * mult, y: (r.y['tl'] - shrinkL) * mult};
+        	s2 = {x: -shrinkB * mult, y: bounds.h - (shrinkL + r.y['bl']) * mult};
+        	e1 = {x: (r.x['tl'] - shrinkT) * mult, y: -shrinkL * mult};
+        	e2 = {x: bounds.w - (shrinkT + r.x['tr']) * mult, y: -shrinkR * mult};
+        	box = getArcBox(s1,s2,e1,e2);
         	str = 'm' + floor(box.start.x) + ',' + floor(box.start.y) + 
         		'wa' + box.l + ',' + box.t + ',' + box.r + ',' + box.b + ',' +
         		floor(box.start.x) + ',' + floor(box.start.y) + ',' + ceil(box.end.x) + ',' + ceil(box.end.y);
         	
-        	s = {x: bounds.w - (shrinkT + r.x['tr']) * mult, y: -shrinkR * mult};
-        	e = {x: bounds.w - shrinkT * mult, y: (r.y['tr'] - shrinkR) * mult};
-        	rad = {x: e.x - s.x, y: e.y - s.y};
-        	c = {x: s.x, y: e.y};
-        	box = getArcBox(rad,c,s,e);
+        	s2 = e1;
+        	s1 = e2;
+        	e1 = {x: bounds.w - shrinkT * mult, y: (r.y['tr'] - shrinkR) * mult};
+        	e2 = {x: bounds.w - shrinkB * mult, y: bounds.h - (shrinkR + r.y['br']) * mult};
+        	box = getArcBox(s1,s2,e1,e2);
         	str += 'l' + floor(box.start.x) + ',' + floor(box.start.y) + 
         		'wa' + box.l + ',' + box.t + ',' + box.r + ',' + box.b + ',' +
         		floor(box.start.x) + ',' + floor(box.start.y) + ',' + floor(box.end.x) + ',' + floor(box.end.y);
 
-        	s = {x: bounds.w - shrinkB * mult, y: bounds.h - (shrinkR + r.y['br']) * mult};
-        	e = {x: bounds.w - (shrinkB + r.x['br']) * mult, y: bounds.h - shrinkR * mult};
-        	rad = {x: s.x - e.x, y: e.y - s.y};
-        	c = {x: e.x, y: s.y};
-        	box = getArcBox(rad,c,s,e);
+        	s2 = e1;
+        	s1 = e2;
+        	e1 = {x: bounds.w - (shrinkB + r.x['br']) * mult, y: bounds.h - shrinkR * mult};
+        	e2 = {x: (r.x['bl'] - shrinkB) * mult, y: bounds.h - shrinkL * mult};
+        	box = getArcBox(s1,s2,e1,e2);
         	str += 'l' + floor(box.start.x) + ',' + floor(box.start.y) + 
         		'wa' + box.l + ',' + box.t + ',' + box.r + ',' + box.b + ',' +
         		floor(box.start.x) + ',' + floor(box.start.y) + ',' + floor(box.end.x) + ',' + floor(box.end.y);
 
-        	s = {x: (r.x['bl'] - shrinkB) * mult, y: bounds.h - shrinkL * mult};
-        	e = {x: -shrinkB * mult, y: bounds.h - (shrinkL + r.y['bl']) * mult};
-        	rad = {x: s.x - e.x, y: s.y - e.y};
-        	c = {x: s.x, y: e.y};
-        	box = getArcBox(rad,c,s,e);
+        	s2 = e1;
+        	s1 = e2;
+        	e1 = {x: bounds.w - (shrinkB + r.x['br']) * mult, y: bounds.h - shrinkR * mult};
+        	e2 = {x: -shrinkT * mult, y: (r.y['tl'] - shrinkL) * mult};
+        	box = getArcBox(s1,s2,e1,e2);
         	str += 'l' + floor(box.start.x) + ',' + floor(box.start.y) + 
         		'wa' + box.l + ',' + box.t + ',' + box.r + ',' + box.b + ',' +
         		floor(box.start.x) + ',' + floor(box.start.y) + ',' + floor(box.end.x) + ',' + floor(box.end.y) + ' x e';
