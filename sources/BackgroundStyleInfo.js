@@ -10,8 +10,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 
     attachIdents: { 'scroll':1, 'fixed':1, 'local':1 },
     repeatIdents: { 'repeat-x':1, 'repeat-y':1, 'repeat':1, 'no-repeat':1 },
-    originIdents: { 'padding-box':1, 'border-box':1, 'content-box':1 },
-    clipIdents: { 'padding-box':1, 'border-box':1 },
+    originAndClipIdents: { 'padding-box':1, 'border-box':1, 'content-box':1 },
     positionIdents: { 'top':1, 'right':1, 'bottom':1, 'left':1, 'center':1 },
     sizeIdents: { 'contain':1, 'cover':1 },
 
@@ -163,11 +162,14 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                     if( tokVal in this.repeatIdents && !image.imgRepeat ) {
                         image.imgRepeat = tokVal;
                     }
-                    else if( tokVal in this.originIdents ) {
-                        // TODO add validation here
+                    else if( tokVal in this.originAndClipIdents && !image.bgOrigin ) {
                         image.bgOrigin = tokVal;
-                        if( tokVal in this.clipIdents ) {
+                        if( ( token = tokenizer.next() ) && ( token.tokenType & type_ident ) &&
+                            token.tokenValue in this.originAndClipIdents ) {
+                            image.bgClip = token.tokenValue;
+                        } else {
                             image.bgClip = tokVal;
+                            tokenizer.prev();
                         }
                     }
                     else if( tokVal in this.attachIdents && !image.bgAttachment ) {
