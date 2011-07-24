@@ -64,9 +64,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
         }
     },
 
-    updateSize: function() {
-        // NO-OP
-    },
+    updateSize: PIE.emptyFn,
 
     updateVisibility: function() {
         var vis = this.styleInfos.visibilityInfo.getProps();
@@ -99,6 +97,8 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
         }
         return box;
     },
+
+    finishUpdate: PIE.emptyFn,
 
     destroy: function() {
         var box = this._box, par;

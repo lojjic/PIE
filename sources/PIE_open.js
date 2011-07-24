@@ -25,7 +25,9 @@ if( !PIE ) {
             'OPTION':1,
             'IMG':1,
             'HR':1
-        }
+        },
+
+        emptyFn: function() {}
     };
 
     // Force the background cache to be used. No reason it shouldn't be.
