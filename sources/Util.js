@@ -36,7 +36,7 @@
          * @param {Object} obj
          */
         getUID: function( obj ) {
-            return obj && obj[ '_pieId' ] || ( obj[ '_pieId' ] = ++idNum );
+            return obj && obj[ '_pieId' ] || ( obj[ '_pieId' ] = '_' + ++idNum );
         },
 
 
