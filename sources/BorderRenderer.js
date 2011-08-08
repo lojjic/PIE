@@ -26,9 +26,9 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
 
     isActive: function() {
         var si = this.styleInfos;
-        return ( si.borderImageInfo.isActive() ||
-                 si.borderRadiusInfo.isActive() ||
+        return ( si.borderRadiusInfo.isActive() ||
                  si.backgroundInfo.isActive() ) &&
+               !si.borderImageInfo.isActive() &&
                si.borderInfo.isActive(); //check BorderStyleInfo last because it's the most expensive
     },
 
@@ -37,12 +37,11 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
      */
     draw: function() {
         var el = this.targetElement,
-            cs = el.currentStyle,
             props = this.styleInfos.borderInfo.getProps(),
             bounds = this.boundsInfo.getBounds(),
             w = bounds.w,
             h = bounds.h,
-            side, shape, stroke, s,
+            shape, stroke, s,
             segments, seg, i, len;
 
         if( props ) {
@@ -307,7 +306,9 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
 
     destroy: function() {
         PIE.RendererBase.destroy.call( this );
-        this.targetElement.runtimeStyle.borderColor = '';
+        if (!this.finalized && !this.styleInfos.borderImageInfo.isActive()) {
+            this.targetElement.runtimeStyle.borderColor = '';
+        }
     }
 
 

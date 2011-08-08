@@ -11,6 +11,8 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
     STRETCH: 'stretch',
     ROUND: 'round',
 
+    bgLayerZIndex: 0,
+
     needsUpdate: function() {
         return this.styleInfos.borderImageInfo.changed();
     },
@@ -28,7 +30,7 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
             repeatV = repeat.v,
             el = me.targetElement,
             cs = el.currentStyle,
-            rs = el.runtimeStyle;
+            isAsync = 0;
 
         PIE.Util.withImageSize( props.src, function( imgSize ) {
             var elW = bounds.w,
@@ -129,8 +131,17 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
                 '</svg>'
             );
 
-            rs.background = 'url(data:image/svg+xml,' + escape( svg.join( '' ) ) + ') no-repeat border-box border-box';
+            me.parent.setBackgroundLayer( me.bgLayerZIndex, 'url(data:image/svg+xml,' + escape( svg.join( '' ) ) + ') no-repeat border-box border-box' );
+
+            // If the border-image's src wasn't immediately available, the SVG for its background layer
+            // will have been created asynchronously after the main element's update has finished; we'll
+            // therefore need to force the root renderer to sync to the final background once finished.
+            if( isAsync ) {
+                me.parent.finishUpdate();
+            }
         }, me );
+
+        isAsync = 1;
     },
 
     /**
@@ -157,8 +168,10 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
     prepareUpdate: PIE.BorderImageRenderer.prototype.prepareUpdate,
 
     destroy: function() {
-        var rs = this.targetElement.runtimeStyle;
-        rs.background = rs.borderColor = rs.borderStyle = rs.borderWidth = '';
+        var me = this,
+            rs = me.targetElement.runtimeStyle;
+        me.parent.setBackgroundLayer( me.bgLayerZIndex );
+        rs.borderColor = rs.borderStyle = rs.borderWidth = '';
     }
 
 } );
