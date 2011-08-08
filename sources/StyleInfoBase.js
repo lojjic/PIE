@@ -25,6 +25,7 @@ PIE.StyleInfoBase = {
     newStyleInfo: function( proto ) {
         function StyleInfo( el ) {
             this.targetElement = el;
+            this._lastCss = this.getCss();
         }
         PIE.Util.merge( StyleInfo.prototype, PIE.StyleInfoBase, proto );
         StyleInfo._propsCache = {};

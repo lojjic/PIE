@@ -7,6 +7,8 @@
  */
 PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
+    bgLayerZIndex: 1,
+
     needsUpdate: function() {
         var si = this.styleInfos;
         return si.backgroundInfo.changed();
@@ -14,12 +16,13 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
     isActive: function() {
         var si = this.styleInfos;
-        return si.backgroundInfo.isActive();
+        return si.backgroundInfo.isActive() || si.borderImageInfo.isActive();
     },
 
     draw: function() {
-        var props = this.styleInfos.backgroundInfo.getProps(),
-            bg, images, i = 0, img;
+        var me = this,
+            props = me.styleInfos.backgroundInfo.getProps(),
+            bg, images, i = 0, img, bgAreaSize, bgSize;
 
         if ( props ) {
             bg = [];
@@ -27,11 +30,19 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
             images = props.bgImages;
             if ( images ) {
                 while( img = images[ i++ ] ) {
-                    bg.push( img.imgType === 'linear-gradient' ?
-                        'url(data:image/svg+xml,' + escape( this.getGradientSvg( img ) ) + ') ' +
-                            ( img.imgRepeat || '' ) + ' ' + this.bgPositionToString( img.bgPosition ) :
-                        img.origString
-                    );
+                    if (img.imgType === 'linear-gradient' ) {
+                        bgAreaSize = me.getBgAreaSize( img.bgOrigin );
+                        bgSize = ( img.bgSize || PIE.BgSize.DEFAULT ).pixels(
+                            me.targetElement, bgAreaSize.w, bgAreaSize.h, bgAreaSize.w, bgAreaSize.h
+                        ),
+                        bg.push(
+                            'url(data:image/svg+xml,' + escape( me.getGradientSvg( img, bgSize.w, bgSize.h ) ) + ') ' +
+                            me.bgPositionToString( img.bgPosition ) + ' / ' + bgSize.w + 'px ' + bgSize.h + 'px ' +
+                            ( img.bgAttachment || '' ) + ' ' + ( img.bgOrigin || '' ) + ' ' + ( img.bgClip || '' )
+                        );
+                    } else {
+                        bg.push( img.origString );
+                    }
                 }
             }
 
@@ -39,25 +50,49 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 bg.push( props.color.val );
             }
 
-            this.targetElement.runtimeStyle.background = bg.join(', ');
+            me.parent.setBackgroundLayer(me.bgLayerZIndex, bg.join(','));
         }
     },
 
     bgPositionToString: function( bgPosition ) {
         return bgPosition ? bgPosition.tokens.map(function(token) {
             return token.tokenValue;
-        }).join(' ') : '';
+        }).join(' ') : '0 0';
     },
 
-    getGradientSvg: function( info ) {
+    getBgAreaSize: function( bgOrigin ) {
+        var me = this,
+            el = me.targetElement,
+            bounds = me.boundsInfo.getBounds(),
+            elW = bounds.w,
+            elH = bounds.h,
+            w = elW,
+            h = elH,
+            borders, getLength, cs;
+
+        if( bgOrigin !== 'border-box' ) {
+            borders = me.styleInfos.borderInfo.getProps();
+            if( borders && ( borders = borders.widths ) ) {
+                w -= borders[ 'l' ].pixels( el ) + borders[ 'l' ].pixels( el );
+                h -= borders[ 't' ].pixels( el ) + borders[ 'b' ].pixels( el );
+            }
+        }
+
+        if ( bgOrigin === 'content-box' ) {
+            getLength = PIE.getLength;
+            cs = el.currentStyle;
+            w -= getLength( cs.paddingLeft ).pixels( el ) + getLength( cs.paddingRight ).pixels( el );
+            h -= getLength( cs.paddingTop ).pixels( el ) + getLength( cs.paddingBottom ).pixels( el );
+        }
+
+        return { w: w, h: h };
+    },
+
+    getGradientSvg: function( info, bgWidth, bgHeight ) {
         var el = this.targetElement,
-            bounds = this.boundsInfo.getBounds(),
             stopsInfo = info.stops,
             stopCount = stopsInfo.length,
-            bgSize = ( info.bgSize || PIE.BgSize.DEFAULT ).pixels( el, bounds.w, bounds.h, bounds.w, bounds.h ),
-            w = bgSize.w,
-            h = bgSize.h,
-            metrics = PIE.GradientUtil.getGradientMetrics( el, w, h, info ),
+            metrics = PIE.GradientUtil.getGradientMetrics( el, bgWidth, bgHeight, info ),
             startX = metrics.startX,
             startY = metrics.startY,
             endX = metrics.endX,
@@ -86,10 +121,10 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
         }
 
         svg = [
-            '<svg width="' + w + '" height="' + h + '" xmlns="http://www.w3.org/2000/svg">' +
+            '<svg width="' + bgWidth + '" height="' + bgHeight + '" xmlns="http://www.w3.org/2000/svg">' +
                 '<defs>' +
                     '<linearGradient id="g" gradientUnits="userSpaceOnUse"' +
-                    ' x1="' + ( startX / w * 100 ) + '%" y1="' + ( startY / h * 100 ) + '%" x2="' + ( endX / w * 100 ) + '%" y2="' + ( endY / h * 100 ) + '%">'
+                    ' x1="' + ( startX / bgWidth * 100 ) + '%" y1="' + ( startY / bgHeight * 100 ) + '%" x2="' + ( endX / bgWidth * 100 ) + '%" y2="' + ( endY / bgHeight * 100 ) + '%">'
         ];
 
         // Convert to percentage along the SVG gradient line and add to the stops list
@@ -112,7 +147,7 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
     },
 
     destroy: function() {
-//        this.targetElement.runtimeStyle.background = '';
+        this.parent.setBackgroundLayer( this.bgLayerZIndex );
     }
 
 } );

@@ -20,6 +20,7 @@ PIE.Element = (function() {
 
     function Element( el ) {
         var renderers,
+            rootRenderer,
             boundsInfo = new PIE.BoundsInfo( el ),
             styleInfos,
             styleInfosArr,
@@ -41,7 +42,7 @@ PIE.Element = (function() {
                     ieDocMode = PIE.ieDocMode,
                     cs = el.currentStyle,
                     lazy = cs.getAttribute( lazyInitCssProp ) === 'true',
-                    rootRenderer, childRenderers;
+                    childRenderers;
 
                 // Polling for size/position changes: default to on in IE8, off otherwise, overridable by -pie-poll
                 poll = cs.getAttribute( pollCssProp );
@@ -73,15 +74,17 @@ PIE.Element = (function() {
                     if ( ieDocMode === 9 ) {
                         styleInfos = {
                             backgroundInfo: new PIE.BackgroundStyleInfo( el ),
-                            borderImageInfo: new PIE.BorderImageStyleInfo( el )
+                            borderImageInfo: new PIE.BorderImageStyleInfo( el ),
+                            borderInfo: new PIE.BorderStyleInfo( el )
                         };
                         styleInfosArr = [
                             styleInfos.backgroundInfo,
                             styleInfos.borderImageInfo
                         ];
-                        renderers = [
-                            new PIE.IE9BackgroundRenderer( el, boundsInfo, styleInfos ),
-                            new PIE.IE9BorderImageRenderer( el, boundsInfo, styleInfos )
+                        rootRenderer = new PIE.IE9RootRenderer( el, boundsInfo, styleInfos );
+                        childRenderers = [
+                            new PIE.IE9BackgroundRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                            new PIE.IE9BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
                         ];
                     } else {
 
@@ -101,7 +104,6 @@ PIE.Element = (function() {
                             styleInfos.boxShadowInfo,
                             styleInfos.visibilityInfo
                         ];
-
                         rootRenderer = new PIE.RootRenderer( el, boundsInfo, styleInfos );
                         childRenderers = [
                             new PIE.BoxShadowOutsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
@@ -114,8 +116,8 @@ PIE.Element = (function() {
                             childRenderers.push( new PIE.ImgRenderer( el, boundsInfo, styleInfos, rootRenderer ) );
                         }
                         rootRenderer.childRenderers = childRenderers; // circular reference, can't pass in constructor; TODO is there a cleaner way?
-                        renderers = [ rootRenderer ].concat( childRenderers );
                     }
+                    renderers = [ rootRenderer ].concat( childRenderers );
 
                     // Add property change listeners to ancestors if requested
                     initAncestorPropChangeListeners();
@@ -194,6 +196,7 @@ PIE.Element = (function() {
                             renderers[i].updateSize();
                         }
                     }
+                    rootRenderer.finishUpdate();
                     unlockAll();
                 }
                 else if( !initializing ) {
@@ -232,6 +235,7 @@ PIE.Element = (function() {
                             renderer.updateProps();
                         }
                     }
+                    rootRenderer.finishUpdate();
                     unlockAll();
                 }
                 else if( !initializing ) {
@@ -339,6 +343,7 @@ PIE.Element = (function() {
                 // destroy any active renderers
                 if( renderers ) {
                     for( i = 0, len = renderers.length; i < len; i++ ) {
+                        renderers[i].finalized = 1;
                         renderers[i].destroy();
                     }
                 }

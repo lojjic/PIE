@@ -145,8 +145,10 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
     },
 
     destroy: function() {
-        var rs = this.targetElement.runtimeStyle;
-        rs.borderColor = rs.borderStyle = rs.borderWidth = '';
+        if (!this.finalized && !this.styleInfos.borderInfo.isActive()) {
+            var rs = this.targetElement.runtimeStyle;
+            rs.borderColor = rs.borderStyle = rs.borderWidth = '';
+        }
     }
 
 } );

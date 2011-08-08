@@ -13,6 +13,15 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     originAndClipIdents: { 'padding-box':1, 'border-box':1, 'content-box':1 },
     positionIdents: { 'top':1, 'right':1, 'bottom':1, 'left':1, 'center':1 },
     sizeIdents: { 'contain':1, 'cover':1 },
+    propertyNames: {
+        CLIP: 'backgroundClip',
+        COLOR: 'backgroundColor',
+        IMAGE: 'backgroundImage',
+        ORIGIN: 'backgroundOrigin',
+        POSITION: 'backgroundPosition',
+        REPEAT: 'backgroundRepeat',
+        SIZE: 'backgroundSize'
+    },
 
     /**
      * For background styles, we support the -pie-background property but fall back to the standard
@@ -62,7 +71,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             beginCharIndex = 0,
             positionIdents = this.positionIdents,
             gradient, stop, width, height,
-            props = null;
+            props = { bgImages: [] };
 
         function isBgPosToken( token ) {
             return token && token.isLengthOrPercent() || ( token.tokenType & type_ident && token.tokenValue in positionIdents );
@@ -75,7 +84,6 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         // If the CSS3-specific -pie-background property is present, parse it
         if( this.getCss3() ) {
             tokenizer = new PIE.Tokenizer( css );
-            props = { bgImages: [] };
             image = {};
 
             while( token = tokenizer.next() ) {
@@ -215,34 +223,76 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 
             // leftovers
             if( image.imgType ) {
+                image.origString = css.substring( beginCharIndex );
                 props.bgImages.push( image );
             }
         }
 
         // Otherwise, use the standard background properties; let IE give us the values rather than parsing them
         else {
-            this.withActualBg( function() {
-                var posX = cs.backgroundPositionX,
-                    posY = cs.backgroundPositionY,
-                    img = cs.backgroundImage,
-                    color = cs.backgroundColor;
+            this.withActualBg( PIE.ieDocMode < 9 ?
+                function() {
+                    var propNames = this.propertyNames,
+                        posX = cs[propNames.POSITION + 'X'],
+                        posY = cs[propNames.POSITION + 'Y'],
+                        img = cs[propNames.IMAGE],
+                        color = cs[propNames.COLOR];
 
-                props = {};
-                if( color !== 'transparent' ) {
-                    props.color = PIE.getColor( color )
+                    if( color !== 'transparent' ) {
+                        props.color = PIE.getColor( color )
+                    }
+                    if( img !== 'none' ) {
+                        props.bgImages = [ {
+                            imgType: 'image',
+                            imgUrl: new PIE.Tokenizer( img ).next().tokenValue,
+                            imgRepeat: cs[propNames.REPEAT],
+                            bgPosition: new PIE.BgPosition( new PIE.Tokenizer( posX + ' ' + posY ).all() )
+                        } ];
+                    }
+                } :
+                function() {
+                    var propNames = this.propertyNames,
+                        splitter = /\s*,\s*/,
+                        images = cs[propNames.IMAGE].split( splitter ),
+                        color = cs[propNames.COLOR],
+                        repeats, positions, origins, clips, sizes, i, len, image, sizeParts;
+
+                    if( color !== 'transparent' ) {
+                        props.color = PIE.getColor( color )
+                    }
+
+                    len = images.length;
+                    if( len && images[0] !== 'none' ) {
+                        repeats = cs[propNames.REPEAT].split( splitter );
+                        positions = cs[propNames.POSITION].split( splitter );
+                        origins = cs[propNames.ORIGIN].split( splitter );
+                        clips = cs[propNames.CLIP].split( splitter );
+                        sizes = cs[propNames.SIZE].split( splitter );
+
+                        props.bgImages = [];
+                        for( i = 0; i < len; i++ ) {
+                            image = images[ i ];
+                            if( image && image !== 'none' ) {
+                                sizeParts = sizes[i].split( ' ' );
+                                props.bgImages.push( {
+                                    origString: image + ' ' + repeats[ i ] + ' ' + positions[ i ] + ' / ' + sizes[ i ] + ' ' +
+                                                origins[ i ] + ' ' + clips[ i ],
+                                    imgType: 'image',
+                                    imgUrl: new PIE.Tokenizer( image ).next().tokenValue,
+                                    imgRepeat: repeats[ i ],
+                                    bgPosition: new PIE.BgPosition( new PIE.Tokenizer( positions[ i ] ).all() ),
+                                    bgOrigin: origins[ i ],
+                                    bgClip: clips[ i ],
+                                    bgSize: new PIE.BgSize( sizeParts[ 0 ], sizeParts[ 1 ] )
+                                } );
+                            }
+                        }
+                    }
                 }
-                if( img !== 'none' ) {
-                    props.bgImages = [ {
-                        imgType: 'image',
-                        imgUrl: new PIE.Tokenizer( img ).next().tokenValue,
-                        imgRepeat: cs.backgroundRepeat,
-                        bgPosition: new PIE.BgPosition( new PIE.Tokenizer( posX + ' ' + posY ).all() )
-                    } ];
-                }
-            } );
+            );
         }
 
-        return ( props && ( props.color || ( props.bgImages && props.bgImages[0] ) ) ) ? props : null;
+        return ( props.color || props.bgImages[0] ) ? props : null;
     },
 
     /**
@@ -251,18 +301,39 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      * @param fn
      */
     withActualBg: function( fn ) {
-        var rs = this.targetElement.runtimeStyle,
-            rsImage = rs.backgroundImage,
-            rsColor = rs.backgroundColor,
-            ret;
+        var isIE9 = PIE.ieDocMode > 8,
+            propNames = this.propertyNames,
+            rs = this.targetElement.runtimeStyle,
+            rsImage = rs[propNames.IMAGE],
+            rsColor = rs[propNames.COLOR],
+            rsRepeat = rs[propNames.REPEAT],
+            rsClip, rsOrigin, rsSize, rsPosition, ret;
 
-        if( rsImage ) rs.backgroundImage = '';
-        if( rsColor ) rs.backgroundColor = '';
+        if( rsImage ) rs[propNames.IMAGE] = '';
+        if( rsColor ) rs[propNames.COLOR] = '';
+        if( rsRepeat ) rs[propNames.REPEAT] = '';
+        if( isIE9 ) {
+            rsClip = rs[propNames.CLIP];
+            rsOrigin = rs[propNames.ORIGIN];
+            rsPosition = rs[propNames.POSITION];
+            rsSize = rs[propNames.SIZE];
+            if( rsClip ) rs[propNames.CLIP] = '';
+            if( rsOrigin ) rs[propNames.ORIGIN] = '';
+            if( rsPosition ) rs[propNames.POSITION] = '';
+            if( rsSize ) rs[propNames.SIZE] = '';
+        }
 
         ret = fn.call( this );
 
-        if( rsImage ) rs.backgroundImage = rsImage;
-        if( rsColor ) rs.backgroundColor = rsColor;
+        if( rsImage ) rs[propNames.IMAGE] = rsImage;
+        if( rsColor ) rs[propNames.COLOR] = rsColor;
+        if( rsRepeat ) rs[propNames.REPEAT] = rsRepeat;
+        if( isIE9 ) {
+            if( rsClip ) rs[propNames.CLIP] = rsClip;
+            if( rsOrigin ) rs[propNames.ORIGIN] = rsOrigin;
+            if( rsPosition ) rs[propNames.POSITION] = rsPosition;
+            if( rsSize ) rs[propNames.SIZE] = rsSize;
+        }
 
         return ret;
     },
@@ -270,9 +341,10 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     getCss: PIE.StyleInfoBase.cacheWhenLocked( function() {
         return this.getCss3() ||
                this.withActualBg( function() {
-                   var cs = this.targetElement.currentStyle;
-                   return cs.backgroundColor + ' ' + cs.backgroundImage + ' ' + cs.backgroundRepeat + ' ' +
-                   cs.backgroundPositionX + ' ' + cs.backgroundPositionY;
+                   var cs = this.targetElement.currentStyle,
+                       propNames = this.propertyNames;
+                   return cs[propNames.COLOR] + ' ' + cs[propNames.IMAGE] + ' ' + cs[propNames.REPEAT] + ' ' +
+                   cs[propNames.POSITION + 'X'] + ' ' + cs[propNames.POSITION + 'Y'];
                } );
     } ),
 
