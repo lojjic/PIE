@@ -1,16 +1,17 @@
-var p = window['PIE'],
-    el = element;
+var el = element;
 
 function init() {
-    if( p && doc.media !== 'print' ) { // IE strangely attaches a second copy of the behavior to elements when printing
-        p['attach']( el );
+    var PIE = window[ 'PIE' ];
+    if( PIE && doc.media !== 'print' ) { // IE strangely attaches a second copy of the behavior to elements when printing
+        PIE['attach']( el );
     }
 }
 
 function cleanup() {
-    if (p) {
-        p['detach']( el );
-        p = el = 0;
+    var PIE = window[ 'PIE' ];
+    if (PIE) {
+        PIE['detach']( el );
+        PIE = el = 0;
     }
 }
 
