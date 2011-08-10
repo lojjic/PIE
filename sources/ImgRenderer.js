@@ -35,6 +35,8 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
             el = this.targetElement,
             src = el.src,
             round = Math.round,
+            cs = el.currentStyle,
+            getLength = PIE.getLength,
             s;
 
         shape.stroked = false;
@@ -44,10 +46,10 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
         shape.coordsize = w * 2 + ',' + h * 2;
         shape.coordorigin = '1,1';
         shape.path = this.getBoxPath( borderWidths ? {
-            t: round( borderWidths['t'].pixels( el ) ),
-            r: round( borderWidths['r'].pixels( el ) ),
-            b: round( borderWidths['b'].pixels( el ) ),
-            l: round( borderWidths['l'].pixels( el ) )
+            t: round( borderWidths['t'].pixels( el ) + getLength( cs.paddingTop ).pixels( el ) ),
+            r: round( borderWidths['r'].pixels( el ) + getLength( cs.paddingRight ).pixels( el )  ),
+            b: round( borderWidths['b'].pixels( el ) + getLength( cs.paddingBottom ).pixels( el )  ),
+            l: round( borderWidths['l'].pixels( el ) + getLength( cs.paddingLeft ).pixels( el )  )
         } : 0, 2 );
         s = shape.style;
         s.width = w;
