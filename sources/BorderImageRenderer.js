@@ -77,14 +77,15 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
             setCrops( [ 'tr', 'r', 'br' ], 'cropLeft', ( imgSize.w - sliceR ) / imgSize.w );
 
             // edges and center
-            if( props.repeat.v === 'stretch' ) {
+            // TODO right now this treats everything like 'stretch', need to support other schemes
+            //if( props.repeat.v === 'stretch' ) {
                 setCrops( [ 'l', 'r', 'c' ], 'cropTop', sliceT / imgSize.h );
                 setCrops( [ 'l', 'r', 'c' ], 'cropBottom', sliceB / imgSize.h );
-            }
-            if( props.repeat.h === 'stretch' ) {
+            //}
+            //if( props.repeat.h === 'stretch' ) {
                 setCrops( [ 't', 'b', 'c' ], 'cropLeft', sliceL / imgSize.w );
                 setCrops( [ 't', 'b', 'c' ], 'cropRight', sliceR / imgSize.w );
-            }
+            //}
 
             // center fill
             pieces['c'].style.display = props.fill ? '' : 'none';
