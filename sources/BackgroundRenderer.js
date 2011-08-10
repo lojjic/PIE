@@ -63,6 +63,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             if( alpha < 1 ) {
                 shape.fill.opacity = alpha;
             }
+            this.applyBehavior(shape);
         } else {
             this.deleteShape( 'bgColor' );
         }
@@ -240,6 +241,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         }
 
         // Convert to percentage along the VML gradient line and add to the VML 'colors' value
+        // first and last values are removed for the colors array
         for( i = 0; i < stopCount; i++ ) {
             vmlColors.push(
                 ( vmlOffsetPct + ( stopPx[ i ] / vmlGradientLength * 100 ) ) + '% ' + stops[i].color.colorValue( el )
@@ -253,7 +255,19 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         fill['method'] = 'sigma';
         fill['color'] = stops[0].color.colorValue( el );
         fill['color2'] = stops[stopCount - 1].color.colorValue( el );
-        fill['colors'].value = vmlColors.join( ',' );
+        
+        // if there are more than 2 stops, ie switches the opacity start and stops?
+		if(stopCount>2){
+			fill['o:opacity2']= stops[0].color.alpha( el );        
+			fill['opacity'] = stops[stopCount - 1].color.alpha( el );
+	        fill['colors'] = vmlColors.join( ',' );
+	    } else {
+			fill['opacity']= stops[0].color.alpha( el );        
+			fill['o:opacity2'] = stops[stopCount - 1].color.alpha( el );
+	    }
+    
+        this.applyBehavior(shape);      
+        this.applyBehavior(fill);
     },
 
 

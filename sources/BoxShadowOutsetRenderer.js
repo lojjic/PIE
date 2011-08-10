@@ -130,6 +130,8 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
                     shape.fill.opacity = alpha;
                 }
             }
+            this.applyBehavior(shape);
+            this.applyBehavior(fill);
         }
     }
 
