@@ -146,10 +146,13 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
     },
 
     destroy: function() {
-        if (!this.finalized && !this.styleInfos.borderInfo.isActive()) {
-            var rs = this.targetElement.runtimeStyle;
-            rs.borderColor = rs.borderStyle = rs.borderWidth = '';
+        var me = this,
+            rs = me.targetElement.runtimeStyle;
+        rs.borderStyle = rs.borderWidth = '';
+        if (me.finalized || !me.styleInfos.borderInfo.isActive()) {
+            rs.borderColor = '';
         }
+        PIE.RendererBase.destroy.call( this );
     }
 
 } );

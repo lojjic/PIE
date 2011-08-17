@@ -305,10 +305,11 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
     },
 
     destroy: function() {
-        PIE.RendererBase.destroy.call( this );
-        if (!this.finalized && !this.styleInfos.borderImageInfo.isActive()) {
-            this.targetElement.runtimeStyle.borderColor = '';
+        var me = this;
+        if (me.finalized || !me.styleInfos.borderImageInfo.isActive()) {
+            me.targetElement.runtimeStyle.borderColor = '';
         }
+        PIE.RendererBase.destroy.call( me );
     }
 
 
