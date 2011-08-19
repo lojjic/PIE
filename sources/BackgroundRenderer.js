@@ -120,47 +120,53 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
      * @param {number} index
      */
     positionBgImage: function( shape, index ) {
+        var me = this;
         PIE.Util.withImageSize( shape.fill.src, function( size ) {
-            var fill = shape.fill,
-                el = this.targetElement,
-                bounds = this.boundsInfo.getBounds(),
+            var el = me.targetElement,
+                bounds = me.boundsInfo.getBounds(),
                 elW = bounds.w,
-                elH = bounds.h,
-                si = this.styleInfos,
-                border = si.borderInfo.getProps(),
-                bw = border && border.widths,
-                bwT = bw ? bw['t'].pixels( el ) : 0,
-                bwR = bw ? bw['r'].pixels( el ) : 0,
-                bwB = bw ? bw['b'].pixels( el ) : 0,
-                bwL = bw ? bw['l'].pixels( el ) : 0,
-                bg = si.backgroundInfo.getProps().bgImages[ index ],
-                bgPos = bg.bgPosition ? bg.bgPosition.coords( el, elW - size.w - bwL - bwR, elH - size.h - bwT - bwB ) : { x:0, y:0 },
-                repeat = bg.imgRepeat,
-                pxX, pxY,
-                clipT = 0, clipL = 0,
-                clipR = elW + 1, clipB = elH + 1, //make sure the default clip region is not inside the box (by a subpixel)
-                clipAdjust = PIE.ieVersion === 8 ? 0 : 1; //prior to IE8 requires 1 extra pixel in the image clip region
+                elH = bounds.h;
 
-            // Positioning - find the pixel offset from the top/left and convert to a ratio
-            // The position is shifted by half a pixel, to adjust for the half-pixel coordorigin shift which is
-            // needed to fix antialiasing but makes the bg image fuzzy.
-            pxX = Math.round( bgPos.x ) + bwL + 0.5;
-            pxY = Math.round( bgPos.y ) + bwT + 0.5;
-            fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
+            // It's possible that the element dimensions are zero now but weren't when the original
+            // update executed, make sure that's not the case to avoid divide-by-zero error
+            if( elW && elH ) {
+                var fill = shape.fill,
+                    si = me.styleInfos,
+                    border = si.borderInfo.getProps(),
+                    bw = border && border.widths,
+                    bwT = bw ? bw['t'].pixels( el ) : 0,
+                    bwR = bw ? bw['r'].pixels( el ) : 0,
+                    bwB = bw ? bw['b'].pixels( el ) : 0,
+                    bwL = bw ? bw['l'].pixels( el ) : 0,
+                    bg = si.backgroundInfo.getProps().bgImages[ index ],
+                    bgPos = bg.bgPosition ? bg.bgPosition.coords( el, elW - size.w - bwL - bwR, elH - size.h - bwT - bwB ) : { x:0, y:0 },
+                    repeat = bg.imgRepeat,
+                    pxX, pxY,
+                    clipT = 0, clipL = 0,
+                    clipR = elW + 1, clipB = elH + 1, //make sure the default clip region is not inside the box (by a subpixel)
+                    clipAdjust = PIE.ieVersion === 8 ? 0 : 1; //prior to IE8 requires 1 extra pixel in the image clip region
 
-            // Repeating - clip the image shape
-            if( repeat && repeat !== 'repeat' ) {
-                if( repeat === 'repeat-x' || repeat === 'no-repeat' ) {
-                    clipT = pxY + 1;
-                    clipB = pxY + size.h + clipAdjust;
+                // Positioning - find the pixel offset from the top/left and convert to a ratio
+                // The position is shifted by half a pixel, to adjust for the half-pixel coordorigin shift which is
+                // needed to fix antialiasing but makes the bg image fuzzy.
+                pxX = Math.round( bgPos.x ) + bwL + 0.5;
+                pxY = Math.round( bgPos.y ) + bwT + 0.5;
+                fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
+
+                // Repeating - clip the image shape
+                if( repeat && repeat !== 'repeat' ) {
+                    if( repeat === 'repeat-x' || repeat === 'no-repeat' ) {
+                        clipT = pxY + 1;
+                        clipB = pxY + size.h + clipAdjust;
+                    }
+                    if( repeat === 'repeat-y' || repeat === 'no-repeat' ) {
+                        clipL = pxX + 1;
+                        clipR = pxX + size.w + clipAdjust;
+                    }
+                    shape.style.clip = 'rect(' + clipT + 'px,' + clipR + 'px,' + clipB + 'px,' + clipL + 'px)';
                 }
-                if( repeat === 'repeat-y' || repeat === 'no-repeat' ) {
-                    clipL = pxX + 1;
-                    clipR = pxX + size.w + clipAdjust;
-                }
-                shape.style.clip = 'rect(' + clipT + 'px,' + clipR + 'px,' + clipB + 'px,' + clipL + 'px)';
             }
-        }, this );
+        } );
     },
 
 
