@@ -27,6 +27,14 @@ if( !PIE ) {
             'HR':1
         },
 
+        focusableElements: {
+            'A':1,
+            'INPUT':1,
+            'TEXTAREA':1,
+            'SELECT':1,
+            'BUTTON':1
+        },
+
         emptyFn: function() {}
     };
 

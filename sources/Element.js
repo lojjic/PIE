@@ -4,9 +4,13 @@ PIE.Element = (function() {
     var wrappers = {},
         lazyInitCssProp = PIE.CSS_PREFIX + 'lazy-init',
         pollCssProp = PIE.CSS_PREFIX + 'poll',
-        hoverClass = ' ' + PIE.CLASS_PREFIX + 'hover',
-        hoverClassRE = new RegExp( '\\b' + PIE.CLASS_PREFIX + 'hover\\b', 'g' ),
-        ignorePropertyNames = { 'background':1, 'bgColor':1, 'display': 1 };
+        hoverClass = PIE.CLASS_PREFIX + 'hover',
+        activeClass = PIE.CLASS_PREFIX + 'active',
+        focusClass = PIE.CLASS_PREFIX + 'focus',
+        firstChildClass = PIE.CLASS_PREFIX + 'first-child',
+        ignorePropertyNames = { 'background':1, 'bgColor':1, 'display': 1 },
+        classNameRegExes = {},
+        dummyArray = [];
 
 
     function addListener( el, type, handler ) {
@@ -16,6 +20,37 @@ PIE.Element = (function() {
     function removeListener( el, type, handler ) {
         el.detachEvent( type, handler );
     }
+
+    function addClass( el, className ) {
+        el.className += ' ' + className;
+    }
+
+    function removeClass( el, className ) {
+        var re = classNameRegExes[ className ] ||
+            ( classNameRegExes[ className ] = new RegExp( '\\b' + className + '\\b', 'g' ) );
+        el.className = el.className.replace( re );
+    }
+
+    function delayAddClass( el, className /*, className2*/ ) {
+        var classes = dummyArray.slice.call( arguments, 1 ),
+            i = classes.length;
+        setTimeout( function() {
+            while( i-- ) {
+                addClass( el, classes[ i ] );
+            }
+        }, 0 );
+    }
+
+    function delayRemoveClass( el, className /*, className2*/ ) {
+        var classes = dummyArray.slice.call( arguments, 1 ),
+            i = classes.length;
+        setTimeout( function() {
+            while( i-- ) {
+                removeClass( el, classes[ i ] );
+            }
+        }, 0 );
+    }
+
 
 
     function Element( el ) {
@@ -141,6 +176,11 @@ PIE.Element = (function() {
                     addListener( el, 'onpropertychange', propChanged );
                     addListener( el, 'onmouseenter', mouseEntered );
                     addListener( el, 'onmouseleave', mouseLeft );
+                    addListener( el, 'onmousedown', mousePressed );
+                    if( el.tagName in PIE.focusableElements ) {
+                        addListener( el, 'onfocus', focused );
+                        addListener( el, 'onblur', blurred );
+                    }
                     PIE.OnResize.observe( handleMoveOrResize );
 
                     PIE.OnBeforeUnload.observe( removeEventListeners );
@@ -245,25 +285,13 @@ PIE.Element = (function() {
         }
 
 
-        function addHoverClass() {
-            if( el ) {
-                el.className += hoverClass;
-            }
-        }
-
-        function removeHoverClass() {
-            if( el ) {
-                el.className = el.className.replace( hoverClassRE, '' );
-            }
-        }
-
         /**
          * Handle mouseenter events. Adds a custom class to the element to allow IE6 to add
          * hover styles to non-link elements, and to trigger a propertychange update.
          */
         function mouseEntered() {
             //must delay this because the mouseenter event fires before the :hover styles are added.
-            setTimeout( addHoverClass, 0 );
+            delayAddClass( el, hoverClass );
         }
 
         /**
@@ -271,7 +299,46 @@ PIE.Element = (function() {
          */
         function mouseLeft() {
             //must delay this because the mouseleave event fires before the :hover styles are removed.
-            setTimeout( removeHoverClass, 0 );
+            delayRemoveClass( el, hoverClass, activeClass );
+        }
+
+        /**
+         * Handle mousedown events. Adds a custom class to the element to allow IE6 to add
+         * active styles to non-link elements, and to trigger a propertychange update.
+         */
+        function mousePressed() {
+            //must delay this because the mousedown event fires before the :active styles are added.
+            delayAddClass( el, activeClass );
+
+            // listen for mouseups on the document; can't just be on the element because the user might
+            // have dragged out of the element while the mouse button was held down
+            PIE.OnMouseup.observe( mouseReleased );
+        }
+
+        /**
+         * Handle mouseup events
+         */
+        function mouseReleased() {
+            //must delay this because the mouseup event fires before the :active styles are removed.
+            delayRemoveClass( el, activeClass );
+
+            PIE.OnMouseup.unobserve( mouseReleased );
+        }
+
+        /**
+         * Handle focus events. Adds a custom class to the element to trigger a propertychange update.
+         */
+        function focused() {
+            //must delay this because the focus event fires before the :focus styles are added.
+            delayAddClass( el, focusClass );
+        }
+
+        /**
+         * Handle blur events
+         */
+        function blurred() {
+            //must delay this because the blur event fires before the :focus styles are removed.
+            delayRemoveClass( el, focusClass );
         }
 
 
@@ -312,6 +379,11 @@ PIE.Element = (function() {
                         removeListener( a, 'onpropertychange', ancestorPropChanged );
                         removeListener( a, 'onmouseenter', mouseEntered );
                         removeListener( a, 'onmouseleave', mouseLeft );
+                        removeListener( a, 'onmousedown', mousePressed );
+                        if( a.tagName in PIE.focusableElements ) {
+                            removeListener( a, 'onfocus', focused );
+                            removeListener( a, 'onblur', blurred );
+                        }
                     }
                 }
 
@@ -321,6 +393,11 @@ PIE.Element = (function() {
                 removeListener( el, 'onpropertychange', propChanged );
                 removeListener( el, 'onmouseenter', mouseEntered );
                 removeListener( el, 'onmouseleave', mouseLeft );
+                removeListener( el, 'onmousedown', mousePressed );
+                if( el.tagName in PIE.focusableElements ) {
+                    removeListener( el, 'onfocus', focused );
+                    removeListener( el, 'onblur', blurred );
+                }
 
                 PIE.OnBeforeUnload.unobserve( removeEventListeners );
                 eventsAttached = 0;
@@ -379,6 +456,11 @@ PIE.Element = (function() {
                     addListener( a, 'onpropertychange', ancestorPropChanged );
                     addListener( a, 'onmouseenter', mouseEntered );
                     addListener( a, 'onmouseleave', mouseLeft );
+                    addListener( a, 'onmousedown', mousePressed );
+                    if( a.tagName in PIE.focusableElements ) {
+                        addListener( a, 'onfocus', focused );
+                        addListener( a, 'onblur', blurred );
+                    }
                     a = a.parentNode;
                 }
             }
@@ -400,7 +482,7 @@ PIE.Element = (function() {
                 }
             }
             if( isFirst ) {
-                el.className += ' ' + PIE.CLASS_PREFIX + 'first-child';
+                addClass( el, firstChildClass );
             }
         }
 
