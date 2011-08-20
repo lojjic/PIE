@@ -3,4 +3,4 @@
  */
 PIE.OnMouseup = new PIE.Observable();
 
-PIE.OnBeforeUnload.attachManagedEvent( doc, 'onmouseup', function() { PIE.OnMouseup.fire(); } );
+PIE.OnUnload.attachManagedEvent( doc, 'onmouseup', function() { PIE.OnMouseup.fire(); } );

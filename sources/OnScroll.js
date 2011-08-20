@@ -9,7 +9,7 @@
         PIE.OnScroll.fire();
     }
 
-    PIE.OnBeforeUnload.attachManagedEvent( window, 'onscroll', scrolled );
+    PIE.OnUnload.attachManagedEvent( window, 'onscroll', scrolled );
 
     PIE.OnResize.observe( scrolled );
 })();

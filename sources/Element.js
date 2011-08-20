@@ -51,7 +51,6 @@ PIE.Element = (function() {
             boundsInfo = new PIE.BoundsInfo( el ),
             styleInfos,
             styleInfosArr,
-            ancestors,
             initializing,
             initialized,
             eventsAttached,
@@ -176,7 +175,7 @@ PIE.Element = (function() {
                     }
                     PIE.OnResize.observe( handleMoveOrResize );
 
-                    PIE.OnBeforeUnload.observe( removeEventListeners );
+                    PIE.OnUnload.observe( removeEventListeners );
                 }
 
                 boundsInfo.unlock();
@@ -379,8 +378,9 @@ PIE.Element = (function() {
                     listener[ 0 ].detachEvent( listener[ 1 ], listener[ 2 ] );
                 }
 
-                PIE.OnBeforeUnload.unobserve( removeEventListeners );
+                PIE.OnUnload.unobserve( removeEventListeners );
                 eventsAttached = 0;
+                eventListeners = [];
             }
         }
 
@@ -413,7 +413,7 @@ PIE.Element = (function() {
                 PIE.OnResize.unobserve( update );
 
                 // Kill references
-                renderers = boundsInfo = styleInfos = styleInfosArr = ancestors = el = null;
+                renderers = boundsInfo = styleInfos = styleInfosArr = el = null;
             }
         }
 
@@ -427,12 +427,10 @@ PIE.Element = (function() {
             var watch = el.currentStyle.getAttribute( PIE.CSS_PREFIX + 'watch-ancestors' ),
                 i, a;
             if( watch ) {
-                ancestors = [];
                 watch = parseInt( watch, 10 );
                 i = 0;
                 a = el.parentNode;
                 while( a && ( watch === 'NaN' || i++ < watch ) ) {
-                    ancestors.push( a );
                     addListener( a, 'onpropertychange', ancestorPropChanged );
                     addListener( a, 'onmouseenter', mouseEntered );
                     addListener( a, 'onmouseleave', mouseLeft );
