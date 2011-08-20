@@ -13,14 +13,6 @@ PIE.Element = (function() {
         dummyArray = [];
 
 
-    function addListener( el, type, handler ) {
-        el.attachEvent( type, handler );
-    }
-
-    function removeListener( el, type, handler ) {
-        el.detachEvent( type, handler );
-    }
-
     function addClass( el, className ) {
         el.className += ' ' + className;
     }
@@ -63,6 +55,7 @@ PIE.Element = (function() {
             initializing,
             initialized,
             eventsAttached,
+            eventListeners = [],
             delayed,
             destroyed,
             poll;
@@ -155,7 +148,7 @@ PIE.Element = (function() {
                     renderers = [ rootRenderer ].concat( childRenderers );
 
                     // Add property change listeners to ancestors if requested
-                    initAncestorPropChangeListeners();
+                    initAncestorEventListeners();
 
                     // Add to list of polled elements in IE8
                     if( poll ) {
@@ -343,7 +336,7 @@ PIE.Element = (function() {
 
 
         /**
-         * Handle property changes on ancestors of the element; see initAncestorPropChangeListeners()
+         * Handle property changes on ancestors of the element; see initAncestorEventListeners()
          * which adds these listeners as requested with the -pie-watch-ancestors CSS property.
          */
         function ancestorPropChanged() {
@@ -368,35 +361,22 @@ PIE.Element = (function() {
         }
 
 
+        function addListener( targetEl, type, handler ) {
+            targetEl.attachEvent( type, handler );
+            eventListeners.push( [ targetEl, type, handler ] );
+        }
+
         /**
-         * Remove all event listeners from the element and any monitoried ancestors.
+         * Remove all event listeners from the element and any monitored ancestors.
          */
         function removeEventListeners() {
             if (eventsAttached) {
-                if( ancestors ) {
-                    for( var i = 0, len = ancestors.length, a; i < len; i++ ) {
-                        a = ancestors[i];
-                        removeListener( a, 'onpropertychange', ancestorPropChanged );
-                        removeListener( a, 'onmouseenter', mouseEntered );
-                        removeListener( a, 'onmouseleave', mouseLeft );
-                        removeListener( a, 'onmousedown', mousePressed );
-                        if( a.tagName in PIE.focusableElements ) {
-                            removeListener( a, 'onfocus', focused );
-                            removeListener( a, 'onblur', blurred );
-                        }
-                    }
-                }
+                var i = eventListeners.length,
+                    listener;
 
-                // Remove event listeners
-                removeListener( el, 'onmove', update );
-                removeListener( el, 'onresize', update );
-                removeListener( el, 'onpropertychange', propChanged );
-                removeListener( el, 'onmouseenter', mouseEntered );
-                removeListener( el, 'onmouseleave', mouseLeft );
-                removeListener( el, 'onmousedown', mousePressed );
-                if( el.tagName in PIE.focusableElements ) {
-                    removeListener( el, 'onfocus', focused );
-                    removeListener( el, 'onblur', blurred );
+                while( i-- ) {
+                    listener = eventListeners[ i ];
+                    listener[ 0 ].detachEvent( listener[ 1 ], listener[ 2 ] );
                 }
 
                 PIE.OnBeforeUnload.unobserve( removeEventListeners );
@@ -439,11 +419,11 @@ PIE.Element = (function() {
 
 
         /**
-         * If requested via the custom -pie-watch-ancestors CSS property, add onpropertychange listeners
-         * to ancestor(s) of the element so we can pick up style changes based on CSS rules using
-         * descendant selectors.
+         * If requested via the custom -pie-watch-ancestors CSS property, add onpropertychange and
+         * other event listeners to ancestor(s) of the element so we can pick up style changes
+         * based on CSS rules using descendant selectors.
          */
-        function initAncestorPropChangeListeners() {
+        function initAncestorEventListeners() {
             var watch = el.currentStyle.getAttribute( PIE.CSS_PREFIX + 'watch-ancestors' ),
                 i, a;
             if( watch ) {
