@@ -18,7 +18,7 @@
             <fileset file="${src_dir}/GradientUtil.js" />
             <fileset file="${src_dir}/Observable.js" />
             <fileset file="${src_dir}/Heartbeat.js" />
-            <fileset file="${src_dir}/OnBeforeUnload.js" />
+            <fileset file="${src_dir}/OnUnload.js" />
             <fileset file="${src_dir}/OnResize.js" />
             <fileset file="${src_dir}/OnScroll.js" />
             <fileset file="${src_dir}/OnPrint.js" />
