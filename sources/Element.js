@@ -20,7 +20,7 @@ PIE.Element = (function() {
     function removeClass( el, className ) {
         var re = classNameRegExes[ className ] ||
             ( classNameRegExes[ className ] = new RegExp( '\\b' + className + '\\b', 'g' ) );
-        el.className = el.className.replace( re );
+        el.className = el.className.replace( re, '' );
     }
 
     function delayAddClass( el, className /*, className2*/ ) {
