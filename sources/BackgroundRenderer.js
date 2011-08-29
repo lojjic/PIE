@@ -259,7 +259,11 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         fill['method'] = 'sigma';
         fill['color'] = stops[0].color.colorValue( el );
         fill['color2'] = stops[stopCount - 1].color.colorValue( el );
-        fill['colors'].value = vmlColors.join( ',' );
+        if( fill['colors'] ) { //sometimes the colors object isn't initialized so we have to assign it directly (?)
+            fill['colors'].value = vmlColors.join( ',' );
+        } else {
+            fill['colors'] = vmlColors.join( ',' );
+        }
     },
 
 
