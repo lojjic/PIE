@@ -37,7 +37,15 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
             round = Math.round,
             cs = el.currentStyle,
             getLength = PIE.getLength,
-            s;
+            s, zero;
+
+        // In IE6, the BorderRenderer will have hidden the border by moving the border-width to
+        // the padding; therefore we want to pretend the borders have no width so they aren't doubled
+        // when adding in the current padding value below.
+        if( !borderWidths || PIE.ieVersion < 7 ) {
+            zero = PIE.getLength( '0' );
+            borderWidths = { 't': zero, 'r': zero, 'b': zero, 'l': zero };
+        }
 
         shape.stroked = false;
         fill.type = 'frame';
@@ -45,12 +53,12 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
         fill.position = (w ? 0.5 / w : 0) + ',' + (h ? 0.5 / h : 0);
         shape.coordsize = w * 2 + ',' + h * 2;
         shape.coordorigin = '1,1';
-        shape.path = this.getBoxPath( borderWidths ? {
+        shape.path = this.getBoxPath( {
             t: round( borderWidths['t'].pixels( el ) + getLength( cs.paddingTop ).pixels( el ) ),
-            r: round( borderWidths['r'].pixels( el ) + getLength( cs.paddingRight ).pixels( el )  ),
-            b: round( borderWidths['b'].pixels( el ) + getLength( cs.paddingBottom ).pixels( el )  ),
-            l: round( borderWidths['l'].pixels( el ) + getLength( cs.paddingLeft ).pixels( el )  )
-        } : 0, 2 );
+            r: round( borderWidths['r'].pixels( el ) + getLength( cs.paddingRight ).pixels( el ) ),
+            b: round( borderWidths['b'].pixels( el ) + getLength( cs.paddingBottom ).pixels( el ) ),
+            l: round( borderWidths['l'].pixels( el ) + getLength( cs.paddingLeft ).pixels( el ) )
+        }, 2 );
         s = shape.style;
         s.width = w;
         s.height = h;
