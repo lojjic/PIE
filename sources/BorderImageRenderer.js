@@ -22,6 +22,7 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
         this.getBox(); //make sure pieces are created
 
         var props = this.styleInfos.borderImageInfo.getProps(),
+            borderProps = this.styleInfos.borderInfo.getProps(),
             bounds = this.boundsInfo.getBounds(),
             el = this.targetElement,
             pieces = this.pieces;
@@ -29,19 +30,17 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
         PIE.Util.withImageSize( props.src, function( imgSize ) {
             var elW = bounds.w,
                 elH = bounds.h,
-                getLength = PIE.getLength,
-                cs = el.currentStyle,
-
-                widths = props.width,
-                widthT = ( widths ? widths.t : getLength( cs.borderTopWidth ) ).pixels( el ),
-                widthR = ( widths ? widths.r : getLength( cs.borderRightWidth ) ).pixels( el ),
-                widthB = ( widths ? widths.b : getLength( cs.borderBottomWidth ) ).pixels( el ),
-                widthL = ( widths ? widths.l : getLength( cs.borderLeftWidth ) ).pixels( el ),
+                zero = PIE.getLength( '0' ),
+                widths = props.widths || ( borderProps ? borderProps.widths : { 't': zero, 'r': zero, 'b': zero, 'l': zero } ),
+                widthT = widths['t'].pixels( el ),
+                widthR = widths['r'].pixels( el ),
+                widthB = widths['b'].pixels( el ),
+                widthL = widths['l'].pixels( el ),
                 slices = props.slice,
-                sliceT = slices.t.pixels( el ),
-                sliceR = slices.r.pixels( el ),
-                sliceB = slices.b.pixels( el ),
-                sliceL = slices.l.pixels( el );
+                sliceT = slices['t'].pixels( el ),
+                sliceR = slices['r'].pixels( el ),
+                sliceB = slices['b'].pixels( el ),
+                sliceL = slices['l'].pixels( el );
 
             // Piece positions and sizes
             function setSizeAndPos( piece, w, h, x, y ) {
@@ -127,30 +126,33 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
     prepareUpdate: function() {
         if (this.isActive()) {
             var me = this,
-                rs = me.targetElement.runtimeStyle,
                 el = me.targetElement,
-                widths = me.styleInfos.borderImageInfo.getProps().width;
+                rs = el.runtimeStyle,
+                widths = me.styleInfos.borderImageInfo.getProps().widths;
 
-            // Force border to solid transparent
-            rs.borderColor = 'transparent';
+            // Force border-style to solid so it doesn't collapse
             rs.borderStyle = 'solid';
 
             // If widths specified in border-image shorthand, override border-width
+            // NOTE px units needed here as this gets used by the IE9 renderer too
             if ( widths ) {
-                rs.borderTopWidth = widths.t.pixels( el ) + 'px';
-                rs.borderRightWidth = widths.r.pixels( el ) + 'px';
-                rs.borderBottomWidth = widths.b.pixels( el ) + 'px';
-                rs.borderLeftWidth = widths.l.pixels( el ) + 'px';
+                rs.borderTopWidth = widths['t'].pixels( el ) + 'px';
+                rs.borderRightWidth = widths['r'].pixels( el ) + 'px';
+                rs.borderBottomWidth = widths['b'].pixels( el ) + 'px';
+                rs.borderLeftWidth = widths['l'].pixels( el ) + 'px';
             }
+
+            // Make the border transparent
+            me.hideBorder();
         }
     },
 
     destroy: function() {
         var me = this,
             rs = me.targetElement.runtimeStyle;
-        rs.borderStyle = rs.borderWidth = '';
+        rs.borderStyle = '';
         if (me.finalized || !me.styleInfos.borderInfo.isActive()) {
-            rs.borderColor = '';
+            rs.borderColor = rs.borderWidth = '';
         }
         PIE.RendererBase.destroy.call( this );
     }

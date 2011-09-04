@@ -24,12 +24,12 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
     draw: function() {
         var me = this,
             props = me.styleInfos.borderImageInfo.getProps(),
+            borderProps = me.styleInfos.borderInfo.getProps(),
             bounds = me.boundsInfo.getBounds(),
             repeat = props.repeat,
             repeatH = repeat.h,
             repeatV = repeat.v,
             el = me.targetElement,
-            cs = el.currentStyle,
             isAsync = 0;
 
         PIE.Util.withImageSize( props.src, function( imgSize ) {
@@ -37,7 +37,6 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
                 elH = bounds.h,
                 imgW = imgSize.w,
                 imgH = imgSize.h,
-                getLength = PIE.getLength,
 
                 // The image cannot be referenced as a URL directly in the SVG because IE9 throws a strange
                 // security exception (perhaps due to cross-origin policy within data URIs?) Therefore we
@@ -51,16 +50,17 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
                 ROUND = me.ROUND,
                 ceil = Math.ceil,
 
-                widths = props.width,
-                widthT = ( widths ? widths.t : getLength( cs.borderTopWidth ) ).pixels( el ),
-                widthR = ( widths ? widths.r : getLength( cs.borderRightWidth ) ).pixels( el ),
-                widthB = ( widths ? widths.b : getLength( cs.borderBottomWidth ) ).pixels( el ),
-                widthL = ( widths ? widths.l : getLength( cs.borderLeftWidth ) ).pixels( el ),
+                zero = PIE.getLength( '0' ),
+                widths = props.widths || ( borderProps ? borderProps.widths : { 't': zero, 'r': zero, 'b': zero, 'l': zero } ),
+                widthT = widths['t'].pixels( el ),
+                widthR = widths['r'].pixels( el ),
+                widthB = widths['b'].pixels( el ),
+                widthL = widths['l'].pixels( el ),
                 slices = props.slice,
-                sliceT = slices.t.pixels( el ),
-                sliceR = slices.r.pixels( el ),
-                sliceB = slices.b.pixels( el ),
-                sliceL = slices.l.pixels( el ),
+                sliceT = slices['t'].pixels( el ),
+                sliceR = slices['r'].pixels( el ),
+                sliceB = slices['b'].pixels( el ),
+                sliceL = slices['l'].pixels( el ),
                 centerW = elW - widthL - widthR,
                 middleH = elH - widthT - widthB,
                 imgCenterW = imgW - sliceL - sliceR,

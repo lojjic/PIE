@@ -113,10 +113,10 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 
             function distributeSides( tokens, convertFn ) {
                 return {
-                    t: convertFn( tokens[0] ),
-                    r: convertFn( tokens[1] || tokens[0] ),
-                    b: convertFn( tokens[2] || tokens[0] ),
-                    l: convertFn( tokens[3] || tokens[1] || tokens[0] )
+                    't': convertFn( tokens[0] ),
+                    'r': convertFn( tokens[1] || tokens[0] ),
+                    'b': convertFn( tokens[2] || tokens[0] ),
+                    'l': convertFn( tokens[3] || tokens[1] || tokens[0] )
                 };
             }
 
@@ -125,7 +125,7 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             } );
 
             if( widths && widths[0] ) {
-                p.width = distributeSides( widths, function( tok ) {
+                p.widths = distributeSides( widths, function( tok ) {
                     return tok.isLengthOrPercent() ? PIE.getLength( tok.tokenValue ) : tok.tokenValue;
                 } );
             }

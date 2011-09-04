@@ -35,7 +35,7 @@ PIE.RendererBase = {
      * renderer or any of the other renderers, e.g. things that might affect the
      * element's size or style properties.
      */
-    prepareUpdate: function() {},
+    prepareUpdate: PIE.emptyFn,
 
     /**
      * Tell the renderer to update based on modified properties
@@ -291,6 +291,63 @@ PIE.RendererBase = {
         }
 
         return box;
+    },
+
+
+    /**
+     * Hide the actual border of the element. In IE7 and up we can just set its color to transparent;
+     * however IE6 does not support transparent borders so we have to get tricky with it. Also, some elements
+     * like form buttons require removing the border width altogether, so for those we increase the padding
+     * by the border size.
+     */
+    hideBorder: function() {
+        var el = this.targetElement,
+            cs = el.currentStyle,
+            rs = el.runtimeStyle,
+            tag = el.tagName,
+            isIE6 = PIE.ieVersion === 6,
+            sides, side, i;
+
+        if( ( isIE6 && ( tag in PIE.childlessElements || tag === 'FIELDSET' ) ) ||
+                tag === 'BUTTON' || ( tag === 'INPUT' && el.type in PIE.inputButtonTypes ) ) {
+            rs.borderWidth = '';
+            sides = this.styleInfos.borderInfo.sides;
+            for( i = sides.length; i--; ) {
+                side = sides[ i ];
+                rs[ 'padding' + side ] = '';
+                rs[ 'padding' + side ] = ( PIE.getLength( cs[ 'padding' + side ] ) ).pixels( el ) +
+                                         ( PIE.getLength( cs[ 'border' + side + 'Width' ] ) ).pixels( el ) +
+                                         ( PIE.ieVersion !== 8 && i % 2 ? 1 : 0 ); //needs an extra horizontal pixel to counteract the extra "inner border" going away
+            }
+            rs.borderWidth = 0;
+        }
+        else if( isIE6 ) {
+            // Wrap all the element's children in a custom element, set the element to visiblity:hidden,
+            // and set the wrapper element to visiblity:visible. This hides the outer element's decorations
+            // (background and border) but displays all the contents.
+            // TODO find a better way to do this that doesn't mess up the DOM parent-child relationship,
+            // as this can interfere with other author scripts which add/modify/delete children. Also, this
+            // won't work for elements which cannot take children, e.g. input/button/textarea/img/etc. Look into
+            // using a compositor filter or some other filter which masks the border.
+            if( el.childNodes.length !== 1 || el.firstChild.tagName !== 'ie6-mask' ) {
+                var cont = doc.createElement( 'ie6-mask' ),
+                    s = cont.style, child;
+                s.visibility = 'visible';
+                s.zoom = 1;
+                while( child = el.firstChild ) {
+                    cont.appendChild( child );
+                }
+                el.appendChild( cont );
+                rs.visibility = 'hidden';
+            }
+        }
+        else {
+            rs.borderColor = 'transparent';
+        }
+    },
+
+    unhideBorder: function() {
+        
     },
 
 

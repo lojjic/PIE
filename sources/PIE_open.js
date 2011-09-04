@@ -27,12 +27,24 @@ if( !PIE ) {
             'HR':1
         },
 
+        /**
+         * Elements that can receive user focus
+         */
         focusableElements: {
             'A':1,
             'INPUT':1,
             'TEXTAREA':1,
             'SELECT':1,
             'BUTTON':1
+        },
+
+        /**
+         * Values of the type attribute for input elements displayed as buttons
+         */
+        inputButtonTypes: {
+            'submit':1,
+            'button':1,
+            'reset':1
         },
 
         emptyFn: function() {}
