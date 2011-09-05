@@ -121,6 +121,7 @@ PIE.Element = (function() {
                             borderImageInfo: new PIE.BorderImageStyleInfo( el ),
                             borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
                             boxShadowInfo: new PIE.BoxShadowStyleInfo( el ),
+                            transformInfo: new PIE.TransformStyleInfo( el ),
                             visibilityInfo: new PIE.VisibilityStyleInfo( el )
                         };
                         styleInfosArr = [
@@ -129,6 +130,7 @@ PIE.Element = (function() {
                             styleInfos.borderImageInfo,
                             styleInfos.borderRadiusInfo,
                             styleInfos.boxShadowInfo,
+                            styleInfos.transformInfo,
                             styleInfos.visibilityInfo
                         ];
                         rootRenderer = new PIE.RootRenderer( el, boundsInfo, styleInfos );
@@ -137,7 +139,8 @@ PIE.Element = (function() {
                             new PIE.BackgroundRenderer( el, boundsInfo, styleInfos, rootRenderer ),
                             //new PIE.BoxShadowInsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
                             new PIE.BorderRenderer( el, boundsInfo, styleInfos, rootRenderer ),
-                            new PIE.BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
+                            new PIE.BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                            new PIE.TransformRenderer( el, boundsInfo, styleInfos, rootRenderer )
                         ];
                         if( el.tagName === 'IMG' ) {
                             childRenderers.push( new PIE.ImgRenderer( el, boundsInfo, styleInfos, rootRenderer ) );
