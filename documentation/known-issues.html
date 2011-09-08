@@ -17,7 +17,8 @@
 <p>This document describes the most common general issues encountered when using PIE. For information regarding bugs
 and limitations in the implementations of specific features, see the detailed documentation of the
 <a href="/documentation/supported-css3-features/">supported CSS3 features</a>, and also
-our <a href="http://github.com/lojjic/PIE/issues">issue tracking system</a>.</p>
+our <a href="http://github.com/lojjic/PIE/issues">issue tracking system</a> where bug reports
+and feature requests are tracked.</p>
 
 <ul>
     <li><a href="#z-index">Problems with z-index (disappearing backgrounds/borders/shadows)</a></li>
@@ -121,7 +122,8 @@ It does so by applying the style <code>zoom:1;</code> to the element.</p>
 
 <p>For the most part, doing this has no adverse effect on the rendering of the element. In fact, a lot of times it
 improves the rendering (hasLayout is often used as a hack to work around IE CSS bugs). However, in some cases this has
-<a href="http://www.satzansatz.de/cssd/onhavinglayout.html#rev">unwanted consequences</a>.</p>
+<a href="http://www.satzansatz.de/cssd/onhavinglayout.html#rev">unwanted consequences</a> such as disappearing
+top margins.</p>
 
 
 
@@ -171,6 +173,10 @@ CSS point the behavior to the PHP file instead:</p>
 
 <pre><code>behavior: url(PIE.php);</code></pre>
 
+<p>Note that this issue is particularly a problem in IE 9, which seems more strict about the content-type
+than some other IE versions.</p>
+
+
 
 <h2 id="x-domain">Same-domain limitation</h2>
 
@@ -195,7 +201,8 @@ if you apply styles that use relative length units such as em or ex. Stick to us
 
 <p>When the user uses the browser zoom function (available in IE7 and up), PIE does not currently scale any
 background images it manages to match. This can cause things to look broken at zoom levels other than 100%,
-if your background images are dependent on sizing (e.g. sprite images).</p>
+if your background images are dependent on sizing (e.g. sprite images). This will be fixed in an upcoming
+release; see <a href="https://github.com/lojjic/PIE/issues/79">issue 79</a>.</p>
 
 
 <!-- noformat off -->

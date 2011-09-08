@@ -26,7 +26,7 @@ target element, parses those properties, and renders them on the page.</p>
 
 
 <h2>What CSS3 properties are currently supported?</h2>
-<p>PIE currently has full or partial support for:</p>
+<p>PIE currently adds full or partial support in IE 6-8 for:</p>
 <ul>
     <li>border-radius</li>
     <li>box-shadow</li>
@@ -34,16 +34,20 @@ target element, parses those properties, and renders them on the page.</p>
     <li>multiple background images</li>
     <li>linear-gradient background images</li>
 </ul>
+
+<p>In addition, PIE adds support for border-image and linear-gradient to IE 9, which already supports the other features natively.</p>
+
 <p>You can find detailed information about the levels of support in the
 <a href="/documentation/supported-css3-features/">Supported CSS3 Properties and Values</a> documentation.</p>
 
 
 <h2>How large is it?</h2>
-<p>The .htc behavior file is 30K. With gzip compression, it is 12K. (You do gzip your content, right?)</p>
+<p>The .htc behavior file is 40K. With gzip compression, it is 16K. (You do gzip your content, right?)</p>
 <p>It's pretty easy to save at least as much as that by using CSS3 instead of all the extra images, markup, and CSS
 you'd have to use otherwise, so this is usually a net win in terms of total page weight. Also, it's important to
 note that the behavior file is only downloaded by IE, so in other browsers which support these CSS3 features natively,
 that's pure win.</p>
+<p>Improvements to file size, by making features optional, are planned in a future release.</p>
 
 
 <h2>What are the goals of the project?</h2>
@@ -107,34 +111,7 @@ goals are:</p>
 
 
 <h2>What sites have used PIE?</h2>
-<p>Here is just a tiny list of sites using PIE already in production. <a href="/contact/">Tell us about yours!</a></p>
-<ul>
-    <li><a href="http://americanapparel.net">American Apparel</a> (<strong><abbr title="Not safe for work">NSFW</abbr></strong>)</li>
-    <li><a href="http://www.bitcloud.com.au/">BitCloud</a></li>
-    <li><a href="http://www.cahealthadvocates.org/">California Health Advocates</a></li>
-    <li><a href="http://demo.crowdfavorite.com/carrington-business">Carrington Business WordPress Theme</a></li>
-    <li><a href="http://www.composite.net/">Composite C1 CMS</a></li>
-    <li><a href="http://www.cthealth.org/">Connecticut Health Foundation</a></li>
-    <li><a href="http://setup.dynguide.com/">DynDNS</a></li>
-    <li><a href="http://www.journeyoutreach.org/">Journey Outreach</a></li>
-    <li><a href="http://www.kleinezeitung.at/">Kleine Zeitung</a></li>
-    <li><a href="http://sites.mckesson.com/betterhealth/">McKesson: For Better Health</a></li>
-    <li><a href="http://www.memyteam.com/">me:myteam</a></li>
-    <li><a href="http://modemerr.com/">Mode Merr</a></li>
-    <li><a href="http://mom.com/">Mom.com</a></li>
-    <li><a href="http://www.blogsouthwest.com/">Nuts About Southwest</a></li>
-    <li><a href="http://www.protagonize.com">Protagonize</a></li>
-    <li><a href="http://realti.ca/">Realti.ca</a></li>
-    <li><a href="http://roomandboard.com/">Room &amp; Board</a></li>
-    <li><a href="http://sheffieldismyplanet.co.uk/">Sheffield Is My Planet</a></li>
-    <li><a href="http://www.skillstar.com/">Skillstar</a></li>
-    <li><a href="http://www.socialistproductions.org/">Socialist Productions</a></li>
-    <li><a href="http://freestyle-developments.co.uk/demo/public/svs/">SVS Securities</a></li>
-    <li><a href="http://twbasics.keycontent.org/">Tiki for Smarties</a></li>
-    <li><a href="http://www.tinypie.co.uk/">TinyPie Projects</a></li>
-    <li><a href="http://www.tractionco.com/">Traction</a></li>
-    <li><a href="https://www.viaprinto.de/">viaprinto</a></li>
-</ul>
+<p>See our <a href="/demos">Demos and Example Sites</a> page for a list of some live public sites using PIE.</p>
 
 
 <h2>What are the licensing terms?</h2>

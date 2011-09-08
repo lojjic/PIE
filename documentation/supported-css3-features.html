@@ -38,7 +38,8 @@ and value types.</p>
 <h2 id="border-radius">border-radius</h2>
 
 <p>PIE fully supports the border-radius property as defined in the CSS3
-Backgrounds and Borders module specification.</p>
+Backgrounds and Borders module specification for IE 6-8. IE 9 and up support
+border-radius natively.</p>
 
 <pre class="long">border-radius: [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} [ / [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} ]?</pre>
 
@@ -54,33 +55,14 @@ gradients), the element's border, and the box-shadow if specified.</p>
 <p>Both the standard border-radius property name as well as a custom
 prefixed -pie-border-radius property name are recognized; if both are
 present then the prefixed value will take precedence. It is recommended
-to only use the standard unprefixed property when possible (in
-addition, of course, to -moz- and -webkit- prefixed properties as
-necessary), since the CSS3 spec for this property seems fairly
-solidified, and because there are no known incompatibilities between
-PIE's implementation and the standard.</p>
-
-<p>Notes on other browsers:</p>
-
-<p>Elliptical radii (the optional set of values after the slash) are
-only supported in Firefox versions 3.5 and up. As of the current
-release (3.6), percentage values for vertical radii are incorrectly
-calculated relative to the width of the box whereas the CSS3 spec says
-they should be relative to the height. PIE handles this correctly.</p>
-
-<p>WebKit deviates significantly from the CSS3 spec: the shorthand
-property cannot be used to specify different radii per corner, so you
-must use the separate longhand properties if you want to do that. It
-also does not support percentage values at all. (TODO: check this in
-WebKit nightlies and recent Chrome, I think these may now match the
-spec and drop the prefix.)</p>
-
+to only use the standard unprefixed property when possible.</p>
 
 
 <h2 id="box-shadow">box-shadow</h2>
 
 <p>PIE supports the <a href="http://dev.w3.org/csswg/css3-background/#box-shadow">box-shadow property syntax</a>
-as currently defined in the CSS3 Backgrounds &amp; Borders module.</p>
+as defined in the CSS3 Backgrounds &amp; Borders module, for IE 6-8. IE 9 and up support
+box-shadow natively so PIE does nothing.</p>
 
 <pre class="long">box-shadow: none | &lt;shadow&gt; [,&lt;shadow&gt;]*
     where &lt;shadow&gt; = inset? &amp;&amp; [ &lt;offset-x&gt; &lt;offset-y&gt; &lt;blur-radius&gt;? &lt;spread-radius&gt;? &amp;&amp; &lt;color&gt;? ]</pre>
@@ -88,18 +70,16 @@ as currently defined in the CSS3 Backgrounds &amp; Borders module.</p>
 <p>Both the standard box-shadow property name as well as a custom
 prefixed -pie-box-shadow property name are recognized; if both are
 present the prefixed value will take precedence. It is recommended to
-use the non-prefixed property when possible, since there are no known
-incompatibilities between PIE's implementation and others which use the
-non-prefixed property, such as Opera.</p>
+use the non-prefixed property when possible.</p>
 
 <p>When used in conjunction with border-radius, the shape of the shadow
 matches the shape of the rounded border box.</p>
 
-<p>When using the blur radius parameter, the strength and size of the
-blur as rendered by PIE should match that of other browsers almost
-identically, however you may notice some slight differences due to
-rounding, particularly when the blur is very small (this should not be
-more than a one-pixel difference).</p>
+<p>The shadow shape rendered by PIE is, unlike other browsers,
+<a href="https://github.com/lojjic/PIE/issues/12">opaque in the area behind the element's background</a>.
+This means that if your element has a transparent or semi-transparent background, the opaque shadow will
+show through. To avoid this you must either give the element a non-transparent background, or remove the
+box-shadow.</p>
 
 <p>PIE does not currently support the 'inset' keyword, but support is
 planned in a future version (see <a href="http://github.com/lojjic/PIE/issues#issue/3">issue #3</a>.</p>
@@ -113,34 +93,23 @@ planned in a future version (see <a href="http://github.com/lojjic/PIE/issues#is
 
 <h2 id="border-image">border-image</h2>
 
-<p>PIE has preliminary support for the border-image property. This property allows
+<p>PIE adds support for the border-image property to IE 6-9. This property allows
 you to specify an image which gets divided into nine squares which are then drawn as
-the corners, sides, and center of the target element. The sides and center will stretch
-to match the size of the element.</p>
+the corners, sides, and center of the target element.</p>
 
-<p>There are currently several limitations of PIE's implementation, including:</p>
+<p>There are currently a few limitations of PIE's implementation, including:</p>
 <ol>
-    <li>It only supports the 'stretch' scheme. I'd like to support the others in the future but performance
-        is a big concern as it seems it will require creating a separate VML shape for each tile.</li>
+    <li>It only supports the 'stretch' scheme in IE 6-8. (The other schemes ('repeat' and 'round') are
+        fully supported in IE 9.)</li>
     <li>It doesn't support the <a href="http://dev.w3.org/csswg/css3-background/#border-image-outset">outset parameter</a>
         described in the Backgrounds &amp; Borders module spec, though other browsers don't seem to support
         that yet either.</li>
-    <li>It doesn't support the <a href="http://dev.w3.org/csswg/css3-background/#border-image-width">width override
-        parameter</a> to the border-image shorthand; it will only use the element's border-width for determining
-        the slice widths (again, support for this in other browsers is spotty too).</li>
-    <li>Related to #3, if the element's <code>border-style</code> is 'none' it will treat that as
-        <code>border-width:0</code>.</li>
     <li>It requires the 'fill' keyword to be present for the center area to be filled in. This is correct
         behavior according to the spec but other browsers don't require it and some even fail if 'fill' is
         present, so it's a bit tricky making it work consistently across browsers.</li>
-    <li>It doesn't hide the element's normal border when border-image is specified. In conjunction with #4
-        above, this means you have to set the border-style to 'solid' (or something other than 'none')
-        <strong>and</strong> set the border-color to transparent.</li>
     <li>It seems there are on rare occasion rounding errors which cause 1px gaps between slices of the
         image. I've seen these gaps occur in other browsers too, though.</li>
 </ol>
-
-<p>These issues will be addressed in a future release.</p>
 
 
 
@@ -154,6 +123,10 @@ standard 'background' property, because IE will attempt to parse the
 value internally and not allow us access to the original value string.
 Therefore we use a custom -pie-background property for holding these
 values.</p>
+
+<p>(Note that IE9 and up support multiple background images natively, so PIE only
+takes over in IE 6-8. It also takes over in IE 9 when there is a gradient present in the
+-pie-background -- see the section on <a href="#gradients">gradients</a> below.)</p>
 
 <p>Only the single -pie-background shorthand value is recognized; longhand values (e.g.
 -pie-background-origin) are ignored.</p>
@@ -173,7 +146,7 @@ backgrounds, be sure to include appropriate fallbacks. For example:</p>
 }</code></pre>
 
 <p>While the PIE parser will allow them, the following aspects of the
-background shorthand will currently be ignored when rendering:</p>
+background shorthand will currently be ignored when rendering in IE 6-8:</p>
 
 <ul>
   <li>background-attachment (will always use 'scroll' even if 'fixed'
@@ -193,32 +166,40 @@ rendered with correct alpha channel transparency in IE6. See the section below r
 
 <p>Notes on other browsers:</p>
 
-<p>Firefox supports multiple backgrounds as of version 3.6. Safari supports them as of version 1.3.
-See <a href="https://developer.mozilla.org/en/CSS/Multiple_backgrounds">https://developer.mozilla.org/en/CSS/Multiple_backgrounds</a></p>
+<p>See <a href="https://developer.mozilla.org/en/CSS/Multiple_backgrounds">https://developer.mozilla.org/en/CSS/Multiple_backgrounds</a></p>
 
 
 
 <h2 id="gradients">Gradients</h2>
 
 <p>PIE currently supports <code>linear-gradient</code> image values when used in the
--pie-background property. Uses in any contexts other than the background
+-pie-background property, for IE 6-9. Uses of linear-gradient in any contexts other than the -pie-background
 are not supported. The supported syntax matches that of the current
 <a href="http://dev.w3.org/csswg/css3-images/#linear-gradients">CSS3 Image Values module</a> draft.</p>
 
 <pre class="long">linear-gradient([&lt;bg-position&gt; || &lt;angle&gt;,]? &lt;color-stop&gt;, &lt;color-stop&gt;[, &lt;color-stop&gt;]*);</pre>
 
-<p>Currently all color stops are rendered fully opaque, even if
-specifying an rgba color value. This is due to a limitation in VML's
-linear gradient syntax which does not allow setting opacity for
-individual color stops. (See <a href="http://github.com/lojjic/PIE/issues#issue/7">issue #7</a>)</p>
+<p>PIE's linear-gradient support in IE 6-8 has a few limitations (all of these work
+properly in IE 9):</p>
 
-<p>Gradients containing color-stops which lie outside the bounding area
-of the element are not currently supported, due to limitations in VML's
-gradient rendering.</p>
+<ul>
+    <li>Currently all color stops are rendered fully opaque, even if
+    specifying an rgba color value. This is due to a limitation in VML's
+    linear gradient syntax which does not allow setting opacity for
+    individual color stops. (See <a href="http://github.com/lojjic/PIE/issues#issue/7">issue #7</a>)</li>
+
+    <li>Gradients containing color-stops which lie outside the bounding area
+    of the element are not currently supported, due to limitations in VML's
+    gradient rendering.</li>
+
+    <li>The background-size/origin/repeat/position parameters are not supported
+    for gradients, so you cannot do things like
+    <a href="http://leaverou.me/2010/12/checkered-stripes-other-background-patterns-with-css3-gradients/">gradient pattern effects</a>.</li>
+</ul>
 
 <p>Radial gradients are not supported at this time; this feature is planned
 for a future release (see <a href="http://github.com/lojjic/PIE/issues#issue/2">issue #2</a>)
-but it may turn out to be impossible to implement due to VML's strange radial gradient behavior.</p>
+but it may turn out to be impossible to implement in IE 6-8 due to VML's strange radial gradient behavior.</p>
 
 <p>Notes on other browsers:</p>
 
@@ -258,8 +239,9 @@ RGB color, but fully opaque. Here are the supported contexts in which
 the opacity will be rendered correctly:</p>
 
 <ul>
-  <li>The solid background-color as specified in the -pie-background property.</li>
-  <li>The color value of box-shadow, if the shadow has no blur.</li>
+    <li>The solid background-color as specified in the -pie-background property.</li>
+    <li>The color value of box-shadow, if the shadow has no blur.</li>
+    <li>Color stops in linear-gradient, for IE 9 only (will be rendered fully opaque in IE 6-8)</li>
 </ul>
 
 
@@ -408,7 +390,7 @@ works seamlessly; in rare cases, however, IE does not fire these events when it 
 When polling is enabled for an element, PIE will manually query that element's layout several times a second, and
 if the layout has changed then it will adjust the rendering.</p>
 
-<p>Polling is enabled by default for all elements in IE8 (as that version is particularly bad about not firing
+<p>Polling is enabled by default for all elements in IE 8 and 9 (as those version is particularly bad about not firing
 the events) and disabled in IE 6 and 7. Users can override these defaults
 to force polling on or off for individual elements by setting a custom CSS property: just specify
 <code>-pie-poll:true;</code> to force polling on for an element, or <code>-pie-poll:false;</code> to disable it.</p>

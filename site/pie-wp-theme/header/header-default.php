@@ -79,7 +79,7 @@ if (CFCT_DEBUG) { cfct_banner(__FILE__); }
         <![if lt IE 8]><nav id="mainNav"><![endif]>
             <?php wp_nav_menu( array('menu' => 'Main Menu', 'container' => null )); ?>
 
-            <p><a class="outbound" href="/download-latest"><strong>Download</strong> <span class="version">Version 1.0beta2</span></a></p>
+            <p><a class="outbound" href="/download-latest"><strong>Download</strong> <span class="version">Version 1.0beta5</span></a></p>
 
             <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
                 <input type="hidden" name="cmd" value="_s-xclick">
