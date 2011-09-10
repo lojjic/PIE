@@ -153,6 +153,11 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 pxY = Math.round( bgPos.y ) + bwT + 0.5;
                 fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
 
+                // Set the size of the image. We have to actually set it to px values otherwise it will not honor
+                // the user's browser zoom level and always display at its natural screen size.
+                fill['size']['x'] = 1; //Can be any value, just has to be set to "prime" it so the next line works. Weird!
+                fill['size'] = size.w + 'px,' + size.h + 'px';
+
                 // Repeating - clip the image shape
                 if( repeat && repeat !== 'repeat' ) {
                     if( repeat === 'repeat-x' || repeat === 'no-repeat' ) {
