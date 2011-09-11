@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tests for background-size</title>
+    <style>
+        .test {
+            width: 25%;
+            height: 100px;
+            border: 10px dotted #C9C;
+            padding: 10px;
+            border-radius: 30px;
+            behavior: url(../build/PIE.htc);
+        }
+
+        .normal {
+            background: #CCF url(border.png) no-repeat;
+            -pie-background: #CCF url(border.png) no-repeat;
+        }
+        .normal-br {
+            background: #CCF url(border.png) no-repeat 100% 100%;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100%;
+        }
+        .contain {
+            background: #CCF url(border.png) no-repeat 0 0 / contain;
+            -pie-background: #CCF url(border.png) no-repeat 0 0 / contain;
+        }
+        .contain-br {
+            background: #CCF url(border.png) no-repeat 100% 100% / contain;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100% / contain;
+        }
+        .contain-border {
+            background: #CCF url(border.png) no-repeat 0 0 / contain border-box;
+            -pie-background: #CCF url(border.png) no-repeat 0 0 / contain border-box;
+        }
+        .contain-border-br {
+            background: #CCF url(border.png) no-repeat 100% 100% / contain border-box;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100% / contain border-box;
+        }
+        .contain-content {
+            background: #CCF url(border.png) no-repeat 0 0 / contain content-box;
+            -pie-background: #CCF url(border.png) no-repeat 0 0 / contain content-box;
+        }
+        .contain-content-br {
+            background: #CCF url(border.png) no-repeat 100% 100% / contain content-box;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100% / contain content-box;
+        }
+        .cover {
+            background: #CCF url(border.png) no-repeat 0 0 / cover;
+            -pie-background: #CCF url(border.png) no-repeat 0 0 / cover;
+        }
+        .cover-br {
+            background: #CCF url(border.png) no-repeat 100% 100% / cover;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100% / cover;
+        }
+        .cover-border {
+            background: #CCF url(border.png) no-repeat 0 0 / cover border-box;
+            -pie-background: #CCF url(border.png) no-repeat 0 0 / cover border-box;
+        }
+        .cover-border-br {
+            background: #CCF url(border.png) no-repeat 100% 100% / cover border-box;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100% / cover border-box;
+        }
+        .cover-content {
+            background: #CCF url(border.png) no-repeat 0 0 / cover content-box;
+            -pie-background: #CCF url(border.png) no-repeat 0 0 / cover content-box;
+        }
+        .cover-content-br {
+            background: #CCF url(border.png) no-repeat 100% 100% / cover content-box;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100% / cover content-box;
+        }
+        .scale-px {
+            background: #CCF url(border.png) no-repeat 0 0 / 50px;
+            -pie-background: #CCF url(border.png) no-repeat 0 0 / 50px;
+        }
+        .scale-px-br {
+            background: #CCF url(border.png) no-repeat 100% 100% / 50px;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100% / 50px;
+        }
+        .scale-100pct {
+            background: #CCF url(border.png) no-repeat 0 0 / 100%;
+            -pie-background: #CCF url(border.png) no-repeat 0 0 / 100%;
+        }
+        .scale-100pct-br {
+            background: #CCF url(border.png) no-repeat 100% 100% / 100%;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100% / 100%;
+        }
+        .scale-100pct-50pct {
+            background: #CCF url(border.png) no-repeat 0 0 / 100% 50%;
+            -pie-background: #CCF url(border.png) no-repeat 0 0 / 100% 50%;
+        }
+        .scale-100pct-50pct-br {
+            background: #CCF url(border.png) no-repeat 100% 100% / 100% 50%;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100% / 100% 50%;
+        }
+        .scale-50pct-100pct {
+            background: #CCF url(border.png) no-repeat 0 0 / 50% 100%;
+            -pie-background: #CCF url(border.png) no-repeat 0 0 / 50% 100%;
+        }
+        .scale-50pct-100pct-br {
+            background: #CCF url(border.png) no-repeat 100% 100% / 50% 100%;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100% / 50% 100%;
+        }
+        .scale-50px-90pct {
+            background: #CCF url(border.png) no-repeat 0 0 / 50px 90%;
+            -pie-background: #CCF url(border.png) no-repeat 0 0 / 50px 90%;
+        }
+        .scale-50px-90pct-br {
+            background: #CCF url(border.png) no-repeat 100% 100% / 50px 90%;
+            -pie-background: #CCF url(border.png) no-repeat 100% 100% / 50px 90%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tests for background-size</h1>
+
+
+    <div class="test normal">natural size</div>
+    <div class="test normal-br">natural size, bottom right</div>
+
+    <div class="test contain">contain</div>
+    <div class="test contain-br">contain, bottom right</div>
+    <div class="test contain-border">contain, border-box</div>
+    <div class="test contain-border-br">contain, border-box, bottom right</div>
+    <div class="test contain-content">contain, content-box</div>
+    <div class="test contain-content-br">contain, content-box, bottom right</div>
+
+    <div class="test cover">cover</div>
+    <div class="test cover-br">cover, bottom right</div>
+    <div class="test cover-border">cover, border-box</div>
+    <div class="test cover-border-br">cover, border-box, bottom right</div>
+    <div class="test cover-content">cover, content-box</div>
+    <div class="test cover-content-br">cover, content-box, bottom right</div>
+
+    <div class="test scale-px">50px</div>
+    <div class="test scale-px-br">50px, bottom right</div>
+    <div class="test scale-100pct">100%</div>
+    <div class="test scale-100pct-br">100%, bottom right</div>
+    <div class="test scale-100pct-50pct">100% 50%</div>
+    <div class="test scale-100pct-50pct-br">100% 50%, bottom right</div>
+    <div class="test scale-50pct-100pct">50% 100%</div>
+    <div class="test scale-50pct-100pct-br">50% 100%, bottom right</div>
+    <div class="test scale-50px-90pct">50px 90%</div>
+    <div class="test scale-50px-90pct-br">50px 90%, bottom right</div>
+
+
+
+</body>
+</html>

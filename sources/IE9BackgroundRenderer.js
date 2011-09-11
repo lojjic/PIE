@@ -60,33 +60,7 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
         }).join(' ') : '0 0';
     },
 
-    getBgAreaSize: function( bgOrigin ) {
-        var me = this,
-            el = me.targetElement,
-            bounds = me.boundsInfo.getBounds(),
-            elW = bounds.w,
-            elH = bounds.h,
-            w = elW,
-            h = elH,
-            borders, getLength, cs;
-
-        if( bgOrigin !== 'border-box' ) {
-            borders = me.styleInfos.borderInfo.getProps();
-            if( borders && ( borders = borders.widths ) ) {
-                w -= borders[ 'l' ].pixels( el ) + borders[ 'l' ].pixels( el );
-                h -= borders[ 't' ].pixels( el ) + borders[ 'b' ].pixels( el );
-            }
-        }
-
-        if ( bgOrigin === 'content-box' ) {
-            getLength = PIE.getLength;
-            cs = el.currentStyle;
-            w -= getLength( cs.paddingLeft ).pixels( el ) + getLength( cs.paddingRight ).pixels( el );
-            h -= getLength( cs.paddingTop ).pixels( el ) + getLength( cs.paddingBottom ).pixels( el );
-        }
-
-        return { w: w, h: h };
-    },
+    getBgAreaSize: PIE.BackgroundRenderer.prototype.getBgAreaSize,
 
     getGradientSvg: function( info, bgWidth, bgHeight ) {
         var el = this.targetElement,

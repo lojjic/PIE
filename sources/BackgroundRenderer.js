@@ -121,7 +121,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
      */
     positionBgImage: function( shape, index ) {
         var me = this;
-        PIE.Util.withImageSize( shape.fill.src, function( size ) {
+        PIE.Util.withImageSize( shape.fill.src, function( imgSize ) {
             var el = me.targetElement,
                 bounds = me.boundsInfo.getBounds(),
                 elW = bounds.w,
@@ -131,15 +131,13 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             // update executed, make sure that's not the case to avoid divide-by-zero error
             if( elW && elH ) {
                 var fill = shape.fill,
-                    si = me.styleInfos,
-                    border = si.borderInfo.getProps(),
-                    bw = border && border.widths,
-                    bwT = bw ? bw['t'].pixels( el ) : 0,
-                    bwR = bw ? bw['r'].pixels( el ) : 0,
-                    bwB = bw ? bw['b'].pixels( el ) : 0,
-                    bwL = bw ? bw['l'].pixels( el ) : 0,
-                    bg = si.backgroundInfo.getProps().bgImages[ index ],
-                    bgPos = bg.bgPosition ? bg.bgPosition.coords( el, elW - size.w - bwL - bwR, elH - size.h - bwT - bwB ) : { x:0, y:0 },
+                    bg = me.styleInfos.backgroundInfo.getProps().bgImages[ index ],
+                    bgAreaSize = me.getBgAreaSize( bg.bgOrigin ),
+                    adjustedImgSize = ( bg.bgSize || PIE.BgSize.DEFAULT ).pixels(
+                        me.targetElement, bgAreaSize.w, bgAreaSize.h, imgSize.w, imgSize.h
+                    ),
+                    bgOriginXY = me.getBgOriginXY( bg.bgOrigin ),
+                    bgPos = bg.bgPosition ? bg.bgPosition.coords( el, bgAreaSize.w - adjustedImgSize.w, bgAreaSize.h - adjustedImgSize.h ) : { x:0, y:0 },
                     repeat = bg.imgRepeat,
                     pxX, pxY,
                     clipT = 0, clipL = 0,
@@ -149,29 +147,93 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 // Positioning - find the pixel offset from the top/left and convert to a ratio
                 // The position is shifted by half a pixel, to adjust for the half-pixel coordorigin shift which is
                 // needed to fix antialiasing but makes the bg image fuzzy.
-                pxX = Math.round( bgPos.x ) + bwL + 0.5;
-                pxY = Math.round( bgPos.y ) + bwT + 0.5;
+                pxX = Math.round( bgOriginXY.x + bgPos.x ) + 0.5;
+                pxY = Math.round( bgOriginXY.y + bgPos.y ) + 0.5;
                 fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
 
                 // Set the size of the image. We have to actually set it to px values otherwise it will not honor
                 // the user's browser zoom level and always display at its natural screen size.
                 fill['size']['x'] = 1; //Can be any value, just has to be set to "prime" it so the next line works. Weird!
-                fill['size'] = size.w + 'px,' + size.h + 'px';
+                fill['size'] = adjustedImgSize.w + 'px,' + adjustedImgSize.h + 'px';
 
                 // Repeating - clip the image shape
                 if( repeat && repeat !== 'repeat' ) {
                     if( repeat === 'repeat-x' || repeat === 'no-repeat' ) {
                         clipT = pxY + 1;
-                        clipB = pxY + size.h + clipAdjust;
+                        clipB = pxY + adjustedImgSize.h + clipAdjust;
                     }
                     if( repeat === 'repeat-y' || repeat === 'no-repeat' ) {
                         clipL = pxX + 1;
-                        clipR = pxX + size.w + clipAdjust;
+                        clipR = pxX + adjustedImgSize.w + clipAdjust;
                     }
                     shape.style.clip = 'rect(' + clipT + 'px,' + clipR + 'px,' + clipB + 'px,' + clipL + 'px)';
                 }
             }
         } );
+    },
+
+
+    /**
+     * For a given background-origin value, return the dimensions of the background area.
+     * @param {String} bgOrigin
+     */
+    getBgAreaSize: function( bgOrigin ) {
+        var me = this,
+            el = me.targetElement,
+            bounds = me.boundsInfo.getBounds(),
+            elW = bounds.w,
+            elH = bounds.h,
+            w = elW,
+            h = elH,
+            borders, getLength, cs;
+
+        if( bgOrigin !== 'border-box' ) {
+            borders = me.styleInfos.borderInfo.getProps();
+            if( borders && ( borders = borders.widths ) ) {
+                w -= borders[ 'l' ].pixels( el ) + borders[ 'l' ].pixels( el );
+                h -= borders[ 't' ].pixels( el ) + borders[ 'b' ].pixels( el );
+            }
+        }
+
+        if ( bgOrigin === 'content-box' ) {
+            getLength = PIE.getLength;
+            cs = el.currentStyle;
+            w -= getLength( cs.paddingLeft ).pixels( el ) + getLength( cs.paddingRight ).pixels( el );
+            h -= getLength( cs.paddingTop ).pixels( el ) + getLength( cs.paddingBottom ).pixels( el );
+        }
+
+        return { w: w, h: h };
+    },
+
+
+    /**
+     * For a given background-origin value, return the x/y position of the origin
+     * from the top-left of the element bounds.
+     * @param {String} bgOrigin
+     */
+    getBgOriginXY: function( bgOrigin ) {
+        var me = this,
+            el = me.targetElement,
+            x = 0,
+            y = 0,
+            borders, getLength, cs;
+
+        if( bgOrigin !== 'border-box' ) {
+            borders = me.styleInfos.borderInfo.getProps();
+            if( borders && ( borders = borders.widths ) ) {
+                x += borders[ 'l' ].pixels( el );
+                y += borders[ 't' ].pixels( el );
+            }
+        }
+
+        if ( bgOrigin === 'content-box' ) {
+            getLength = PIE.getLength;
+            cs = el.currentStyle;
+            x += getLength( cs.paddingLeft ).pixels( el );
+            y += getLength( cs.paddingTop ).pixels( el );
+        }
+
+        return { x: x, y: y };
     },
 
 

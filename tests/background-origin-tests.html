@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tests for background-origin</title>
+    <style>
+        .test {
+            width: 200px;
+            height: 100px;
+            border: 10px dotted #C9C;
+            padding: 10px;
+            border-radius: 30px;
+            behavior: url(../build/PIE.htc);
+        }
+
+        .border-box {
+            background: #CCF url(border.png) border-box no-repeat;
+            -pie-background: #CCF url(border.png) border-box no-repeat;
+        }
+        .border-box-br {
+            background: #CCF url(border.png) border-box no-repeat 100% 100%;
+            -pie-background: #CCF url(border.png) border-box no-repeat 100% 100%;
+        }
+        .padding-box {
+            background: #CCF url(border.png) padding-box no-repeat;
+            -pie-background: #CCF url(border.png) padding-box no-repeat;
+        }
+        .padding-box-br {
+            background: #CCF url(border.png) padding-box no-repeat 100% 100%;
+            -pie-background: #CCF url(border.png) padding-box no-repeat 100% 100%;
+        }
+        .content-box {
+            background: #CCF url(border.png) content-box no-repeat;
+            -pie-background: #CCF url(border.png) content-box no-repeat;
+        }
+        .content-box-br {
+            background: #CCF url(border.png) content-box no-repeat 100% 100%;
+            -pie-background: #CCF url(border.png) content-box no-repeat 100% 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tests for background-origin</h1>
+
+    <div class="test border-box">origin = border-box</div>
+    <div class="test border-box-br">origin = border-box</div>
+
+    <div class="test padding-box">origin = padding-box</div>
+    <div class="test padding-box-br">origin = padding-box</div>
+
+    <div class="test content-box">origin = content-box</div>
+    <div class="test content-box-br">origin = content-box</div>
+
+</body>
+</html>
