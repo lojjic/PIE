@@ -55,6 +55,12 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                 }
                 boxPos = 'absolute';
             }
+            
+            //Fix for ie8 when you reach page end after scrolling, it adds an extra pixel ... 
+            //@issue https://github.com/lojjic/PIE/issues/162
+            if (PIE.ieVersion == 8 && docEl.scrollTop == docEl.scrollHeight-docEl.clientHeight ){
+    			y--;
+			}
 
             s.position = boxPos;
             s.left = x;
