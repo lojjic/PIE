@@ -130,6 +130,12 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
                     shape.fill.opacity = alpha;
                 }
             }
+            
+            // adding rgba support ...
+            var _alpha = color.alpha();
+			if( _alpha < 1 ) {
+				shape.style.filter = 'alpha(opacity='+(_alpha*100)+')';
+			}
         }
     }
 
