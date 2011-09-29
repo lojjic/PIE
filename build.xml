@@ -2,7 +2,7 @@
 
 <project name="PIE" default="build" basedir=".">
 
-    <property name="version" value="1.0beta5" />
+    <property name="version" value="1.0beta6-SNAPSHOT" />
     <property name="build_dir" value="./build" />
     <property name="src_dir" value="./sources" />
 
@@ -12,7 +12,9 @@
 
     <target name="build-uncompressed">
         <mkdir dir="${build_dir}" />
-        <concat destfile="${build_dir}/script_uncompressed.js">
+
+        <concat destfile="${build_dir}/PIE_IE678_uncompressed.js">
+            <fileset file="${src_dir}/js_open.js" />
             <fileset file="${src_dir}/PIE_open.js" />
             <fileset file="${src_dir}/Util.js" />
             <fileset file="${src_dir}/GradientUtil.js" />
@@ -28,6 +30,7 @@
             <fileset file="${src_dir}/BgSize.js" />
             <fileset file="${src_dir}/Angle.js" />
             <fileset file="${src_dir}/Color.js" />
+            <fileset file="${src_dir}/Color_IE678.js" />
             <fileset file="${src_dir}/Tokenizer.js" />
             <fileset file="${src_dir}/BoundsInfo.js" />
             <fileset file="${src_dir}/StyleInfoBase.js" />
@@ -38,6 +41,7 @@
             <fileset file="${src_dir}/BoxShadowStyleInfo.js" />
             <fileset file="${src_dir}/VisibilityStyleInfo.js" />
             <fileset file="${src_dir}/RendererBase.js" />
+            <fileset file="${src_dir}/RendererBase_IE678.js" />
             <fileset file="${src_dir}/RootRenderer.js" />
             <fileset file="${src_dir}/BackgroundRenderer.js" />
             <fileset file="${src_dir}/BorderRenderer.js" />
@@ -45,39 +49,61 @@
             <fileset file="${src_dir}/BoxShadowOutsetRenderer.js" />
             <!--<fileset file="${src_dir}/BoxShadowInsetRenderer.js" />-->
             <fileset file="${src_dir}/ImgRenderer.js" />
+            <fileset file="${src_dir}/Element.js" />
+            <fileset file="${src_dir}/PIE_API.js" />
+            <fileset file="${src_dir}/js_close.js" />
+        </concat>
+
+        <concat destfile="${build_dir}/PIE_IE9_uncompressed.js">
+            <fileset file="${src_dir}/js_open.js" />
+            <fileset file="${src_dir}/PIE_open.js" />
+            <fileset file="${src_dir}/Util.js" />
+            <fileset file="${src_dir}/GradientUtil.js" />
+            <fileset file="${src_dir}/Observable.js" />
+            <fileset file="${src_dir}/Heartbeat.js" />
+            <fileset file="${src_dir}/OnBeforeUnload.js" />
+            <fileset file="${src_dir}/OnResize.js" />
+            <fileset file="${src_dir}/OnScroll.js" />
+            <fileset file="${src_dir}/OnPrint.js" />
+            <fileset file="${src_dir}/Length.js" />
+            <fileset file="${src_dir}/BgPosition.js" />
+            <fileset file="${src_dir}/BgSize.js" />
+            <fileset file="${src_dir}/Angle.js" />
+            <fileset file="${src_dir}/Color.js" />
+            <fileset file="${src_dir}/Tokenizer.js" />
+            <fileset file="${src_dir}/BoundsInfo.js" />
+            <fileset file="${src_dir}/StyleInfoBase.js" />
+            <fileset file="${src_dir}/BackgroundStyleInfo.js" />
+            <fileset file="${src_dir}/RendererBase.js" />
             <fileset file="${src_dir}/IE9RootRenderer.js" />
             <fileset file="${src_dir}/IE9BackgroundRenderer.js" />
             <fileset file="${src_dir}/IE9BorderImageRenderer.js" />
             <fileset file="${src_dir}/Element.js" />
             <fileset file="${src_dir}/PIE_API.js" />
-            <fileset file="${src_dir}/PIE_close.js" />
+            <fileset file="${src_dir}/js_close.js" />
         </concat>
 
         <concat destfile="${build_dir}/PIE_uncompressed.htc">
             <fileset file="${src_dir}/htc_open.txt" />
-            <fileset file="${build_dir}/script_uncompressed.js" />
-            <fileset file="${src_dir}/htc_init.js" />
+            <fileset file="${src_dir}/htc_script.js" />
             <fileset file="${src_dir}/htc_close.txt" />
         </concat>
 
-        <concat destfile="${build_dir}/PIE_uncompressed.js">
-            <fileset file="${src_dir}/js_open.js" />
-            <fileset file="${build_dir}/script_uncompressed.js" />
-            <fileset file="${src_dir}/js_close.js" />
-        </concat>
-
         <replace file="${build_dir}/PIE_uncompressed.htc" token="$Version$" value="${version}"/>
-        <replace file="${build_dir}/PIE_uncompressed.js" token="$Version$" value="${version}"/>
+        <replace file="${build_dir}/PIE_IE678_uncompressed.js" token="$Version$" value="${version}"/>
+        <replace file="${build_dir}/PIE_IE9_uncompressed.js" token="$Version$" value="${version}"/>
     </target>
 
     <target name="build-compressed" depends="build-uncompressed">
         <exec executable="java">
             <arg line='-jar tools/compiler.jar
-                       --js ${build_dir}/script_uncompressed.js
-                       --js ${src_dir}/htc_init.js
+                       --js ${build_dir}/PIE_IE678_uncompressed.js
+                       --js ${build_dir}/PIE_IE9_uncompressed.js
+                       --js ${src_dir}/htc_script.js
                        --js ${src_dir}/closure_preservefunctions.js
-                       --module "script_compressed:1"
-                       --module "htc_init_compressed:1"
+                       --module "PIE_IE678:1"
+                       --module "PIE_IE9:1"
+                       --module "htc_script_compressed:1"
                        --module "temp:1"
                        --module_output_path_prefix ${build_dir}/
                        --compilation_level ADVANCED_OPTIMIZATIONS
@@ -86,24 +112,16 @@
 
         <concat destfile="${build_dir}/PIE.htc">
             <fileset file="${src_dir}/htc_open.txt" />
-            <fileset file="${build_dir}/script_compressed.js" />
-            <fileset file="${build_dir}/htc_init_compressed.js" />
+            <fileset file="${build_dir}/htc_script_compressed.js" />
             <fileset file="${src_dir}/htc_close.txt" />
         </concat>
 
-        <concat destfile="${build_dir}/PIE.js">
-            <fileset file="${src_dir}/js_open.js" />
-            <fileset file="${build_dir}/script_compressed.js" />
-            <fileset file="${src_dir}/js_close.js" />
-        </concat>
-
         <replace file="${build_dir}/PIE.htc" token="$Version$" value="${version}"/>
-        <replace file="${build_dir}/PIE.js" token="$Version$" value="${version}"/>
+        <replace file="${build_dir}/PIE_IE678.js" token="$Version$" value="${version}"/>
+        <replace file="${build_dir}/PIE_IE9.js" token="$Version$" value="${version}"/>
 
         <delete file="${build_dir}/temp.js" />
-        <delete file="${build_dir}/htc_init_compressed.js" />
-        <delete file="${build_dir}/script_uncompressed.js" />
-        <delete file="${build_dir}/script_compressed.js" />
+        <delete file="${build_dir}/htc_script_compressed.js" />
     </target>
 
 

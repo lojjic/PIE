@@ -105,8 +105,8 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
             this.pieces = {};
 
             for( i = 0; i < len; i++ ) {
-                piece = this.pieces[ pieceNames[i] ] = PIE.Util.createVmlElement( 'rect' );
-                piece.appendChild( PIE.Util.createVmlElement( 'imagedata' ) );
+                piece = this.pieces[ pieceNames[i] ] = this.createVmlElement( 'rect' );
+                piece.appendChild( this.createVmlElement( 'imagedata' ) );
                 s = piece.style;
                 s['behavior'] = 'url(#default#VML)';
                 s.position = "absolute";

@@ -103,7 +103,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                                 gradient.stops.push( stop );
                             }
                             if( gradient.stops.length > 1 ) {
-                                PIE.Util.merge( image, gradient );
+                                PIE.merge( image, gradient );
                             }
                             break;
                         }
