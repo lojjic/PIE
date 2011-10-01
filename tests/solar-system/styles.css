@@ -12,6 +12,8 @@ www.cssbeauty.com
 
 - - - - - - - - - - - - - - - - - */
 
+html { -pie-base-url: "../../build"; }
+
 * {
     margin: 0;
     padding: 0;
