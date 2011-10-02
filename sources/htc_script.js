@@ -1,24 +1,17 @@
 var el = element,
     doc = el.document,
+    docMode = doc.documentMode || 0,
     PIE = window[ 'PIE' ];
 
-if (!PIE) {
+if (!PIE && docMode < 10) {
     (function() {
         var queue = {},
+            defaultBaseUrl = '$DefaultBaseUrl$',
+            protocol = doc.location.protocol,
             baseUrl, script, tester, isIE6;
 
         // Create stub PIE object
         PIE = window[ 'PIE' ] = {
-            'onLoad': function() {
-                for( var id in queue ) {
-                    if ( queue.hasOwnProperty( id ) ) {
-                        PIE[ 'attach' ]( queue[ id ] );
-                    }
-                }
-                queue = 0;
-                delete PIE[ 'onLoad' ];
-            },
-
             'attach': function( el ) {
                 queue[ el[ 'uniqueID' ] ] = el;
             },
@@ -28,17 +21,36 @@ if (!PIE) {
             }
         };
 
+        // Are we in IE6?
         tester = doc.createElement('div');
         tester.innerHTML = '<!--[if IE 6]><i></i><![endif]-->';
         isIE6 = tester.getElementsByTagName('i')[0];
 
-        // Start loading JS file
+        // Look for a custom -pie-base-url and load it, or fall back to the CDN url
         baseUrl = doc.documentElement.currentStyle.getAttribute( ( isIE6 ? '' : '-' ) + 'pie-base-url' );
-        baseUrl = baseUrl ? baseUrl.replace(/^"|"$/g, '') : '';
-        script = doc.createElement('script');
+        if( baseUrl ) {
+            baseUrl = baseUrl.replace(/^"|"$/g, '');
+        } else {
+            baseUrl = ( protocol === 'https:' ? protocol + defaultBaseUrl.replace( /^[^\/]*]/, '' ) : defaultBaseUrl );
+        }
+        baseUrl += '/PIE_IE' + ( docMode < 9 ? '678' : '9' ) + '$JSVariant$.js';
+
+        // Start loading JS file
+        script = doc.createElement( 'script' );
         script.async = true;
-        script.src = baseUrl + '/PIE_IE' + ( doc.documentMode === 9 ? '9' : '678' ) + '.js';
-        doc.getElementsByTagName( 'head' )[0].appendChild( script );
+        script.onreadystatechange = function() {
+            var rs = script.readyState, id;
+            if ( queue && ( rs === 'complete' || rs === 'loaded' ) ) {
+                for( id in queue ) {
+                    if ( queue.hasOwnProperty( id ) ) {
+                        PIE[ 'attach' ]( queue[ id ] );
+                    }
+                }
+                queue = 0;
+            }
+        };
+        script.src = baseUrl;
+        ( doc.getElementsByTagName( 'head' )[0] || doc.body ).appendChild( script );
     })();
 }
 
