@@ -18,7 +18,7 @@ var el = element,
 if (!PIE && docMode < 10) {
     (function() {
         var queue = {},
-            defaultBaseUrl = 'http://cdnjs.cloudflare.com/ajax/libs/css3pie/1.0beta6-SNAPSHOT',
+            defaultBaseUrl = 'http://lojjic.github.com/PIE/files/builds/1.0beta6-SNAPSHOT',
             protocol = doc.location.protocol,
             baseUrl, script, tester, isIE6;
 
