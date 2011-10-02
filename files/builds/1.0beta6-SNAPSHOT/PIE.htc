@@ -1,0 +1,17 @@
+<!--
+PIE: CSS3 rendering for IE
+Version 1.0beta6-SNAPSHOT
+http://css3pie.com
+Dual-licensed for use under the Apache License Version 2.0 or the General Public License (GPL) Version 2.
+-->
+<PUBLIC:COMPONENT lightWeight="true">
+<!-- saved from url=(0014)about:internet -->
+<PUBLIC:ATTACH EVENT="oncontentready" FOR="element" ONEVENT="init()" />
+<PUBLIC:ATTACH EVENT="ondocumentready" FOR="element" ONEVENT="init()" />
+<PUBLIC:ATTACH EVENT="ondetach" FOR="element" ONEVENT="cleanup()" />
+<script type="text/javascript">
+var ca=element,Z=ca.document,da=Z.documentMode||0,ea=window.PIE;
+!ea&&da<10&&function(){var N={},L=Z.location.protocol,e,$;ea=window.PIE={attach:function(a){N[a.uniqueID]=a},detach:function(a){delete N[a.uniqueID]}};e=Z.createElement("div");e.innerHTML="<!--[if IE 6]><i></i><![endif]--\>";e=e.getElementsByTagName("i")[0];e=(e=Z.documentElement.currentStyle.getAttribute((e?"":"-")+"pie-base-url"))?e.replace(/^"|"$/g,""):L==="https:"?L+"http://cdnjs.cloudflare.com/ajax/libs/css3pie/1.0beta6-SNAPSHOT".replace(/^[^\/]*]/,""):"http://cdnjs.cloudflare.com/ajax/libs/css3pie/1.0beta6-SNAPSHOT";e+="/PIE_IE"+(da<9?"678":"9")+".js";$=Z.createElement("script");
+$.async=true;$.onreadystatechange=function(){var a=$.readyState,b;if(N&&(a==="complete"||a==="loaded")){for(b in N)N.hasOwnProperty(b)&&ea.attach(N[b]);N=0}};$.src=e;(Z.getElementsByTagName("head")[0]||Z.body).appendChild($)}();function init(){var N=window.PIE;N&&Z.media!=="print"&&N.attach(ca)}function cleanup(){var N=window.PIE;N&&Z.media!=="print"&&N.detach(ca);ca=0}ca.readyState==="complete"&&init();
+</script>
+</PUBLIC:COMPONENT>
