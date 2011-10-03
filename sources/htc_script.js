@@ -6,9 +6,9 @@ var el = element,
 if (!PIE && docMode < 10) {
     (function() {
         var queue = {},
-            defaultBaseUrl = '$DefaultBaseUrl$',
+            baseUrls = $DefaultBaseUrls$,
             protocol = doc.location.protocol,
-            baseUrl, script, tester, isIE6;
+            baseUrl, tester, isIE6, i = 0;
 
         // Create stub PIE object
         PIE = window[ 'PIE' ] = {
@@ -30,27 +30,38 @@ if (!PIE && docMode < 10) {
         baseUrl = doc.documentElement.currentStyle.getAttribute( ( isIE6 ? '' : '-' ) + 'pie-base-url' );
         if( baseUrl ) {
             baseUrl = baseUrl.replace(/^"|"$/g, '');
-        } else {
-            baseUrl = ( protocol === 'https:' ? protocol + defaultBaseUrl.replace( /^[^\/]*]/, '' ) : defaultBaseUrl );
+            baseUrls = [ baseUrl ];
         }
-        baseUrl += '/PIE_IE' + ( docMode < 9 ? '678' : '9' ) + '$JSVariant$.js';
 
         // Start loading JS file
-        script = doc.createElement( 'script' );
-        script.async = true;
-        script.onreadystatechange = function() {
-            var rs = script.readyState, id;
-            if ( queue && ( rs === 'complete' || rs === 'loaded' ) ) {
-                for( id in queue ) {
-                    if ( queue.hasOwnProperty( id ) ) {
-                        PIE[ 'attach' ]( queue[ id ] );
+        function tryLoading( baseUrl ) {
+            var script = doc.createElement( 'script' );
+            script.async = true;
+            script.onreadystatechange = function() {
+                var rs = script.readyState, id;
+                if ( queue && ( rs === 'complete' || rs === 'loaded' ) ) {
+                    if ( 'version' in PIE ) {
+                        for( id in queue ) {
+                            if ( queue.hasOwnProperty( id ) ) {
+                                PIE[ 'attach' ]( queue[ id ] );
+                            }
+                        }
+                        queue = 0;
+                    } else {
+                        tryLoading( baseUrls[ ++i ] );
                     }
                 }
-                queue = 0;
+            };
+
+            if ( protocol === 'https:' ) {
+                baseUrl = baseUrl.replace( /^http:/, protocol );
             }
-        };
-        script.src = baseUrl;
-        ( doc.getElementsByTagName( 'head' )[0] || doc.body ).appendChild( script );
+            script.src = baseUrl + '/PIE_IE' + ( docMode < 9 ? '678' : '9' ) + '$JSVariant$.js';
+            ( doc.getElementsByTagName( 'head' )[0] || doc.body ).appendChild( script );
+        }
+
+        tryLoading( baseUrls[ i ] );
+
     })();
 }
 

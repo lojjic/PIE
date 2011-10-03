@@ -3,8 +3,8 @@
 <project name="PIE" default="build" basedir=".">
 
     <property name="version" value="1.0beta6-SNAPSHOT" />
-    <!--<property name="default_base_url" value="http://cdnjs.cloudflare.com/ajax/libs/css3pie/${version}" />-->
-    <property name="default_base_url" value="http://lojjic.github.com/PIE/files/builds/${version}" />
+    <!-- 'http://cdnjs.cloudflare.com/ajax/libs/css3pie/${version}' -->
+    <property name="default_base_urls" value="['http://lojjic.github.com/PIE/files/builds/${version}']"/>
     <property name="build_dir" value="./build" />
     <property name="src_dir" value="./sources" />
 
@@ -94,7 +94,7 @@
         <replace file="${build_dir}/PIE_uncompressed.htc">
             <replacefilter token="$Version$" value="${version}" />
             <replacefilter token="$JSVariant$" value="_uncompressed" />
-            <replacefilter token="$DefaultBaseUrl$" value="${default_base_url}" />
+            <replacefilter token="$DefaultBaseUrls$" value="${default_base_urls}" />
         </replace>
         <replace file="${build_dir}/PIE_IE678_uncompressed.js" token="$Version$" value="${version}"/>
         <replace file="${build_dir}/PIE_IE9_uncompressed.js" token="$Version$" value="${version}"/>
@@ -125,7 +125,7 @@
         <replace file="${build_dir}/PIE.htc">
             <replacefilter token="$Version$" value="${version}" />
             <replacefilter token="$JSVariant$" value="" />
-            <replacefilter token="$DefaultBaseUrl$" value="${default_base_url}" />
+            <replacefilter token="$DefaultBaseUrls$" value="${default_base_urls}" />
         </replace>
         <replace file="${build_dir}/PIE_IE678.js" token="$Version$" value="${version}"/>
         <replace file="${build_dir}/PIE_IE9.js" token="$Version$" value="${version}"/>
