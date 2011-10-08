@@ -12,7 +12,7 @@ www.cssbeauty.com
 
 - - - - - - - - - - - - - - - - - */
 
-html { -pie-base-url: "../../build"; }
+html { -pie-load-path: "../../build"; }
 
 * {
     margin: 0;

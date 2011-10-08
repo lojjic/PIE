@@ -1,6 +1,6 @@
 /* Peculiar, pictograms created by Lucian Marin - lucianmarin.com */
 
-html { -pie-base-url: "../../build"; }
+html { -pie-load-path: "../../build"; }
 
 .icon {
 position: relative;
