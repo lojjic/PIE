@@ -165,4 +165,34 @@
         <zip destfile="${build_dir}/PIE.zip" basedir="${build_dir}"/>
     </target>
 
+
+
+    <target name="deploy" depends="build" description="Builds and pushes the files to the gh-pages branch">
+        <!-- Clone repo into temp dir, checking out the gh-pages branch -->
+        <exec executable="git">
+            <arg line="clone --reference . --branch gh-pages git@github.com:lojjic/PIE.git ${build_dir}/temp-git-clone" />
+        </exec>
+
+        <!-- Copy built files into correct version dir -->
+        <copy todir="${build_dir}/temp-git-clone/files/builds/${version}" overwrite="true">
+            <fileset file="${build_dir}/PIE.htc" />
+            <fileset file="${build_dir}/PIE_IE678.js" />
+            <fileset file="${build_dir}/PIE_IE9.js" />
+            <fileset file="${build_dir}/PIE_uncompressed.htc" />
+            <fileset file="${build_dir}/PIE_IE678_uncompressed.js" />
+            <fileset file="${build_dir}/PIE_IE9_uncompressed.js" />
+        </copy>
+
+        <!-- Commit and push -->
+        <exec executable="git" dir="${build_dir}/temp-git-clone">
+            <arg line='commit -a -m "Update files for build ${version}"' />
+        </exec>
+        <exec executable="git" dir="${build_dir}/temp-git-clone">
+            <arg line='push origin gh-pages' />
+        </exec>
+
+        <!-- Cleanup -->
+        <delete dir="${build_dir}/temp-git-clone" />
+    </target>
+
 </project>
