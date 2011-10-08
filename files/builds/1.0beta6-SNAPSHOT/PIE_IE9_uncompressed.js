@@ -373,6 +373,29 @@ PIE.Heartbeat.run = function() {
     }
 };
 /**
+ * Create an observable listener for the onunload event
+ */
+(function() {
+    PIE.OnUnload = new PIE.Observable();
+
+    function handleUnload() {
+        PIE.OnUnload.fire();
+        window.detachEvent( 'onunload', handleUnload );
+        window[ 'PIE' ] = null;
+    }
+
+    window.attachEvent( 'onunload', handleUnload );
+
+    /**
+     * Attach an event which automatically gets detached onunload
+     */
+    PIE.OnUnload.attachManagedEvent = function( target, name, handler ) {
+        target.attachEvent( name, handler );
+        this.observe( function() {
+            target.detachEvent( name, handler );
+        } );
+    };
+})()/**
  * Create a single observable listener for window resize events.
  */
 PIE.OnResize = new PIE.Observable();
@@ -418,6 +441,12 @@ PIE.OnUnload.attachManagedEvent( window, 'onresize', function() { PIE.OnResize.f
     PIE.OnUnload.attachManagedEvent( window, 'onafterprint', afterPrint );
 
 })();/**
+ * Create a single observable listener for document mouseup events.
+ */
+PIE.OnMouseup = new PIE.Observable();
+
+PIE.OnUnload.attachManagedEvent( doc, 'onmouseup', function() { PIE.OnMouseup.fire(); } );
+/**
  * Wrapper for length and percentage style values. The value is immutable. A singleton instance per unique
  * value is returned from PIE.getLength() - always use that instead of instantiating directly.
  * @constructor
@@ -773,7 +802,55 @@ PIE.Color = (function() {
      */
     Color.rgbaRE = /\s*rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d+|\d*\.\d+)\s*\)\s*/;
 
-    Color.names = {};
+    Color.names = {
+        "aliceblue":"F0F8FF", "antiquewhite":"FAEBD7", "aqua":"0FF",
+        "aquamarine":"7FFFD4", "azure":"F0FFFF", "beige":"F5F5DC",
+        "bisque":"FFE4C4", "black":"000", "blanchedalmond":"FFEBCD",
+        "blue":"00F", "blueviolet":"8A2BE2", "brown":"A52A2A",
+        "burlywood":"DEB887", "cadetblue":"5F9EA0", "chartreuse":"7FFF00",
+        "chocolate":"D2691E", "coral":"FF7F50", "cornflowerblue":"6495ED",
+        "cornsilk":"FFF8DC", "crimson":"DC143C", "cyan":"0FF",
+        "darkblue":"00008B", "darkcyan":"008B8B", "darkgoldenrod":"B8860B",
+        "darkgray":"A9A9A9", "darkgreen":"006400", "darkkhaki":"BDB76B",
+        "darkmagenta":"8B008B", "darkolivegreen":"556B2F", "darkorange":"FF8C00",
+        "darkorchid":"9932CC", "darkred":"8B0000", "darksalmon":"E9967A",
+        "darkseagreen":"8FBC8F", "darkslateblue":"483D8B", "darkslategray":"2F4F4F",
+        "darkturquoise":"00CED1", "darkviolet":"9400D3", "deeppink":"FF1493",
+        "deepskyblue":"00BFFF", "dimgray":"696969", "dodgerblue":"1E90FF",
+        "firebrick":"B22222", "floralwhite":"FFFAF0", "forestgreen":"228B22",
+        "fuchsia":"F0F", "gainsboro":"DCDCDC", "ghostwhite":"F8F8FF",
+        "gold":"FFD700", "goldenrod":"DAA520", "gray":"808080",
+        "green":"008000", "greenyellow":"ADFF2F", "honeydew":"F0FFF0",
+        "hotpink":"FF69B4", "indianred":"CD5C5C", "indigo":"4B0082",
+        "ivory":"FFFFF0", "khaki":"F0E68C", "lavender":"E6E6FA",
+        "lavenderblush":"FFF0F5", "lawngreen":"7CFC00", "lemonchiffon":"FFFACD",
+        "lightblue":"ADD8E6", "lightcoral":"F08080", "lightcyan":"E0FFFF",
+        "lightgoldenrodyellow":"FAFAD2", "lightgreen":"90EE90", "lightgrey":"D3D3D3",
+        "lightpink":"FFB6C1", "lightsalmon":"FFA07A", "lightseagreen":"20B2AA",
+        "lightskyblue":"87CEFA", "lightslategray":"789", "lightsteelblue":"B0C4DE",
+        "lightyellow":"FFFFE0", "lime":"0F0", "limegreen":"32CD32",
+        "linen":"FAF0E6", "magenta":"F0F", "maroon":"800000",
+        "mediumauqamarine":"66CDAA", "mediumblue":"0000CD", "mediumorchid":"BA55D3",
+        "mediumpurple":"9370D8", "mediumseagreen":"3CB371", "mediumslateblue":"7B68EE",
+        "mediumspringgreen":"00FA9A", "mediumturquoise":"48D1CC", "mediumvioletred":"C71585",
+        "midnightblue":"191970", "mintcream":"F5FFFA", "mistyrose":"FFE4E1",
+        "moccasin":"FFE4B5", "navajowhite":"FFDEAD", "navy":"000080",
+        "oldlace":"FDF5E6", "olive":"808000", "olivedrab":"688E23",
+        "orange":"FFA500", "orangered":"FF4500", "orchid":"DA70D6",
+        "palegoldenrod":"EEE8AA", "palegreen":"98FB98", "paleturquoise":"AFEEEE",
+        "palevioletred":"D87093", "papayawhip":"FFEFD5", "peachpuff":"FFDAB9",
+        "peru":"CD853F", "pink":"FFC0CB", "plum":"DDA0DD",
+        "powderblue":"B0E0E6", "purple":"800080", "red":"F00",
+        "rosybrown":"BC8F8F", "royalblue":"4169E1", "saddlebrown":"8B4513",
+        "salmon":"FA8072", "sandybrown":"F4A460", "seagreen":"2E8B57",
+        "seashell":"FFF5EE", "sienna":"A0522D", "silver":"C0C0C0",
+        "skyblue":"87CEEB", "slateblue":"6A5ACD", "slategray":"708090",
+        "snow":"FFFAFA", "springgreen":"00FF7F", "steelblue":"4682B4",
+        "tan":"D2B48C", "teal":"008080", "thistle":"D8BFD8",
+        "tomato":"FF6347", "turquoise":"40E0D0", "violet":"EE82EE",
+        "wheat":"F5DEB3", "white":"FFF", "whitesmoke":"F5F5F5",
+        "yellow":"FF0", "yellowgreen":"9ACD32"
+    };
 
     Color.prototype = {
         /**
@@ -1607,6 +1684,39 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         return el.style[ this.styleProperty ] || el.currentStyle.getAttribute( this.cssProperty );
     } ),
 
+
+    /**
+     * For a given background-origin value, return the dimensions of the background area.
+     * @param {String} bgOrigin
+     * @param {PIE.BoundsInfo} boundsInfo
+     * @param {PIE.BorderStyleInfo} borderInfo
+     */
+    getBgAreaSize: function( bgOrigin, boundsInfo, borderInfo ) {
+        var el = this.targetElement,
+            bounds = boundsInfo.getBounds(),
+            w = bounds.w,
+            h = bounds.h,
+            borders, getLength, cs;
+
+        if( bgOrigin !== 'border-box' ) {
+            borders = borderInfo.getProps();
+            if( borders && ( borders = borders.widths ) ) {
+                w -= borders[ 'l' ].pixels( el ) + borders[ 'l' ].pixels( el );
+                h -= borders[ 't' ].pixels( el ) + borders[ 'b' ].pixels( el );
+            }
+        }
+
+        if ( bgOrigin === 'content-box' ) {
+            getLength = PIE.getLength;
+            cs = el.currentStyle;
+            w -= getLength( cs.paddingLeft ).pixels( el ) + getLength( cs.paddingRight ).pixels( el );
+            h -= getLength( cs.paddingTop ).pixels( el ) + getLength( cs.paddingBottom ).pixels( el );
+        }
+
+        return { w: w, h: h };
+    },
+
+
     /**
      * Tests if style.PiePngFix or the -pie-png-fix property is set to true in IE6.
      */
@@ -1628,6 +1738,249 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     isActive: PIE.StyleInfoBase.cacheWhenLocked( function() {
         return (this.getCss3() || this.isPngFix()) && !!this.getProps();
     } )
+
+} );/**
+ * Handles parsing, caching, and detecting changes to border CSS
+ * @constructor
+ * @param {Element} el the target element
+ */
+PIE.BorderStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
+
+    sides: [ 'Top', 'Right', 'Bottom', 'Left' ],
+    namedWidths: {
+        'thin': '1px',
+        'medium': '3px',
+        'thick': '5px'
+    },
+
+    parseCss: function( css ) {
+        var w = {},
+            s = {},
+            c = {},
+            active = false,
+            colorsSame = true,
+            stylesSame = true,
+            widthsSame = true;
+
+        this.withActualBorder( function() {
+            var el = this.targetElement,
+                cs = el.currentStyle,
+                i = 0,
+                style, color, width, lastStyle, lastColor, lastWidth, side, ltr;
+            for( ; i < 4; i++ ) {
+                side = this.sides[ i ];
+
+                ltr = side.charAt(0).toLowerCase();
+                style = s[ ltr ] = cs[ 'border' + side + 'Style' ];
+                color = cs[ 'border' + side + 'Color' ];
+                width = cs[ 'border' + side + 'Width' ];
+
+                if( i > 0 ) {
+                    if( style !== lastStyle ) { stylesSame = false; }
+                    if( color !== lastColor ) { colorsSame = false; }
+                    if( width !== lastWidth ) { widthsSame = false; }
+                }
+                lastStyle = style;
+                lastColor = color;
+                lastWidth = width;
+
+                c[ ltr ] = PIE.getColor( color );
+
+                width = w[ ltr ] = PIE.getLength( s[ ltr ] === 'none' ? '0' : ( this.namedWidths[ width ] || width ) );
+                if( width.pixels( this.targetElement ) > 0 ) {
+                    active = true;
+                }
+            }
+        } );
+
+        return active ? {
+            widths: w,
+            styles: s,
+            colors: c,
+            widthsSame: widthsSame,
+            colorsSame: colorsSame,
+            stylesSame: stylesSame
+        } : null;
+    },
+
+    getCss: PIE.StyleInfoBase.cacheWhenLocked( function() {
+        var el = this.targetElement,
+            cs = el.currentStyle,
+            css;
+
+        // Don't redraw or hide borders for cells in border-collapse:collapse tables
+        if( !( el.tagName in PIE.tableCellTags && el.offsetParent.currentStyle.borderCollapse === 'collapse' ) ) {
+            this.withActualBorder( function() {
+                css = cs.borderWidth + '|' + cs.borderStyle + '|' + cs.borderColor;
+            } );
+        }
+        return css;
+    } ),
+
+    /**
+     * Execute a function with the actual border styles (not overridden with runtimeStyle
+     * properties set by the renderers) available via currentStyle.
+     * @param fn
+     */
+    withActualBorder: function( fn ) {
+        var rs = this.targetElement.runtimeStyle,
+            rsWidth = rs.borderWidth,
+            rsColor = rs.borderColor,
+            ret;
+
+        if( rsWidth ) rs.borderWidth = '';
+        if( rsColor ) rs.borderColor = '';
+
+        ret = fn.call( this );
+
+        if( rsWidth ) rs.borderWidth = rsWidth;
+        if( rsColor ) rs.borderColor = rsColor;
+
+        return ret;
+    }
+
+} );
+/**
+ * Handles parsing, caching, and detecting changes to border-image CSS
+ * @constructor
+ * @param {Element} el the target element
+ */
+PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
+
+    cssProperty: 'border-image',
+    styleProperty: 'borderImage',
+
+    repeatIdents: { 'stretch':1, 'round':1, 'repeat':1, 'space':1 },
+
+    parseCss: function( css ) {
+        var p = null, tokenizer, token, type, value,
+            slices, widths, outsets,
+            slashCount = 0,
+            Type = PIE.Tokenizer.Type,
+            IDENT = Type.IDENT,
+            NUMBER = Type.NUMBER,
+            PERCENT = Type.PERCENT;
+
+        if( css ) {
+            tokenizer = new PIE.Tokenizer( css );
+            p = {};
+
+            function isSlash( token ) {
+                return token && ( token.tokenType & Type.OPERATOR ) && ( token.tokenValue === '/' );
+            }
+
+            function isFillIdent( token ) {
+                return token && ( token.tokenType & IDENT ) && ( token.tokenValue === 'fill' );
+            }
+
+            function collectSlicesEtc() {
+                slices = tokenizer.until( function( tok ) {
+                    return !( tok.tokenType & ( NUMBER | PERCENT ) );
+                } );
+
+                if( isFillIdent( tokenizer.next() ) && !p.fill ) {
+                    p.fill = true;
+                } else {
+                    tokenizer.prev();
+                }
+
+                if( isSlash( tokenizer.next() ) ) {
+                    slashCount++;
+                    widths = tokenizer.until( function( token ) {
+                        return !token.isLengthOrPercent() && !( ( token.tokenType & IDENT ) && token.tokenValue === 'auto' );
+                    } );
+
+                    if( isSlash( tokenizer.next() ) ) {
+                        slashCount++;
+                        outsets = tokenizer.until( function( token ) {
+                            return !token.isLength();
+                        } );
+                    }
+                } else {
+                    tokenizer.prev();
+                }
+            }
+
+            while( token = tokenizer.next() ) {
+                type = token.tokenType;
+                value = token.tokenValue;
+
+                // Numbers and/or 'fill' keyword: slice values. May be followed optionally by width values, followed optionally by outset values
+                if( type & ( NUMBER | PERCENT ) && !slices ) {
+                    tokenizer.prev();
+                    collectSlicesEtc();
+                }
+                else if( isFillIdent( token ) && !p.fill ) {
+                    p.fill = true;
+                    collectSlicesEtc();
+                }
+
+                // Idents: one or values for 'repeat'
+                else if( ( type & IDENT ) && this.repeatIdents[value] && !p.repeat ) {
+                    p.repeat = { h: value };
+                    if( token = tokenizer.next() ) {
+                        if( ( token.tokenType & IDENT ) && this.repeatIdents[token.tokenValue] ) {
+                            p.repeat.v = token.tokenValue;
+                        } else {
+                            tokenizer.prev();
+                        }
+                    }
+                }
+
+                // URL of the image
+                else if( ( type & Type.URL ) && !p.src ) {
+                    p.src =  value;
+                }
+
+                // Found something unrecognized; exit.
+                else {
+                    return null;
+                }
+            }
+
+            // Validate what we collected
+            if( !p.src || !slices || slices.length < 1 || slices.length > 4 ||
+                ( widths && widths.length > 4 ) || ( slashCount === 1 && widths.length < 1 ) ||
+                ( outsets && outsets.length > 4 ) || ( slashCount === 2 && outsets.length < 1 ) ) {
+                return null;
+            }
+
+            // Fill in missing values
+            if( !p.repeat ) {
+                p.repeat = { h: 'stretch' };
+            }
+            if( !p.repeat.v ) {
+                p.repeat.v = p.repeat.h;
+            }
+
+            function distributeSides( tokens, convertFn ) {
+                return {
+                    't': convertFn( tokens[0] ),
+                    'r': convertFn( tokens[1] || tokens[0] ),
+                    'b': convertFn( tokens[2] || tokens[0] ),
+                    'l': convertFn( tokens[3] || tokens[1] || tokens[0] )
+                };
+            }
+
+            p.slice = distributeSides( slices, function( tok ) {
+                return PIE.getLength( ( tok.tokenType & NUMBER ) ? tok.tokenValue + 'px' : tok.tokenValue );
+            } );
+
+            if( widths && widths[0] ) {
+                p.widths = distributeSides( widths, function( tok ) {
+                    return tok.isLengthOrPercent() ? PIE.getLength( tok.tokenValue ) : tok.tokenValue;
+                } );
+            }
+
+            if( outsets && outsets[0] ) {
+                p.outset = distributeSides( outsets, function( tok ) {
+                    return tok.isLength() ? PIE.getLength( tok.tokenValue ) : tok.tokenValue;
+                } );
+            }
+        }
+
+        return p;
+    }
 
 } );PIE.RendererBase = {
 
@@ -1697,6 +2050,13 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     },
 
     /**
+     * Hide the target element's border
+     */
+    hideBorder: function() {
+        this.targetElement.runtimeStyle.borderColor = 'transparent';
+    },
+
+    /**
      * Destroy the rendered objects. This is a base implementation which handles common renderer
      * structures, but individual renderers may override as necessary.
      */
@@ -1763,7 +2123,8 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
     draw: function() {
         var me = this,
-            props = me.styleInfos.backgroundInfo.getProps(),
+            bgInfo = me.styleInfos.backgroundInfo,
+            props = bgInfo.getProps(),
             bg, images, i = 0, img, bgAreaSize, bgSize;
 
         if ( props ) {
@@ -1773,7 +2134,7 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
             if ( images ) {
                 while( img = images[ i++ ] ) {
                     if (img.imgType === 'linear-gradient' ) {
-                        bgAreaSize = me.getBgAreaSize( img.bgOrigin );
+                        bgAreaSize = bgInfo.getBgAreaSize( bg.bgOrigin, me.boundsInfo, me.styleInfos.borderInfo ),
                         bgSize = ( img.bgSize || PIE.BgSize.DEFAULT ).pixels(
                             me.targetElement, bgAreaSize.w, bgAreaSize.h, bgAreaSize.w, bgAreaSize.h
                         ),
@@ -1801,8 +2162,6 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
             return token.tokenValue;
         }).join(' ') : '0 0';
     },
-
-    getBgAreaSize: PIE.BackgroundRenderer.prototype.getBgAreaSize,
 
     getGradientSvg: function( info, bgWidth, bgHeight ) {
         var el = this.targetElement,
@@ -2034,7 +2393,28 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
         }
     })(),
 
-    prepareUpdate: PIE.BorderImageRenderer.prototype.prepareUpdate,
+    prepareUpdate: function() {
+        if (this.isActive()) {
+            var me = this,
+                el = me.targetElement,
+                rs = el.runtimeStyle,
+                widths = me.styleInfos.borderImageInfo.getProps().widths;
+
+            // Force border-style to solid so it doesn't collapse
+            rs.borderStyle = 'solid';
+
+            // If widths specified in border-image shorthand, override border-width
+            if ( widths ) {
+                rs.borderTopWidth = widths['t'].pixels( el ) + 'px';
+                rs.borderRightWidth = widths['r'].pixels( el ) + 'px';
+                rs.borderBottomWidth = widths['b'].pixels( el ) + 'px';
+                rs.borderLeftWidth = widths['l'].pixels( el ) + 'px';
+            }
+
+            // Make the border transparent
+            me.hideBorder();
+        }
+    },
 
     destroy: function() {
         var me = this,
