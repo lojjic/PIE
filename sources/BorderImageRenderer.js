@@ -105,8 +105,8 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
             this.pieces = {};
 
             for( i = 0; i < len; i++ ) {
-                piece = this.pieces[ pieceNames[i] ] = PIE.Util.createVmlElement( 'rect' );
-                piece.appendChild( PIE.Util.createVmlElement( 'imagedata' ) );
+                piece = this.pieces[ pieceNames[i] ] = this.createVmlElement( 'rect' );
+                piece.appendChild( this.createVmlElement( 'imagedata' ) );
                 s = piece.style;
                 s['behavior'] = 'url(#default#VML)';
                 s.position = "absolute";
@@ -134,12 +134,11 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
             rs.borderStyle = 'solid';
 
             // If widths specified in border-image shorthand, override border-width
-            // NOTE px units needed here as this gets used by the IE9 renderer too
             if ( widths ) {
-                rs.borderTopWidth = widths['t'].pixels( el ) + 'px';
-                rs.borderRightWidth = widths['r'].pixels( el ) + 'px';
-                rs.borderBottomWidth = widths['b'].pixels( el ) + 'px';
-                rs.borderLeftWidth = widths['l'].pixels( el ) + 'px';
+                rs.borderTopWidth = widths['t'].pixels( el );
+                rs.borderRightWidth = widths['r'].pixels( el );
+                rs.borderBottomWidth = widths['b'].pixels( el );
+                rs.borderLeftWidth = widths['l'].pixels( el );
             }
 
             // Make the border transparent

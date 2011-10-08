@@ -103,7 +103,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                                 gradient.stops.push( stop );
                             }
                             if( gradient.stops.length > 1 ) {
-                                PIE.Util.merge( image, gradient );
+                                PIE.merge( image, gradient );
                             }
                             break;
                         }
@@ -352,6 +352,39 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         var el = this.targetElement;
         return el.style[ this.styleProperty ] || el.currentStyle.getAttribute( this.cssProperty );
     } ),
+
+
+    /**
+     * For a given background-origin value, return the dimensions of the background area.
+     * @param {String} bgOrigin
+     * @param {PIE.BoundsInfo} boundsInfo
+     * @param {PIE.BorderStyleInfo} borderInfo
+     */
+    getBgAreaSize: function( bgOrigin, boundsInfo, borderInfo ) {
+        var el = this.targetElement,
+            bounds = boundsInfo.getBounds(),
+            w = bounds.w,
+            h = bounds.h,
+            borders, getLength, cs;
+
+        if( bgOrigin !== 'border-box' ) {
+            borders = borderInfo.getProps();
+            if( borders && ( borders = borders.widths ) ) {
+                w -= borders[ 'l' ].pixels( el ) + borders[ 'l' ].pixels( el );
+                h -= borders[ 't' ].pixels( el ) + borders[ 'b' ].pixels( el );
+            }
+        }
+
+        if ( bgOrigin === 'content-box' ) {
+            getLength = PIE.getLength;
+            cs = el.currentStyle;
+            w -= getLength( cs.paddingLeft ).pixels( el ) + getLength( cs.paddingRight ).pixels( el );
+            h -= getLength( cs.paddingTop ).pixels( el ) + getLength( cs.paddingBottom ).pixels( el );
+        }
+
+        return { w: w, h: h };
+    },
+
 
     /**
      * Tests if style.PiePngFix or the -pie-png-fix property is set to true in IE6.

@@ -165,7 +165,28 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
         }
     })(),
 
-    prepareUpdate: PIE.BorderImageRenderer.prototype.prepareUpdate,
+    prepareUpdate: function() {
+        if (this.isActive()) {
+            var me = this,
+                el = me.targetElement,
+                rs = el.runtimeStyle,
+                widths = me.styleInfos.borderImageInfo.getProps().widths;
+
+            // Force border-style to solid so it doesn't collapse
+            rs.borderStyle = 'solid';
+
+            // If widths specified in border-image shorthand, override border-width
+            if ( widths ) {
+                rs.borderTopWidth = widths['t'].pixels( el ) + 'px';
+                rs.borderRightWidth = widths['r'].pixels( el ) + 'px';
+                rs.borderBottomWidth = widths['b'].pixels( el ) + 'px';
+                rs.borderLeftWidth = widths['l'].pixels( el ) + 'px';
+            }
+
+            // Make the border transparent
+            me.hideBorder();
+        }
+    },
 
     destroy: function() {
         var me = this,

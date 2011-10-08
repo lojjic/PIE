@@ -131,8 +131,9 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             // update executed, make sure that's not the case to avoid divide-by-zero error
             if( elW && elH ) {
                 var fill = shape.fill,
-                    bg = me.styleInfos.backgroundInfo.getProps().bgImages[ index ],
-                    bgAreaSize = me.getBgAreaSize( bg.bgOrigin ),
+                    bgInfo = me.styleInfos.backgroundInfo,
+                    bg = bgInfo.getProps().bgImages[ index ],
+                    bgAreaSize = bgInfo.getBgAreaSize( bg.bgOrigin, me.boundsInfo, me.styleInfos.borderInfo ),
                     adjustedImgSize = ( bg.bgSize || PIE.BgSize.DEFAULT ).pixels(
                         me.targetElement, bgAreaSize.w, bgAreaSize.h, imgSize.w, imgSize.h
                     ),
@@ -170,39 +171,6 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 }
             }
         } );
-    },
-
-
-    /**
-     * For a given background-origin value, return the dimensions of the background area.
-     * @param {String} bgOrigin
-     */
-    getBgAreaSize: function( bgOrigin ) {
-        var me = this,
-            el = me.targetElement,
-            bounds = me.boundsInfo.getBounds(),
-            elW = bounds.w,
-            elH = bounds.h,
-            w = elW,
-            h = elH,
-            borders, getLength, cs;
-
-        if( bgOrigin !== 'border-box' ) {
-            borders = me.styleInfos.borderInfo.getProps();
-            if( borders && ( borders = borders.widths ) ) {
-                w -= borders[ 'l' ].pixels( el ) + borders[ 'l' ].pixels( el );
-                h -= borders[ 't' ].pixels( el ) + borders[ 'b' ].pixels( el );
-            }
-        }
-
-        if ( bgOrigin === 'content-box' ) {
-            getLength = PIE.getLength;
-            cs = el.currentStyle;
-            w -= getLength( cs.paddingLeft ).pixels( el ) + getLength( cs.paddingRight ).pixels( el );
-            h -= getLength( cs.paddingTop ).pixels( el ) + getLength( cs.paddingBottom ).pixels( el );
-        }
-
-        return { w: w, h: h };
     },
 
 
