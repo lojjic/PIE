@@ -66,6 +66,13 @@ PIE.RendererBase = {
     },
 
     /**
+     * Hide the target element's border
+     */
+    hideBorder: function() {
+        this.targetElement.runtimeStyle.borderColor = 'transparent';
+    },
+
+    /**
      * Destroy the rendered objects. This is a base implementation which handles common renderer
      * structures, but individual renderers may override as necessary.
      */

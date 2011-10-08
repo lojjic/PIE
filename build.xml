@@ -32,7 +32,6 @@
             <fileset file="${src_dir}/BgSize.js" />
             <fileset file="${src_dir}/Angle.js" />
             <fileset file="${src_dir}/Color.js" />
-            <fileset file="${src_dir}/Color_IE678.js" />
             <fileset file="${src_dir}/Tokenizer.js" />
             <fileset file="${src_dir}/BoundsInfo.js" />
             <fileset file="${src_dir}/StyleInfoBase.js" />
@@ -63,10 +62,11 @@
             <fileset file="${src_dir}/GradientUtil.js" />
             <fileset file="${src_dir}/Observable.js" />
             <fileset file="${src_dir}/Heartbeat.js" />
-            <fileset file="${src_dir}/OnBeforeUnload.js" />
+            <fileset file="${src_dir}/OnUnload.js" />
             <fileset file="${src_dir}/OnResize.js" />
             <fileset file="${src_dir}/OnScroll.js" />
             <fileset file="${src_dir}/OnPrint.js" />
+            <fileset file="${src_dir}/OnMouseup.js" />
             <fileset file="${src_dir}/Length.js" />
             <fileset file="${src_dir}/BgPosition.js" />
             <fileset file="${src_dir}/BgSize.js" />
@@ -76,6 +76,8 @@
             <fileset file="${src_dir}/BoundsInfo.js" />
             <fileset file="${src_dir}/StyleInfoBase.js" />
             <fileset file="${src_dir}/BackgroundStyleInfo.js" />
+            <fileset file="${src_dir}/BorderStyleInfo.js" />
+            <fileset file="${src_dir}/BorderImageStyleInfo.js" />
             <fileset file="${src_dir}/RendererBase.js" />
             <fileset file="${src_dir}/IE9RootRenderer.js" />
             <fileset file="${src_dir}/IE9BackgroundRenderer.js" />
@@ -104,11 +106,25 @@
         <exec executable="java">
             <arg line='-jar tools/compiler.jar
                        --js ${build_dir}/PIE_IE678_uncompressed.js
+                       --module "PIE_IE678:1"
+                       --module_output_path_prefix ${build_dir}/
+                       --compilation_level ADVANCED_OPTIMIZATIONS
+                       --externs ${src_dir}/closure_externs.js' />
+        </exec>
+
+        <exec executable="java">
+            <arg line='-jar tools/compiler.jar
                        --js ${build_dir}/PIE_IE9_uncompressed.js
+                       --module "PIE_IE9:1"
+                       --module_output_path_prefix ${build_dir}/
+                       --compilation_level ADVANCED_OPTIMIZATIONS
+                       --externs ${src_dir}/closure_externs.js' />
+        </exec>
+
+        <exec executable="java">
+            <arg line='-jar tools/compiler.jar
                        --js ${src_dir}/htc_script.js
                        --js ${src_dir}/closure_preservefunctions.js
-                       --module "PIE_IE678:1"
-                       --module "PIE_IE9:1"
                        --module "htc_script_compressed:1"
                        --module "temp:1"
                        --module_output_path_prefix ${build_dir}/

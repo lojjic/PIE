@@ -21,7 +21,8 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
     draw: function() {
         var me = this,
-            props = me.styleInfos.backgroundInfo.getProps(),
+            bgInfo = me.styleInfos.backgroundInfo,
+            props = bgInfo.getProps(),
             bg, images, i = 0, img, bgAreaSize, bgSize;
 
         if ( props ) {
@@ -31,7 +32,7 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
             if ( images ) {
                 while( img = images[ i++ ] ) {
                     if (img.imgType === 'linear-gradient' ) {
-                        bgAreaSize = me.getBgAreaSize( img.bgOrigin );
+                        bgAreaSize = bgInfo.getBgAreaSize( bg.bgOrigin, me.boundsInfo, me.styleInfos.borderInfo ),
                         bgSize = ( img.bgSize || PIE.BgSize.DEFAULT ).pixels(
                             me.targetElement, bgAreaSize.w, bgAreaSize.h, bgAreaSize.w, bgAreaSize.h
                         ),
@@ -59,8 +60,6 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
             return token.tokenValue;
         }).join(' ') : '0 0';
     },
-
-    getBgAreaSize: PIE.BackgroundRenderer.prototype.getBgAreaSize,
 
     getGradientSvg: function( info, bgWidth, bgHeight ) {
         var el = this.targetElement,
