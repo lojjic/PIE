@@ -86,7 +86,7 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
             }
             path = this.getBoxPath( { t: shrink, r: shrink, b: shrink, l: shrink }, 2, radii );
 
-            if( blur ) {
+            if( (( w + h ) > 0 ) && blur ) {
                 totalW = ( spread + blur ) * 2 + w;
                 totalH = ( spread + blur ) * 2 + h;
                 focusX = blur * 2 / totalW;
