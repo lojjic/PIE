@@ -74,7 +74,7 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
             shadowInfo = shadowInfos[ i ];
             xOff = shadowInfo.xOffset.pixels( el );
             yOff = shadowInfo.yOffset.pixels( el );
-            spread = shadowInfo.spread.pixels( el ),
+            spread = shadowInfo.spread.pixels( el );
             blur = shadowInfo.blur.pixels( el );
             color = shadowInfo.color;
             // Shape path
