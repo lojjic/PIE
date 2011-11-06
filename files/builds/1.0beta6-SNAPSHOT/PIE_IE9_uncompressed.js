@@ -380,11 +380,11 @@ PIE.Heartbeat.run = function() {
 
     function handleUnload() {
         PIE.OnUnload.fire();
-        window.detachEvent( 'onunload', handleUnload );
-        window[ 'PIE' ] = null;
+        win.detachEvent( 'onunload', handleUnload );
+        win[ 'PIE' ] = null;
     }
 
-    window.attachEvent( 'onunload', handleUnload );
+    win.attachEvent( 'onunload', handleUnload );
 
     /**
      * Attach an event which automatically gets detached onunload
@@ -400,7 +400,7 @@ PIE.Heartbeat.run = function() {
  */
 PIE.OnResize = new PIE.Observable();
 
-PIE.OnUnload.attachManagedEvent( window, 'onresize', function() { PIE.OnResize.fire(); } );
+PIE.OnUnload.attachManagedEvent( win, 'onresize', function() { PIE.OnResize.fire(); } );
 /**
  * Create a single observable listener for scroll events. Used for lazy loading based
  * on the viewport, and for fixed position backgrounds.
@@ -412,7 +412,7 @@ PIE.OnUnload.attachManagedEvent( window, 'onresize', function() { PIE.OnResize.f
         PIE.OnScroll.fire();
     }
 
-    PIE.OnUnload.attachManagedEvent( window, 'onscroll', scrolled );
+    PIE.OnUnload.attachManagedEvent( win, 'onscroll', scrolled );
 
     PIE.OnResize.observe( scrolled );
 })();
@@ -437,8 +437,8 @@ PIE.OnUnload.attachManagedEvent( window, 'onresize', function() { PIE.OnResize.f
         }
     }
 
-    PIE.OnUnload.attachManagedEvent( window, 'onbeforeprint', beforePrint );
-    PIE.OnUnload.attachManagedEvent( window, 'onafterprint', afterPrint );
+    PIE.OnUnload.attachManagedEvent( win, 'onbeforeprint', beforePrint );
+    PIE.OnUnload.attachManagedEvent( win, 'onafterprint', afterPrint );
 
 })();/**
  * Create a single observable listener for document mouseup events.
@@ -578,6 +578,13 @@ PIE.Length = (function() {
                 return px;
             }
         }
+    };
+
+    /**
+     * Convert a pixel length into a point length
+     */
+    Length.pxToPt = function( px ) {
+        return px / conversions[ 'pt' ];
     };
 
 
@@ -2022,12 +2029,13 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     prepareUpdate: PIE.emptyFn,
 
     /**
-     * Tell the renderer to update based on modified properties
+     * Tell the renderer to update based on modified properties or element dimensions
      */
-    updateProps: function() {
-        this.destroy();
+    updateRendering: function() {
         if( this.isActive() ) {
             this.draw();
+        } else {
+            this.destroy();
         }
     },
 
@@ -2036,17 +2044,6 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      */
     updatePos: function() {
         this.isPositioned = true;
-    },
-
-    /**
-     * Tell the renderer to update based on modified element dimensions
-     */
-    updateSize: function() {
-        if( this.isActive() ) {
-            this.draw();
-        } else {
-            this.destroy();
-        }
     },
 
     /**
@@ -2071,9 +2068,8 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 PIE.IE9RootRenderer = PIE.RendererBase.newRenderer( {
 
     updatePos: PIE.emptyFn,
-    updateSize: PIE.emptyFn,
+    updateRendering: PIE.emptyFn,
     updateVisibility: PIE.emptyFn,
-    updateProps: PIE.emptyFn,
 
     outerCommasRE: /^,+|,+$/g,
     innerCommasRE: /,+/g,
@@ -2575,14 +2571,14 @@ PIE.Element = (function() {
                     // Add property change listeners to ancestors if requested
                     initAncestorEventListeners();
 
-                    // Add to list of polled elements in IE8
+                    // Add to list of polled elements when -pie-poll:true
                     if( poll ) {
                         PIE.Heartbeat.observe( update );
                         PIE.Heartbeat.run();
                     }
 
                     // Trigger rendering
-                    update( 1 );
+                    update( 0, 1 );
                 }
 
                 if( !eventsAttached ) {
@@ -2628,12 +2624,14 @@ PIE.Element = (function() {
          * this rather than the updatePos/Size functions because sometimes, particularly
          * during page load, one will fire but the other won't.
          */
-        function update( force ) {
+        function update( checkProps, force ) {
             if( !destroyed ) {
                 if( initialized ) {
-                    var i, len = renderers.length;
-
                     lockAll();
+
+                    var i, len = renderers.length,
+                        sizeChanged = boundsInfo.sizeChanged();
+
                     for( i = 0; i < len; i++ ) {
                         renderers[i].prepareUpdate();
                     }
@@ -2649,12 +2647,13 @@ PIE.Element = (function() {
                             renderers[i].updatePos();
                         }
                     }
-                    if( force || boundsInfo.sizeChanged() ) {
-                        for( i = 0; i < len; i++ ) {
-                            renderers[i].updateSize();
+                    for( i = 0; i < len; i++ ) {
+                        if( force || sizeChanged || ( checkProps && renderers[i].needsUpdate() ) ) {
+                            renderers[i].updateRendering();
                         }
                     }
                     rootRenderer.finishUpdate();
+
                     unlockAll();
                 }
                 else if( !initializing ) {
@@ -2667,38 +2666,15 @@ PIE.Element = (function() {
          * Handle property changes to trigger update when appropriate.
          */
         function propChanged() {
-            var i, len = renderers.length,
-                renderer,
-                e = event;
+            var e = event;
 
             // Some elements like <table> fire onpropertychange events for old-school background properties
             // ('background', 'bgColor') when runtimeStyle background properties are changed, which
             // results in an infinite loop; therefore we filter out those property names. Also, 'display'
             // is ignored because size calculations don't work correctly immediately when its onpropertychange
             // event fires, and because it will trigger an onresize event anyway.
-            if( !destroyed && !( e && e.propertyName in ignorePropertyNames ) ) {
-                if( initialized ) {
-                    lockAll();
-                    for( i = 0; i < len; i++ ) {
-                        renderers[i].prepareUpdate();
-                    }
-                    for( i = 0; i < len; i++ ) {
-                        renderer = renderers[i];
-                        // Make sure position is synced if the element hasn't already been rendered.
-                        // TODO this feels sloppy - look into merging propChanged and update functions
-                        if( !renderer.isPositioned ) {
-                            renderer.updatePos();
-                        }
-                        if( renderer.needsUpdate() ) {
-                            renderer.updateProps();
-                        }
-                    }
-                    rootRenderer.finishUpdate();
-                    unlockAll();
-                }
-                else if( !initializing ) {
-                    init();
-                }
+            if( !( e && e.propertyName in ignorePropertyNames ) ) {
+                update( 1 );
             }
         }
 
@@ -2894,9 +2870,7 @@ PIE.Element = (function() {
         // These methods are all already bound to this instance so there's no need to wrap them
         // in a closure to maintain the 'this' scope object when calling them.
         this.init = init;
-        this.update = update;
         this.destroy = destroy;
-        this.el = el;
     }
 
     Element.getInstance = function( el ) {

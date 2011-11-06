@@ -14,4 +14,6 @@ var a=element,f=a.document,h=f.documentMode||0,k=window.PIE;
 !k&&h<10&&function(){function c(d){var g=f.createElement("script");g.async=true;g.onreadystatechange=function(){var l=g.readyState,i;if(e&&(l==="complete"||l==="loaded"))if("version"in k){for(i in e)e.hasOwnProperty(i)&&k.attach(e[i]);e=0}else c(j[++m])};if(n==="https:")d=d.replace(/^http:/,n);g.src=d+"/PIE_IE"+(h<9?"678":"9")+".js";(f.getElementsByTagName("head")[0]||f.body).appendChild(g)}var e={},j=['http://lojjic.github.com/PIE/files/builds/1.0beta6-SNAPSHOT'],n=f.location.protocol,b,m=0;k=window.PIE={attach:function(d){e[d.uniqueID]=
 d},detach:function(d){delete e[d.uniqueID]}};b=f.createElement("div");b.innerHTML="<!--[if IE 6]><i></i><![endif]--\>";b=b.getElementsByTagName("i")[0];if(b=f.documentElement.currentStyle.getAttribute((b?"":"-")+"pie-load-path")){b=b.replace(/^"|"$/g,"");j=[b]}c(j[m])}();function init(){var c=window.PIE;c&&f.media!=="print"&&c.attach(a)}function cleanup(){var c=window.PIE;c&&f.media!=="print"&&c.detach(a);a=0}a.readyState==="complete"&&init();
 </script>
+
+<script type="text/vbscript"></script>
 </PUBLIC:COMPONENT>
