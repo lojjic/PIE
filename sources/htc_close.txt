@@ -1,2 +1,9 @@
 </script>
+
+//# IE will sometimes hang for a long time on unload of pages with .htc behaviors
+//# attached to many elements, if the script block is a certain size. We can work
+//# around this by including an empty vbscript block at the end. For more details:
+//# http://www.pcreview.co.uk/forums/htc-components-512-bytes-javascript-slow-unload-t727396.html
+//# http://code.google.com/p/svgweb/source/browse/trunk/src/svg.htc
+<script type="text/vbscript"></script>
 </PUBLIC:COMPONENT>

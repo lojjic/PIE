@@ -54,6 +54,12 @@
             <fileset file="${src_dir}/Element.js" />
             <fileset file="${src_dir}/PIE_API.js" />
             <fileset file="${src_dir}/js_close.js" />
+
+            <filterchain>
+                <tokenfilter>
+                    <replacestring from="$Version$" to="${version}" />
+                </tokenfilter>
+            </filterchain>
         </concat>
 
         <concat destfile="${build_dir}/PIE_IE9_uncompressed.js">
@@ -86,21 +92,27 @@
             <fileset file="${src_dir}/Element.js" />
             <fileset file="${src_dir}/PIE_API.js" />
             <fileset file="${src_dir}/js_close.js" />
+
+            <filterchain>
+                <tokenfilter>
+                    <replacestring from="$Version$" to="${version}" />
+                </tokenfilter>
+            </filterchain>
         </concat>
 
         <concat destfile="${build_dir}/PIE_uncompressed.htc">
             <fileset file="${src_dir}/htc_open.txt" />
             <fileset file="${src_dir}/htc_script.js" />
             <fileset file="${src_dir}/htc_close.txt" />
-        </concat>
 
-        <replace file="${build_dir}/PIE_uncompressed.htc">
-            <replacefilter token="$Version$" value="${version}" />
-            <replacefilter token="$JSVariant$" value="_uncompressed" />
-            <replacefilter token="$DefaultBaseUrls$" value="${default_base_urls}" />
-        </replace>
-        <replace file="${build_dir}/PIE_IE678_uncompressed.js" token="$Version$" value="${version}"/>
-        <replace file="${build_dir}/PIE_IE9_uncompressed.js" token="$Version$" value="${version}"/>
+            <filterchain>
+                <tokenfilter>
+                    <replacestring from="$Version$" to="${version}" />
+                    <replacestring from="$JSVariant$" to="_uncompressed" />
+                    <replacestring from="$DefaultBaseUrls$" to="${default_base_urls}" />
+                </tokenfilter>
+            </filterchain>
+        </concat>
     </target>
 
     <target name="build-compressed" depends="build-uncompressed">
@@ -137,15 +149,18 @@
             <fileset file="${src_dir}/htc_open.txt" />
             <fileset file="${build_dir}/htc_script_compressed.js" />
             <fileset file="${src_dir}/htc_close.txt" />
-        </concat>
 
-        <replace file="${build_dir}/PIE.htc">
-            <replacefilter token="$Version$" value="${version}" />
-            <replacefilter token="$JSVariant$" value="" />
-            <replacefilter token="$DefaultBaseUrls$" value="${default_base_urls}" />
-        </replace>
-        <replace file="${build_dir}/PIE_IE678.js" token="$Version$" value="${version}"/>
-        <replace file="${build_dir}/PIE_IE9.js" token="$Version$" value="${version}"/>
+            <filterchain>
+                <striplinecomments>
+                    <comment value="//#" />
+                </striplinecomments>
+                <tokenfilter>
+                    <replacestring from="$Version$" to="${version}" />
+                    <replacestring from="$JSVariant$" to="" />
+                    <replacestring from="$DefaultBaseUrls$" to="${default_base_urls}" />
+                </tokenfilter>
+            </filterchain>
+        </concat>
 
         <delete file="${build_dir}/temp.js" />
         <delete file="${build_dir}/htc_script_compressed.js" />
