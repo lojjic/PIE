@@ -7,8 +7,7 @@
  */
 PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
 
-    boxZIndex: 4,
-    boxName: 'border',
+    shapeZIndex: 4,
 
     needsUpdate: function() {
         var si = this.styleInfos;
@@ -27,43 +26,46 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
      * Draw the border shape(s)
      */
     draw: function() {
-        var el = this.targetElement,
-            props = this.styleInfos.borderInfo.getProps(),
-            bounds = this.boundsInfo.getBounds(),
+        var me = this,
+            el = me.targetElement,
+            props = me.styleInfos.borderInfo.getProps(),
+            bounds = me.boundsInfo.getBounds(),
             w = bounds.w,
             h = bounds.h,
-            shape, stroke, s,
+            shape,
             segments, seg, i, len;
 
         if( props ) {
-            this.hideBorder();
+            me.hideBorder();
 
-            segments = this.getBorderSegments( 2 );
+            segments = me.getBorderSegments( 2 );
             for( i = 0, len = segments.length; i < len; i++) {
                 seg = segments[i];
-                shape = this.getShape( 'borderPiece' + i, seg.stroke ? 'stroke' : 'fill', this.getBox() );
-                shape.coordsize = w * 2 + ',' + h * 2;
-                shape.coordorigin = '1,1';
-                shape.path = seg.path;
-                s = shape.style;
-                s.width = w;
-                s.height = h;
+                shape = me.getShape( 'borderPiece' + i, me.shapeZIndex );
+                shape.setSize( w, h );
 
-                shape.filled = !!seg.fill;
-                shape.stroked = !!seg.stroke;
+                shape.setAttrs(
+                    'path', seg.path,
+                    'filled', !!seg.fill,
+                    'stroked', !!seg.stroke
+                );
+
                 if( seg.stroke ) {
-                    stroke = shape.stroke;
-                    stroke['weight'] = seg.weight + 'px';
-                    stroke.color = seg.color.colorValue( el );
-                    stroke['dashstyle'] = seg.stroke === 'dashed' ? '2 2' : seg.stroke === 'dotted' ? '1 1' : 'solid';
-                    stroke['linestyle'] = seg.stroke === 'double' && seg.weight > 2 ? 'ThinThin' : 'Single';
+                    shape.setStrokeAttrs(
+                        'weight', seg.weight + 'px',
+                        'color', seg.color.colorValue( el ),
+                        'dashstyle', seg.stroke === 'dashed' ? '2 2' : seg.stroke === 'dotted' ? '1 1' : 'solid',
+                        'linestyle', seg.stroke === 'double' && seg.weight > 2 ? 'ThinThin' : 'Single'
+                    );
                 } else {
-                    shape.fill.color = seg.fill.colorValue( el );
+                    shape.setFillAttrs(
+                        'color', seg.fill.colorValue( el )
+                    );
                 }
             }
 
             // remove any previously-created border shapes which didn't get used above
-            while( this.deleteShape( 'borderPiece' + i++ ) ) {}
+            while( me.deleteShape( 'borderPiece' + i++ ) ) {}
         }
     },
 

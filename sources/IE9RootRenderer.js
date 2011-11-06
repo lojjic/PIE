@@ -6,9 +6,8 @@
 PIE.IE9RootRenderer = PIE.RendererBase.newRenderer( {
 
     updatePos: PIE.emptyFn,
-    updateSize: PIE.emptyFn,
+    updateRendering: PIE.emptyFn,
     updateVisibility: PIE.emptyFn,
-    updateProps: PIE.emptyFn,
 
     outerCommasRE: /^,+|,+$/g,
     innerCommasRE: /,+/g,

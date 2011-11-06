@@ -7,8 +7,7 @@
  */
 PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
-    boxZIndex: 2,
-    boxName: 'background',
+    shapeZIndex: 2,
 
     needsUpdate: function() {
         var si = this.styleInfos;
@@ -47,21 +46,17 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         if( color && color.alpha() > 0 ) {
             this.hideBackground();
 
-            shape = this.getShape( 'bgColor', 'fill', this.getBox(), 1 );
-            w = bounds.w;
-            h = bounds.h;
-            shape.stroked = false;
-            shape.coordsize = w * 2 + ',' + h * 2;
-            shape.coordorigin = '1,1';
-            shape.path = this.getBoxPath( null, 2 );
-            s = shape.style;
-            s.width = w;
-            s.height = h;
-            shape.fill.color = color.colorValue( el );
+            shape = this.getShape( 'bgColor', this.shapeZIndex );
 
+            shape.setSize( bounds.w, bounds.h );
+            shape.setAttrs(
+                'stroked', false,
+                'path', this.getBoxPath( 0, 2 )
+            );
+            shape.setFillAttrs( 'color', color.colorValue( el ) );
             alpha = color.alpha();
             if( alpha < 1 ) {
-                shape.fill.opacity = alpha;
+                shape.setFillAttrs( 'opacity', alpha );
             }
         } else {
             this.deleteShape( 'bgColor' );
@@ -86,24 +81,23 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             i = images.length;
             while( i-- ) {
                 img = images[i];
-                shape = this.getShape( 'bgImage' + i, 'fill', this.getBox(), 2 );
+                shape = this.getShape( 'bgImage' + i, this.shapeZIndex + ( .5 - i / 1000 ) );
 
-                shape.stroked = false;
-                shape.fill.type = 'tile';
-                shape.fillcolor = 'none';
-                shape.coordsize = w * 2 + ',' + h * 2;
-                shape.coordorigin = '1,1';
-                shape.path = this.getBoxPath( 0, 2 );
-                s = shape.style;
-                s.width = w;
-                s.height = h;
+                shape.setAttrs(
+                    'stroked', false,
+                    'path', this.getBoxPath( 0, 2 )
+                );
+                shape.setSize( w, h );
 
                 if( img.imgType === 'linear-gradient' ) {
                     this.addLinearGradient( shape, img );
                 }
                 else {
-                    shape.fill.src = img.imgUrl;
-                    this.positionBgImage( shape, i );
+                    shape.setFillAttrs(
+                        'type', 'tile',
+                        'color', 'none'
+                    );
+                    this.positionBgImage( shape, img.imgUrl, i );
                 }
             }
         }
@@ -117,12 +111,13 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
     /**
      * Set the position and clipping of the background image for a layer
      * @param {Element} shape
+     * @param {String} src
      * @param {number} index
      */
-    positionBgImage: function( shape, index ) {
-        var me = this;
-        PIE.Util.withImageSize( shape.fill.src, function( imgSize ) {
-            var el = me.targetElement,
+    positionBgImage: function( shape, src, index ) {
+        PIE.Util.withImageSize( src, function( imgSize ) {
+            var me = this,
+                el = me.targetElement,
                 bounds = me.boundsInfo.getBounds(),
                 elW = bounds.w,
                 elH = bounds.h;
@@ -130,8 +125,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             // It's possible that the element dimensions are zero now but weren't when the original
             // update executed, make sure that's not the case to avoid divide-by-zero error
             if( elW && elH ) {
-                var fill = shape.fill,
-                    bgInfo = me.styleInfos.backgroundInfo,
+                var bgInfo = me.styleInfos.backgroundInfo,
                     bg = bgInfo.getProps().bgImages[ index ],
                     bgAreaSize = bgInfo.getBgAreaSize( bg.bgOrigin, me.boundsInfo, me.styleInfos.borderInfo ),
                     adjustedImgSize = ( bg.bgSize || PIE.BgSize.DEFAULT ).pixels(
@@ -150,12 +144,16 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 // needed to fix antialiasing but makes the bg image fuzzy.
                 pxX = Math.round( bgOriginXY.x + bgPos.x ) + 0.5;
                 pxY = Math.round( bgOriginXY.y + bgPos.y ) + 0.5;
-                fill.position = ( pxX / elW ) + ',' + ( pxY / elH );
+                shape.setFillAttrs(
+                    'src', src,
+                    'position', ( pxX / elW ) + ',' + ( pxY / elH ),
 
-                // Set the size of the image. We have to actually set it to px values otherwise it will not honor
-                // the user's browser zoom level and always display at its natural screen size.
-                fill['size']['x'] = 1; //Can be any value, just has to be set to "prime" it so the next line works. Weird!
-                fill['size'] = adjustedImgSize.w + 'px,' + adjustedImgSize.h + 'px';
+                    // Set the size of the image. We only set it if the image is scaled via background-size or by
+                    // the user changing the browser zoom level, to avoid fuzzy images at normal size. For some reason
+                    // using px units doesn't work in VML markup so we must convert to pt.
+                    'size', ( adjustedImgSize.w !== imgSize.w || adjustedImgSize.h !== imgSize.h || screen['logicalXDPI'] / screen['deviceXDPI'] !== 1 ) ?
+                        PIE.Length.pxToPt( adjustedImgSize.w ) + 'pt,' + PIE.Length.pxToPt( adjustedImgSize.h ) + 'pt' : ''
+                );
 
                 // Repeating - clip the image shape
                 if( repeat && repeat !== 'repeat' ) {
@@ -167,10 +165,10 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                         clipL = pxX + 1;
                         clipR = pxX + adjustedImgSize.w + clipAdjust;
                     }
-                    shape.style.clip = 'rect(' + clipT + 'px,' + clipR + 'px,' + clipB + 'px,' + clipL + 'px)';
+                    shape.setStyles( 'clip', 'rect(' + clipT + 'px,' + clipR + 'px,' + clipB + 'px,' + clipL + 'px)' );
                 }
             }
-        } );
+        }, this );
     },
 
 
@@ -215,7 +213,6 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             bounds = this.boundsInfo.getBounds(),
             w = bounds.w,
             h = bounds.h,
-            fill = shape.fill,
             stops = info.stops,
             stopCount = stops.length,
             PI = Math.PI,
@@ -289,16 +286,14 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
         // Now, finally, we're ready to render the gradient fill. Set the start and end colors to
         // the first and last stop colors; this just sets outer bounds for the gradient.
-        fill['angle'] = vmlAngle;
-        fill['type'] = 'gradient';
-        fill['method'] = 'sigma';
-        fill['color'] = stops[0].color.colorValue( el );
-        fill['color2'] = stops[stopCount - 1].color.colorValue( el );
-        if( fill['colors'] ) { //sometimes the colors object isn't initialized so we have to assign it directly (?)
-            fill['colors'].value = vmlColors.join( ',' );
-        } else {
-            fill['colors'] = vmlColors.join( ',' );
-        }
+        shape.setFillAttrs(
+            'angle', vmlAngle,
+            'type', 'gradient',
+            'method', 'sigma',
+            'color', stops[0].color.colorValue( el ),
+            'color2', stops[stopCount - 1].color.colorValue( el ),
+            'colors', vmlColors.join( ',' )
+        );
     },
 
 

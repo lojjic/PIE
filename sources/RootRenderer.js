@@ -21,7 +21,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
     },
 
     updatePos: function() {
-        if( this.isActive() ) {
+        if( this.isActive() && this.getBoxEl() ) {
             var el = this.getPositioningElement(),
                 par = el,
                 docEl,
@@ -29,7 +29,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                 tgtCS = el.currentStyle,
                 tgtPos = tgtCS.position,
                 boxPos,
-                s = this.getBox().style, cs,
+                s = this.getBoxEl().style, cs,
                 x = 0, y = 0,
                 elBounds = this.boundsInfo.getBounds();
 
@@ -64,14 +64,16 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
         }
     },
 
-    updateSize: PIE.emptyFn,
-
     updateVisibility: function() {
-        var vis = this.styleInfos.visibilityInfo.getProps();
-        this.getBox().style.display = ( vis.visible && vis.displayed ) ? '' : 'none';
+        var vis = this.styleInfos.visibilityInfo,
+            box = this._box;
+        if ( box && vis.changed() ) {
+            vis = vis.getProps();
+            box.style.display = ( vis.visible && vis.displayed ) ? '' : 'none';
+        }
     },
 
-    updateProps: function() {
+    updateRendering: function() {
         if( this.isActive() ) {
             this.updateVisibility();
         } else {
@@ -84,21 +86,94 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
         return el.tagName in PIE.tableCellTags ? el.offsetParent : el;
     },
 
-    getBox: function() {
-        var box = this._box, el;
+    /**
+     * Get a reference to the css3pie container element that contains the VML shapes,
+     * if it has been inserted.
+     */
+    getBoxEl: function() {
+        var box = this._box;
         if( !box ) {
-            el = this.getPositioningElement();
-            box = this._box = doc.createElement( 'css3-container' );
-            box.style['direction'] = 'ltr'; //fix positioning bug in rtl environments
-
-            this.updateVisibility();
-
-            el.parentNode.insertBefore( box, el );
+            box = this._box = doc.getElementById( '_pie' + PIE.Util.getUID( this ) );
         }
         return box;
     },
 
-    finishUpdate: PIE.emptyFn,
+    /**
+     * Render any child rendrerer shapes which have not already been rendered into the DOM.
+     */
+    finishUpdate: function() {
+        var me = this,
+            queue = me._shapeRenderQueue,
+            renderedShapes, markup, i, len, j,
+            ref, pos;
+
+        if( queue ) {
+            // We've already rendered something once, so do incremental insertion of new shapes
+            renderedShapes = me._renderedShapes;
+            if( renderedShapes ) {
+                for( i = 0, len = queue.length; i < len; i++ ) {
+                    for( j = renderedShapes.length; j--; ) {
+                        if( renderedShapes[ j ].ordinalGroup < queue[ i ].ordinalGroup ) {
+                            break;
+                        }
+                    }
+
+                    if ( j < 0 ) {
+                        ref = me.getBoxEl();
+                        pos = 'afterBegin';
+                    } else {
+                        ref = renderedShapes[ j ].getShape();
+                        pos = 'afterEnd';
+                    }
+                    ref.insertAdjacentHTML( pos, queue[ i ].getMarkup() );
+                    renderedShapes.splice( j < 0 ? 0 : j, 0, queue[ i ] );
+                }
+            }
+            // This is the first render, so build up a single markup string and insert it all at once
+            else {
+                queue.sort( me.shapeSorter );
+                markup = [ '<css3pie id="_pie' + PIE.Util.getUID( me ) + '" style="direction:ltr;position:absolute;">' ];
+                for( i = 0, len = queue.length; i < len; i++ ) {
+                    markup.push( queue[ i ].getMarkup() );
+                }
+                markup.push( '</css3pie>' );
+
+                me.getPositioningElement().insertAdjacentHTML( 'beforeBegin', markup.join( '' ) );
+                me.updatePos();
+
+                me._renderedShapes = queue;
+            }
+            delete me._shapeRenderQueue;
+        }
+    },
+
+    shapeSorter: function( shape1, shape2 ) {
+        return shape1.ordinalGroup - shape2.ordinalGroup;
+    },
+
+    /**
+     * Add a VmlShape into the queue to get rendered in finishUpdate
+     */
+    enqueueShapeForRender: function( shape ) {
+        var me = this,
+            queue = me._shapeRenderQueue || ( me._shapeRenderQueue = [] );
+        queue.push( shape );
+    },
+
+    /**
+     * Remove a VmlShape from the DOM and also from the internal list of rendered shapes.
+     */
+    removeShape: function( shape ) {
+        var shapes = this._renderedShapes, i;
+        if ( shapes ) {
+            for( i = shapes.length; i--; ) {
+                if( shapes[ i ] === shape ) {
+                    shapes.splice( i, 1 );
+                    break;
+                }
+            }
+        }
+    },
 
     destroy: function() {
         var box = this._box, par;
@@ -106,7 +181,10 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
             par.removeChild( box );
         }
         delete this._box;
-        delete this._layers;
+        delete this._renderedShapes;
     }
 
 } );
+
+// Prime IE for recognizing the custom <css3pie> element
+doc.createElement( 'css3pie' );

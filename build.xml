@@ -41,6 +41,7 @@
             <fileset file="${src_dir}/BorderImageStyleInfo.js" />
             <fileset file="${src_dir}/BoxShadowStyleInfo.js" />
             <fileset file="${src_dir}/VisibilityStyleInfo.js" />
+            <fileset file="${src_dir}/VmlShape.js" />
             <fileset file="${src_dir}/RendererBase.js" />
             <fileset file="${src_dir}/RendererBase_IE678.js" />
             <fileset file="${src_dir}/RootRenderer.js" />

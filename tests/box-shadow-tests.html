@@ -61,6 +61,21 @@
             position: relative;
         }
 
+        #rgba {
+            background: url(background2.gif);
+            padding: 2em;
+        }
+        #rgba div {
+            width: 15em;
+            height: 2em;
+            padding: 0.5em;
+            margin: 1.6em 0;
+            background: white;
+            white-space: pre;
+            behavior: url(../build/PIE.htc);
+            position: relative;
+        }
+
 
     </style>
 
@@ -133,6 +148,29 @@
             (function() {
                 var S= "";
                 var D= document.getElementById("elektroNotdienst").getElementsByTagName("div");
+                for(var i=0; S=D[i] && D[i].firstChild.data; i++) {
+                    D[i].style.cssText += "; -moz-box-shadow:" + S + "-webkit-box-shadow:" + S + "box-shadow:" + S;
+                }
+            })();
+        </script>
+    </div>
+
+    <div id="rgba">
+        <div>10px 10px 0 rgba(0, 0, 0, 0.5);</div>
+        <div>10px 10px 2px rgba(0, 0, 0, 0.5);</div>
+        <div>10px 10px 5px rgba(0, 0, 0, 0.5);</div>
+        <div>10px 10px 10px rgba(0, 0, 0, 0.5);</div>
+        <div>10px 10px 20px rgba(0, 0, 0, 0.5);</div>
+        <div>10px 10px 10px 5px rgba(0, 0, 0, 0.5);</div>
+
+        <div>10px 10px 5px rgba(255, 0, 0, 0.5);</div>
+        <div>10px 10px 5px rgba(0, 255, 0, 0.5);</div>
+        <div>10px 10px 5px rgba(0, 0, 255, 0.5);</div>
+
+        <script type="text/javascript">
+            (function() {
+                var S= "";
+                var D= document.getElementById("rgba").getElementsByTagName("div");
                 for(var i=0; S=D[i] && D[i].firstChild.data; i++) {
                     D[i].style.cssText += "; -moz-box-shadow:" + S + "-webkit-box-shadow:" + S + "box-shadow:" + S;
                 }

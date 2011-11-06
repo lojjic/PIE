@@ -132,6 +132,13 @@ PIE.Length = (function() {
         }
     };
 
+    /**
+     * Convert a pixel length into a point length
+     */
+    Length.pxToPt = function( px ) {
+        return px / conversions[ 'pt' ];
+    };
+
 
     /**
      * Retrieve a PIE.Length instance for the given value. A shared singleton instance is returned for each unique value.

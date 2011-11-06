@@ -1,103 +1,19 @@
 PIE.merge(PIE.RendererBase, {
 
     /**
-     * Add a layer element, with the given z-order index, to the renderer's main box element. We can't use
-     * z-index because that breaks when the root rendering box's z-index is 'auto' in IE8+ standards mode.
-     * So instead we make sure they are inserted into the DOM in the correct order.
-     * @param {number} index
-     * @param {Element} el
-     */
-    addLayer: function( index, el ) {
-        this.removeLayer( index );
-        for( var layers = this._layers || ( this._layers = [] ), i = index + 1, len = layers.length, layer; i < len; i++ ) {
-            layer = layers[i];
-            if( layer ) {
-                break;
-            }
-        }
-        layers[index] = el;
-        this.getBox().insertBefore( el, layer || null );
-    },
-
-    /**
-     * Retrieve a layer element by its index, or null if not present
-     * @param {number} index
-     * @return {Element}
-     */
-    getLayer: function( index ) {
-        var layers = this._layers;
-        return layers && layers[index] || null;
-    },
-
-    /**
-     * Remove a layer element by its index
-     * @param {number} index
-     */
-    removeLayer: function( index ) {
-        var layer = this.getLayer( index ),
-            box = this._box;
-        if( layer && box ) {
-            box.removeChild( layer );
-            this._layers[index] = null;
-        }
-    },
-
-
-    /**
-     * To create a VML element, it must be created by a Document which has the VML
-     * namespace set. Unfortunately, if you try to add the namespace programatically
-     * into the main document, you will get an "Unspecified error" when trying to
-     * access document.namespaces before the document is finished loading. To get
-     * around this, we create a DocumentFragment, which in IE land is apparently a
-     * full-fledged Document. It allows adding namespaces immediately, so we add the
-     * namespace there and then have it create the VML element.
-     * @param {string} tag The tag name for the VML element
-     * @return {Element} The new VML element
-     */
-    createVmlElement: function fn( tag ) {
-        var vmlCreatorDoc = fn.doc,
-            vmlPrefix = 'css3vml';
-        if( !vmlCreatorDoc ) {
-            vmlCreatorDoc = fn.doc = doc.createDocumentFragment();
-            vmlCreatorDoc.namespaces.add( vmlPrefix, 'urn:schemas-microsoft-com:vml' );
-        }
-        return vmlCreatorDoc.createElement( vmlPrefix + ':' + tag );
-    },
-
-
-    /**
-     * Get a VML shape by name, creating it if necessary.
+     * Get a VmlShape by name, creating it if necessary.
      * @param {string} name A name identifying the element
-     * @param {string=} subElName If specified a subelement of the shape will be created with this tag name
-     * @param {Element} parent The parent element for the shape; will be ignored if 'group' is specified
-     * @param {number=} group If specified, an ordinal group for the shape. 1 or greater. Groups are rendered
-     *                  using container elements in the correct order, to get correct z stacking without z-index.
+     * @param {number} zIndex Specifies the target z-index of the shape. This will be used when rendering
+     *                 the shape to ensure it is inserted in the correct order with other shapes to give
+     *                 correct stacking order without using actual CSS z-index.
+     * @return {PIE.VmlShape}
      */
-    getShape: function( name, subElName, parent, group ) {
+    getShape: function( name, zIndex ) {
         var shapes = this._shapes || ( this._shapes = {} ),
-            shape = shapes[ name ],
-            s;
-
+            shape = shapes[ name ];
         if( !shape ) {
-            shape = shapes[ name ] = this.createVmlElement( 'shape' );
-            if( subElName ) {
-                shape.appendChild( shape[ subElName ] = this.createVmlElement( subElName ) );
-            }
-
-            if( group ) {
-                parent = this.getLayer( group );
-                if( !parent ) {
-                    this.addLayer( group, doc.createElement( 'group' + group ) );
-                    parent = this.getLayer( group );
-                }
-            }
-
-            parent.appendChild( shape );
-
-            s = shape.style;
-            s.position = 'absolute';
-            s.left = s.top = 0;
-            s['behavior'] = 'url(#default#VML)';
+            shape = shapes[ name ] = new PIE.VmlShape( name, zIndex );
+            this.parent.enqueueShapeForRender( shape );
         }
         return shape;
     },
@@ -112,7 +28,8 @@ PIE.merge(PIE.RendererBase, {
         var shapes = this._shapes,
             shape = shapes && shapes[ name ];
         if( shape ) {
-            shape.parentNode.removeChild( shape );
+            shape.destroy();
+            this.parent.removeShape( shape );
             delete shapes[ name ];
         }
         return !!shape;
@@ -233,24 +150,6 @@ PIE.merge(PIE.RendererBase, {
 
 
     /**
-     * Get the container element for the shapes, creating it if necessary.
-     */
-    getBox: function() {
-        var box = this.parent.getLayer( this.boxZIndex ), s;
-
-        if( !box ) {
-            box = doc.createElement( this.boxName );
-            s = box.style;
-            s.position = 'absolute';
-            s.top = s.left = 0;
-            this.parent.addLayer( this.boxZIndex, box );
-        }
-
-        return box;
-    },
-
-
-    /**
      * Hide the actual border of the element. In IE7 and up we can just set its color to transparent;
      * however IE6 does not support transparent borders so we have to get tricky with it. Also, some elements
      * like form buttons require removing the border width altogether, so for those we increase the padding
@@ -312,8 +211,13 @@ PIE.merge(PIE.RendererBase, {
      * structures, but individual renderers may override as necessary.
      */
     destroy: function() {
-        this.parent.removeLayer( this.boxZIndex );
-        delete this._shapes;
-        delete this._layers;
+        var shapes = this._shapes, s;
+        if ( shapes ) {
+            for( s in shapes ) {
+                if( shapes.hasOwnProperty( s ) ) {
+                    this.deleteShape( s );
+                }
+            }
+        }
     }
 });

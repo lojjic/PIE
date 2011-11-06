@@ -7,8 +7,7 @@
  */
 PIE.BoxShadowInsetRenderer = PIE.RendererBase.newRenderer( {
 
-    boxZIndex: 3,
-    boxName: 'inset-box-shadow',
+    shapeZIndex: 3,
 
     needsUpdate: function() {
         var si = this.styleInfos;
@@ -20,12 +19,6 @@ PIE.BoxShadowInsetRenderer = PIE.RendererBase.newRenderer( {
         return boxShadowInfo.isActive() && boxShadowInfo.getProps().inset[0];
     },
 
-    updateSize: function() {
-        // TODO
-    },
-
-    updateProps: function() {
-        // TODO
-    }
+    updateRendering: PIE.emptyFn
     
 } );

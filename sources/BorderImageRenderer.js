@@ -7,8 +7,7 @@
  */
 PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
 
-    boxZIndex: 5,
-    pieceNames: [ 't', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl', 'c' ],
+    shapeZIndex: 5,
 
     needsUpdate: function() {
         return this.styleInfos.borderImageInfo.changed();
@@ -19,13 +18,11 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
     },
 
     draw: function() {
-        this.getBox(); //make sure pieces are created
-
-        var props = this.styleInfos.borderImageInfo.getProps(),
-            borderProps = this.styleInfos.borderInfo.getProps(),
-            bounds = this.boundsInfo.getBounds(),
-            el = this.targetElement,
-            pieces = this.pieces;
+        var me = this,
+            props = me.styleInfos.borderImageInfo.getProps(),
+            borderProps = me.styleInfos.borderInfo.getProps(),
+            bounds = me.boundsInfo.getBounds(),
+            el = me.targetElement;
 
         PIE.Util.withImageSize( props.src, function( imgSize ) {
             var elW = bounds.w,
@@ -44,12 +41,13 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
 
             // Piece positions and sizes
             function setSizeAndPos( piece, w, h, x, y ) {
-                var s = pieces[piece].style,
-                    max = Math.max;
-                s.width = max(w, 0);
-                s.height = max(h, 0);
-                s.left = x;
-                s.top = y;
+                var max = Math.max;
+                me.getRect( piece ).setStyles(
+                    'width', max( w, 0 ) + 'px',
+                    'height', max( h, 0 ) + 'px',
+                    'left', x + 'px',
+                    'top', y + 'px'
+                );
             }
             setSizeAndPos( 'tl', widthL, widthT, 0, 0 );
             setSizeAndPos( 't', elW - widthL - widthR, widthT, widthL, 0 );
@@ -64,8 +62,13 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
 
             // image croppings
             function setCrops( sides, crop, val ) {
-                for( var i=0, len=sides.length; i < len; i++ ) {
-                    pieces[ sides[i] ]['imagedata'][ crop ] = val;
+                var src = props.src,
+                    i = 0, len = sides.length;
+                for( ; i < len; i++ ) {
+                    me.getRect( sides[i] ).setImageDataAttrs(
+                        'src', src,
+                        crop, val
+                    );
                 }
             }
 
@@ -87,40 +90,20 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
             //}
 
             // center fill
-            pieces['c'].style.display = props.fill ? '' : 'none';
-        }, this );
+            me.getRect( 'c' ).setStyles(
+                'display', props.fill ? '' : 'none'
+            );
+        }, me );
     },
 
-    getBox: function() {
-        var box = this.parent.getLayer( this.boxZIndex ),
-            s, piece, i,
-            pieceNames = this.pieceNames,
-            len = pieceNames.length;
-
-        if( !box ) {
-            box = doc.createElement( 'border-image' );
-            s = box.style;
-            s.position = 'absolute';
-
-            this.pieces = {};
-
-            for( i = 0; i < len; i++ ) {
-                piece = this.pieces[ pieceNames[i] ] = this.createVmlElement( 'rect' );
-                piece.appendChild( this.createVmlElement( 'imagedata' ) );
-                s = piece.style;
-                s['behavior'] = 'url(#default#VML)';
-                s.position = "absolute";
-                s.top = s.left = 0;
-                piece['imagedata'].src = this.styleInfos.borderImageInfo.getProps().src;
-                piece.stroked = false;
-                piece.filled = false;
-                box.appendChild( piece );
-            }
-
-            this.parent.addLayer( this.boxZIndex, box );
-        }
-
-        return box;
+    getRect: function( name ) {
+        var shape = this.getShape( 'borderImage' + name, this.shapeZIndex );
+        shape.tagName = 'rect';
+        shape.setAttrs(
+            'stroked', false,
+            'filled', false
+        );
+        return shape;
     },
 
     prepareUpdate: function() {
@@ -153,7 +136,7 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
         if (me.finalized || !me.styleInfos.borderInfo.isActive()) {
             rs.borderColor = rs.borderWidth = '';
         }
-        PIE.RendererBase.destroy.call( this );
+        PIE.RendererBase.destroy.call( me );
     }
 
 } );
