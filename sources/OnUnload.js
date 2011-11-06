@@ -6,11 +6,11 @@
 
     function handleUnload() {
         PIE.OnUnload.fire();
-        window.detachEvent( 'onunload', handleUnload );
-        window[ 'PIE' ] = null;
+        win.detachEvent( 'onunload', handleUnload );
+        win[ 'PIE' ] = null;
     }
 
-    window.attachEvent( 'onunload', handleUnload );
+    win.attachEvent( 'onunload', handleUnload );
 
     /**
      * Attach an event which automatically gets detached onunload

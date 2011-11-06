@@ -3,4 +3,4 @@
  */
 PIE.OnResize = new PIE.Observable();
 
-PIE.OnUnload.attachManagedEvent( window, 'onresize', function() { PIE.OnResize.fire(); } );
+PIE.OnUnload.attachManagedEvent( win, 'onresize', function() { PIE.OnResize.fire(); } );

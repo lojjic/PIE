@@ -19,7 +19,7 @@
         }
     }
 
-    PIE.OnUnload.attachManagedEvent( window, 'onbeforeprint', beforePrint );
-    PIE.OnUnload.attachManagedEvent( window, 'onafterprint', afterPrint );
+    PIE.OnUnload.attachManagedEvent( win, 'onbeforeprint', beforePrint );
+    PIE.OnUnload.attachManagedEvent( win, 'onafterprint', afterPrint );
 
 })();
