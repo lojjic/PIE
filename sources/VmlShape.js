@@ -56,7 +56,7 @@ PIE.VmlShape = (function() {
 
 
     function VmlShape( idSeed, ordinalGroup ) {
-        this.elId = '_pie_' + ( idSeed || 'shape' ) + '_' + ordinalGroup + PIE.Util.getUID(this);
+        this.elId = '_pie_' + ( idSeed || 'shape' ) + PIE.Util.getUID(this);
         this.ordinalGroup = ordinalGroup || 0;
     }
     VmlShape.prototype = {
