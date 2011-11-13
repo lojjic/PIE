@@ -9,6 +9,23 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
 
     shapeZIndex: 4,
 
+    /**
+     * Single definition of arguments for use by the per-side creation loop in
+     * getBorderSegmentsInfo. Arguments are, in order:
+     * centerX1, centerY1, outerX1, outerY1, centerX2, centerY2, outerX2, outerY2, baseAngle
+     */
+    sideArgs: {
+        't': [ 2, 1, 0, 3, 4, 7, 6, 5, 90 ],
+        'r': [ 4, 7, 6, 5, 10, 9, 8, 11, 0 ],
+        'b': [ 10, 9, 8, 11, 12, 15, 14, 13, 270 ],
+        'l': [ 12, 15, 14, 13, 2, 1, 0, 3, 180 ]
+    },
+
+    dashedStyles: {
+        'dotted': 1,
+        'dashed': 1
+    },
+
     needsUpdate: function() {
         var si = this.styleInfos;
         return si.borderInfo.changed() || si.borderRadiusInfo.changed();
@@ -30,219 +47,225 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
             el = me.targetElement,
             props = me.styleInfos.borderInfo.getProps(),
             bounds = me.boundsInfo.getBounds(),
-            w = bounds.w,
-            h = bounds.h,
-            shape,
-            segments, seg, i, len;
+            shape, segmentsInfo, i, len;
 
         if( props ) {
             me.hideBorder();
 
-            segments = me.getBorderSegments( 2 );
-            for( i = 0, len = segments.length; i < len; i++) {
-                seg = segments[i];
-                shape = me.getShape( 'borderPiece' + i, me.shapeZIndex );
-                shape.setSize( w, h );
-
+            segmentsInfo = me.getBorderSegmentsInfo();
+            for( i = 0, len = segmentsInfo.length; i < len; i += 2) {
+                shape = me.getShape( 'border' + i, me.shapeZIndex );
+                shape.setSize( bounds.w, bounds.h );
                 shape.setAttrs(
-                    'path', seg.path,
-                    'filled', !!seg.fill,
-                    'stroked', !!seg.stroke
+                    'path', segmentsInfo[ i ]
                 );
-
-                if( seg.stroke ) {
-                    shape.setStrokeAttrs(
-                        'weight', seg.weight + 'px',
-                        'color', seg.color.colorValue( el ),
-                        'dashstyle', seg.stroke === 'dashed' ? '2 2' : seg.stroke === 'dotted' ? '1 1' : 'solid',
-                        'linestyle', seg.stroke === 'double' && seg.weight > 2 ? 'ThinThin' : 'Single'
-                    );
-                } else {
-                    shape.setFillAttrs(
-                        'color', seg.fill.colorValue( el )
-                    );
-                }
+                shape.setFillAttrs(
+                    'color', segmentsInfo[ i + 1 ].colorValue( el )
+                );
             }
 
             // remove any previously-created border shapes which didn't get used above
-            while( me.deleteShape( 'borderPiece' + i++ ) ) {}
+            while( me.deleteShape( 'border' + i++ ) ) {}
+        }
+    },
+
+
+    /**
+     * Adds rectangular sub-paths at intervals along a given side which serve to "cut out"
+     * those areas, forming the spaces in a dashed or dotted border.
+     * @param {Array.<string>} path The path string array to which the extra sub-paths will be added
+     * @param {number} startCoord The x or y coordinate at which the dashing starts
+     * @param {number} endCoord The x or y coordinate at which the dashing ends
+     * @param {number} sideWidth The width of the border on the target side
+     * @param {number} shift A shift of the perpendicular coordinate
+     * @param {boolean} isVertical True if this is a vertical border (left or right)
+     * @param {string} style The border style, either 'dotted' or 'dashed'
+     */
+    dashify: function( path, startCoord, endCoord, sideWidth, shift, isVertical, style ) {
+        var dashLength = sideWidth * ( style === 'dashed' ? 3 : 1 ),
+            shift2 = shift + sideWidth,
+            dashEndCoord;
+
+        // If dash is longer than the box edge, don't make any cutouts
+        if( dashLength < endCoord - startCoord ) {
+            // adjust the start to keep the dash pattern centered on the box edge, favoring full
+            // spaces over full dashes, like WebKit does.
+            startCoord += ( endCoord - startCoord - dashLength ) / 2 % dashLength;
+
+            // add rectangular sub-paths to cut out each dash's space
+            while( startCoord < endCoord ) {
+                dashEndCoord = Math.min( startCoord + dashLength, endCoord );
+                path.push(
+                    isVertical ? (
+                        'm' + shift + ',' + startCoord +
+                        'l' + shift + ',' + dashEndCoord +
+                        'l' + shift2 + ',' + dashEndCoord +
+                        'l' + shift2 + ',' + startCoord + 'x'
+                    ) : (
+                        'm' + startCoord + ',' + shift +
+                        'l' + dashEndCoord + ',' + shift +
+                        'l' + dashEndCoord + ',' + shift2 +
+                        'l' + startCoord + ',' + shift2 + 'x'
+                    )
+                );
+                startCoord += dashLength * 2;
+            }
         }
     },
 
 
     /**
      * Get the VML path definitions for the border segment(s).
-     * @param {number=} mult If specified, all coordinates will be multiplied by this number
-     * @return {Array.<string>}
+     * @return {Array.<string>} Pairs of segment info: 1st item in each pair is the path string, 2nd is the fill color
      */
-    getBorderSegments: function( mult ) {
-        var el = this.targetElement,
-            bounds, elW, elH,
-            borderInfo = this.styleInfos.borderInfo,
-            segments = [],
-            floor, ceil, wT, wR, wB, wL,
-            round = Math.round,
-            borderProps, radiusInfo, radii, widths, styles, colors;
+    getBorderSegmentsInfo: function() {
+        var me = this,
+            borderInfo = me.styleInfos.borderInfo,
+            segmentsInfo = [];
 
         if( borderInfo.isActive() ) {
-            borderProps = borderInfo.getProps();
+            var mult = 2,
+                el = me.targetElement,
+                bounds = me.boundsInfo.getBounds(),
+                borderProps = borderInfo.getProps(),
+                widths = borderProps.widths,
+                styles = borderProps.styles,
+                colors = borderProps.colors,
+                M = Math,
+                abs = M.abs,
+                round = M.round,
+                wT = round( widths['t'].pixels( el ) ),
+                wR = round( widths['r'].pixels( el ) ),
+                wB = round( widths['b'].pixels( el ) ),
+                wL = round( widths['l'].pixels( el ) ),
+                path = [],
+                innerCoords, outerCoords, doubleOuterCoords, doubleInnerCoords,
+                sideArgs = me.sideArgs,
+                side,
+                deg = 65535,
+                dashedStyles = me.dashedStyles,
+                style;
 
-            widths = borderProps.widths;
-            styles = borderProps.styles;
-            colors = borderProps.colors;
-
-            if( borderProps.widthsSame && borderProps.stylesSame && borderProps.colorsSame ) {
+            // When the border has uniform color and style all the way around, we can get
+            // away with a single VML path shape, otherwise we need four separate shapes.
+            if ( borderProps.stylesSame && borderProps.colorsSame ) {
                 if( colors['t'].alpha() > 0 ) {
-                    // shortcut for identical border on all sides - only need 1 stroked shape
-                    wT = widths['t'].pixels( el ); //thickness
-                    wR = wT / 2; //shrink
-                    segments.push( {
-                        path: this.getBoxPath( { t: wR, r: wR, b: wR, l: wR }, mult ),
-                        stroke: styles['t'],
-                        color: colors['t'],
-                        weight: wT
-                    } );
+                    // Outer path
+                    path[ 0 ] = me.getBoxPath( 0, 0, 0, 0, mult );
+
+                    // If double style, add the middle cutout sub-paths
+                    style = styles[ 't' ];
+                    if( style === 'double' ) {
+                        path.push(
+                            me.getBoxPath( wT / 3, wR / 3, wB / 3, wL / 3, mult ) +
+                            me.getBoxPath( wT * 2 / 3, wR * 2 / 3, wB * 2 / 3, wL * 2 / 3, mult )
+                        );
+                    }
+                    // If dashed, add the dash cutout sub-paths
+                    else if( style in dashedStyles ) {
+                        innerCoords = me.getBoxPathCoords( wT, wR, wB, wL, mult );
+                        me.dashify( path, innerCoords[ 2 ], innerCoords[ 4 ], wT * mult, 0, 0, styles[ 't' ] );
+                        me.dashify( path, innerCoords[ 7 ], innerCoords[ 9 ], wR * mult, ( bounds.w - wR ) * mult, 1, styles[ 'r' ] );
+                        me.dashify( path, innerCoords[ 12 ], innerCoords[ 10 ], wB * mult, ( bounds.h - wB ) * mult, 0, styles[ 'b' ] );
+                        me.dashify( path, innerCoords[ 1 ], innerCoords[ 15 ], wL * mult, 0, 1, styles[ 'l' ] );
+                    }
+
+                    // Inner path
+                    path.push( me.getBoxPath( wT, wR, wB, wL, mult ) );
+
+                    segmentsInfo.push( path.join( '' ), colors['t'] );
                 }
             }
             else {
-                mult = mult || 1;
-                bounds = this.boundsInfo.getBounds();
-                elW = bounds.w;
-                elH = bounds.h;
+                outerCoords = me.getBoxPathCoords( 0, 0, 0, 0, mult );
+                innerCoords = me.getBoxPathCoords( wT, wR, wB, wL, mult );
 
-                wT = round( widths['t'].pixels( el ) );
-                wR = round( widths['r'].pixels( el ) );
-                wB = round( widths['b'].pixels( el ) );
-                wL = round( widths['l'].pixels( el ) );
-                var pxWidths = {
-                    't': wT,
-                    'r': wR,
-                    'b': wB,
-                    'l': wL
-                };
+                // Build the segment for each side
+                for( side in sideArgs ) {
+                    if ( sideArgs.hasOwnProperty( side ) ) {
+                        var args = sideArgs[ side ],
+                            centerX1 = args[ 0 ],
+                            centerY1 = args[ 1 ],
+                            outerX1 = args[ 2 ],
+                            outerY1 = args[ 3 ],
+                            centerX2 = args[ 4 ],
+                            centerY2 = args[ 5 ],
+                            outerX2 = args[ 6 ],
+                            outerY2 = args[ 7 ],
+                            baseAngle = args[ 8 ];
 
-                radiusInfo = this.styleInfos.borderRadiusInfo;
-                if( radiusInfo.isActive() ) {
-                    radii = this.getRadiiPixels( radiusInfo.getProps() );
-                }
+                        style = styles[ side ];
 
-                floor = Math.floor;
-                ceil = Math.ceil;
+                        // Outer edge
+                        path[ 0 ] = 'al' + outerCoords[ centerX1 ] + ',' + outerCoords[ centerY1 ] + ',' +
+                                abs( outerCoords[ outerX1 ] - outerCoords[ centerX1 ] ) + ',' +
+                                abs( outerCoords[ outerY1 ] - outerCoords[ centerY1 ] ) + ',' +
+                                ( baseAngle + 45 ) * deg + ',' + -45 * deg +
+                            'ae' + outerCoords[ centerX2 ] + ',' + outerCoords[ centerY2 ] + ',' +
+                                abs( outerCoords[ outerX2 ] - outerCoords[ centerX2 ] ) + ',' +
+                                abs( outerCoords[ outerY2 ] - outerCoords[ centerY2 ] ) + ',' +
+                                baseAngle * deg + ',' + -45 * deg;
 
-                function radius( xy, corner ) {
-                    return radii ? radii[ xy ][ corner ] : 0;
-                }
-
-                function curve( corner, shrinkX, shrinkY, startAngle, ccw, doMove ) {
-                    var rx = radius( 'x', corner),
-                        ry = radius( 'y', corner),
-                        deg = 65535,
-                        isRight = corner.charAt( 1 ) === 'r',
-                        isBottom = corner.charAt( 0 ) === 'b';
-                    return ( rx > 0 && ry > 0 ) ?
-                                ( doMove ? 'al' : 'ae' ) +
-                                ( isRight ? ceil( elW - rx ) : floor( rx ) ) * mult + ',' + // center x
-                                ( isBottom ? ceil( elH - ry ) : floor( ry ) ) * mult + ',' + // center y
-                                ( floor( rx ) - shrinkX ) * mult + ',' + // width
-                                ( floor( ry ) - shrinkY ) * mult + ',' + // height
-                                ( startAngle * deg ) + ',' + // start angle
-                                ( 45 * deg * ( ccw ? 1 : -1 ) // angle change
-                            ) : (
-                                ( doMove ? 'm' : 'l' ) +
-                                ( isRight ? elW - shrinkX : shrinkX ) * mult + ',' +
-                                ( isBottom ? elH - shrinkY : shrinkY ) * mult
+                        // If double style, add the middle cutout sub-paths
+                        if( style === 'double' ) {
+                            if( !doubleOuterCoords ) {
+                                doubleOuterCoords = me.getBoxPathCoords( wT / 3, wR / 3, wB / 3, wL / 3, mult );
+                                doubleInnerCoords = me.getBoxPathCoords( wT * 2 / 3, wR * 2 / 3, wB * 2 / 3, wL * 2 / 3, mult );
+                            }
+                            path.push(
+                                'ae' + doubleOuterCoords[ centerX2 ] + ',' + doubleOuterCoords[ centerY2 ] + ',' +
+                                    abs( doubleOuterCoords[ outerX2 ] - doubleOuterCoords[ centerX2 ] ) + ',' +
+                                    abs( doubleOuterCoords[ outerY2 ] - doubleOuterCoords[ centerY2 ] ) + ',' +
+                                    ( baseAngle - 45 ) * deg + ',' + 45 * deg +
+                                'ae' + doubleOuterCoords[ centerX1 ] + ',' + doubleOuterCoords[ centerY1 ] + ',' +
+                                    abs( doubleOuterCoords[ outerX1 ] - doubleOuterCoords[ centerX1 ] ) + ',' +
+                                    abs( doubleOuterCoords[ outerY1 ] - doubleOuterCoords[ centerY1 ] ) + ',' +
+                                    baseAngle * deg + ',' + 45 * deg +
+                                'x' +
+                                'al' + doubleInnerCoords[ centerX1 ] + ',' + doubleInnerCoords[ centerY1 ] + ',' +
+                                    abs( doubleInnerCoords[ outerX1 ] - doubleInnerCoords[ centerX1 ] ) + ',' +
+                                    abs( doubleInnerCoords[ outerY1 ] - doubleInnerCoords[ centerY1 ] ) + ',' +
+                                    ( baseAngle + 45 ) * deg + ',' + -45 * deg +
+                                'ae' + doubleInnerCoords[ centerX2 ] + ',' + doubleInnerCoords[ centerY2 ] + ',' +
+                                    abs( doubleInnerCoords[ outerX2 ] - doubleInnerCoords[ centerX2 ] ) + ',' +
+                                    abs( doubleInnerCoords[ outerY2 ] - doubleInnerCoords[ centerY2 ] ) + ',' +
+                                    baseAngle * deg + ',' + -45 * deg
                             );
-                }
+                        }
 
-                function line( side, shrink, ccw, doMove ) {
-                    var
-                        start = (
-                            side === 't' ?
-                                floor( radius( 'x', 'tl') ) * mult + ',' + ceil( shrink ) * mult :
-                            side === 'r' ?
-                                ceil( elW - shrink ) * mult + ',' + floor( radius( 'y', 'tr') ) * mult :
-                            side === 'b' ?
-                                ceil( elW - radius( 'x', 'br') ) * mult + ',' + floor( elH - shrink ) * mult :
-                            // side === 'l' ?
-                                floor( shrink ) * mult + ',' + ceil( elH - radius( 'y', 'bl') ) * mult
-                        ),
-                        end = (
-                            side === 't' ?
-                                ceil( elW - radius( 'x', 'tr') ) * mult + ',' + ceil( shrink ) * mult :
-                            side === 'r' ?
-                                ceil( elW - shrink ) * mult + ',' + ceil( elH - radius( 'y', 'br') ) * mult :
-                            side === 'b' ?
-                                floor( radius( 'x', 'bl') ) * mult + ',' + floor( elH - shrink ) * mult :
-                            // side === 'l' ?
-                                floor( shrink ) * mult + ',' + floor( radius( 'y', 'tl') ) * mult
+                        // Inner edge
+                        path.push(
+                            'ae' + innerCoords[ centerX2 ] + ',' + innerCoords[ centerY2 ] + ',' +
+                                abs( innerCoords[ outerX2 ] - innerCoords[ centerX2 ] ) + ',' +
+                                abs( innerCoords[ outerY2 ] - innerCoords[ centerY2 ] ) + ',' +
+                                ( baseAngle - 45 ) * deg + ',' + 45 * deg +
+                            'ae' + innerCoords[ centerX1 ] + ',' + innerCoords[ centerY1 ] + ',' +
+                                abs( innerCoords[ outerX1 ] - innerCoords[ centerX1 ] ) + ',' +
+                                abs( innerCoords[ outerY1 ] - innerCoords[ centerY1 ] ) + ',' +
+                                baseAngle * deg + ',' + 45 * deg +
+                            'x'
                         );
-                    return ccw ? ( doMove ? 'm' + end : '' ) + 'l' + start :
-                                 ( doMove ? 'm' + start : '' ) + 'l' + end;
-                }
 
-
-                function addSide( side, sideBefore, sideAfter, cornerBefore, cornerAfter, baseAngle ) {
-                    var vert = side === 'l' || side === 'r',
-                        sideW = pxWidths[ side ],
-                        beforeX, beforeY, afterX, afterY;
-
-                    if( sideW > 0 && styles[ side ] !== 'none' && colors[ side ].alpha() > 0 ) {
-                        beforeX = pxWidths[ vert ? side : sideBefore ];
-                        beforeY = pxWidths[ vert ? sideBefore : side ];
-                        afterX = pxWidths[ vert ? side : sideAfter ];
-                        afterY = pxWidths[ vert ? sideAfter : side ];
-
-                        if( styles[ side ] === 'dashed' || styles[ side ] === 'dotted' ) {
-                            segments.push( {
-                                path: curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0, 1 ) +
-                                      curve( cornerBefore, 0, 0, baseAngle, 1, 0 ),
-                                fill: colors[ side ]
-                            } );
-                            segments.push( {
-                                path: line( side, sideW / 2, 0, 1 ),
-                                stroke: styles[ side ],
-                                weight: sideW,
-                                color: colors[ side ]
-                            } );
-                            segments.push( {
-                                path: curve( cornerAfter, afterX, afterY, baseAngle, 0, 1 ) +
-                                      curve( cornerAfter, 0, 0, baseAngle - 45, 1, 0 ),
-                                fill: colors[ side ]
-                            } );
+                        // For dashed/dotted styles, add the dash cutout sub-paths
+                        if ( style in dashedStyles ) {
+                            side === 't' ?
+                                me.dashify( path, innerCoords[ 2 ], innerCoords[ 4 ], wT * mult, 0, 0, style ) :
+                            side === 'r' ?
+                                me.dashify( path, innerCoords[ 7 ], innerCoords[ 9 ], wR * mult, ( bounds.w - wR ) * mult, 1, style ) :
+                            side === 'b' ?
+                                me.dashify( path, innerCoords[ 12 ], innerCoords[ 10 ], wB * mult, ( bounds.h - wB ) * mult, 0, style ) :
+                            //side === 'l' ?
+                                me.dashify( path, innerCoords[ 1 ], innerCoords[ 15 ], wL * mult, 0, 1, style );
                         }
-                        else {
-                            segments.push( {
-                                path: curve( cornerBefore, beforeX, beforeY, baseAngle + 45, 0, 1 ) +
-                                      line( side, sideW, 0, 0 ) +
-                                      curve( cornerAfter, afterX, afterY, baseAngle, 0, 0 ) +
 
-                                      ( styles[ side ] === 'double' && sideW > 2 ?
-                                              curve( cornerAfter, afterX - floor( afterX / 3 ), afterY - floor( afterY / 3 ), baseAngle - 45, 1, 0 ) +
-                                              line( side, ceil( sideW / 3 * 2 ), 1, 0 ) +
-                                              curve( cornerBefore, beforeX - floor( beforeX / 3 ), beforeY - floor( beforeY / 3 ), baseAngle, 1, 0 ) +
-                                              'x ' +
-                                              curve( cornerBefore, floor( beforeX / 3 ), floor( beforeY / 3 ), baseAngle + 45, 0, 1 ) +
-                                              line( side, floor( sideW / 3 ), 1, 0 ) +
-                                              curve( cornerAfter, floor( afterX / 3 ), floor( afterY / 3 ), baseAngle, 0, 0 )
-                                          : '' ) +
-
-                                      curve( cornerAfter, 0, 0, baseAngle - 45, 1, 0 ) +
-                                      line( side, 0, 1, 0 ) +
-                                      curve( cornerBefore, 0, 0, baseAngle, 1, 0 ),
-                                fill: colors[ side ]
-                            } );
-                        }
+                        segmentsInfo.push( path.join( '' ), colors[ side ] );
+                        path.length = 0; //reuse same array for next loop
                     }
                 }
-
-                addSide( 't', 'l', 'r', 'tl', 'tr', 90 );
-                addSide( 'r', 't', 'b', 'tr', 'br', 0 );
-                addSide( 'b', 'r', 'l', 'br', 'bl', -90 );
-                addSide( 'l', 'b', 't', 'bl', 'tl', -180 );
             }
         }
 
-        return segments;
+        return segmentsInfo;
     },
 
     destroy: function() {

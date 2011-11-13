@@ -62,7 +62,7 @@ PIE.VmlShape = (function() {
     VmlShape.prototype = {
         behaviorStyle: 'behavior:url(#default#VML);',
         defaultStyles: 'position:absolute;top:0px;left:0px;',
-        defaultAttrs: 'coordorigin="1,1" ',
+        defaultAttrs: 'coordorigin="1,1" stroked="false" ',
         tagName: 'shape',
         mightBeRendered: 0,
 
@@ -74,7 +74,6 @@ PIE.VmlShape = (function() {
         setAttrs: createSetter( '' ),
         setStyles: createSetter( 'style' ),
         setFillAttrs: createSetter( 'fill' ),
-        setStrokeAttrs: createSetter( 'stroke' ),
         setImageDataAttrs: createSetter( 'imagedata' ),
 
         setSize: function( w, h ) {
@@ -104,8 +103,6 @@ PIE.VmlShape = (function() {
             var m,
                 me = this,
                 tag = me.tagName,
-                fill = 'fill',
-                stroke = 'stroke',
                 tagStart = '<v:',
                 subElEnd = ' style="' + me.behaviorStyle + '" />';
 
@@ -135,7 +132,6 @@ PIE.VmlShape = (function() {
             m.push( '>' );
 
             pushElement( 'fill' );
-            pushElement( 'stroke' );
             pushElement( 'imagedata' );
 
             m.push( '</v:' + tag + '>' );

@@ -100,7 +100,6 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
         var shape = this.getShape( 'borderImage' + name, this.shapeZIndex );
         shape.tagName = 'rect';
         shape.setAttrs(
-            'stroked', false,
             'filled', false
         );
         return shape;

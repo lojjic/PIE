@@ -95,57 +95,101 @@ PIE.merge(PIE.RendererBase, {
 
     /**
      * Return the VML path string for the element's background box, with corners rounded.
-     * @param {Object.<{t:number, r:number, b:number, l:number}>} shrink - if present, specifies number of
-     *        pixels to shrink the box path inward from the element's four sides.
-     * @param {number=} mult If specified, all coordinates will be multiplied by this number
+     * @param {number} shrinkT - number of pixels to shrink the box path inward from the element's top side.
+     * @param {number} shrinkR - number of pixels to shrink the box path inward from the element's right side.
+     * @param {number} shrinkB - number of pixels to shrink the box path inward from the element's bottom side.
+     * @param {number} shrinkL - number of pixels to shrink the box path inward from the element's left side.
+     * @param {number} mult All coordinates will be multiplied by this number
      * @param {Object=} radii If specified, this will be used for the corner radii instead of the properties
      *        from this renderer's borderRadiusInfo object.
      * @return {string} the VML path
      */
-    getBoxPath: function( shrink, mult, radii ) {
-        mult = mult || 1;
+    getBoxPath: function( shrinkT, shrinkR, shrinkB, shrinkL, mult, radii ) {
+        var str, coords, bounds, w, h,
+            M = Math, floor = M.floor, ceil = M.ceil;
 
-        var r, str,
-            bounds = this.boundsInfo.getBounds(),
-            w = bounds.w * mult,
-            h = bounds.h * mult,
-            radInfo = this.styleInfos.borderRadiusInfo,
-            floor = Math.floor, ceil = Math.ceil,
-            shrinkT = shrink ? shrink.t * mult : 0,
-            shrinkR = shrink ? shrink.r * mult : 0,
-            shrinkB = shrink ? shrink.b * mult : 0,
-            shrinkL = shrink ? shrink.l * mult : 0,
-            tlX, tlY, trX, trY, brX, brY, blX, blY;
-
-        if( radii || radInfo.isActive() ) {
-            r = this.getRadiiPixels( radii || radInfo.getProps() );
-
-            tlX = r.x['tl'] * mult;
-            tlY = r.y['tl'] * mult;
-            trX = r.x['tr'] * mult;
-            trY = r.y['tr'] * mult;
-            brX = r.x['br'] * mult;
-            brY = r.y['br'] * mult;
-            blX = r.x['bl'] * mult;
-            blY = r.y['bl'] * mult;
-
-            str = 'm' + floor( shrinkL ) + ',' + floor( tlY ) +
-                'qy' + floor( tlX ) + ',' + floor( shrinkT ) +
-                'l' + ceil( w - trX ) + ',' + floor( shrinkT ) +
-                'qx' + ceil( w - shrinkR ) + ',' + floor( trY ) +
-                'l' + ceil( w - shrinkR ) + ',' + ceil( h - brY ) +
-                'qy' + ceil( w - brX ) + ',' + ceil( h - shrinkB ) +
-                'l' + floor( blX ) + ',' + ceil( h - shrinkB ) +
-                'qx' + floor( shrinkL ) + ',' + ceil( h - blY ) + ' x e';
+        if( radii || this.styleInfos.borderRadiusInfo.isActive() ) {
+            // rounded box path
+            coords = this.getBoxPathCoords( shrinkT, shrinkR, shrinkB, shrinkL, mult, radii );
+            str = 'm' + coords[ 0 ] + ',' + coords[ 1 ] +
+                  'qy' + coords[ 2 ] + ',' + coords[ 3 ] +
+                  'l' + coords[ 4 ] + ',' + coords[ 5 ] +
+                  'qx' + coords[ 6 ] + ',' + coords[ 7 ] +
+                  'l' + coords[ 8 ] + ',' + coords[ 9 ] +
+                  'qy' + coords[ 10 ] + ',' + coords[ 11 ] +
+                  'l' + coords[ 12 ] + ',' + coords[ 13 ] +
+                  'qx' + coords[ 14 ] + ',' + coords[ 15 ] +
+                  'x';
         } else {
-            // simplified path for non-rounded box
+            // skip most of the heavy math for a non-rounded box
+            bounds = this.boundsInfo.getBounds();
+            w = bounds.w * mult;
+            h = bounds.h * mult;
+            shrinkT *= mult;
+            shrinkR *= mult;
+            shrinkB *= mult;
+            shrinkL *= mult;
             str = 'm' + floor( shrinkL ) + ',' + floor( shrinkT ) +
                   'l' + ceil( w - shrinkR ) + ',' + floor( shrinkT ) +
                   'l' + ceil( w - shrinkR ) + ',' + ceil( h - shrinkB ) +
                   'l' + floor( shrinkL ) + ',' + ceil( h - shrinkB ) +
-                  'xe';
+                  'x';
         }
         return str;
+    },
+
+    /**
+     * Return the VML coordinates for all the vertices in the rounded box path.
+     * @param {number} shrinkT - number of pixels to shrink the box path inward from the element's top side.
+     * @param {number} shrinkR - number of pixels to shrink the box path inward from the element's right side.
+     * @param {number} shrinkB - number of pixels to shrink the box path inward from the element's bottom side.
+     * @param {number} shrinkL - number of pixels to shrink the box path inward from the element's left side.
+     * @param {number=} mult If specified, all coordinates will be multiplied by this number
+     * @param {Object=} radii If specified, this will be used for the corner radii instead of the properties
+     *        from this renderer's borderRadiusInfo object.
+     * @return {Array.<number>} all the coordinates going clockwise, starting with the top-left corner's lower vertex
+     */
+    getBoxPathCoords: function( shrinkT, shrinkR, shrinkB, shrinkL, mult, radii ) {
+        var bounds = this.boundsInfo.getBounds(),
+            w = bounds.w * mult,
+            h = bounds.h * mult,
+            M = Math,
+            floor = M.floor, ceil = M.ceil,
+            max = M.max, min = M.min,
+
+            r = this.getRadiiPixels( radii || this.styleInfos.borderRadiusInfo.getProps() ),
+            tlRadiusX = r.x['tl'] * mult,
+            tlRadiusY = r.y['tl'] * mult,
+            trRadiusX = r.x['tr'] * mult,
+            trRadiusY = r.y['tr'] * mult,
+            brRadiusX = r.x['br'] * mult,
+            brRadiusY = r.y['br'] * mult,
+            blRadiusX = r.x['bl'] * mult,
+            blRadiusY = r.y['bl'] * mult;
+
+        shrinkT *= mult;
+        shrinkR *= mult;
+        shrinkB *= mult;
+        shrinkL *= mult;
+
+        return [
+            floor( shrinkL ),                                       // top-left lower x
+            floor( min( max( tlRadiusY, shrinkT ), h - shrinkB ) ), // top-left lower y
+            floor( min( max( tlRadiusX, shrinkL ), w - shrinkR ) ), // top-left upper x
+            floor( shrinkT ),                                       // top-left upper y
+            ceil( max( shrinkL, w - max( trRadiusX, shrinkR ) ) ),  // top-right upper x
+            floor( shrinkT ),                                       // top-right upper y
+            ceil( w - shrinkR ),                                    // top-right lower x
+            floor( min( max( trRadiusY, shrinkT ), h - shrinkB ) ), // top-right lower y
+            ceil( w - shrinkR ),                                    // bottom-right upper x
+            ceil( max( shrinkT, h - max( brRadiusY, shrinkB ) ) ),  // bottom-right upper y
+            ceil( max( shrinkL, w - max( brRadiusX, shrinkR ) ) ),  // bottom-right lower x
+            ceil( h - shrinkB ),                                    // bottom-right lower y
+            floor( min( max( blRadiusX, shrinkL ), w - shrinkR ) ), // bottom-left lower x
+            ceil( h - shrinkB ),                                    // bottom-left lower y
+            floor( shrinkL ),                                       // bottom-left upper x
+            ceil( max( shrinkT, h - max( blRadiusY, shrinkB ) ) )   // bottom-left upper y
+        ];
     },
 
 

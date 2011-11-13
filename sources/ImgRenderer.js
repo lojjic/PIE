@@ -46,13 +46,13 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
         }
 
         shape.setAttrs(
-            'stroked', false,
-            'path', this.getBoxPath( {
-                t: round( borderWidths['t'].pixels( el ) + getLength( cs.paddingTop ).pixels( el ) ),
-                r: round( borderWidths['r'].pixels( el ) + getLength( cs.paddingRight ).pixels( el ) ),
-                b: round( borderWidths['b'].pixels( el ) + getLength( cs.paddingBottom ).pixels( el ) ),
-                l: round( borderWidths['l'].pixels( el ) + getLength( cs.paddingLeft ).pixels( el ) )
-            }, 2 )
+            'path', this.getBoxPath(
+                round( borderWidths['t'].pixels( el ) + getLength( cs.paddingTop ).pixels( el ) ),
+                round( borderWidths['r'].pixels( el ) + getLength( cs.paddingRight ).pixels( el ) ),
+                round( borderWidths['b'].pixels( el ) + getLength( cs.paddingBottom ).pixels( el ) ),
+                round( borderWidths['l'].pixels( el ) + getLength( cs.paddingLeft ).pixels( el ) ),
+                2
+            )
         );
         shape.setFillAttrs(
             'type', 'frame',

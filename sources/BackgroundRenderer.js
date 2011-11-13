@@ -50,8 +50,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
             shape.setSize( bounds.w, bounds.h );
             shape.setAttrs(
-                'stroked', false,
-                'path', this.getBoxPath( 0, 2 )
+                'path', this.getBoxPath( 0, 0, 0, 0, 2 )
             );
             shape.setFillAttrs( 'color', color.colorValue( el ) );
             alpha = color.alpha();
@@ -84,8 +83,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 shape = this.getShape( 'bgImage' + i, this.shapeZIndex + ( .5 - i / 1000 ) );
 
                 shape.setAttrs(
-                    'stroked', false,
-                    'path', this.getBoxPath( 0, 2 )
+                    'path', this.getBoxPath( 0, 0, 0, 0, 2 )
                 );
                 shape.setSize( w, h );
 

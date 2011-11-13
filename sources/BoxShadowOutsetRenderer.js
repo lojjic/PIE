@@ -50,7 +50,7 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
                 // round the corners of the expanded shadow shape rather than squaring them off.
                 radii = PIE.BorderRadiusStyleInfo.ALL_ZERO;
             }
-            path = me.getBoxPath( { t: shrink, r: shrink, b: shrink, l: shrink }, 2, radii );
+            path = me.getBoxPath( shrink, shrink, shrink, shrink, 2, radii );
 
             // Create the shape object
             shape = me.getShape( 'shadow' + i, me.shapeZIndex + ( .5 - i / 1000 ) );
@@ -99,8 +99,6 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
             }
 
             shape.setAttrs(
-                'stroked', false,
-                'filled', true,
                 'path', path
             );
             shape.setFillAttrs( 'color', color );
