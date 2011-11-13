@@ -71,25 +71,13 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
                     alpha *= focusAdjustRatio * focusAdjustRatio; //this is a rough eyeball-adjustment, could be refined
                 }
 
-                // Inner focus opacity: VML does not allow opacity2 to be modified via the VML DOM,
-                // so we must trigger regeneration of the VML shape via markup.
-                if ( alpha !== shape.lastOpacity2 ) {
-                    if( shape.getShape() ) {
-                        me.deleteShape( 'shadow' + i );
-                        shape = me.getShape( 'shadow' + i, me.shapeZIndex + ( .5 - i / 1000 ) );
-                    }
-                    if( alpha < 1 ) {
-                        shape.setFillAttrs( 'o:opacity2', alpha );
-                    }
-                    shape.lastOpacity2 = alpha;
-                }
-
                 shape.setFillAttrs(
                     'type', 'gradienttitle', //makes the VML gradient follow the shape's outline - hooray for undocumented features?!?!
                     'color2', color,
                     'focusposition', focusX + ',' + focusY,
                     'focussize', ( 1 - focusX * 2 ) + ',' + ( 1 - focusY * 2 ),
-                    'opacity', 0
+                    'opacity', 0,
+                    'o:opacity2', alpha
                 );
             } else {
                 shape.setFillAttrs(

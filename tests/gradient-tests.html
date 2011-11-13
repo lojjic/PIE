@@ -184,6 +184,39 @@
         }
 
 
+        #opacity {
+            background: url(background2.gif);
+        }
+        #opacity1 {
+            background: -webkit-linear-gradient(top, rgba(0, 0, 255, 1), rgba(0, 0, 255, 0.2));
+            background: -moz-linear-gradient(top, rgba(0, 0, 255, 1), rgba(0, 0, 255, 0.2));
+            background: -ms-linear-gradient(top, rgba(0, 0, 255, 1), rgba(0, 0, 255, 0.2));
+            background: -o-linear-gradient(top, rgba(0, 0, 255, 1), rgba(0, 0, 255, 0.2));
+            -pie-background: linear-gradient(top, rgba(0, 0, 255, 1), rgba(0, 0, 255, 0.2));
+        }
+        #opacity1:hover {
+            background: -webkit-linear-gradient(top, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 0.8));
+            background: -moz-linear-gradient(top, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 0.8));
+            background: -ms-linear-gradient(top, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 0.8));
+            background: -o-linear-gradient(top, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 0.8));
+            -pie-background: linear-gradient(top, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 0.8));
+        }
+        #opacity2 {
+            background: -webkit-linear-gradient(top, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
+            background: -moz-linear-gradient(top, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
+            background: -ms-linear-gradient(top, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
+            background: -o-linear-gradient(top, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
+            -pie-background: linear-gradient(top, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
+        }
+        #opacity2:hover {
+            background: -webkit-linear-gradient(left, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
+            background: -moz-linear-gradient(left, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
+            background: -ms-linear-gradient(left, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
+            background: -o-linear-gradient(left, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
+            -pie-background: linear-gradient(left, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
+        }
+
+
     </style>
 </head>
 <body>
@@ -233,6 +266,12 @@
         <h1>Lining up (<a href="http://github.com/lojjic/PIE/issues/issue/64">issue 64</a>)</h1>
         <p id="lineup1">element 1</p>
         <p id="lineup2">element 2</p>
+    </div>
+
+    <div class="section" id="opacity">
+        <h1>Color-stop opacity</h1>
+        <p id="opacity1">linear-gradient(top, rgba(0, 0, 255, 1), rgba(0, 0, 255, 0.2))</p>
+        <p id="opacity2">linear-gradient(top, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1))</p>
     </div>
 
 </body>

@@ -292,6 +292,15 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             'color2', stops[stopCount - 1].color.colorValue( el ),
             'colors', vmlColors.join( ',' )
         );
+
+        // Set opacity; right now we only support this for two-stop gradients, multi-stop
+        // opacity will require chopping up each segment into its own shape.
+        if ( stopCount === 2 ) {
+            shape.setFillAttrs(
+                'opacity', stops[0].color.alpha(),
+                'o:opacity2', stops[1].color.alpha()
+            );
+        }
     },
 
 
