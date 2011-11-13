@@ -455,7 +455,7 @@ PIE.OnUnload.attachManagedEvent( doc, 'onmouseup', function() { PIE.OnMouseup.fi
  */
 PIE.Length = (function() {
     var lengthCalcEl = doc.createElement( 'length-calc' ),
-        parent = doc.documentElement,
+        parent = doc.body,
         s = lengthCalcEl.style,
         conversions = {},
         units = [ 'mm', 'cm', 'in', 'pt', 'pc' ],
@@ -467,13 +467,13 @@ PIE.Length = (function() {
 
     parent.appendChild( lengthCalcEl );
     while( i-- ) {
-        lengthCalcEl.style.width = '100' + units[i];
+        s.width = '100' + units[i];
         conversions[ units[i] ] = lengthCalcEl.offsetWidth / 100;
     }
     parent.removeChild( lengthCalcEl );
 
     // All calcs from here on will use 1em
-    lengthCalcEl.style.width = '1em';
+    s.width = '1em';
 
 
     function Length( val ) {
