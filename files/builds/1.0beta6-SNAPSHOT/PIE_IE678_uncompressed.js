@@ -2185,21 +2185,39 @@ PIE.VmlShape = (function() {
                     fill[ name ][ 'x' ] = 1; //Can be any value, just has to be set to "prime" it so the next line works. Weird!
                     fill[ name ] = value;
                 }
+            },
+
+            'o:opacity2': function( fill, name, value ) {
+                // The VML DOM does not allow dynamic setting of o:opacity2, so we must regenerate
+                // the entire shape from markup instead.
+                var me = this;
+                if( value !== me.lastOpacity2 ) {
+                    me.getShape().insertAdjacentHTML( 'afterEnd', me.getMarkup() );
+                    me.destroy();
+                    me.lastOpacity2 = value;
+                }
             }
         };
 
     function createSetter( objName ) {
         return function() {
             var args = arguments,
-                i = 0, len = args.length,
-                obj = this.getShape(),
-                name, setter;
+                i, len = args.length,
+                obj, name, setter;
 
+            // Store the property locally
+            obj = this[ attrsPrefix + objName ] || ( this[ attrsPrefix + objName ] = {} );
+            for( i = 0; i < len; i += 2 ) {
+                obj[ args[ i ] ] = args[ i + 1 ];
+            }
+
+            // If there is a rendered VML shape already, set the property directly via the VML DOM
+            obj = this.getShape();
             if( obj ) {
                 if( objName ) {
                     obj = obj[ objName ];
                 }
-                for( ; i < len; i += 2 ) {
+                for( i = 0; i < len; i += 2 ) {
                     name = args[ i ];
                     setter = objectSetters[ name ]; //if there is a custom setter for this property, use it
                     if ( setter ) {
@@ -2207,11 +2225,6 @@ PIE.VmlShape = (function() {
                     } else {
                         obj[ name ] = args[ i + 1 ];
                     }
-                }
-            } else {
-                obj = this[ attrsPrefix + objName ] || ( this[ attrsPrefix + objName ] = {} );
-                for( ; i < len; i += 2 ) {
-                    obj[ args[ i ] ] = args[ i + 1 ];
                 }
             }
         }
@@ -3135,6 +3148,15 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             'color2', stops[stopCount - 1].color.colorValue( el ),
             'colors', vmlColors.join( ',' )
         );
+
+        // Set opacity; right now we only support this for two-stop gradients, multi-stop
+        // opacity will require chopping up each segment into its own shape.
+        if ( stopCount === 2 ) {
+            shape.setFillAttrs(
+                'opacity', stops[0].color.alpha(),
+                'o:opacity2', stops[1].color.alpha()
+            );
+        }
     },
 
 
@@ -3648,25 +3670,13 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
                     alpha *= focusAdjustRatio * focusAdjustRatio; //this is a rough eyeball-adjustment, could be refined
                 }
 
-                // Inner focus opacity: VML does not allow opacity2 to be modified via the VML DOM,
-                // so we must trigger regeneration of the VML shape via markup.
-                if ( alpha !== shape.lastOpacity2 ) {
-                    if( shape.getShape() ) {
-                        me.deleteShape( 'shadow' + i );
-                        shape = me.getShape( 'shadow' + i, me.shapeZIndex + ( .5 - i / 1000 ) );
-                    }
-                    if( alpha < 1 ) {
-                        shape.setFillAttrs( 'o:opacity2', alpha );
-                    }
-                    shape.lastOpacity2 = alpha;
-                }
-
                 shape.setFillAttrs(
                     'type', 'gradienttitle', //makes the VML gradient follow the shape's outline - hooray for undocumented features?!?!
                     'color2', color,
                     'focusposition', focusX + ',' + focusY,
                     'focussize', ( 1 - focusX * 2 ) + ',' + ( 1 - focusY * 2 ),
-                    'opacity', 0
+                    'opacity', 0,
+                    'o:opacity2', alpha
                 );
             } else {
                 shape.setFillAttrs(
