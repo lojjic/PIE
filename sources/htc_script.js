@@ -47,8 +47,9 @@ if (!PIE && docMode < 10) {
                             }
                         }
                         queue = 0;
-                    } else {
-                        tryLoading( baseUrls[ ++i ] );
+                    }
+                    else if( baseUrls[ ++i ] ) {
+                        tryLoading( baseUrls[ i ] );
                     }
                 }
             };
