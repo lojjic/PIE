@@ -17,8 +17,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
 
     isActive: function() {
         var si = this.styleInfos;
-        return ( si.borderRadiusInfo.isActive() ||
-                 si.backgroundInfo.isActive() ) &&
+        return si.borderRadiusInfo.isActive() &&
                !si.borderImageInfo.isActive() &&
                si.borderInfo.isActive(); //check BorderStyleInfo last because it's the most expensive
     },
