@@ -2504,37 +2504,16 @@ PIE.merge(PIE.RendererBase, {
      * @return {string} the VML path
      */
     getBoxPath: function( shrinkT, shrinkR, shrinkB, shrinkL, mult, radii ) {
-        var str, coords, bounds, w, h,
-            M = Math, floor = M.floor, ceil = M.ceil;
-
-        if( radii || this.styleInfos.borderRadiusInfo.isActive() ) {
-            // rounded box path
-            coords = this.getBoxPathCoords( shrinkT, shrinkR, shrinkB, shrinkL, mult, radii );
-            str = 'm' + coords[ 0 ] + ',' + coords[ 1 ] +
-                  'qy' + coords[ 2 ] + ',' + coords[ 3 ] +
-                  'l' + coords[ 4 ] + ',' + coords[ 5 ] +
-                  'qx' + coords[ 6 ] + ',' + coords[ 7 ] +
-                  'l' + coords[ 8 ] + ',' + coords[ 9 ] +
-                  'qy' + coords[ 10 ] + ',' + coords[ 11 ] +
-                  'l' + coords[ 12 ] + ',' + coords[ 13 ] +
-                  'qx' + coords[ 14 ] + ',' + coords[ 15 ] +
-                  'x';
-        } else {
-            // skip most of the heavy math for a non-rounded box
-            bounds = this.boundsInfo.getBounds();
-            w = bounds.w * mult;
-            h = bounds.h * mult;
-            shrinkT *= mult;
-            shrinkR *= mult;
-            shrinkB *= mult;
-            shrinkL *= mult;
-            str = 'm' + floor( shrinkL ) + ',' + floor( shrinkT ) +
-                  'l' + ceil( w - shrinkR ) + ',' + floor( shrinkT ) +
-                  'l' + ceil( w - shrinkR ) + ',' + ceil( h - shrinkB ) +
-                  'l' + floor( shrinkL ) + ',' + ceil( h - shrinkB ) +
-                  'x';
-        }
-        return str;
+        var coords = this.getBoxPathCoords( shrinkT, shrinkR, shrinkB, shrinkL, mult, radii );
+        return 'm' + coords[ 0 ] + ',' + coords[ 1 ] +
+               'qy' + coords[ 2 ] + ',' + coords[ 3 ] +
+               'l' + coords[ 4 ] + ',' + coords[ 5 ] +
+               'qx' + coords[ 6 ] + ',' + coords[ 7 ] +
+               'l' + coords[ 8 ] + ',' + coords[ 9 ] +
+               'qy' + coords[ 10 ] + ',' + coords[ 11 ] +
+               'l' + coords[ 12 ] + ',' + coords[ 13 ] +
+               'qx' + coords[ 14 ] + ',' + coords[ 15 ] +
+               'x';
     },
 
     /**
@@ -2555,40 +2534,58 @@ PIE.merge(PIE.RendererBase, {
             M = Math,
             floor = M.floor, ceil = M.ceil,
             max = M.max, min = M.min,
-
-            r = this.getRadiiPixels( radii || this.styleInfos.borderRadiusInfo.getProps() ),
-            tlRadiusX = r.x['tl'] * mult,
-            tlRadiusY = r.y['tl'] * mult,
-            trRadiusX = r.x['tr'] * mult,
-            trRadiusY = r.y['tr'] * mult,
-            brRadiusX = r.x['br'] * mult,
-            brRadiusY = r.y['br'] * mult,
-            blRadiusX = r.x['bl'] * mult,
-            blRadiusY = r.y['bl'] * mult;
+            coords;
 
         shrinkT *= mult;
         shrinkR *= mult;
         shrinkB *= mult;
         shrinkL *= mult;
 
-        return [
-            floor( shrinkL ),                                       // top-left lower x
-            floor( min( max( tlRadiusY, shrinkT ), h - shrinkB ) ), // top-left lower y
-            floor( min( max( tlRadiusX, shrinkL ), w - shrinkR ) ), // top-left upper x
-            floor( shrinkT ),                                       // top-left upper y
-            ceil( max( shrinkL, w - max( trRadiusX, shrinkR ) ) ),  // top-right upper x
-            floor( shrinkT ),                                       // top-right upper y
-            ceil( w - shrinkR ),                                    // top-right lower x
-            floor( min( max( trRadiusY, shrinkT ), h - shrinkB ) ), // top-right lower y
-            ceil( w - shrinkR ),                                    // bottom-right upper x
-            ceil( max( shrinkT, h - max( brRadiusY, shrinkB ) ) ),  // bottom-right upper y
-            ceil( max( shrinkL, w - max( brRadiusX, shrinkR ) ) ),  // bottom-right lower x
-            ceil( h - shrinkB ),                                    // bottom-right lower y
-            floor( min( max( blRadiusX, shrinkL ), w - shrinkR ) ), // bottom-left lower x
-            ceil( h - shrinkB ),                                    // bottom-left lower y
-            floor( shrinkL ),                                       // bottom-left upper x
-            ceil( max( shrinkT, h - max( blRadiusY, shrinkB ) ) )   // bottom-left upper y
-        ];
+        if ( !radii ) {
+            radii = this.styleInfos.borderRadiusInfo.getProps();
+        }
+
+        if ( radii ) {
+            radii = this.getRadiiPixels( radii );
+
+            var tlRadiusX = radii.x['tl'] * mult,
+                tlRadiusY = radii.y['tl'] * mult,
+                trRadiusX = radii.x['tr'] * mult,
+                trRadiusY = radii.y['tr'] * mult,
+                brRadiusX = radii.x['br'] * mult,
+                brRadiusY = radii.y['br'] * mult,
+                blRadiusX = radii.x['bl'] * mult,
+                blRadiusY = radii.y['bl'] * mult;
+
+            coords = [
+                floor( shrinkL ),                                       // top-left lower x
+                floor( min( max( tlRadiusY, shrinkT ), h - shrinkB ) ), // top-left lower y
+                floor( min( max( tlRadiusX, shrinkL ), w - shrinkR ) ), // top-left upper x
+                floor( shrinkT ),                                       // top-left upper y
+                ceil( max( shrinkL, w - max( trRadiusX, shrinkR ) ) ),  // top-right upper x
+                floor( shrinkT ),                                       // top-right upper y
+                ceil( w - shrinkR ),                                    // top-right lower x
+                floor( min( max( trRadiusY, shrinkT ), h - shrinkB ) ), // top-right lower y
+                ceil( w - shrinkR ),                                    // bottom-right upper x
+                ceil( max( shrinkT, h - max( brRadiusY, shrinkB ) ) ),  // bottom-right upper y
+                ceil( max( shrinkL, w - max( brRadiusX, shrinkR ) ) ),  // bottom-right lower x
+                ceil( h - shrinkB ),                                    // bottom-right lower y
+                floor( min( max( blRadiusX, shrinkL ), w - shrinkR ) ), // bottom-left lower x
+                ceil( h - shrinkB ),                                    // bottom-left lower y
+                floor( shrinkL ),                                       // bottom-left upper x
+                ceil( max( shrinkT, h - max( blRadiusY, shrinkB ) ) )   // bottom-left upper y
+            ];
+        } else {
+            // Skip most of the heavy math for a simple non-rounded box
+            var t = floor( shrinkT ),
+                r = ceil( w - shrinkR ),
+                b = ceil( h - shrinkB ),
+                l = floor( shrinkL );
+
+            coords = [ l, t, l, t, r, t, r, t, r, b, r, b, l, b, l, b ];
+        }
+
+        return coords;
     },
 
 
