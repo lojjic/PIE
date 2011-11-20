@@ -61,6 +61,7 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
             s.top = y;
             s.zIndex = tgtPos === 'static' ? -1 : tgtCS.zIndex;
             this.isPositioned = true;
+            this.updateVisibility();
         }
     },
 
