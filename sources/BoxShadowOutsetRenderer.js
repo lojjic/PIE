@@ -89,8 +89,8 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
             if( blur ) {
                 totalW = ( spread + blur ) * 2 + w;
                 totalH = ( spread + blur ) * 2 + h;
-                focusX = blur * 2 / totalW;
-                focusY = blur * 2 / totalH;
+                focusX = totalW ? blur * 2 / totalW : 0;
+                focusY = totalH ? blur * 2 / totalH : 0;
                 if( blur - spread > w / 2 || blur - spread > h / 2 ) {
                     // If the blur is larger than half the element's narrowest dimension, we cannot do
                     // this with a single shape gradient, because its focussize would have to be less than
