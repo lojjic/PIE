@@ -58,8 +58,8 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
             if( blur ) {
                 totalW = ( spread + blur ) * 2 + w;
                 totalH = ( spread + blur ) * 2 + h;
-                focusX = blur * 2 / totalW;
-                focusY = blur * 2 / totalH;
+                focusX = totalW ? blur * 2 / totalW : 0;
+                focusY = totalH ? blur * 2 / totalH : 0;
 
                 // If the blur is larger than half the element's narrowest dimension, then its focussize
                 // will to be less than zero which results in ugly artifacts. To get around this, we adjust
