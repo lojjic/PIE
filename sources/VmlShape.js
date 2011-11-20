@@ -5,7 +5,8 @@
  */
 PIE.VmlShape = (function() {
 
-    var attrsPrefix = '_attrs_',
+    var nsPrefix = 'pievml',
+        attrsPrefix = '_attrs_',
         objectSetters = {
             'colors': function( fill, name, value ) {
                 if( fill[ name ] ) { //sometimes the colors object isn't initialized so we have to assign it directly (?)
@@ -68,6 +69,22 @@ PIE.VmlShape = (function() {
     }
 
 
+    /**
+     * The VML namespace has to be registered with the document, or the shapes will be invisible
+     * on initial render sometimes. This results in the infamous "Unspecified error" if called
+     * at certain times, so catch that and retry after a delay.
+     */
+    (function addVmlNamespace() {
+        try {
+            doc.namespaces.add(nsPrefix, 'urn:schemas-microsoft-com:vml', '#default#VML');
+        }
+        catch (e) {
+            setTimeout(addVmlNamespace, 1);
+        }
+    })();
+
+
+
     function VmlShape( idSeed, ordinalGroup ) {
         this.elId = '_pie_' + ( idSeed || 'shape' ) + PIE.Util.getUID(this);
         this.ordinalGroup = ordinalGroup || 0;
@@ -116,7 +133,7 @@ PIE.VmlShape = (function() {
             var m,
                 me = this,
                 tag = me.tagName,
-                tagStart = '<v:',
+                tagStart = '<' + nsPrefix + ':',
                 subElEnd = ' style="' + me.behaviorStyle + '" />';
 
             me.mightBeRendered = 1;
@@ -147,7 +164,7 @@ PIE.VmlShape = (function() {
             pushElement( 'fill' );
             pushElement( 'imagedata' );
 
-            m.push( '</v:' + tag + '>' );
+            m.push( '</' + nsPrefix + ':' + tag + '>' );
 
             return m.join( '' );
         },

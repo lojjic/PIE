@@ -41,7 +41,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             bounds = this.boundsInfo.getBounds(),
             el = this.targetElement,
             color = props && props.color,
-            shape, w, h, s, alpha;
+            shape, alpha;
 
         if( color && color.alpha() > 0 ) {
             this.hideBackground();
