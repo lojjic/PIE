@@ -25,6 +25,18 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
         'dotted': 1,
         'dashed': 1
     },
+    colorManipStyles: {
+        'groove': 1,
+        'ridge': 1,
+        'inset': 1,
+        'outset': 1
+    },
+    doubleStyles: {
+        'groove': 1,
+        'ridge': 1,
+        'double': 1
+    },
+
 
     needsUpdate: function() {
         var si = this.styleInfos;
@@ -43,7 +55,6 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
      */
     draw: function() {
         var me = this,
-            el = me.targetElement,
             props = me.styleInfos.borderInfo.getProps(),
             bounds = me.boundsInfo.getBounds(),
             shape, segmentsInfo, i, len;
@@ -59,7 +70,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                     'path', segmentsInfo[ i ]
                 );
                 shape.setFillAttrs(
-                    'color', segmentsInfo[ i + 1 ].colorValue( el )
+                    'color', segmentsInfo[ i + 1 ]
                 );
             }
 
@@ -143,11 +154,11 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                 side,
                 deg = 65535,
                 dashedStyles = me.dashedStyles,
-                style;
+                style, color;
 
             // When the border has uniform color and style all the way around, we can get
             // away with a single VML path shape, otherwise we need four separate shapes.
-            if ( borderProps.stylesSame && borderProps.colorsSame ) {
+            if ( borderProps.stylesSame && borderProps.colorsSame && !( styles[ 't' ] in me.colorManipStyles ) ) {
                 if( colors['t'].alpha() > 0 ) {
                     // Outer path
                     path[ 0 ] = me.getBoxPath( 0, 0, 0, 0, mult );
@@ -191,7 +202,8 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                             centerY2 = args[ 5 ],
                             outerX2 = args[ 6 ],
                             outerY2 = args[ 7 ],
-                            baseAngle = args[ 8 ];
+                            baseAngle = args[ 8 ],
+                            isTopLeft = side === 't' || side === 'l';
 
                         style = styles[ side ];
 
@@ -205,11 +217,15 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                                 abs( outerCoords[ outerY2 ] - outerCoords[ centerY2 ] ) + ',' +
                                 baseAngle * deg + ',' + -45 * deg;
 
-                        // If double style, add the middle cutout sub-paths
-                        if( style === 'double' ) {
+                        // If double style, add the middle sub-paths
+                        if( style in me.doubleStyles ) {
                             if( !doubleOuterCoords ) {
-                                doubleOuterCoords = me.getBoxPathCoords( wT / 3, wR / 3, wB / 3, wL / 3, mult );
-                                doubleInnerCoords = me.getBoxPathCoords( wT * 2 / 3, wR * 2 / 3, wB * 2 / 3, wL * 2 / 3, mult );
+                                if ( style === 'double' ) {
+                                    doubleOuterCoords = me.getBoxPathCoords( wT / 3, wR / 3, wB / 3, wL / 3, mult );
+                                    doubleInnerCoords = me.getBoxPathCoords( wT * 2 / 3, wR * 2 / 3, wB * 2 / 3, wL * 2 / 3, mult );
+                                } else {
+                                    doubleOuterCoords = doubleInnerCoords = me.getBoxPathCoords( wT / 2, wR / 2, wB / 2, wL / 2, mult );
+                                }
                             }
                             path.push(
                                 'ae' + doubleOuterCoords[ centerX2 ] + ',' + doubleOuterCoords[ centerY2 ] + ',' +
@@ -220,7 +236,20 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                                     abs( doubleOuterCoords[ outerX1 ] - doubleOuterCoords[ centerX1 ] ) + ',' +
                                     abs( doubleOuterCoords[ outerY1 ] - doubleOuterCoords[ centerY1 ] ) + ',' +
                                     baseAngle * deg + ',' + 45 * deg +
-                                'x' +
+                                'x'
+                            );
+
+                            // Actual 'double' style with have both paths as a single shape, but 'ridge' and
+                            // 'groove' need separate shapes for the different colors
+                            if( style !== 'double' ) {
+                                color = colors[ side ].colorValue( el ) + (
+                                    ( style === 'groove' ? isTopLeft : !isTopLeft ) ? ' darken(128)' : ' lighten(128)'
+                                );
+                                segmentsInfo.push( path.join( '' ), color );
+                                path.length = 0; //reuse same array for next loop
+                            }
+
+                            path.push(
                                 'al' + doubleInnerCoords[ centerX1 ] + ',' + doubleInnerCoords[ centerY1 ] + ',' +
                                     abs( doubleInnerCoords[ outerX1 ] - doubleInnerCoords[ centerX1 ] ) + ',' +
                                     abs( doubleInnerCoords[ outerY1 ] - doubleInnerCoords[ centerY1 ] ) + ',' +
@@ -257,7 +286,15 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                                 me.dashify( path, innerCoords[ 1 ], innerCoords[ 15 ], wL * mult, 0, 1, style );
                         }
 
-                        segmentsInfo.push( path.join( '' ), colors[ side ] );
+                        color = colors[ side ].colorValue( el );
+                        if ( style in me.colorManipStyles ) {
+                            // lighten or darken as appropriate
+                            color += (
+                                ( ( style === 'groove' || style === 'outset' ) ? isTopLeft : !isTopLeft ) ?
+                                ' lighten(128)' : ' darken(128)'
+                            );
+                        }
+                        segmentsInfo.push( path.join( '' ), color );
                         path.length = 0; //reuse same array for next loop
                     }
                 }
