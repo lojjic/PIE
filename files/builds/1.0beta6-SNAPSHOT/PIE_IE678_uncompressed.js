@@ -797,6 +797,44 @@ PIE.Angle = (function() {
  * @param {string} val The raw CSS string value for the color
  */
 PIE.Color = (function() {
+
+    /*
+     * hsl2rgb from http://codingforums.com/showthread.php?t=11156
+     * code by Jason Karl Davis (http://www.jasonkarldavis.com)
+     * swiped from cssSandpaper by Zoltan Hawryluk (http://www.useragentman.com/blog/csssandpaper-a-css3-javascript-library/)
+     * modified for formatting and size optimizations
+     */
+    function hsl2rgb( h, s, l ) {
+        var m1, m2, r, g, b,
+            round = Math.round;
+        s /= 100;
+        l /= 100;
+        if ( !s ) { r = g = b = l * 255; }
+        else {
+            if ( l <= 0.5 ) { m2 = l * ( s + 1 ); }
+            else { m2 = l + s - l * s; }
+            m1 = l * 2 - m2;
+            h = ( h % 360 ) / 360;
+            r = hueToRgb( m1, m2, h + 1/3 );
+            g = hueToRgb( m1, m2, h );
+            b = hueToRgb( m1, m2, h - 1/3 );
+        }
+        return { r: round( r ), g: round( g ), b: round( b ) };
+    }
+    function hueToRgb( m1, m2, hue ) {
+        var v;
+        if ( hue < 0 ) { hue += 1; }
+        else if ( hue > 1 ) { hue -= 1; }
+        if ( 6 * hue < 1 ) { v = m1 + ( m2 - m1 ) * hue * 6; }
+        else if ( 2 * hue < 1 ) { v = m2; }
+        else if ( 3 * hue < 2 ) { v = m1 + ( m2 - m1 ) * ( 2/3 - hue ) * 6; }
+        else { v = m1; }
+        return 255 * v;
+    }
+
+
+
+
     var instances = {};
 
     function Color( val ) {
@@ -807,7 +845,8 @@ PIE.Color = (function() {
      * Regular expression for matching rgba colors and extracting their components
      * @type {RegExp}
      */
-    Color.rgbaRE = /\s*rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d+|\d*\.\d+)\s*\)\s*/;
+    Color.rgbOrRgbaRE = /\s*rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(,\s*(\d+|\d*\.\d+))?\s*\)\s*/;
+    Color.hslOrHslaRE = /\s*hsla?\(\s*(\d*\.?\d+)\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*(,\s*(\d+|\d*\.\d+))?\s*\)\s*/;
 
     Color.names = {
         "aliceblue":"F0F8FF", "antiquewhite":"FAEBD7", "aqua":"0FF",
@@ -866,32 +905,72 @@ PIE.Color = (function() {
         parse: function() {
             if( !this._color ) {
                 var me = this,
-                    v = me.val,
-                    vLower,
-                    m = v.match( Color.rgbaRE );
-                if( m ) {
-                    me._color = 'rgb(' + m[1] + ',' + m[2] + ',' + m[3] + ')';
-                    me._alpha = parseFloat( m[4] );
+                    color = me.val,
+                    alpha, vLower, m, rgb;
+
+                // RGB or RGBA colors
+                if( m = color.match( Color.rgbOrRgbaRE ) ) {
+                    color = me.rgbToHex( +m[1], +m[2], +m[3] );
+                    alpha = ( 5 in m ) ? +m[5] : 1;
+                }
+                // HSL or HSLA colors
+                else if( m = color.match( Color.hslOrHslaRE ) ) {
+                    rgb = hsl2rgb( m[1], m[2], m[3] );
+                    color = me.rgbToHex( rgb.r, rgb.g, rgb.b );
+                    alpha = ( 5 in m ) ? +m[5] : 1;
                 }
                 else {
-                    if( ( vLower = v.toLowerCase() ) in Color.names ) {
-                        v = '#' + Color.names[vLower];
+                    if( Color.names.hasOwnProperty( vLower = color.toLowerCase() ) ) {
+                        color = '#' + Color.names[vLower];
                     }
-                    me._color = v;
-                    me._alpha = ( v === 'transparent' ? 0 : 1 );
+                    alpha = ( color === 'transparent' ? 0 : 1 );
                 }
+                me._color = color;
+                me._alpha = alpha;
             }
         },
 
         /**
+         * Converts RGB color channels to a hex value string
+         */
+        rgbToHex: function( r, g, b ) {
+            return '#' + ( r < 16 ? '0' : '' ) + r.toString( 16 ) +
+                         ( g < 16 ? '0' : '' ) + g.toString( 16 ) +
+                         ( b < 16 ? '0' : '' ) + b.toString( 16 );
+        },
+
+        /**
          * Retrieve the value of the color in a format usable by IE natively. This will be the same as
-         * the raw input value, except for rgba values which will be converted to an rgb value.
+         * the raw input value, except for rgb(a) and hsl(a) values which will be converted to a hex value.
          * @param {Element} el The context element, used to get 'currentColor' keyword value.
          * @return {string} Color value
          */
         colorValue: function( el ) {
             this.parse();
-            return this._color === 'currentColor' ? el.currentStyle.color : this._color;
+            return this._color === 'currentColor' ? PIE.getColor( el.currentStyle.color ).colorValue( el ) : this._color;
+        },
+
+        /**
+         * Retrieve the value of the color in a normalized six-digit hex format.
+         * @param el
+         */
+        hexValue: function( el ) {
+            var color = this.colorValue( el );
+            // At this point the color should be either a 3- or 6-digit hex value, or the string "transparent".
+
+            function ch( i ) {
+                return color.charAt( i );
+            }
+
+            // Fudge transparent to black - should be ignored anyway since its alpha will be 0
+            if( color === 'transparent' ) {
+                color = '#000';
+            }
+            // Expand 3-digit to 6-digit hex
+            if( ch(0) === '#' && color.length === 4 ) {
+                color = '#' + ch(1) + ch(1) + ch(2) + ch(2) + ch(3) + ch(3);
+            }
+            return color;
         },
 
         /**
@@ -3217,6 +3296,18 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
         'dotted': 1,
         'dashed': 1
     },
+    colorManipStyles: {
+        'groove': 1,
+        'ridge': 1,
+        'inset': 1,
+        'outset': 1
+    },
+    doubleStyles: {
+        'groove': 1,
+        'ridge': 1,
+        'double': 1
+    },
+
 
     needsUpdate: function() {
         var si = this.styleInfos;
@@ -3235,7 +3326,6 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
      */
     draw: function() {
         var me = this,
-            el = me.targetElement,
             props = me.styleInfos.borderInfo.getProps(),
             bounds = me.boundsInfo.getBounds(),
             shape, segmentsInfo, i, len;
@@ -3251,7 +3341,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                     'path', segmentsInfo[ i ]
                 );
                 shape.setFillAttrs(
-                    'color', segmentsInfo[ i + 1 ].colorValue( el )
+                    'color', segmentsInfo[ i + 1 ]
                 );
             }
 
@@ -3335,11 +3425,11 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                 side,
                 deg = 65535,
                 dashedStyles = me.dashedStyles,
-                style;
+                style, color;
 
             // When the border has uniform color and style all the way around, we can get
             // away with a single VML path shape, otherwise we need four separate shapes.
-            if ( borderProps.stylesSame && borderProps.colorsSame ) {
+            if ( borderProps.stylesSame && borderProps.colorsSame && !( styles[ 't' ] in me.colorManipStyles ) ) {
                 if( colors['t'].alpha() > 0 ) {
                     // Outer path
                     path[ 0 ] = me.getBoxPath( 0, 0, 0, 0, mult );
@@ -3383,7 +3473,8 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                             centerY2 = args[ 5 ],
                             outerX2 = args[ 6 ],
                             outerY2 = args[ 7 ],
-                            baseAngle = args[ 8 ];
+                            baseAngle = args[ 8 ],
+                            isTopLeft = side === 't' || side === 'l';
 
                         style = styles[ side ];
 
@@ -3397,11 +3488,15 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                                 abs( outerCoords[ outerY2 ] - outerCoords[ centerY2 ] ) + ',' +
                                 baseAngle * deg + ',' + -45 * deg;
 
-                        // If double style, add the middle cutout sub-paths
-                        if( style === 'double' ) {
+                        // If double style, add the middle sub-paths
+                        if( style in me.doubleStyles ) {
                             if( !doubleOuterCoords ) {
-                                doubleOuterCoords = me.getBoxPathCoords( wT / 3, wR / 3, wB / 3, wL / 3, mult );
-                                doubleInnerCoords = me.getBoxPathCoords( wT * 2 / 3, wR * 2 / 3, wB * 2 / 3, wL * 2 / 3, mult );
+                                if ( style === 'double' ) {
+                                    doubleOuterCoords = me.getBoxPathCoords( wT / 3, wR / 3, wB / 3, wL / 3, mult );
+                                    doubleInnerCoords = me.getBoxPathCoords( wT * 2 / 3, wR * 2 / 3, wB * 2 / 3, wL * 2 / 3, mult );
+                                } else {
+                                    doubleOuterCoords = doubleInnerCoords = me.getBoxPathCoords( wT / 2, wR / 2, wB / 2, wL / 2, mult );
+                                }
                             }
                             path.push(
                                 'ae' + doubleOuterCoords[ centerX2 ] + ',' + doubleOuterCoords[ centerY2 ] + ',' +
@@ -3412,7 +3507,20 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                                     abs( doubleOuterCoords[ outerX1 ] - doubleOuterCoords[ centerX1 ] ) + ',' +
                                     abs( doubleOuterCoords[ outerY1 ] - doubleOuterCoords[ centerY1 ] ) + ',' +
                                     baseAngle * deg + ',' + 45 * deg +
-                                'x' +
+                                'x'
+                            );
+
+                            // Actual 'double' style with have both paths as a single shape, but 'ridge' and
+                            // 'groove' need separate shapes for the different colors
+                            if( style !== 'double' ) {
+                                color = colors[ side ].colorValue( el ) + (
+                                    ( style === 'groove' ? isTopLeft : !isTopLeft ) ? ' darken(128)' : ' lighten(128)'
+                                );
+                                segmentsInfo.push( path.join( '' ), color );
+                                path.length = 0; //reuse same array for next loop
+                            }
+
+                            path.push(
                                 'al' + doubleInnerCoords[ centerX1 ] + ',' + doubleInnerCoords[ centerY1 ] + ',' +
                                     abs( doubleInnerCoords[ outerX1 ] - doubleInnerCoords[ centerX1 ] ) + ',' +
                                     abs( doubleInnerCoords[ outerY1 ] - doubleInnerCoords[ centerY1 ] ) + ',' +
@@ -3449,7 +3557,15 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                                 me.dashify( path, innerCoords[ 1 ], innerCoords[ 15 ], wL * mult, 0, 1, style );
                         }
 
-                        segmentsInfo.push( path.join( '' ), colors[ side ] );
+                        color = colors[ side ].colorValue( el );
+                        if ( style in me.colorManipStyles ) {
+                            // lighten or darken as appropriate
+                            color += (
+                                ( ( style === 'groove' || style === 'outset' ) ? isTopLeft : !isTopLeft ) ?
+                                ' lighten(128)' : ' darken(128)'
+                            );
+                        }
+                        segmentsInfo.push( path.join( '' ), color );
                         path.length = 0; //reuse same array for next loop
                     }
                 }
@@ -3670,8 +3786,8 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
             if( blur ) {
                 totalW = ( spread + blur ) * 2 + w;
                 totalH = ( spread + blur ) * 2 + h;
-                focusX = blur * 2 / totalW;
-                focusY = blur * 2 / totalH;
+                focusX = totalW ? blur * 2 / totalW : 0;
+                focusY = totalH ? blur * 2 / totalH : 0;
 
                 // If the blur is larger than half the element's narrowest dimension, then its focussize
                 // will to be less than zero which results in ugly artifacts. To get around this, we adjust
