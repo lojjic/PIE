@@ -452,12 +452,12 @@ PIE.Element = (function() {
     }
 
     Element.getInstance = function( el ) {
-        var id = PIE.Util.getUID( el );
+        var id = el[ 'uniqueID' ];
         return wrappers[ id ] || ( wrappers[ id ] = new Element( el ) );
     };
 
     Element.destroy = function( el ) {
-        var id = PIE.Util.getUID( el ),
+        var id = el[ 'uniqueID' ],
             wrapper = wrappers[ id ];
         if( wrapper ) {
             wrapper.destroy();

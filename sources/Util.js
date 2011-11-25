@@ -10,11 +10,12 @@
 
         /**
          * Generate and return a unique ID for a given object. The generated ID is stored
-         * as a property of the object for future reuse. DOM Elements use the builtin uniqueID property.
+         * as a property of the object for future reuse. For DOM Elements, don't use this
+         * but use the IE-native uniqueID property instead.
          * @param {Object} obj
          */
         getUID: function( obj ) {
-            return obj && obj[ 'uniqueID' ] || obj[ '_pieId' ] || ( obj[ '_pieId' ] = '_' + idNum++ );
+            return obj && obj[ '_pieId' ] || ( obj[ '_pieId' ] = '_' + idNum++ );
         },
 
 
