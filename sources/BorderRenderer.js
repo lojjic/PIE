@@ -183,7 +183,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
                     // Inner path
                     path.push( me.getBoxPath( wT, wR, wB, wL, mult ) );
 
-                    segmentsInfo.push( path.join( '' ), colors['t'] );
+                    segmentsInfo.push( path.join( '' ), colors['t'].colorValue( el ) );
                 }
             }
             else {
