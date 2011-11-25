@@ -119,13 +119,13 @@ PIE.Color = (function() {
                 // RGB or RGBA colors
                 if( m = color.match( Color.rgbOrRgbaRE ) ) {
                     color = me.rgbToHex( +m[1], +m[2], +m[3] );
-                    alpha = ( 5 in m ) ? +m[5] : 1;
+                    alpha = m[5] ? +m[5] : 1;
                 }
                 // HSL or HSLA colors
                 else if( m = color.match( Color.hslOrHslaRE ) ) {
                     rgb = hsl2rgb( m[1], m[2], m[3] );
                     color = me.rgbToHex( rgb.r, rgb.g, rgb.b );
-                    alpha = ( 5 in m ) ? +m[5] : 1;
+                    alpha = m[5] ? +m[5] : 1;
                 }
                 else {
                     if( Color.names.hasOwnProperty( vLower = color.toLowerCase() ) ) {
