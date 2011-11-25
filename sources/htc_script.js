@@ -1,9 +1,12 @@
 var el = element,
     doc = el.document,
-    docMode = doc.documentMode || 0,
-    PIE = window[ 'PIE' ];
+    docMode = doc.documentMode || 0;
 
-if (!PIE && docMode < 10) {
+// NOTE: do NOT try maintaining a long-lived variable referencing window.PIE here at the top
+// level because for some reason it isn't reliably set when it should be on subsequent attachments
+// of the behavior, resulting in double loads of the JS file.
+
+if ( !window[ 'PIE' ] && docMode < 10 ) {
     (function() {
         var queue = {},
             baseUrls = $DefaultBaseUrls$,
@@ -11,7 +14,7 @@ if (!PIE && docMode < 10) {
             baseUrl, tester, isIE6, i = 0;
 
         // Create stub PIE object
-        PIE = window[ 'PIE' ] = {
+        window[ 'PIE' ] = {
             'attach': function( el ) {
                 queue[ el[ 'uniqueID' ] ] = el;
             },
@@ -38,7 +41,9 @@ if (!PIE && docMode < 10) {
             var script = doc.createElement( 'script' );
             script.async = true;
             script.onreadystatechange = function() {
-                var rs = script.readyState, id;
+                var PIE = window[ 'PIE' ],
+                    rs = script.readyState,
+                    id;
                 if ( queue && ( rs === 'complete' || rs === 'loaded' ) ) {
                     if ( 'version' in PIE ) {
                         for( id in queue ) {
