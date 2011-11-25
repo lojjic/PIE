@@ -123,11 +123,12 @@ try {
 
         /**
          * Generate and return a unique ID for a given object. The generated ID is stored
-         * as a property of the object for future reuse. DOM Elements use the builtin uniqueID property.
+         * as a property of the object for future reuse. For DOM Elements, don't use this
+         * but use the IE-native uniqueID property instead.
          * @param {Object} obj
          */
         getUID: function( obj ) {
-            return obj && obj[ 'uniqueID' ] || obj[ '_pieId' ] || ( obj[ '_pieId' ] = '_' + idNum++ );
+            return obj && obj[ '_pieId' ] || ( obj[ '_pieId' ] = '_' + idNum++ );
         },
 
 
@@ -455,7 +456,7 @@ PIE.OnUnload.attachManagedEvent( doc, 'onmouseup', function() { PIE.OnMouseup.fi
  */
 PIE.Length = (function() {
     var lengthCalcEl = doc.createElement( 'length-calc' ),
-        parent = doc.body,
+        parent = doc.body || doc.documentElement,
         s = lengthCalcEl.style,
         conversions = {},
         units = [ 'mm', 'cm', 'in', 'pt', 'pc' ],
@@ -911,13 +912,13 @@ PIE.Color = (function() {
                 // RGB or RGBA colors
                 if( m = color.match( Color.rgbOrRgbaRE ) ) {
                     color = me.rgbToHex( +m[1], +m[2], +m[3] );
-                    alpha = ( 5 in m ) ? +m[5] : 1;
+                    alpha = m[5] ? +m[5] : 1;
                 }
                 // HSL or HSLA colors
                 else if( m = color.match( Color.hslOrHslaRE ) ) {
                     rgb = hsl2rgb( m[1], m[2], m[3] );
                     color = me.rgbToHex( rgb.r, rgb.g, rgb.b );
-                    alpha = ( 5 in m ) ? +m[5] : 1;
+                    alpha = m[5] ? +m[5] : 1;
                 }
                 else {
                     if( Color.names.hasOwnProperty( vLower = color.toLowerCase() ) ) {
@@ -2953,12 +2954,12 @@ PIE.Element = (function() {
     }
 
     Element.getInstance = function( el ) {
-        var id = PIE.Util.getUID( el );
+        var id = el[ 'uniqueID' ];
         return wrappers[ id ] || ( wrappers[ id ] = new Element( el ) );
     };
 
     Element.destroy = function( el ) {
-        var id = PIE.Util.getUID( el ),
+        var id = el[ 'uniqueID' ],
             wrapper = wrappers[ id ];
         if( wrapper ) {
             wrapper.destroy();
