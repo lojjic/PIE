@@ -22,10 +22,23 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
             props = me.styleInfos.borderImageInfo.getProps(),
             borderProps = me.styleInfos.borderInfo.getProps(),
             bounds = me.boundsInfo.getBounds(),
-            el = me.targetElement;
+            el = me.targetElement,
+
+            // Create the shapes up front; if we wait until after image load they sometimes
+            // get drawn with no image and a black border.
+            tl = me.getRect( 'tl' ),
+            t = me.getRect( 't' ),
+            tr = me.getRect( 'tr' ),
+            r = me.getRect( 'r' ),
+            br = me.getRect( 'br' ),
+            b = me.getRect( 'b' ),
+            bl = me.getRect( 'bl' ),
+            l = me.getRect( 'l' ),
+            c = me.getRect( 'c' );
 
         PIE.Util.withImageSize( props.src, function( imgSize ) {
-            var elW = bounds.w,
+            var me = this,
+                elW = bounds.w,
                 elH = bounds.h,
                 zero = PIE.getLength( '0' ),
                 widths = props.widths || ( borderProps ? borderProps.widths : { 't': zero, 'r': zero, 'b': zero, 'l': zero } ),
@@ -37,72 +50,76 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
                 sliceT = slices['t'].pixels( el ),
                 sliceR = slices['r'].pixels( el ),
                 sliceB = slices['b'].pixels( el ),
-                sliceL = slices['l'].pixels( el );
+                sliceL = slices['l'].pixels( el ),
+                src = props.src,
+                setSizeAndPos = me.setSizeAndPos,
+                setImageData = me.setImageData;
 
             // Piece positions and sizes
-            function setSizeAndPos( piece, w, h, x, y ) {
-                var max = Math.max;
-                me.getRect( piece ).setStyles(
-                    'width', max( w, 0 ) + 'px',
-                    'height', max( h, 0 ) + 'px',
-                    'left', x + 'px',
-                    'top', y + 'px'
-                );
-            }
-            setSizeAndPos( 'tl', widthL, widthT, 0, 0 );
-            setSizeAndPos( 't', elW - widthL - widthR, widthT, widthL, 0 );
-            setSizeAndPos( 'tr', widthR, widthT, elW - widthR, 0 );
-            setSizeAndPos( 'r', widthR, elH - widthT - widthB, elW - widthR, widthT );
-            setSizeAndPos( 'br', widthR, widthB, elW - widthR, elH - widthB );
-            setSizeAndPos( 'b', elW - widthL - widthR, widthB, widthL, elH - widthB );
-            setSizeAndPos( 'bl', widthL, widthB, 0, elH - widthB );
-            setSizeAndPos( 'l', widthL, elH - widthT - widthB, 0, widthT );
-            setSizeAndPos( 'c', elW - widthL - widthR, elH - widthT - widthB, widthL, widthT );
+            setSizeAndPos( tl, widthL, widthT, 0, 0 );
+            setSizeAndPos( t, elW - widthL - widthR, widthT, widthL, 0 );
+            setSizeAndPos( tr, widthR, widthT, elW - widthR, 0 );
+            setSizeAndPos( r, widthR, elH - widthT - widthB, elW - widthR, widthT );
+            setSizeAndPos( br, widthR, widthB, elW - widthR, elH - widthB );
+            setSizeAndPos( b, elW - widthL - widthR, widthB, widthL, elH - widthB );
+            setSizeAndPos( bl, widthL, widthB, 0, elH - widthB );
+            setSizeAndPos( l, widthL, elH - widthT - widthB, 0, widthT );
+            setSizeAndPos( c, elW - widthL - widthR, elH - widthT - widthB, widthL, widthT );
 
 
             // image croppings
-            function setCrops( sides, crop, val ) {
-                var src = props.src,
-                    i = 0, len = sides.length;
-                for( ; i < len; i++ ) {
-                    me.getRect( sides[i] ).setImageDataAttrs(
-                        'src', src,
-                        crop, val
-                    );
-                }
-            }
-
             // corners
-            setCrops( [ 'tl', 't', 'tr' ], 'cropBottom', ( imgSize.h - sliceT ) / imgSize.h );
-            setCrops( [ 'tl', 'l', 'bl' ], 'cropRight', ( imgSize.w - sliceL ) / imgSize.w );
-            setCrops( [ 'bl', 'b', 'br' ], 'cropTop', ( imgSize.h - sliceB ) / imgSize.h );
-            setCrops( [ 'tr', 'r', 'br' ], 'cropLeft', ( imgSize.w - sliceR ) / imgSize.w );
+            setImageData( src, 'Bottom', ( imgSize.h - sliceT ) / imgSize.h, tl, t, tr );
+            setImageData( src, 'Right', ( imgSize.w - sliceL ) / imgSize.w, tl, l, bl );
+            setImageData( src, 'Top', ( imgSize.h - sliceB ) / imgSize.h, bl, b, br );
+            setImageData( src, 'Left', ( imgSize.w - sliceR ) / imgSize.w, tr, r, br );
 
             // edges and center
             // TODO right now this treats everything like 'stretch', need to support other schemes
             //if( props.repeat.v === 'stretch' ) {
-                setCrops( [ 'l', 'r', 'c' ], 'cropTop', sliceT / imgSize.h );
-                setCrops( [ 'l', 'r', 'c' ], 'cropBottom', sliceB / imgSize.h );
+                setImageData( src, 'Top', sliceT / imgSize.h, l, r, c );
+                setImageData( src, 'Bottom', sliceB / imgSize.h, l, r, c );
             //}
             //if( props.repeat.h === 'stretch' ) {
-                setCrops( [ 't', 'b', 'c' ], 'cropLeft', sliceL / imgSize.w );
-                setCrops( [ 't', 'b', 'c' ], 'cropRight', sliceR / imgSize.w );
+                setImageData( src, 'Left', sliceL / imgSize.w, t, b, c );
+                setImageData( src, 'Right', sliceR / imgSize.w, t, b, c );
             //}
 
             // center fill
-            me.getRect( 'c' ).setStyles(
+            c.setStyles(
                 'display', props.fill ? '' : 'none'
             );
         }, me );
     },
 
     getRect: function( name ) {
-        var shape = this.getShape( 'borderImage' + name, this.shapeZIndex );
+        var shape = this.getShape( 'borderImage_' + name, this.shapeZIndex );
         shape.tagName = 'rect';
         shape.setAttrs(
             'filled', false
         );
         return shape;
+    },
+
+    setSizeAndPos: function( piece, w, h, x, y ) {
+        var max = Math.max;
+        piece.setStyles(
+            'width', max( w, 0 ) + 'px',
+            'height', max( h, 0 ) + 'px',
+            'left', x + 'px',
+            'top', y + 'px'
+        );
+    },
+
+    setImageData: function( src, cropSide, cropVal /*side1, side2, ...*/ ) {
+        var args = arguments,
+            i = 3, len = args.length;
+        for( ; i < len; i++ ) {
+            args[i].setImageDataAttrs(
+                'src', src,
+                'crop' + cropSide, cropVal
+            );
+        }
     },
 
     prepareUpdate: function() {
