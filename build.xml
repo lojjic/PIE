@@ -100,19 +100,22 @@
             </filterchain>
         </concat>
 
-        <concat destfile="${build_dir}/PIE_uncompressed.htc">
-            <fileset file="${src_dir}/htc_open.txt" />
-            <fileset file="${src_dir}/htc_script.js" />
-            <fileset file="${src_dir}/htc_close.txt" />
-
+        <loadfile property="htc_script_uncompressed" srcFile="${src_dir}/htc_script.js">
             <filterchain>
                 <tokenfilter>
-                    <replacestring from="$Version$" to="${version}" />
                     <replacestring from="$JSVariant$" to="_uncompressed" />
                     <replacestring from="$DefaultBaseUrls$" to="${default_base_urls}" />
                 </tokenfilter>
             </filterchain>
-        </concat>
+        </loadfile>
+        <copy file="${src_dir}/htc_markup.htc" tofile="${build_dir}/PIE_uncompressed.htc">
+            <filterchain>
+                <tokenfilter>
+                    <replacestring from="$Version$" to="${version}" />
+                    <replacestring from="$Contents$" to="${htc_script_uncompressed}" />
+                </tokenfilter>
+            </filterchain>
+        </copy>
     </target>
 
     <target name="build-compressed" depends="build-uncompressed">
@@ -145,22 +148,25 @@
                        --externs ${src_dir}/closure_externs.js' />
         </exec>
 
-        <concat destfile="${build_dir}/PIE.htc">
-            <fileset file="${src_dir}/htc_open.txt" />
-            <fileset file="${build_dir}/htc_script_compressed.js" />
-            <fileset file="${src_dir}/htc_close.txt" />
-
+        <loadfile property="htc_script_compressed" srcFile="${build_dir}/htc_script_compressed.js">
+            <filterchain>
+                <tokenfilter>
+                    <replacestring from="$JSVariant$" to="" />
+                    <replacestring from="$DefaultBaseUrls$" to="${default_base_urls}" />
+                </tokenfilter>
+            </filterchain>
+        </loadfile>
+        <copy file="${src_dir}/htc_markup.htc" tofile="${build_dir}/PIE.htc">
             <filterchain>
                 <striplinecomments>
                     <comment value="//#" />
                 </striplinecomments>
                 <tokenfilter>
+                    <replacestring from="$Contents$" to="${htc_script_compressed}" />
                     <replacestring from="$Version$" to="${version}" />
-                    <replacestring from="$JSVariant$" to="" />
-                    <replacestring from="$DefaultBaseUrls$" to="${default_base_urls}" />
                 </tokenfilter>
             </filterchain>
-        </concat>
+        </copy>
 
         <delete file="${build_dir}/temp.js" />
         <delete file="${build_dir}/htc_script_compressed.js" />
