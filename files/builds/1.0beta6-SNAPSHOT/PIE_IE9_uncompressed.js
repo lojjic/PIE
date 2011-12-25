@@ -418,30 +418,6 @@ PIE.OnUnload.attachManagedEvent( win, 'onresize', function() { PIE.OnResize.fire
     PIE.OnResize.observe( scrolled );
 })();
 /**
- * Listen for printing events, destroy all active PIE instances when printing, and
- * restore them afterward.
- */
-(function() {
-
-    var elements;
-
-    function beforePrint() {
-        elements = PIE.Element.destroyAll();
-    }
-
-    function afterPrint() {
-        if( elements ) {
-            for( var i = 0, len = elements.length; i < len; i++ ) {
-                PIE[ 'attach' ]( elements[i] );
-            }
-            elements = 0;
-        }
-    }
-
-    PIE.OnUnload.attachManagedEvent( win, 'onbeforeprint', beforePrint );
-    PIE.OnUnload.attachManagedEvent( win, 'onafterprint', afterPrint );
-
-})();/**
  * Create a single observable listener for document mouseup events.
  */
 PIE.OnMouseup = new PIE.Observable();
@@ -2088,12 +2064,6 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     },
 
     /**
-     * Flag indicating the element has already been positioned at least once.
-     * @type {boolean}
-     */
-    isPositioned: false,
-
-    /**
      * Determine if the renderer needs to be updated
      * @return {boolean}
      */
@@ -2117,13 +2087,6 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         } else {
             this.destroy();
         }
-    },
-
-    /**
-     * Tell the renderer to update based on modified element position
-     */
-    updatePos: function() {
-        this.isPositioned = true;
     },
 
     /**
@@ -2548,7 +2511,8 @@ PIE.Element = (function() {
 
 
     function Element( el ) {
-        var renderers,
+        var me = this,
+            renderers,
             rootRenderer,
             boundsInfo = new PIE.BoundsInfo( el ),
             styleInfos,
@@ -2560,6 +2524,8 @@ PIE.Element = (function() {
             delayed,
             destroyed,
             poll;
+
+        me.el = el;
 
         /**
          * Initialize PIE for this element.
@@ -2715,7 +2681,14 @@ PIE.Element = (function() {
                     for( i = 0; i < len; i++ ) {
                         renderers[i].prepareUpdate();
                     }
-                    if( force || boundsInfo.positionChanged() ) {
+                    for( i = 0; i < len; i++ ) {
+                        if( force || sizeChanged || ( checkProps && renderers[i].needsUpdate() ) ) {
+                            renderers[i].updateRendering();
+                        }
+                    }
+                    rootRenderer.finishUpdate();
+
+                    if( force || ( rootRenderer.isPositioned && boundsInfo.positionChanged() ) ) {
                         /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
                            position changes may not always be accurate; it's possible that
                            an element will actually move relative to its positioning parent, but its position
@@ -2723,16 +2696,8 @@ PIE.Element = (function() {
                            track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
                            but that is a more expensive operation since it does some DOM walking, and we want this
                            check to be as fast as possible. */
-                        for( i = 0; i < len; i++ ) {
-                            renderers[i].updatePos();
-                        }
+                        rootRenderer.updatePos();
                     }
-                    for( i = 0; i < len; i++ ) {
-                        if( force || sizeChanged || ( checkProps && renderers[i].needsUpdate() ) ) {
-                            renderers[i].updateRendering();
-                        }
-                    }
-                    rootRenderer.finishUpdate();
 
                     unlockAll();
                 }
@@ -2896,6 +2861,7 @@ PIE.Element = (function() {
 
                 // Kill references
                 renderers = boundsInfo = styleInfos = styleInfosArr = el = null;
+                me.el = me = 0;
             }
         }
 
@@ -2949,8 +2915,8 @@ PIE.Element = (function() {
 
         // These methods are all already bound to this instance so there's no need to wrap them
         // in a closure to maintain the 'this' scope object when calling them.
-        this.init = init;
-        this.destroy = destroy;
+        me.init = init;
+        me.destroy = destroy;
     }
 
     Element.getInstance = function( el ) {

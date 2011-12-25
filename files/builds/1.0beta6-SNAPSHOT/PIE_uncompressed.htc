@@ -101,6 +101,7 @@ function cleanup() {
 if( el.readyState === 'complete' ) {
     init();
 }
+
 </script>
 
 //# IE will sometimes hang for a long time on unload of pages with .htc behaviors

@@ -2347,7 +2347,6 @@ PIE.VmlShape = (function() {
         setAttrs: createSetter( '' ),
         setStyles: createSetter( 'style' ),
         setFillAttrs: createSetter( 'fill' ),
-        setImageDataAttrs: createSetter( 'imagedata' ),
 
         setSize: function( w, h ) {
             this.setStyles(
@@ -2405,7 +2404,6 @@ PIE.VmlShape = (function() {
             m.push( '>' );
 
             pushElement( 'fill' );
-            pushElement( 'imagedata' );
 
             m.push( '</' + nsPrefix + ':' + tag + '>' );
 
@@ -2442,12 +2440,6 @@ PIE.VmlShape = (function() {
     },
 
     /**
-     * Flag indicating the element has already been positioned at least once.
-     * @type {boolean}
-     */
-    isPositioned: false,
-
-    /**
      * Determine if the renderer needs to be updated
      * @return {boolean}
      */
@@ -2471,13 +2463,6 @@ PIE.VmlShape = (function() {
         } else {
             this.destroy();
         }
-    },
-
-    /**
-     * Tell the renderer to update based on modified element position
-     */
-    updatePos: function() {
-        this.isPositioned = true;
     },
 
     /**
@@ -2766,6 +2751,12 @@ PIE.merge(PIE.RendererBase, {
  */
 PIE.RootRenderer = PIE.RendererBase.newRenderer( {
 
+    /**
+     * Flag indicating the element has already been positioned at least once.
+     * @type {boolean}
+     */
+    isPositioned: false,
+
     isActive: function() {
         var children = this.childRenderers;
         for( var i in children ) {
@@ -2780,6 +2771,9 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
         return this.styleInfos.visibilityInfo.changed();
     },
 
+    /**
+     * Tell the renderer to update based on modified element position
+     */
     updatePos: function() {
         if( this.isActive() && this.getBoxEl() ) {
             var el = this.getPositioningElement(),
@@ -2899,11 +2893,10 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                 markup.push( '</css3pie>' );
 
                 me.getPositioningElement().insertAdjacentHTML( 'beforeBegin', markup.join( '' ) );
-                me.updatePos();
 
                 me._renderedShapes = queue;
             }
-            delete me._shapeRenderQueue;
+            me._shapeRenderQueue = 0;
         }
     },
 
@@ -3610,19 +3603,7 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
             props = me.styleInfos.borderImageInfo.getProps(),
             borderProps = me.styleInfos.borderInfo.getProps(),
             bounds = me.boundsInfo.getBounds(),
-            el = me.targetElement,
-
-            // Create the shapes up front; if we wait until after image load they sometimes
-            // get drawn with no image and a black border.
-            tl = me.getRect( 'tl' ),
-            t = me.getRect( 't' ),
-            tr = me.getRect( 'tr' ),
-            r = me.getRect( 'r' ),
-            br = me.getRect( 'br' ),
-            b = me.getRect( 'b' ),
-            bl = me.getRect( 'bl' ),
-            l = me.getRect( 'l' ),
-            c = me.getRect( 'c' );
+            el = me.targetElement;
 
         PIE.Util.withImageSize( props.src, function( imgSize ) {
             var me = this,
@@ -3640,74 +3621,53 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
                 sliceB = slices['b'].pixels( el ),
                 sliceL = slices['l'].pixels( el ),
                 src = props.src,
-                setSizeAndPos = me.setSizeAndPos,
-                setImageData = me.setImageData;
+                imgW = imgSize.w,
+                imgH = imgSize.h;
+
+            function setSizeAndPos( rect, rectX, rectY, rectW, rectH, sliceX, sliceY, sliceW, sliceH ) {
+                // Hide the piece entirely if we have zero dimensions for the image, the rect, or the slice
+                var max = Math.max;
+                if ( !imgW || !imgH || !rectW || !rectH || !sliceW || !sliceH ) {
+                    rect.setStyles( 'display', 'none' );
+                } else {
+                    rectW = max( rectW, 0 );
+                    rectH = max( rectH, 0 );
+                    rect.setAttrs(
+                        'path', 'm0,0l' + rectW * 2 + ',0l' + rectW * 2 + ',' + rectH * 2 + 'l0,' + rectH * 2 + 'x'
+                    );
+                    rect.setFillAttrs(
+                        'src', src,
+                        'type', 'tile',
+                        'position', '0,0',
+                        'origin', ( ( sliceX - 0.5 ) / imgW ) + ',' + ( ( sliceY - 0.5 ) / imgH ),
+                        // For some reason using px units doesn't work in VML markup so we must convert to pt.
+                        'size', PIE.Length.pxToPt( rectW * imgW / sliceW ) + 'pt,' + PIE.Length.pxToPt( rectH * imgH / sliceH ) + 'pt'
+                    );
+                    rect.setSize( rectW, rectH );
+                    rect.setStyles(
+                        'left', rectX + 'px',
+                        'top', rectY + 'px',
+                        'display', ''
+                    );
+                }
+            }
 
             // Piece positions and sizes
-            setSizeAndPos( tl, widthL, widthT, 0, 0 );
-            setSizeAndPos( t, elW - widthL - widthR, widthT, widthL, 0 );
-            setSizeAndPos( tr, widthR, widthT, elW - widthR, 0 );
-            setSizeAndPos( r, widthR, elH - widthT - widthB, elW - widthR, widthT );
-            setSizeAndPos( br, widthR, widthB, elW - widthR, elH - widthB );
-            setSizeAndPos( b, elW - widthL - widthR, widthB, widthL, elH - widthB );
-            setSizeAndPos( bl, widthL, widthB, 0, elH - widthB );
-            setSizeAndPos( l, widthL, elH - widthT - widthB, 0, widthT );
-            setSizeAndPos( c, elW - widthL - widthR, elH - widthT - widthB, widthL, widthT );
-
-
-            // image croppings
-            // corners
-            setImageData( src, 'Bottom', ( imgSize.h - sliceT ) / imgSize.h, tl, t, tr );
-            setImageData( src, 'Right', ( imgSize.w - sliceL ) / imgSize.w, tl, l, bl );
-            setImageData( src, 'Top', ( imgSize.h - sliceB ) / imgSize.h, bl, b, br );
-            setImageData( src, 'Left', ( imgSize.w - sliceR ) / imgSize.w, tr, r, br );
-
-            // edges and center
             // TODO right now this treats everything like 'stretch', need to support other schemes
-            //if( props.repeat.v === 'stretch' ) {
-                setImageData( src, 'Top', sliceT / imgSize.h, l, r, c );
-                setImageData( src, 'Bottom', sliceB / imgSize.h, l, r, c );
-            //}
-            //if( props.repeat.h === 'stretch' ) {
-                setImageData( src, 'Left', sliceL / imgSize.w, t, b, c );
-                setImageData( src, 'Right', sliceR / imgSize.w, t, b, c );
-            //}
-
-            // center fill
-            c.setStyles(
-                'display', props.fill ? '' : 'none'
-            );
+            setSizeAndPos( me.getRect( 'tl' ), 0, 0, widthL, widthT, 0, 0, sliceL, sliceT );
+            setSizeAndPos( me.getRect( 't' ), widthL, 0, elW - widthL - widthR, widthT, sliceL, 0, imgW - sliceL - sliceR, sliceT );
+            setSizeAndPos( me.getRect( 'tr' ), elW - widthR, 0, widthR, widthT, imgW - sliceR, 0, sliceR, sliceT );
+            setSizeAndPos( me.getRect( 'r' ), elW - widthR, widthT, widthR, elH - widthT - widthB, imgW - sliceR, sliceT, sliceR, imgH - sliceT - sliceB );
+            setSizeAndPos( me.getRect( 'br' ), elW - widthR, elH - widthB, widthR, widthB, imgW - sliceR, imgH - sliceB, sliceR, sliceB );
+            setSizeAndPos( me.getRect( 'b' ), widthL, elH - widthB, elW - widthL - widthR, widthB, sliceL, imgH - sliceB, imgW - sliceL - sliceR, sliceB );
+            setSizeAndPos( me.getRect( 'bl' ), 0, elH - widthB, widthL, widthB, 0, imgH - sliceB, sliceL, sliceB );
+            setSizeAndPos( me.getRect( 'l' ), 0, widthT, widthL, elH - widthT - widthB, 0, sliceT, sliceL, imgH - sliceT - sliceB );
+            setSizeAndPos( me.getRect( 'c' ), widthL, widthT, elW - widthL - widthR, elH - widthT - widthB, sliceL, sliceT, props.fill ? imgW - sliceL - sliceR : 0, imgH - sliceT - sliceB );
         }, me );
     },
 
     getRect: function( name ) {
-        var shape = this.getShape( 'borderImage_' + name, this.shapeZIndex );
-        shape.tagName = 'rect';
-        shape.setAttrs(
-            'filled', false
-        );
-        return shape;
-    },
-
-    setSizeAndPos: function( piece, w, h, x, y ) {
-        var max = Math.max;
-        piece.setStyles(
-            'width', max( w, 0 ) + 'px',
-            'height', max( h, 0 ) + 'px',
-            'left', x + 'px',
-            'top', y + 'px'
-        );
-    },
-
-    setImageData: function( src, cropSide, cropVal /*side1, side2, ...*/ ) {
-        var args = arguments,
-            i = 3, len = args.length;
-        for( ; i < len; i++ ) {
-            args[i].setImageDataAttrs(
-                'src', src,
-                'crop' + cropSide, cropVal
-            );
-        }
+        return this.getShape( 'borderImage_' + name, this.shapeZIndex );
     },
 
     prepareUpdate: function() {
@@ -3970,7 +3930,8 @@ PIE.Element = (function() {
 
 
     function Element( el ) {
-        var renderers,
+        var me = this,
+            renderers,
             rootRenderer,
             boundsInfo = new PIE.BoundsInfo( el ),
             styleInfos,
@@ -3982,6 +3943,8 @@ PIE.Element = (function() {
             delayed,
             destroyed,
             poll;
+
+        me.el = el;
 
         /**
          * Initialize PIE for this element.
@@ -4137,7 +4100,14 @@ PIE.Element = (function() {
                     for( i = 0; i < len; i++ ) {
                         renderers[i].prepareUpdate();
                     }
-                    if( force || boundsInfo.positionChanged() ) {
+                    for( i = 0; i < len; i++ ) {
+                        if( force || sizeChanged || ( checkProps && renderers[i].needsUpdate() ) ) {
+                            renderers[i].updateRendering();
+                        }
+                    }
+                    rootRenderer.finishUpdate();
+
+                    if( force || ( rootRenderer.isPositioned && boundsInfo.positionChanged() ) ) {
                         /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
                            position changes may not always be accurate; it's possible that
                            an element will actually move relative to its positioning parent, but its position
@@ -4145,16 +4115,8 @@ PIE.Element = (function() {
                            track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
                            but that is a more expensive operation since it does some DOM walking, and we want this
                            check to be as fast as possible. */
-                        for( i = 0; i < len; i++ ) {
-                            renderers[i].updatePos();
-                        }
+                        rootRenderer.updatePos();
                     }
-                    for( i = 0; i < len; i++ ) {
-                        if( force || sizeChanged || ( checkProps && renderers[i].needsUpdate() ) ) {
-                            renderers[i].updateRendering();
-                        }
-                    }
-                    rootRenderer.finishUpdate();
 
                     unlockAll();
                 }
@@ -4318,6 +4280,7 @@ PIE.Element = (function() {
 
                 // Kill references
                 renderers = boundsInfo = styleInfos = styleInfosArr = el = null;
+                me.el = me = 0;
             }
         }
 
@@ -4371,8 +4334,8 @@ PIE.Element = (function() {
 
         // These methods are all already bound to this instance so there's no need to wrap them
         // in a closure to maintain the 'this' scope object when calling them.
-        this.init = init;
-        this.destroy = destroy;
+        me.init = init;
+        me.destroy = destroy;
     }
 
     Element.getInstance = function( el ) {
