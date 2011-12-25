@@ -22,19 +22,7 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
             props = me.styleInfos.borderImageInfo.getProps(),
             borderProps = me.styleInfos.borderInfo.getProps(),
             bounds = me.boundsInfo.getBounds(),
-            el = me.targetElement,
-
-            // Create the shapes up front; if we wait until after image load they sometimes
-            // get drawn with no image and a black border.
-            tl = me.getRect( 'tl' ),
-            t = me.getRect( 't' ),
-            tr = me.getRect( 'tr' ),
-            r = me.getRect( 'r' ),
-            br = me.getRect( 'br' ),
-            b = me.getRect( 'b' ),
-            bl = me.getRect( 'bl' ),
-            l = me.getRect( 'l' ),
-            c = me.getRect( 'c' );
+            el = me.targetElement;
 
         PIE.Util.withImageSize( props.src, function( imgSize ) {
             var me = this,
@@ -52,74 +40,53 @@ PIE.BorderImageRenderer = PIE.RendererBase.newRenderer( {
                 sliceB = slices['b'].pixels( el ),
                 sliceL = slices['l'].pixels( el ),
                 src = props.src,
-                setSizeAndPos = me.setSizeAndPos,
-                setImageData = me.setImageData;
+                imgW = imgSize.w,
+                imgH = imgSize.h;
+
+            function setSizeAndPos( rect, rectX, rectY, rectW, rectH, sliceX, sliceY, sliceW, sliceH ) {
+                // Hide the piece entirely if we have zero dimensions for the image, the rect, or the slice
+                var max = Math.max;
+                if ( !imgW || !imgH || !rectW || !rectH || !sliceW || !sliceH ) {
+                    rect.setStyles( 'display', 'none' );
+                } else {
+                    rectW = max( rectW, 0 );
+                    rectH = max( rectH, 0 );
+                    rect.setAttrs(
+                        'path', 'm0,0l' + rectW * 2 + ',0l' + rectW * 2 + ',' + rectH * 2 + 'l0,' + rectH * 2 + 'x'
+                    );
+                    rect.setFillAttrs(
+                        'src', src,
+                        'type', 'tile',
+                        'position', '0,0',
+                        'origin', ( ( sliceX - 0.5 ) / imgW ) + ',' + ( ( sliceY - 0.5 ) / imgH ),
+                        // For some reason using px units doesn't work in VML markup so we must convert to pt.
+                        'size', PIE.Length.pxToPt( rectW * imgW / sliceW ) + 'pt,' + PIE.Length.pxToPt( rectH * imgH / sliceH ) + 'pt'
+                    );
+                    rect.setSize( rectW, rectH );
+                    rect.setStyles(
+                        'left', rectX + 'px',
+                        'top', rectY + 'px',
+                        'display', ''
+                    );
+                }
+            }
 
             // Piece positions and sizes
-            setSizeAndPos( tl, widthL, widthT, 0, 0 );
-            setSizeAndPos( t, elW - widthL - widthR, widthT, widthL, 0 );
-            setSizeAndPos( tr, widthR, widthT, elW - widthR, 0 );
-            setSizeAndPos( r, widthR, elH - widthT - widthB, elW - widthR, widthT );
-            setSizeAndPos( br, widthR, widthB, elW - widthR, elH - widthB );
-            setSizeAndPos( b, elW - widthL - widthR, widthB, widthL, elH - widthB );
-            setSizeAndPos( bl, widthL, widthB, 0, elH - widthB );
-            setSizeAndPos( l, widthL, elH - widthT - widthB, 0, widthT );
-            setSizeAndPos( c, elW - widthL - widthR, elH - widthT - widthB, widthL, widthT );
-
-
-            // image croppings
-            // corners
-            setImageData( src, 'Bottom', ( imgSize.h - sliceT ) / imgSize.h, tl, t, tr );
-            setImageData( src, 'Right', ( imgSize.w - sliceL ) / imgSize.w, tl, l, bl );
-            setImageData( src, 'Top', ( imgSize.h - sliceB ) / imgSize.h, bl, b, br );
-            setImageData( src, 'Left', ( imgSize.w - sliceR ) / imgSize.w, tr, r, br );
-
-            // edges and center
             // TODO right now this treats everything like 'stretch', need to support other schemes
-            //if( props.repeat.v === 'stretch' ) {
-                setImageData( src, 'Top', sliceT / imgSize.h, l, r, c );
-                setImageData( src, 'Bottom', sliceB / imgSize.h, l, r, c );
-            //}
-            //if( props.repeat.h === 'stretch' ) {
-                setImageData( src, 'Left', sliceL / imgSize.w, t, b, c );
-                setImageData( src, 'Right', sliceR / imgSize.w, t, b, c );
-            //}
-
-            // center fill
-            c.setStyles(
-                'display', props.fill ? '' : 'none'
-            );
+            setSizeAndPos( me.getRect( 'tl' ), 0, 0, widthL, widthT, 0, 0, sliceL, sliceT );
+            setSizeAndPos( me.getRect( 't' ), widthL, 0, elW - widthL - widthR, widthT, sliceL, 0, imgW - sliceL - sliceR, sliceT );
+            setSizeAndPos( me.getRect( 'tr' ), elW - widthR, 0, widthR, widthT, imgW - sliceR, 0, sliceR, sliceT );
+            setSizeAndPos( me.getRect( 'r' ), elW - widthR, widthT, widthR, elH - widthT - widthB, imgW - sliceR, sliceT, sliceR, imgH - sliceT - sliceB );
+            setSizeAndPos( me.getRect( 'br' ), elW - widthR, elH - widthB, widthR, widthB, imgW - sliceR, imgH - sliceB, sliceR, sliceB );
+            setSizeAndPos( me.getRect( 'b' ), widthL, elH - widthB, elW - widthL - widthR, widthB, sliceL, imgH - sliceB, imgW - sliceL - sliceR, sliceB );
+            setSizeAndPos( me.getRect( 'bl' ), 0, elH - widthB, widthL, widthB, 0, imgH - sliceB, sliceL, sliceB );
+            setSizeAndPos( me.getRect( 'l' ), 0, widthT, widthL, elH - widthT - widthB, 0, sliceT, sliceL, imgH - sliceT - sliceB );
+            setSizeAndPos( me.getRect( 'c' ), widthL, widthT, elW - widthL - widthR, elH - widthT - widthB, sliceL, sliceT, props.fill ? imgW - sliceL - sliceR : 0, imgH - sliceT - sliceB );
         }, me );
     },
 
     getRect: function( name ) {
-        var shape = this.getShape( 'borderImage_' + name, this.shapeZIndex );
-        shape.tagName = 'rect';
-        shape.setAttrs(
-            'filled', false
-        );
-        return shape;
-    },
-
-    setSizeAndPos: function( piece, w, h, x, y ) {
-        var max = Math.max;
-        piece.setStyles(
-            'width', max( w, 0 ) + 'px',
-            'height', max( h, 0 ) + 'px',
-            'left', x + 'px',
-            'top', y + 'px'
-        );
-    },
-
-    setImageData: function( src, cropSide, cropVal /*side1, side2, ...*/ ) {
-        var args = arguments,
-            i = 3, len = args.length;
-        for( ; i < len; i++ ) {
-            args[i].setImageDataAttrs(
-                'src', src,
-                'crop' + cropSide, cropVal
-            );
-        }
+        return this.getShape( 'borderImage_' + name, this.shapeZIndex );
     },
 
     prepareUpdate: function() {
