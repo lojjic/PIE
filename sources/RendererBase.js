@@ -17,12 +17,6 @@ PIE.RendererBase = {
     },
 
     /**
-     * Flag indicating the element has already been positioned at least once.
-     * @type {boolean}
-     */
-    isPositioned: false,
-
-    /**
      * Determine if the renderer needs to be updated
      * @return {boolean}
      */
@@ -46,13 +40,6 @@ PIE.RendererBase = {
         } else {
             this.destroy();
         }
-    },
-
-    /**
-     * Tell the renderer to update based on modified element position
-     */
-    updatePos: function() {
-        this.isPositioned = true;
     },
 
     /**

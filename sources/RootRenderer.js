@@ -6,6 +6,12 @@
  */
 PIE.RootRenderer = PIE.RendererBase.newRenderer( {
 
+    /**
+     * Flag indicating the element has already been positioned at least once.
+     * @type {boolean}
+     */
+    isPositioned: false,
+
     isActive: function() {
         var children = this.childRenderers;
         for( var i in children ) {
@@ -20,6 +26,9 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
         return this.styleInfos.visibilityInfo.changed();
     },
 
+    /**
+     * Tell the renderer to update based on modified element position
+     */
     updatePos: function() {
         if( this.isActive() && this.getBoxEl() ) {
             var el = this.getPositioningElement(),
@@ -139,11 +148,10 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                 markup.push( '</css3pie>' );
 
                 me.getPositioningElement().insertAdjacentHTML( 'beforeBegin', markup.join( '' ) );
-                me.updatePos();
 
                 me._renderedShapes = queue;
             }
-            delete me._shapeRenderQueue;
+            me._shapeRenderQueue = 0;
         }
     },
 

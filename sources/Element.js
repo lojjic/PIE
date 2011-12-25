@@ -213,7 +213,14 @@ PIE.Element = (function() {
                     for( i = 0; i < len; i++ ) {
                         renderers[i].prepareUpdate();
                     }
-                    if( force || boundsInfo.positionChanged() ) {
+                    for( i = 0; i < len; i++ ) {
+                        if( force || sizeChanged || ( checkProps && renderers[i].needsUpdate() ) ) {
+                            renderers[i].updateRendering();
+                        }
+                    }
+                    rootRenderer.finishUpdate();
+
+                    if( force || ( rootRenderer.isPositioned && boundsInfo.positionChanged() ) ) {
                         /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
                            position changes may not always be accurate; it's possible that
                            an element will actually move relative to its positioning parent, but its position
@@ -221,16 +228,8 @@ PIE.Element = (function() {
                            track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
                            but that is a more expensive operation since it does some DOM walking, and we want this
                            check to be as fast as possible. */
-                        for( i = 0; i < len; i++ ) {
-                            renderers[i].updatePos();
-                        }
+                        rootRenderer.updatePos();
                     }
-                    for( i = 0; i < len; i++ ) {
-                        if( force || sizeChanged || ( checkProps && renderers[i].needsUpdate() ) ) {
-                            renderers[i].updateRendering();
-                        }
-                    }
-                    rootRenderer.finishUpdate();
 
                     unlockAll();
                 }
