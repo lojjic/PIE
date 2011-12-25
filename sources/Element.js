@@ -46,7 +46,8 @@ PIE.Element = (function() {
 
 
     function Element( el ) {
-        var renderers,
+        var me = this,
+            renderers,
             rootRenderer,
             boundsInfo = new PIE.BoundsInfo( el ),
             styleInfos,
@@ -58,6 +59,8 @@ PIE.Element = (function() {
             delayed,
             destroyed,
             poll;
+
+        me.el = el;
 
         /**
          * Initialize PIE for this element.
@@ -393,6 +396,7 @@ PIE.Element = (function() {
 
                 // Kill references
                 renderers = boundsInfo = styleInfos = styleInfosArr = el = null;
+                me.el = me = 0;
             }
         }
 
@@ -446,8 +450,8 @@ PIE.Element = (function() {
 
         // These methods are all already bound to this instance so there's no need to wrap them
         // in a closure to maintain the 'this' scope object when calling them.
-        this.init = init;
-        this.destroy = destroy;
+        me.init = init;
+        me.destroy = destroy;
     }
 
     Element.getInstance = function( el ) {

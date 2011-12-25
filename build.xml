@@ -72,7 +72,6 @@
             <fileset file="${src_dir}/OnUnload.js" />
             <fileset file="${src_dir}/OnResize.js" />
             <fileset file="${src_dir}/OnScroll.js" />
-            <fileset file="${src_dir}/OnPrint.js" />
             <fileset file="${src_dir}/OnMouseup.js" />
             <fileset file="${src_dir}/Length.js" />
             <fileset file="${src_dir}/BgPosition.js" />
