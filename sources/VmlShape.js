@@ -104,7 +104,6 @@ PIE.VmlShape = (function() {
         setAttrs: createSetter( '' ),
         setStyles: createSetter( 'style' ),
         setFillAttrs: createSetter( 'fill' ),
-        setImageDataAttrs: createSetter( 'imagedata' ),
 
         setSize: function( w, h ) {
             this.setStyles(
@@ -162,7 +161,6 @@ PIE.VmlShape = (function() {
             m.push( '>' );
 
             pushElement( 'fill' );
-            pushElement( 'imagedata' );
 
             m.push( '</' + nsPrefix + ':' + tag + '>' );
 
