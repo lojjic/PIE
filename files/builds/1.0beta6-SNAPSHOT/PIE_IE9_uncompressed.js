@@ -1427,6 +1427,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      * Format of return object:
      * {
      *     color: <PIE.Color>,
+     *     colorClip: <'border-box' | 'padding-box'>,
      *     bgImages: [
      *         {
      *             imgType: 'image',
@@ -1620,6 +1621,8 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 image.origString = css.substring( beginCharIndex );
                 props.bgImages.push( image );
             }
+
+            props.colorClip = image.bgClip;
         }
 
         // Otherwise, use the standard background properties; let IE give us the values rather than parsing them
@@ -1754,12 +1757,12 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      * @param {PIE.BoundsInfo} boundsInfo
      * @param {PIE.BorderStyleInfo} borderInfo
      */
-    getBgAreaSize: function( bgOrigin, boundsInfo, borderInfo ) {
+    getBgAreaSize: function( bgOrigin, boundsInfo, borderInfo, paddingInfo ) {
         var el = this.targetElement,
             bounds = boundsInfo.getBounds(),
             w = bounds.w,
             h = bounds.h,
-            borders, getLength, cs;
+            borders, paddings;
 
         if( bgOrigin !== 'border-box' ) {
             borders = borderInfo.getProps();
@@ -1770,10 +1773,11 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         }
 
         if ( bgOrigin === 'content-box' ) {
-            getLength = PIE.getLength;
-            cs = el.currentStyle;
-            w -= getLength( cs.paddingLeft ).pixels( el ) + getLength( cs.paddingRight ).pixels( el );
-            h -= getLength( cs.paddingTop ).pixels( el ) + getLength( cs.paddingBottom ).pixels( el );
+            paddings = paddingInfo.getProps();
+            if ( paddings ) {
+                w -= paddings[ 'l' ].pixels( el ) + paddings[ 'l' ].pixels( el );
+                h -= paddings[ 't' ].pixels( el ) + paddings[ 'b' ].pixels( el );
+            }
         }
 
         return { w: w, h: h };
@@ -2045,7 +2049,42 @@ PIE.BorderImageStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         return p;
     }
 
-} );PIE.RendererBase = {
+} );/**
+ * Handles parsing, caching, and detecting changes to padding CSS
+ * @constructor
+ * @param {Element} el the target element
+ */
+PIE.PaddingStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
+
+    parseCss: function( css ) {
+        var tokenizer = new PIE.Tokenizer( css ),
+            arr = [],
+            token;
+
+        while( ( token = tokenizer.next() ) && token.isLengthOrPercent() ) {
+            arr.push( PIE.getLength( token.tokenValue ) );
+        }
+        return arr.length > 0 && arr.length < 5 ? {
+                't': arr[0],
+                'r': arr[1] || arr[0],
+                'b': arr[2] || arr[0],
+                'l': arr[3] || arr[1] || arr[0]
+            } : null;
+    },
+
+    getCss: PIE.StyleInfoBase.cacheWhenLocked( function() {
+        var el = this.targetElement,
+            rs = el.runtimeStyle,
+            rsPadding = rs.padding,
+            padding;
+        if( rsPadding ) rs.padding = '';
+        padding = el.currentStyle.padding;
+        if( rsPadding ) rs.padding = rsPadding;
+        return padding;
+    } )
+
+} );
+PIE.RendererBase = {
 
     /**
      * Create a new Renderer class, with the standard constructor, and augmented by
@@ -2162,7 +2201,8 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
     draw: function() {
         var me = this,
-            bgInfo = me.styleInfos.backgroundInfo,
+            styleInfos = me.styleInfos,
+            bgInfo = styleInfos.backgroundInfo,
             props = bgInfo.getProps(),
             bg, images, i = 0, img, bgAreaSize, bgSize;
 
@@ -2173,10 +2213,10 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
             if ( images ) {
                 while( img = images[ i++ ] ) {
                     if (img.imgType === 'linear-gradient' ) {
-                        bgAreaSize = bgInfo.getBgAreaSize( bg.bgOrigin, me.boundsInfo, me.styleInfos.borderInfo ),
+                        bgAreaSize = bgInfo.getBgAreaSize( bg.bgOrigin, me.boundsInfo, styleInfos.borderInfo, styleInfos.paddingInfo );
                         bgSize = ( img.bgSize || PIE.BgSize.DEFAULT ).pixels(
                             me.targetElement, bgAreaSize.w, bgAreaSize.h, bgAreaSize.w, bgAreaSize.h
-                        ),
+                        );
                         bg.push(
                             'url(data:image/svg+xml,' + escape( me.getGradientSvg( img, bgSize.w, bgSize.h ) ) + ') ' +
                             me.bgPositionToString( img.bgPosition ) + ' / ' + bgSize.w + 'px ' + bgSize.h + 'px ' +
@@ -2570,11 +2610,14 @@ PIE.Element = (function() {
                         styleInfos = {
                             backgroundInfo: new PIE.BackgroundStyleInfo( el ),
                             borderImageInfo: new PIE.BorderImageStyleInfo( el ),
-                            borderInfo: new PIE.BorderStyleInfo( el )
+                            borderInfo: new PIE.BorderStyleInfo( el ),
+                            paddingInfo: new PIE.PaddingStyleInfo( el )
                         };
                         styleInfosArr = [
                             styleInfos.backgroundInfo,
-                            styleInfos.borderImageInfo
+                            styleInfos.borderInfo,
+                            styleInfos.borderImageInfo,
+                            styleInfos.paddingInfo
                         ];
                         rootRenderer = new PIE.IE9RootRenderer( el, boundsInfo, styleInfos );
                         childRenderers = [
@@ -2589,6 +2632,7 @@ PIE.Element = (function() {
                             borderImageInfo: new PIE.BorderImageStyleInfo( el ),
                             borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
                             boxShadowInfo: new PIE.BoxShadowStyleInfo( el ),
+                            paddingInfo: new PIE.PaddingStyleInfo( el ),
                             visibilityInfo: new PIE.VisibilityStyleInfo( el )
                         };
                         styleInfosArr = [
@@ -2597,6 +2641,7 @@ PIE.Element = (function() {
                             styleInfos.borderImageInfo,
                             styleInfos.borderRadiusInfo,
                             styleInfos.boxShadowInfo,
+                            styleInfos.paddingInfo,
                             styleInfos.visibilityInfo
                         ];
                         rootRenderer = new PIE.RootRenderer( el, boundsInfo, styleInfos );
