@@ -33,8 +33,7 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
             el = this.targetElement,
             src = el.src,
             round = Math.round,
-            cs = el.currentStyle,
-            getLength = PIE.getLength,
+            paddings = this.styleInfos.paddingInfo.getProps(),
             zero;
 
         // In IE6, the BorderRenderer will have hidden the border by moving the border-width to
@@ -47,10 +46,10 @@ PIE.ImgRenderer = PIE.RendererBase.newRenderer( {
 
         shape.setAttrs(
             'path', this.getBoxPath(
-                round( borderWidths['t'].pixels( el ) + getLength( cs.paddingTop ).pixels( el ) ),
-                round( borderWidths['r'].pixels( el ) + getLength( cs.paddingRight ).pixels( el ) ),
-                round( borderWidths['b'].pixels( el ) + getLength( cs.paddingBottom ).pixels( el ) ),
-                round( borderWidths['l'].pixels( el ) + getLength( cs.paddingLeft ).pixels( el ) ),
+                round( borderWidths['t'].pixels( el ) + paddings[ 't' ].pixels( el ) ),
+                round( borderWidths['r'].pixels( el ) + paddings[ 'r' ].pixels( el ) ),
+                round( borderWidths['b'].pixels( el ) + paddings[ 'b' ].pixels( el ) ),
+                round( borderWidths['l'].pixels( el ) + paddings[ 'l' ].pixels( el ) ),
                 2
             )
         );

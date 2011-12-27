@@ -50,7 +50,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
             shape.setSize( bounds.w, bounds.h );
             shape.setAttrs(
-                'path', this.getBoxPath( 0, 0, 0, 0, 2 )
+                'path', this.getBgClipPath( bounds, props.colorClip )
             );
             shape.setFillAttrs( 'color', color.colorValue( el ) );
             alpha = color.alpha();
@@ -69,7 +69,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         var props = this.styleInfos.backgroundInfo.getProps(),
             bounds = this.boundsInfo.getBounds(),
             images = props && props.bgImages,
-            img, shape, w, h, s, i;
+            img, shape, w, h, i;
 
         if( images ) {
             this.hideBackground();
@@ -83,7 +83,7 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 shape = this.getShape( 'bgImage' + i, this.shapeZIndex + ( .5 - i / 1000 ) );
 
                 shape.setAttrs(
-                    'path', this.getBoxPath( 0, 0, 0, 0, 2 )
+                    'path', this.getBgClipPath( bounds, img.bgClip )
                 );
                 shape.setSize( w, h );
 
@@ -123,9 +123,10 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             // It's possible that the element dimensions are zero now but weren't when the original
             // update executed, make sure that's not the case to avoid divide-by-zero error
             if( elW && elH ) {
-                var bgInfo = me.styleInfos.backgroundInfo,
+                var styleInfos = me.styleInfos,
+                    bgInfo = styleInfos.backgroundInfo,
                     bg = bgInfo.getProps().bgImages[ index ],
-                    bgAreaSize = bgInfo.getBgAreaSize( bg.bgOrigin, me.boundsInfo, me.styleInfos.borderInfo ),
+                    bgAreaSize = bgInfo.getBgAreaSize( bg.bgOrigin, me.boundsInfo, styleInfos.borderInfo, styleInfos.paddingInfo ),
                     adjustedImgSize = ( bg.bgSize || PIE.BgSize.DEFAULT ).pixels(
                         me.targetElement, bgAreaSize.w, bgAreaSize.h, imgSize.w, imgSize.h
                     ),
@@ -171,6 +172,48 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
 
     /**
+     * For a given background-clip value, return the VML path for that clip area.
+     * @param {Object} bounds
+     * @param {String} bgClip
+     */
+    getBgClipPath: function( bounds, bgClip ) {
+        var me = this,
+            shrinkT = 0,
+            shrinkR = 0,
+            shrinkB = 0,
+            shrinkL = 0,
+            el = me.targetElement,
+            styleInfos = me.styleInfos,
+            borders, paddings;
+
+        if ( bgClip && bgClip !== 'border-box' ) {
+            borders = styleInfos.borderInfo.getProps();
+            if ( borders && ( borders = borders.widths ) ) {
+                shrinkT += borders[ 't' ].pixels( el );
+                shrinkR += borders[ 'r' ].pixels( el );
+                shrinkB += borders[ 'b' ].pixels( el );
+                shrinkL += borders[ 'l' ].pixels( el );
+            }
+        }
+
+        if ( bgClip === 'content-box' ) {
+            paddings = styleInfos.paddingInfo.getProps();
+            if( paddings ) {
+                shrinkT += paddings[ 't' ].pixels( el );
+                shrinkR += paddings[ 'r' ].pixels( el );
+                shrinkB += paddings[ 'b' ].pixels( el );
+                shrinkL += paddings[ 'l' ].pixels( el );
+            }
+        }
+
+        // Add points at 0,0 and w,h so that the image size/position will still be
+        // based on the full element area.
+        return 'm0,0r0,0m' + bounds.w * 2 + ',' + bounds.h * 2 + 'r0,0' +
+               me.getBoxPath( shrinkT, shrinkR, shrinkB, shrinkL, 2 );
+    },
+
+
+    /**
      * For a given background-origin value, return the x/y position of the origin
      * from the top-left of the element bounds.
      * @param {String} bgOrigin
@@ -178,12 +221,13 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
     getBgOriginXY: function( bgOrigin ) {
         var me = this,
             el = me.targetElement,
+            styleInfos = me.styleInfos,
             x = 0,
             y = 0,
-            borders, getLength, cs;
+            borders, paddings;
 
         if( bgOrigin !== 'border-box' ) {
-            borders = me.styleInfos.borderInfo.getProps();
+            borders = styleInfos.borderInfo.getProps();
             if( borders && ( borders = borders.widths ) ) {
                 x += borders[ 'l' ].pixels( el );
                 y += borders[ 't' ].pixels( el );
@@ -191,10 +235,11 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
         }
 
         if ( bgOrigin === 'content-box' ) {
-            getLength = PIE.getLength;
-            cs = el.currentStyle;
-            x += getLength( cs.paddingLeft ).pixels( el );
-            y += getLength( cs.paddingTop ).pixels( el );
+            paddings = styleInfos.paddingInfo.getProps();
+            if( paddings ) {
+                x += paddings[ 'l' ].pixels( el );
+                y += paddings[ 't' ].pixels( el );
+            }
         }
 
         return { x: x, y: y };
@@ -295,10 +340,12 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
         // Set opacity; right now we only support this for two-stop gradients, multi-stop
         // opacity will require chopping up each segment into its own shape.
+        // Note these seem backwards but they must be that way since VML strangely reverses
+        // them when the 'colors' property is present.
         if ( stopCount === 2 ) {
             shape.setFillAttrs(
-                'opacity', stops[0].color.alpha(),
-                'o:opacity2', stops[1].color.alpha()
+                'opacity', stops[1].color.alpha(),
+                'o:opacity2', stops[0].color.alpha()
             );
         }
     },

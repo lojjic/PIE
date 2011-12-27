@@ -33,6 +33,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      * Format of return object:
      * {
      *     color: <PIE.Color>,
+     *     colorClip: <'border-box' | 'padding-box'>,
      *     bgImages: [
      *         {
      *             imgType: 'image',
@@ -226,6 +227,8 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                 image.origString = css.substring( beginCharIndex );
                 props.bgImages.push( image );
             }
+
+            props.colorClip = image.bgClip;
         }
 
         // Otherwise, use the standard background properties; let IE give us the values rather than parsing them
@@ -360,12 +363,12 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      * @param {PIE.BoundsInfo} boundsInfo
      * @param {PIE.BorderStyleInfo} borderInfo
      */
-    getBgAreaSize: function( bgOrigin, boundsInfo, borderInfo ) {
+    getBgAreaSize: function( bgOrigin, boundsInfo, borderInfo, paddingInfo ) {
         var el = this.targetElement,
             bounds = boundsInfo.getBounds(),
             w = bounds.w,
             h = bounds.h,
-            borders, getLength, cs;
+            borders, paddings;
 
         if( bgOrigin !== 'border-box' ) {
             borders = borderInfo.getProps();
@@ -376,10 +379,11 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         }
 
         if ( bgOrigin === 'content-box' ) {
-            getLength = PIE.getLength;
-            cs = el.currentStyle;
-            w -= getLength( cs.paddingLeft ).pixels( el ) + getLength( cs.paddingRight ).pixels( el );
-            h -= getLength( cs.paddingTop ).pixels( el ) + getLength( cs.paddingBottom ).pixels( el );
+            paddings = paddingInfo.getProps();
+            if ( paddings ) {
+                w -= paddings[ 'l' ].pixels( el ) + paddings[ 'l' ].pixels( el );
+                h -= paddings[ 't' ].pixels( el ) + paddings[ 'b' ].pixels( el );
+            }
         }
 
         return { w: w, h: h };
