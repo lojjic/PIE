@@ -27,8 +27,10 @@ PIE.Element = (function() {
         var classes = dummyArray.slice.call( arguments, 1 ),
             i = classes.length;
         setTimeout( function() {
-            while( i-- ) {
-                addClass( el, classes[ i ] );
+            if( el ) {
+                while( i-- ) {
+                    addClass( el, classes[ i ] );
+                }
             }
         }, 0 );
     }
@@ -37,8 +39,10 @@ PIE.Element = (function() {
         var classes = dummyArray.slice.call( arguments, 1 ),
             i = classes.length;
         setTimeout( function() {
-            while( i-- ) {
-                removeClass( el, classes[ i ] );
+            if( el ) {
+                while( i-- ) {
+                    removeClass( el, classes[ i ] );
+                }
             }
         }, 0 );
     }
