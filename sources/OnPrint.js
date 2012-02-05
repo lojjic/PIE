@@ -19,7 +19,9 @@
         }
     }
 
-    PIE.OnUnload.attachManagedEvent( window, 'onbeforeprint', beforePrint );
-    PIE.OnUnload.attachManagedEvent( window, 'onafterprint', afterPrint );
+    if( PIE.ieDocMode < 9 ) {
+        PIE.OnUnload.attachManagedEvent( window, 'onbeforeprint', beforePrint );
+        PIE.OnUnload.attachManagedEvent( window, 'onafterprint', afterPrint );
+    }
 
 })();
