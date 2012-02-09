@@ -72,16 +72,20 @@ if ( !window[ 'PIE' ] && docMode < 10 ) {
 }
 
 function init() {
-    var PIE = window[ 'PIE' ];
-    if( PIE && doc.media !== 'print' ) { // IE strangely attaches a second copy of the behavior to elements when printing
-        PIE[ 'attach' ]( el );
+    if ( doc.media !== 'print' ) { // IE strangely attaches a second copy of the behavior to elements when printing
+        var PIE = window[ 'PIE' ];
+        if( PIE ) {
+            PIE[ 'attach' ]( el );
+        }
     }
 }
 
 function cleanup() {
-    var PIE = window[ 'PIE' ];
-    if ( PIE && doc.media !== 'print' ) {
-        PIE[ 'detach' ]( el );
+    if ( doc.media !== 'print' ) {
+        var PIE = window[ 'PIE' ];
+        if ( PIE ) {
+            PIE[ 'detach' ]( el );
+        }
     }
     el = 0;
 }
