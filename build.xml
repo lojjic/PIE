@@ -2,7 +2,7 @@
 
 <project name="PIE" default="build" basedir=".">
 
-    <property name="version" value="1.0beta6-SNAPSHOT" />
+    <property name="version" value="2.0beta1-SNAPSHOT" />
     <!-- 'http://cdnjs.cloudflare.com/ajax/libs/css3pie/${version}' -->
     <property name="default_base_urls" value="['http://lojjic.github.com/PIE/files/builds/${version}']"/>
     <property name="build_dir" value="./build" />
