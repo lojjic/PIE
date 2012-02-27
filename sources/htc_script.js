@@ -32,7 +32,7 @@ if ( !window[ 'PIE' ] && docMode < 10 ) {
         // Look for a custom -pie-load-path, or fall back to the CDN url
         baseUrl = doc.documentElement.currentStyle.getAttribute( ( isIE6 ? '' : '-' ) + 'pie-load-path' );
         if( baseUrl ) {
-            baseUrl = baseUrl.replace(/^"|"$/g, '');
+            baseUrl = baseUrl.replace(/^("|')|("|')$/g, '');
             baseUrls = [ baseUrl ];
         }
 
