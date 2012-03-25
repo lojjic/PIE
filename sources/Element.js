@@ -72,117 +72,123 @@ PIE.Element = (function() {
                     bounds,
                     ieDocMode = PIE.ieDocMode,
                     cs = el.currentStyle,
-                    lazy = cs.getAttribute( lazyInitCssProp ) === 'true',
-                    childRenderers;
+                    lazy, childRenderers;
 
-                // Polling for size/position changes: default to on in IE8, off otherwise, overridable by -pie-poll
-                poll = cs.getAttribute( pollCssProp );
-                poll = ieDocMode > 7 ? poll !== 'false' : poll === 'true';
-
-                // Force layout so move/resize events will fire. Set this as soon as possible to avoid layout changes
-                // after load, but make sure it only gets called the first time through to avoid recursive calls to init().
-                if( !initializing ) {
-                    initializing = 1;
-                    el.runtimeStyle.zoom = 1;
-                    initFirstChildPseudoClass();
-                }
-
-                boundsInfo.lock();
-
-                // If the -pie-lazy-init:true flag is set, check if the element is outside the viewport and if so, delay initialization
-                if( lazy && ( bounds = boundsInfo.getBounds() ) && ( docEl = doc.documentElement || doc.body ) &&
-                        ( bounds.y > docEl.clientHeight || bounds.x > docEl.clientWidth || bounds.y + bounds.h < 0 || bounds.x + bounds.w < 0 ) ) {
-                    if( !delayed ) {
-                        delayed = 1;
-                        PIE.OnScroll.observe( init );
-                    }
+                if( !cs ) {
+                    // currentStyle not yet initialized; delay slightly until it's ready
+                    setTimeout(init, 1);
                 } else {
-                    initialized = 1;
-                    delayed = initializing = 0;
-                    PIE.OnScroll.unobserve( init );
+                    lazy = cs.getAttribute( lazyInitCssProp ) === 'true';
 
-                    // Create the style infos and renderers
-                    if ( ieDocMode === 9 ) {
-                        styleInfos = {
-                            backgroundInfo: new PIE.BackgroundStyleInfo( el ),
-                            borderImageInfo: new PIE.BorderImageStyleInfo( el ),
-                            borderInfo: new PIE.BorderStyleInfo( el )
-                        };
-                        styleInfosArr = [
-                            styleInfos.backgroundInfo,
-                            styleInfos.borderImageInfo
-                        ];
-                        rootRenderer = new PIE.IE9RootRenderer( el, boundsInfo, styleInfos );
-                        childRenderers = [
-                            new PIE.IE9BackgroundRenderer( el, boundsInfo, styleInfos, rootRenderer ),
-                            new PIE.IE9BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
-                        ];
-                    } else {
+                    // Polling for size/position changes: default to on in IE8, off otherwise, overridable by -pie-poll
+                    poll = cs.getAttribute( pollCssProp );
+                    poll = ieDocMode > 7 ? poll !== 'false' : poll === 'true';
 
-                        styleInfos = {
-                            backgroundInfo: new PIE.BackgroundStyleInfo( el ),
-                            borderInfo: new PIE.BorderStyleInfo( el ),
-                            borderImageInfo: new PIE.BorderImageStyleInfo( el ),
-                            borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
-                            boxShadowInfo: new PIE.BoxShadowStyleInfo( el ),
-                            visibilityInfo: new PIE.VisibilityStyleInfo( el )
-                        };
-                        styleInfosArr = [
-                            styleInfos.backgroundInfo,
-                            styleInfos.borderInfo,
-                            styleInfos.borderImageInfo,
-                            styleInfos.borderRadiusInfo,
-                            styleInfos.boxShadowInfo,
-                            styleInfos.visibilityInfo
-                        ];
-                        rootRenderer = new PIE.RootRenderer( el, boundsInfo, styleInfos );
-                        childRenderers = [
-                            new PIE.BoxShadowOutsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
-                            new PIE.BackgroundRenderer( el, boundsInfo, styleInfos, rootRenderer ),
-                            //new PIE.BoxShadowInsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
-                            new PIE.BorderRenderer( el, boundsInfo, styleInfos, rootRenderer ),
-                            new PIE.BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
-                        ];
-                        if( el.tagName === 'IMG' ) {
-                            childRenderers.push( new PIE.ImgRenderer( el, boundsInfo, styleInfos, rootRenderer ) );
+                    // Force layout so move/resize events will fire. Set this as soon as possible to avoid layout changes
+                    // after load, but make sure it only gets called the first time through to avoid recursive calls to init().
+                    if( !initializing ) {
+                        initializing = 1;
+                        el.runtimeStyle.zoom = 1;
+                        initFirstChildPseudoClass();
+                    }
+
+                    boundsInfo.lock();
+
+                    // If the -pie-lazy-init:true flag is set, check if the element is outside the viewport and if so, delay initialization
+                    if( lazy && ( bounds = boundsInfo.getBounds() ) && ( docEl = doc.documentElement || doc.body ) &&
+                            ( bounds.y > docEl.clientHeight || bounds.x > docEl.clientWidth || bounds.y + bounds.h < 0 || bounds.x + bounds.w < 0 ) ) {
+                        if( !delayed ) {
+                            delayed = 1;
+                            PIE.OnScroll.observe( init );
                         }
-                        rootRenderer.childRenderers = childRenderers; // circular reference, can't pass in constructor; TODO is there a cleaner way?
+                    } else {
+                        initialized = 1;
+                        delayed = initializing = 0;
+                        PIE.OnScroll.unobserve( init );
+
+                        // Create the style infos and renderers
+                        if ( ieDocMode === 9 ) {
+                            styleInfos = {
+                                backgroundInfo: new PIE.BackgroundStyleInfo( el ),
+                                borderImageInfo: new PIE.BorderImageStyleInfo( el ),
+                                borderInfo: new PIE.BorderStyleInfo( el )
+                            };
+                            styleInfosArr = [
+                                styleInfos.backgroundInfo,
+                                styleInfos.borderImageInfo
+                            ];
+                            rootRenderer = new PIE.IE9RootRenderer( el, boundsInfo, styleInfos );
+                            childRenderers = [
+                                new PIE.IE9BackgroundRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                                new PIE.IE9BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
+                            ];
+                        } else {
+
+                            styleInfos = {
+                                backgroundInfo: new PIE.BackgroundStyleInfo( el ),
+                                borderInfo: new PIE.BorderStyleInfo( el ),
+                                borderImageInfo: new PIE.BorderImageStyleInfo( el ),
+                                borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
+                                boxShadowInfo: new PIE.BoxShadowStyleInfo( el ),
+                                visibilityInfo: new PIE.VisibilityStyleInfo( el )
+                            };
+                            styleInfosArr = [
+                                styleInfos.backgroundInfo,
+                                styleInfos.borderInfo,
+                                styleInfos.borderImageInfo,
+                                styleInfos.borderRadiusInfo,
+                                styleInfos.boxShadowInfo,
+                                styleInfos.visibilityInfo
+                            ];
+                            rootRenderer = new PIE.RootRenderer( el, boundsInfo, styleInfos );
+                            childRenderers = [
+                                new PIE.BoxShadowOutsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                                new PIE.BackgroundRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                                //new PIE.BoxShadowInsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                                new PIE.BorderRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                                new PIE.BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
+                            ];
+                            if( el.tagName === 'IMG' ) {
+                                childRenderers.push( new PIE.ImgRenderer( el, boundsInfo, styleInfos, rootRenderer ) );
+                            }
+                            rootRenderer.childRenderers = childRenderers; // circular reference, can't pass in constructor; TODO is there a cleaner way?
+                        }
+                        renderers = [ rootRenderer ].concat( childRenderers );
+
+                        // Add property change listeners to ancestors if requested
+                        initAncestorEventListeners();
+
+                        // Add to list of polled elements in IE8
+                        if( poll ) {
+                            PIE.Heartbeat.observe( update );
+                            PIE.Heartbeat.run();
+                        }
+
+                        // Trigger rendering
+                        update( 1 );
                     }
-                    renderers = [ rootRenderer ].concat( childRenderers );
 
-                    // Add property change listeners to ancestors if requested
-                    initAncestorEventListeners();
+                    if( !eventsAttached ) {
+                        eventsAttached = 1;
+                        if( ieDocMode < 9 ) {
+                            addListener( el, 'onmove', handleMoveOrResize );
+                        }
+                        addListener( el, 'onresize', handleMoveOrResize );
+                        addListener( el, 'onpropertychange', propChanged );
+                        addListener( el, 'onmouseenter', mouseEntered );
+                        addListener( el, 'onmouseleave', mouseLeft );
+                        addListener( el, 'onmousedown', mousePressed );
+                        if( el.tagName in PIE.focusableElements ) {
+                            addListener( el, 'onfocus', focused );
+                            addListener( el, 'onblur', blurred );
+                        }
+                        PIE.OnResize.observe( handleMoveOrResize );
 
-                    // Add to list of polled elements in IE8
-                    if( poll ) {
-                        PIE.Heartbeat.observe( update );
-                        PIE.Heartbeat.run();
+                        PIE.OnUnload.observe( removeEventListeners );
                     }
 
-                    // Trigger rendering
-                    update( 1 );
+                    boundsInfo.unlock();
                 }
-
-                if( !eventsAttached ) {
-                    eventsAttached = 1;
-                    if( ieDocMode < 9 ) {
-                        addListener( el, 'onmove', handleMoveOrResize );
-                    }
-                    addListener( el, 'onresize', handleMoveOrResize );
-                    addListener( el, 'onpropertychange', propChanged );
-                    addListener( el, 'onmouseenter', mouseEntered );
-                    addListener( el, 'onmouseleave', mouseLeft );
-                    addListener( el, 'onmousedown', mousePressed );
-                    if( el.tagName in PIE.focusableElements ) {
-                        addListener( el, 'onfocus', focused );
-                        addListener( el, 'onblur', blurred );
-                    }
-                    PIE.OnResize.observe( handleMoveOrResize );
-
-                    PIE.OnUnload.observe( removeEventListeners );
-                }
-
-                boundsInfo.unlock();
             }
         }
 
@@ -208,7 +214,11 @@ PIE.Element = (function() {
          */
         function update( force ) {
             if( !destroyed ) {
-                if( initialized ) {
+                if( !el.currentStyle ) {
+                    // currentStyle not yet initialized; delay slightly until it's ready
+                    setTimeout(update, 1);
+                }
+                else if( initialized ) {
                     var i, len = renderers.length;
 
                     lockAll();
@@ -255,7 +265,11 @@ PIE.Element = (function() {
             // is ignored because size calculations don't work correctly immediately when its onpropertychange
             // event fires, and because it will trigger an onresize event anyway.
             if( !destroyed && !( e && e.propertyName in ignorePropertyNames ) ) {
-                if( initialized ) {
+                if( !el.currentStyle ) {
+                    // currentStyle not yet initialized; delay slightly until it's ready
+                    setTimeout(propChanged, 1);
+                }
+                else if( initialized ) {
                     lockAll();
                     for( i = 0; i < len; i++ ) {
                         renderers[i].prepareUpdate();
