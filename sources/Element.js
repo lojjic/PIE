@@ -4,6 +4,7 @@ PIE.Element = (function() {
     var wrappers = {},
         lazyInitCssProp = PIE.CSS_PREFIX + 'lazy-init',
         pollCssProp = PIE.CSS_PREFIX + 'poll',
+        trackActiveCssProp = PIE.CSS_PREFIX + 'track-active',
         hoverClass = PIE.CLASS_PREFIX + 'hover',
         activeClass = PIE.CLASS_PREFIX + 'active',
         focusClass = PIE.CLASS_PREFIX + 'focus',
@@ -73,6 +74,7 @@ PIE.Element = (function() {
                     ieDocMode = PIE.ieDocMode,
                     cs = el.currentStyle,
                     lazy = cs.getAttribute( lazyInitCssProp ) === 'true',
+                    trackActive = cs.getAttribute( trackActiveCssProp ) !== 'false',
                     childRenderers;
 
                 // Polling for size/position changes: default to on in IE8, off otherwise, overridable by -pie-poll
@@ -172,7 +174,9 @@ PIE.Element = (function() {
                     addListener( el, 'onpropertychange', propChanged );
                     addListener( el, 'onmouseenter', mouseEntered );
                     addListener( el, 'onmouseleave', mouseLeft );
-                    addListener( el, 'onmousedown', mousePressed );
+                    if( trackActive ) {
+                        addListener( el, 'onmousedown', mousePressed );
+                    }
                     if( el.tagName in PIE.focusableElements ) {
                         addListener( el, 'onfocus', focused );
                         addListener( el, 'onblur', blurred );
