@@ -1,0 +1,20 @@
+<!--
+PIE: CSS3 rendering for IE
+Version 2.0beta1-SNAPSHOT
+http://css3pie.com
+Dual-licensed for use under the Apache License Version 2.0 or the General Public License (GPL) Version 2.
+-->
+<PUBLIC:COMPONENT lightWeight="true">
+<!-- saved from url=(0014)about:internet -->
+<PUBLIC:ATTACH EVENT="oncontentready" FOR="element" ONEVENT="init()" />
+<PUBLIC:ATTACH EVENT="ondocumentready" FOR="element" ONEVENT="init()" />
+<PUBLIC:ATTACH EVENT="ondetach" FOR="element" ONEVENT="cleanup()" />
+<script type="text/javascript">
+var a=element,f=a.document,k=f.documentMode||0;
+!window.PIE&&k<10&&function(){function c(d){var g=f.createElement("script");g.async=true;g.onreadystatechange=function(){var l=window.PIE,m=g.readyState,i;if(e&&(m==="complete"||m==="loaded"))if("version"in l){for(i in e)e.hasOwnProperty(i)&&l.attach(e[i]);e=0}else h[++j]&&c(h[j])};if(n==="https:")d=d.replace(/^http:/,n);g.src=d+"/PIE_IE"+(k<9?"678":"9")+".js";(f.getElementsByTagName("head")[0]||f.body).appendChild(g)}var e={},h=['http://lojjic.github.com/PIE/files/builds/2.0beta1-SNAPSHOT'],n=f.location.protocol,b,j=0;window.PIE=
+{attach:function(d){e[d.uniqueID]=d},detach:function(d){delete e[d.uniqueID]}};b=f.createElement("div");b.innerHTML="<!--[if IE 6]><i></i><![endif]--\>";b=b.getElementsByTagName("i")[0];if(b=f.documentElement.currentStyle.getAttribute((b?"":"-")+"pie-load-path")){b=b.replace(/^("|')|("|')$/g,"");h=[b]}c(h[j])}();function init(){if(f.media!=="print"){var c=window.PIE;c&&c.attach(a)}}function cleanup(){if(f.media!=="print"){var c=window.PIE;c&&c.detach(a)}a=0}a.readyState==="complete"&&init();
+
+</script>
+
+<script type="text/vbscript"></script>
+</PUBLIC:COMPONENT>
