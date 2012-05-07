@@ -27,7 +27,8 @@ PIE.Tokenizer = (function() {
         OPERATOR: 256,
         PERCENT: 512,
         STRING: 1024,
-        URL: 2048
+        URL: 2048,
+        TIME: 4096
     };
 
     /**
@@ -63,7 +64,8 @@ PIE.Tokenizer = (function() {
             'px': Type.LENGTH, 'em': Type.LENGTH, 'ex': Type.LENGTH,
             'mm': Type.LENGTH, 'cm': Type.LENGTH, 'in': Type.LENGTH,
             'pt': Type.LENGTH, 'pc': Type.LENGTH,
-            'deg': Type.ANGLE, 'rad': Type.ANGLE, 'grad': Type.ANGLE
+            'deg': Type.ANGLE, 'rad': Type.ANGLE, 'grad': Type.ANGLE,
+            's': Type.TIME, 'ms': Type.TIME
         },
 
         colorFunctions: {

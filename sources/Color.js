@@ -189,6 +189,37 @@ PIE.Color = (function() {
         alpha: function() {
             this.parse();
             return this._alpha;
+        },
+
+
+        /**
+         * Given another target color, calculate and return an intermediate color at a given
+         * percentage between the two.
+         * @param {PIE.Color} toColor The other color being transitioned to
+         * @param {number} percent The percent (number from 0 to 1) between the two colors to calculate
+         * @param {Element} el
+         * @return {PIE.Color} The interpolated color
+         */
+        interpolate: function( toColor, percent, el ) {
+            var hex1 = this.hexValue( el ),
+                hex2 = toColor.hexValue( el ),
+                parse = parseInt,
+                r1 = parse( hex1.substr(1, 2), 16 ),
+                g1 = parse( hex1.substr(3, 2), 16 ),
+                b1 = parse( hex1.substr(5, 2), 16 ),
+                r2 = parse( hex2.substr(1, 2), 16 ),
+                g2 = parse( hex2.substr(3, 2), 16 ),
+                b2 = parse( hex2.substr(5, 2), 16 ),
+                a1 = this.alpha(),
+                a2 = toColor.alpha(),
+                newColor = new Color();
+
+            // Set the internal color/alpha cached values directly so it doesn't have to re-parse
+            newColor._alpha = ( a2 - a1 ) * percent + a1;
+            newColor._color = '#' + ( ( r2 - r1 ) * percent + r1 ).toString( 16 ) +
+                                    ( ( g2 - g1 ) * percent + g1 ).toString( 16 ) +
+                                    ( ( b2 - b1 ) * percent + b1 ).toString( 16 );
+            return newColor;
         }
     };
 

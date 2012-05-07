@@ -112,13 +112,15 @@ PIE.Element = (function() {
                             backgroundInfo: new PIE.BackgroundStyleInfo( el ),
                             borderImageInfo: new PIE.BorderImageStyleInfo( el ),
                             borderInfo: new PIE.BorderStyleInfo( el ),
-                            paddingInfo: new PIE.PaddingStyleInfo( el )
+                            paddingInfo: new PIE.PaddingStyleInfo( el ),
+                            transitionInfo: new PIE.TransitionStyleInfo( el )
                         };
                         styleInfosArr = [
                             styleInfos.backgroundInfo,
                             styleInfos.borderInfo,
                             styleInfos.borderImageInfo,
-                            styleInfos.paddingInfo
+                            styleInfos.paddingInfo,
+                            styleInfos.transitionInfo
                         ];
                         rootRenderer = new PIE.IE9RootRenderer( el, boundsInfo, styleInfos );
                         childRenderers = [
@@ -134,6 +136,7 @@ PIE.Element = (function() {
                             borderRadiusInfo: new PIE.BorderRadiusStyleInfo( el ),
                             boxShadowInfo: new PIE.BoxShadowStyleInfo( el ),
                             paddingInfo: new PIE.PaddingStyleInfo( el ),
+                            transitionInfo: new PIE.TransitionStyleInfo( el ),
                             visibilityInfo: new PIE.VisibilityStyleInfo( el )
                         };
                         styleInfosArr = [
@@ -143,6 +146,7 @@ PIE.Element = (function() {
                             styleInfos.borderRadiusInfo,
                             styleInfos.boxShadowInfo,
                             styleInfos.paddingInfo,
+                            styleInfos.transitionInfo,
                             styleInfos.visibilityInfo
                         ];
                         rootRenderer = new PIE.RootRenderer( el, boundsInfo, styleInfos );
