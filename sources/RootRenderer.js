@@ -40,11 +40,12 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                 boxPos,
                 s = this.getBoxEl().style, cs,
                 x = 0, y = 0,
-                elBounds = this.boundsInfo.getBounds();
+                elBounds = this.boundsInfo.getBounds(),
+                logicalZoomRatio = elBounds.logicalZoomRatio;
 
             if( tgtPos === 'fixed' && PIE.ieVersion > 6 ) {
-                x = elBounds.x;
-                y = elBounds.y;
+                x = elBounds.x * logicalZoomRatio;
+                y = elBounds.y * logicalZoomRatio;
                 boxPos = tgtPos;
             } else {
                 // Get the element's offsets from its nearest positioned ancestor. Uses
@@ -55,12 +56,12 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                 if( par ) {
                     parRect = par.getBoundingClientRect();
                     cs = par.currentStyle;
-                    x = elBounds.x - parRect.left - ( parseFloat(cs.borderLeftWidth) || 0 );
-                    y = elBounds.y - parRect.top - ( parseFloat(cs.borderTopWidth) || 0 );
+                    x = ( elBounds.x - parRect.left ) * logicalZoomRatio - ( parseFloat(cs.borderLeftWidth) || 0 );
+                    y = ( elBounds.y - parRect.top ) * logicalZoomRatio - ( parseFloat(cs.borderTopWidth) || 0 );
                 } else {
                     docEl = doc.documentElement;
-                    x = elBounds.x + docEl.scrollLeft - docEl.clientLeft;
-                    y = elBounds.y + docEl.scrollTop - docEl.clientTop;
+                    x = ( elBounds.x + docEl.scrollLeft - docEl.clientLeft ) * logicalZoomRatio;
+                    y = ( elBounds.y + docEl.scrollTop - docEl.clientTop ) * logicalZoomRatio;
                 }
                 boxPos = 'absolute';
             }
