@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>-pie-png-fix test</title>
+
+    <style>
+
+        div {
+            behavior: url(../build/PIE.htc);
+            border-radius: 20px;
+            box-shadow: 0 0 10px blue;
+            background: white;
+            width: 200px;
+            height: 50px;
+            padding: 30px;
+            margin: 50px;
+        }
+
+        div.hover:hover {
+            border-radius: 30px;
+            box-shadow: 0 0 10px green;
+        }
+        #hover-false {
+            -pie-track-hover: false;
+        }
+
+        div.active:active {
+            border-radius: 50px;
+            box-shadow: 0 0 20px red;
+        }
+        #active-false {
+            -pie-track-active: false;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="hover" id="hover-true">
+        -pie-track-hover: true;
+    </div>
+    <div class="hover" id="hover-false">
+        -pie-track-hover: false;
+    </div>
+
+    <div class="active" id="active-true">
+        -pie-track-active: true;
+    </div>
+    <div class="active" id="active-false">
+        -pie-track-active: false;
+    </div>
+
+</body>
+</html>

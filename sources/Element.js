@@ -5,6 +5,7 @@ PIE.Element = (function() {
         lazyInitCssProp = PIE.CSS_PREFIX + 'lazy-init',
         pollCssProp = PIE.CSS_PREFIX + 'poll',
         trackActiveCssProp = PIE.CSS_PREFIX + 'track-active',
+        trackHoverCssProp = PIE.CSS_PREFIX + 'track-hover',
         hoverClass = PIE.CLASS_PREFIX + 'hover',
         activeClass = PIE.CLASS_PREFIX + 'active',
         focusClass = PIE.CLASS_PREFIX + 'focus',
@@ -78,6 +79,7 @@ PIE.Element = (function() {
                     cs = el.currentStyle,
                     lazy = cs.getAttribute( lazyInitCssProp ) === 'true',
                     trackActive = cs.getAttribute( trackActiveCssProp ) !== 'false',
+                    trackHover = cs.getAttribute( trackHoverCssProp ) !== 'false',
                     childRenderers;
 
                 // Polling for size/position changes: default to on in IE8, off otherwise, overridable by -pie-poll
@@ -180,8 +182,12 @@ PIE.Element = (function() {
                     }
                     addListener( el, 'onresize', handleMoveOrResize );
                     addListener( el, 'onpropertychange', propChanged );
-                    addListener( el, 'onmouseenter', mouseEntered );
-                    addListener( el, 'onmouseleave', mouseLeft );
+                    if( trackHover ) {
+                        addListener( el, 'onmouseenter', mouseEntered );
+                    }
+                    if( trackHover || trackActive ) {
+                        addListener( el, 'onmouseleave', mouseLeft );
+                    }
                     if( trackActive ) {
                         addListener( el, 'onmousedown', mousePressed );
                     }
