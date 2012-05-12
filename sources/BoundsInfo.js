@@ -25,14 +25,19 @@ PIE.BoundsInfo.prototype = {
     getLiveBounds: function() {
         var el = this.targetElement,
             rect = el.getBoundingClientRect(),
-            isIE9 = PIE.ieDocMode === 9;
+            isIE9 = PIE.ieDocMode === 9,
+            width = rect.right - rect.left,
+            // IE7 is inconsistent in using logical vs. device pixels in measurements so we must
+            // calculate the ratio and use it in certain places as a position adjustment
+            logicalZoomRatio = ( PIE.ieVersion === 7 && width ) ? el.offsetWidth / width : 1;
         return {
             x: rect.left,
             y: rect.top,
             // In some cases scrolling the page will cause IE9 to report incorrect dimensions
             // in the rect returned by getBoundingClientRect, so we must query offsetWidth/Height instead
-            w: isIE9 ? el.offsetWidth : rect.right - rect.left,
-            h: isIE9 ? el.offsetHeight : rect.bottom - rect.top
+            w: isIE9 ? el.offsetWidth : width * logicalZoomRatio,
+            h: isIE9 ? el.offsetHeight : ( rect.bottom - rect.top ) * logicalZoomRatio,
+            logicalZoomRatio: logicalZoomRatio
         };
     },
 
