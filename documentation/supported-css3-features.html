@@ -30,6 +30,8 @@ and value types.</p>
             <li><a href="#pie-png-fix">PNG alpha transparency and -pie-png-fix</a></li>
             <li><a href="#pie-lazy-init">Lazy Initialization (-pie-lazy-init)</a></li>
             <li><a href="#pie-poll">Layout polling (-pie-poll)</a></li>
+            <li><a href="#pie-track-hover">:hover tracking (-pie-track-hover)</a></li>
+            <li><a href="#pie-track-active">:active tracking (-pie-track-active)</a></li>
         </ul>
     </li>
 </ul>
@@ -394,6 +396,29 @@ if the layout has changed then it will adjust the rendering.</p>
 the events) and disabled in IE 6 and 7. Users can override these defaults
 to force polling on or off for individual elements by setting a custom CSS property: just specify
 <code>-pie-poll:true;</code> to force polling on for an element, or <code>-pie-poll:false;</code> to disable it.</p>
+
+
+<h3 id="pie-track-hover">Hover tracking (-pie-track-hover)</h3>
+
+<p>By default, PIE automatically listens for mouseover/out events and applies any matching <code>:hover</code>
+styles if supported by the browser. In addition, it adds a special <code>pie_hover</code> class to the element
+which you can use to apply hover styles in versions of IE that don't support it.</p>
+
+<p>If you want to disable this, you can do so by setting the custom CSS style <code>-pie-track-hover:false;</code>
+for the element. This might be useful if you notice sluggishness on your page when hovering and you don't need
+hover styles.</p>
+
+
+<h3 id="pie-track-active">Active tracking (-pie-track-active)</h3>
+
+<p>By default, PIE automatically listens for mousedown/up events and applies any matching <code>:active</code>
+styles if supported by the browser. In addition, it adds a special <code>pie_active</code> class to the element
+which you can use to apply active styles in versions of IE that don't support it.</p>
+
+<p>If you want to disable this, you can do so by setting the custom CSS style <code>-pie-track-active:false;</code>
+for the element. This is useful in some situations where the addition of the pie_active class has unwanted
+side effects, for instance breaking the behavior of <a href="https://github.com/lojjic/PIE/issues/190">scrollbars in IE7</a>.</p>
+
 
 
 <!-- noformat off -->
