@@ -49,7 +49,7 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
             }
 
             if ( props.color ) {
-                bg.push( props.color.val );
+                bg.push( props.color.val + ' ' + ( props.colorClip || '' ) );
             }
 
             me.parent.setBackgroundLayer(me.bgLayerZIndex, bg.join(','));
