@@ -224,7 +224,7 @@ PIE.Element = (function() {
          * this rather than the updatePos/Size functions because sometimes, particularly
          * during page load, one will fire but the other won't.
          */
-        function update( checkProps, force ) {
+        function update( isPropChange, force ) {
             if( !destroyed ) {
                 if( initialized ) {
                     lockAll();
@@ -236,13 +236,13 @@ PIE.Element = (function() {
                         renderers[i].prepareUpdate();
                     }
                     for( i = 0; i < len; i++ ) {
-                        if( force || sizeChanged || ( checkProps && renderers[i].needsUpdate() ) ) {
+                        if( force || sizeChanged || ( isPropChange && renderers[i].needsUpdate() ) ) {
                             renderers[i].updateRendering();
                         }
                     }
                     rootRenderer.finishUpdate();
 
-                    if( force || ( rootRenderer.isPositioned && boundsInfo.positionChanged() ) ) {
+                    if( force || ( ( !isPropChange || rootRenderer.isPositioned ) && boundsInfo.positionChanged() ) ) {
                         /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
                            position changes may not always be accurate; it's possible that
                            an element will actually move relative to its positioning parent, but its position
