@@ -1290,14 +1290,19 @@ PIE.BoundsInfo.prototype = {
     getLiveBounds: function() {
         var el = this.targetElement,
             rect = el.getBoundingClientRect(),
-            isIE9 = PIE.ieDocMode === 9;
+            isIE9 = PIE.ieDocMode === 9,
+            isIE7 = PIE.ieVersion === 7,
+            width = rect.right - rect.left;
         return {
             x: rect.left,
             y: rect.top,
             // In some cases scrolling the page will cause IE9 to report incorrect dimensions
-            // in the rect returned by getBoundingClientRect, so we must query offsetWidth/Height instead
-            w: isIE9 ? el.offsetWidth : rect.right - rect.left,
-            h: isIE9 ? el.offsetHeight : rect.bottom - rect.top
+            // in the rect returned by getBoundingClientRect, so we must query offsetWidth/Height
+            // instead. Also IE7 is inconsistent in using logical vs. device pixels in measurements
+            // so we must calculate the ratio and use it in certain places as a position adjustment.
+            w: isIE9 || isIE7 ? el.offsetWidth : width,
+            h: isIE9 || isIE7 ? el.offsetHeight : rect.bottom - rect.top,
+            logicalZoomRatio: ( isIE7 && width ) ? el.offsetWidth / width : 1
         };
     },
 
@@ -2824,11 +2829,12 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                 boxPos,
                 s = this.getBoxEl().style, cs,
                 x = 0, y = 0,
-                elBounds = this.boundsInfo.getBounds();
+                elBounds = this.boundsInfo.getBounds(),
+                logicalZoomRatio = elBounds.logicalZoomRatio;
 
             if( tgtPos === 'fixed' && PIE.ieVersion > 6 ) {
-                x = elBounds.x;
-                y = elBounds.y;
+                x = elBounds.x * logicalZoomRatio;
+                y = elBounds.y * logicalZoomRatio;
                 boxPos = tgtPos;
             } else {
                 // Get the element's offsets from its nearest positioned ancestor. Uses
@@ -2839,12 +2845,12 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                 if( par ) {
                     parRect = par.getBoundingClientRect();
                     cs = par.currentStyle;
-                    x = elBounds.x - parRect.left - ( parseFloat(cs.borderLeftWidth) || 0 );
-                    y = elBounds.y - parRect.top - ( parseFloat(cs.borderTopWidth) || 0 );
+                    x = ( elBounds.x - parRect.left ) * logicalZoomRatio - ( parseFloat(cs.borderLeftWidth) || 0 );
+                    y = ( elBounds.y - parRect.top ) * logicalZoomRatio - ( parseFloat(cs.borderTopWidth) || 0 );
                 } else {
                     docEl = doc.documentElement;
-                    x = elBounds.x + docEl.scrollLeft - docEl.clientLeft;
-                    y = elBounds.y + docEl.scrollTop - docEl.clientTop;
+                    x = ( elBounds.x + docEl.scrollLeft - docEl.clientLeft ) * logicalZoomRatio;
+                    y = ( elBounds.y + docEl.scrollTop - docEl.clientTop ) * logicalZoomRatio;
                 }
                 boxPos = 'absolute';
             }
@@ -3132,7 +3138,8 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
                     // Set the size of the image. We only set it if the image is scaled via background-size or by
                     // the user changing the browser zoom level, to avoid fuzzy images at normal size. For some reason
                     // using px units doesn't work in VML markup so we must convert to pt.
-                    'size', ( adjustedImgSize.w !== imgSize.w || adjustedImgSize.h !== imgSize.h || screen['logicalXDPI'] / screen['deviceXDPI'] !== 1 ) ?
+                    'size', ( adjustedImgSize.w !== imgSize.w || adjustedImgSize.h !== imgSize.h ||
+                        bounds.logicalZoomRatio !== 1 || screen['logicalXDPI'] / screen['deviceXDPI'] !== 1 ) ?
                         PIE.Length.pxToPt( adjustedImgSize.w ) + 'pt,' + PIE.Length.pxToPt( adjustedImgSize.h ) + 'pt' : ''
                 );
 
@@ -3974,6 +3981,7 @@ PIE.Element = (function() {
         lazyInitCssProp = PIE.CSS_PREFIX + 'lazy-init',
         pollCssProp = PIE.CSS_PREFIX + 'poll',
         trackActiveCssProp = PIE.CSS_PREFIX + 'track-active',
+        trackHoverCssProp = PIE.CSS_PREFIX + 'track-hover',
         hoverClass = PIE.CLASS_PREFIX + 'hover',
         activeClass = PIE.CLASS_PREFIX + 'active',
         focusClass = PIE.CLASS_PREFIX + 'focus',
@@ -4047,6 +4055,7 @@ PIE.Element = (function() {
                     cs = el.currentStyle,
                     lazy = cs.getAttribute( lazyInitCssProp ) === 'true',
                     trackActive = cs.getAttribute( trackActiveCssProp ) !== 'false',
+                    trackHover = cs.getAttribute( trackHoverCssProp ) !== 'false',
                     childRenderers;
 
                 // Polling for size/position changes: default to on in IE8, off otherwise, overridable by -pie-poll
@@ -4149,8 +4158,12 @@ PIE.Element = (function() {
                     }
                     addListener( el, 'onresize', handleMoveOrResize );
                     addListener( el, 'onpropertychange', propChanged );
-                    addListener( el, 'onmouseenter', mouseEntered );
-                    addListener( el, 'onmouseleave', mouseLeft );
+                    if( trackHover ) {
+                        addListener( el, 'onmouseenter', mouseEntered );
+                    }
+                    if( trackHover || trackActive ) {
+                        addListener( el, 'onmouseleave', mouseLeft );
+                    }
                     if( trackActive ) {
                         addListener( el, 'onmousedown', mousePressed );
                     }
@@ -4187,7 +4200,7 @@ PIE.Element = (function() {
          * this rather than the updatePos/Size functions because sometimes, particularly
          * during page load, one will fire but the other won't.
          */
-        function update( checkProps, force ) {
+        function update( isPropChange, force ) {
             if( !destroyed ) {
                 if( initialized ) {
                     lockAll();
@@ -4199,13 +4212,13 @@ PIE.Element = (function() {
                         renderers[i].prepareUpdate();
                     }
                     for( i = 0; i < len; i++ ) {
-                        if( force || sizeChanged || ( checkProps && renderers[i].needsUpdate() ) ) {
+                        if( force || sizeChanged || ( isPropChange && renderers[i].needsUpdate() ) ) {
                             renderers[i].updateRendering();
                         }
                     }
                     rootRenderer.finishUpdate();
 
-                    if( force || ( rootRenderer.isPositioned && boundsInfo.positionChanged() ) ) {
+                    if( force || ( ( !isPropChange || rootRenderer.isPositioned ) && boundsInfo.positionChanged() ) ) {
                         /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
                            position changes may not always be accurate; it's possible that
                            an element will actually move relative to its positioning parent, but its position
