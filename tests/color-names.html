@@ -30,7 +30,7 @@
     <script type="text/javascript">
         // Some simple unit tests of color parsing
         var colorValueTests = {
-                'aqua': '#0FF',
+                'aqua': '#00FFFF',
                 'beige': '#F5F5DC',
                 '#123456': '#123456',
                 '#123': '#123',
@@ -40,7 +40,7 @@
                 'hsl(0, 100%, 50%)': '#ff0000',
                 'hsla(0, 100%, 50%, 0.5)': '#ff0000',
                 'hsla(0, 100%, 50%, .5)': '#ff0000',
-                'currentColor': '#F00',
+                'currentColor': '#FF0000',
                 'transparent': 'transparent'
             },
             hexValueTests = {
@@ -77,14 +77,14 @@
             c, val;
         for (c in colorValueTests) {
             val = PIE.getColor( c ).colorValue( currentColorTester );
-            if ( val !== colorValueTests[ c ] ) {
+            if ( val.toLowerCase() !== colorValueTests[ c ].toLowerCase() ) {
                 document.write('<p style="color:red">PIE.Color#colorValue() failed for "' + c + '": got "' + val + '", expected "' + colorValueTests[c] + '"</p>')
                 failed = true;
             }
         }
         for (c in hexValueTests) {
             val = PIE.getColor( c ).hexValue( currentColorTester );
-            if ( val !== hexValueTests[ c ] ) {
+            if ( val.toLowerCase() !== hexValueTests[ c ].toLowerCase() ) {
                 document.write('<p style="color:red">PIE.Color#hexValue() failed for "' + c + '": got "' + val + '", expected "' + hexValueTests[c] + '"</p>')
                 failed = true;
             }
