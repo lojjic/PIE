@@ -192,7 +192,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
 
                 // Build the segment for each side
                 for( side in sideArgs ) {
-                    if ( sideArgs.hasOwnProperty( side ) ) {
+                    if ( sideArgs.hasOwnProperty( side ) && colors[ side ].alpha() > 0 ) {
                         var args = sideArgs[ side ],
                             centerX1 = args[ 0 ],
                             centerY1 = args[ 1 ],
