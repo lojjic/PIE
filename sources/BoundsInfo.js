@@ -10,6 +10,17 @@ PIE.BoundsInfo.prototype = {
 
     _locked: 0,
 
+    /**
+     * Determines if the element's position has changed since the last update.
+     * TODO this does a simple getBoundingClientRect comparison for detecting the
+     * changes in position, which may not always be accurate; it's possible that
+     * an element will actually move relative to its positioning parent, but its position
+     * relative to the viewport will stay the same. Need to come up with a better way to
+     * track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
+     * but that is a more expensive operation since it performs DOM walking, and we want this
+     * check to be as fast as possible. Perhaps introduce a -pie-* flag to trigger the slower
+     * but more accurate method?
+     */
     positionChanged: function() {
         var last = this._lastBounds,
             bounds;

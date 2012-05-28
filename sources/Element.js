@@ -53,7 +53,7 @@ PIE.Element = (function() {
 
     function Element( el ) {
         var me = this,
-            renderers,
+            childRenderers,
             rootRenderer,
             boundsInfo = new PIE.BoundsInfo( el ),
             styleInfos,
@@ -79,8 +79,7 @@ PIE.Element = (function() {
                     cs = el.currentStyle,
                     lazy = cs.getAttribute( lazyInitCssProp ) === 'true',
                     trackActive = cs.getAttribute( trackActiveCssProp ) !== 'false',
-                    trackHover = cs.getAttribute( trackHoverCssProp ) !== 'false',
-                    childRenderers;
+                    trackHover = cs.getAttribute( trackHoverCssProp ) !== 'false';
 
                 // Polling for size/position changes: default to on in IE8, off otherwise, overridable by -pie-poll
                 poll = cs.getAttribute( pollCssProp );
@@ -160,7 +159,6 @@ PIE.Element = (function() {
                         }
                         rootRenderer.childRenderers = childRenderers; // circular reference, can't pass in constructor; TODO is there a cleaner way?
                     }
-                    renderers = [ rootRenderer ].concat( childRenderers );
 
                     // Add property change listeners to ancestors if requested
                     initAncestorEventListeners();
@@ -229,28 +227,18 @@ PIE.Element = (function() {
                 if( initialized ) {
                     lockAll();
 
-                    var i, len = renderers.length,
+                    var i = 0, len = childRenderers.length,
                         sizeChanged = boundsInfo.sizeChanged();
-
-                    for( i = 0; i < len; i++ ) {
-                        renderers[i].prepareUpdate();
+                    for( ; i < len; i++ ) {
+                        childRenderers[i].prepareUpdate();
                     }
                     for( i = 0; i < len; i++ ) {
-                        if( force || sizeChanged || ( isPropChange && renderers[i].needsUpdate() ) ) {
-                            renderers[i].updateRendering();
+                        if( force || sizeChanged || ( isPropChange && childRenderers[i].needsUpdate() ) ) {
+                            childRenderers[i].updateRendering();
                         }
                     }
-                    rootRenderer.finishUpdate();
-
-                    if( force || ( ( !isPropChange || rootRenderer.isPositioned ) && boundsInfo.positionChanged() ) ) {
-                        /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
-                           position changes may not always be accurate; it's possible that
-                           an element will actually move relative to its positioning parent, but its position
-                           relative to the viewport will stay the same. Need to come up with a better way to
-                           track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
-                           but that is a more expensive operation since it does some DOM walking, and we want this
-                           check to be as fast as possible. */
-                        rootRenderer.updatePos();
+                    if( force || sizeChanged || isPropChange || boundsInfo.positionChanged() ) {
+                        rootRenderer.updateRendering();
                     }
 
                     unlockAll();
@@ -265,14 +253,12 @@ PIE.Element = (function() {
          * Handle property changes to trigger update when appropriate.
          */
         function propChanged() {
-            var e = event;
-
             // Some elements like <table> fire onpropertychange events for old-school background properties
             // ('background', 'bgColor') when runtimeStyle background properties are changed, which
             // results in an infinite loop; therefore we filter out those property names. Also, 'display'
             // is ignored because size calculations don't work correctly immediately when its onpropertychange
             // event fires, and because it will trigger an onresize event anyway.
-            if( !( e && e.propertyName in ignorePropertyNames ) ) {
+            if( initialized && !( event && event.propertyName in ignorePropertyNames ) ) {
                 update( 1 );
             }
         }
@@ -341,7 +327,7 @@ PIE.Element = (function() {
          */
         function ancestorPropChanged() {
             var name = event.propertyName;
-            if( name === 'className' || name === 'id' ) {
+            if( name === 'className' || name === 'id' || name.indexOf( 'style.' ) === 0 ) {
                 propChanged();
             }
         }
@@ -399,12 +385,13 @@ PIE.Element = (function() {
                 destroyed = 1;
 
                 // destroy any active renderers
-                if( renderers ) {
-                    for( i = 0, len = renderers.length; i < len; i++ ) {
-                        renderers[i].finalized = 1;
-                        renderers[i].destroy();
+                if( childRenderers ) {
+                    for( i = 0, len = childRenderers.length; i < len; i++ ) {
+                        childRenderers[i].finalized = 1;
+                        childRenderers[i].destroy();
                     }
                 }
+                rootRenderer.destroy();
 
                 // Remove from list of polled elements in IE8
                 if( poll ) {
@@ -414,7 +401,7 @@ PIE.Element = (function() {
                 PIE.OnResize.unobserve( update );
 
                 // Kill references
-                renderers = boundsInfo = styleInfos = styleInfosArr = el = null;
+                childRenderers = rootRenderer = boundsInfo = styleInfos = styleInfosArr = el = null;
                 me.el = me = 0;
             }
         }

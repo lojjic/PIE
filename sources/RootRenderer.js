@@ -6,12 +6,6 @@
  */
 PIE.RootRenderer = PIE.RendererBase.newRenderer( {
 
-    /**
-     * Flag indicating the element has already been positioned at least once.
-     * @type {boolean}
-     */
-    isPositioned: false,
-
     isActive: function() {
         var children = this.childRenderers;
         for( var i in children ) {
@@ -22,72 +16,58 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
         return false;
     },
 
-    needsUpdate: function() {
-        return this.styleInfos.visibilityInfo.changed();
-    },
+    getBoxCssText: function() {
+        var el = this.getPositioningElement(),
+            par = el,
+            docEl,
+            parRect,
+            tgtCS = el.currentStyle,
+            tgtPos = tgtCS.position,
+            boxPos,
+            cs,
+            x = 0, y = 0,
+            elBounds = this.boundsInfo.getBounds(),
+            vis = this.styleInfos.visibilityInfo.getProps(),
+            logicalZoomRatio = elBounds.logicalZoomRatio;
 
-    /**
-     * Tell the renderer to update based on modified element position
-     */
-    updatePos: function() {
-        if( this.isActive() && this.getBoxEl() ) {
-            var el = this.getPositioningElement(),
-                par = el,
-                docEl,
-                parRect,
-                tgtCS = el.currentStyle,
-                tgtPos = tgtCS.position,
-                boxPos,
-                s = this.getBoxEl().style, cs,
-                x = 0, y = 0,
-                elBounds = this.boundsInfo.getBounds(),
-                logicalZoomRatio = elBounds.logicalZoomRatio;
-
-            if( tgtPos === 'fixed' && PIE.ieVersion > 6 ) {
-                x = elBounds.x * logicalZoomRatio;
-                y = elBounds.y * logicalZoomRatio;
-                boxPos = tgtPos;
-            } else {
-                // Get the element's offsets from its nearest positioned ancestor. Uses
-                // getBoundingClientRect for accuracy and speed.
-                do {
-                    par = par.offsetParent;
-                } while( par && ( par.currentStyle.position === 'static' ) );
-                if( par ) {
-                    parRect = par.getBoundingClientRect();
-                    cs = par.currentStyle;
-                    x = ( elBounds.x - parRect.left ) * logicalZoomRatio - ( parseFloat(cs.borderLeftWidth) || 0 );
-                    y = ( elBounds.y - parRect.top ) * logicalZoomRatio - ( parseFloat(cs.borderTopWidth) || 0 );
-                } else {
-                    docEl = doc.documentElement;
-                    x = ( elBounds.x + docEl.scrollLeft - docEl.clientLeft ) * logicalZoomRatio;
-                    y = ( elBounds.y + docEl.scrollTop - docEl.clientTop ) * logicalZoomRatio;
-                }
-                boxPos = 'absolute';
-            }
-
-            s.position = boxPos;
-            s.left = x;
-            s.top = y;
-            s.zIndex = tgtPos === 'static' ? -1 : tgtCS.zIndex;
-            this.isPositioned = true;
-        }
-    },
-
-    updateVisibility: function() {
-        var vis = this.styleInfos.visibilityInfo,
-            box = this._box;
-        if ( box && vis.changed() ) {
-            vis = vis.getProps();
-            box.style.display = ( vis.visible && vis.displayed ) ? '' : 'none';
-        }
-    },
-
-    updateRendering: function() {
-        if( this.isActive() ) {
-            this.updateVisibility();
+        if( tgtPos === 'fixed' && PIE.ieVersion > 6 ) {
+            x = elBounds.x * logicalZoomRatio;
+            y = elBounds.y * logicalZoomRatio;
+            boxPos = tgtPos;
         } else {
-            this.destroy();
+            // Get the element's offsets from its nearest positioned ancestor. Uses
+            // getBoundingClientRect for accuracy and speed.
+            do {
+                par = par.offsetParent;
+            } while( par && ( par.currentStyle.position === 'static' ) );
+            if( par ) {
+                parRect = par.getBoundingClientRect();
+                cs = par.currentStyle;
+                x = ( elBounds.x - parRect.left ) * logicalZoomRatio - ( parseFloat(cs.borderLeftWidth) || 0 );
+                y = ( elBounds.y - parRect.top ) * logicalZoomRatio - ( parseFloat(cs.borderTopWidth) || 0 );
+            } else {
+                docEl = doc.documentElement;
+                x = ( elBounds.x + docEl.scrollLeft - docEl.clientLeft ) * logicalZoomRatio;
+                y = ( elBounds.y + docEl.scrollTop - docEl.clientTop ) * logicalZoomRatio;
+            }
+            boxPos = 'absolute';
+        }
+
+        return 'direction:ltr;' +
+               'position:absolute;' +
+               'behavior:none !important;' +
+               'position:' + boxPos + ';' +
+               'left:' + x + 'px;' +
+               'top:' + y + 'px;' +
+               'z-index:' + ( tgtPos === 'static' ? -1 : tgtCS.zIndex ) + ';' +
+               'display:' + ( vis.visible && vis.displayed ? 'block' : 'none' );
+    },
+
+    updateBoxStyles: function() {
+        var me = this,
+            boxEl = me.getBoxEl();
+        if( boxEl && ( me.boundsInfo.positionChanged() || me.styleInfos.visibilityInfo.changed() ) ) {
+            boxEl.style.cssText = me.getBoxCssText();
         }
     },
 
@@ -111,48 +91,59 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
     /**
      * Render any child rendrerer shapes which have not already been rendered into the DOM.
      */
-    finishUpdate: function() {
+    updateRendering: function() {
         var me = this,
             queue = me._shapeRenderQueue,
             renderedShapes, markup, i, len, j,
-            ref, pos;
+            ref, pos, vis;
 
-        if( queue ) {
-            // We've already rendered something once, so do incremental insertion of new shapes
-            renderedShapes = me._renderedShapes;
-            if( renderedShapes ) {
-                for( i = 0, len = queue.length; i < len; i++ ) {
-                    for( j = renderedShapes.length; j--; ) {
-                        if( renderedShapes[ j ].ordinalGroup < queue[ i ].ordinalGroup ) {
-                            break;
+        if (me.isActive()) {
+            if( queue ) {
+                // We've already rendered something once, so do incremental insertion of new shapes
+                renderedShapes = me._renderedShapes;
+                if( renderedShapes ) {
+                    for( i = 0, len = queue.length; i < len; i++ ) {
+                        for( j = renderedShapes.length; j--; ) {
+                            if( renderedShapes[ j ].ordinalGroup < queue[ i ].ordinalGroup ) {
+                                break;
+                            }
                         }
+
+                        if ( j < 0 ) {
+                            ref = me.getBoxEl();
+                            pos = 'afterBegin';
+                        } else {
+                            ref = renderedShapes[ j ].getShape();
+                            pos = 'afterEnd';
+                        }
+                        ref.insertAdjacentHTML( pos, queue[ i ].getMarkup() );
+                        renderedShapes.splice( j < 0 ? 0 : j, 0, queue[ i ] );
                     }
+                    me._shapeRenderQueue = 0;
+                    me.updateBoxStyles();
+                }
+                // This is the first render, so build up a single markup string and insert it all at once
+                else {
+                    vis = me.styleInfos.visibilityInfo.getProps();
+                    if( vis.visible && vis.displayed ) {
+                        queue.sort( me.shapeSorter );
+                        markup = [ '<css3pie id="_pie' + PIE.Util.getUID( me ) + '" style="' + me.getBoxCssText() + '">' ];
+                        for( i = 0, len = queue.length; i < len; i++ ) {
+                            markup.push( queue[ i ].getMarkup() );
+                        }
+                        markup.push( '</css3pie>' );
 
-                    if ( j < 0 ) {
-                        ref = me.getBoxEl();
-                        pos = 'afterBegin';
-                    } else {
-                        ref = renderedShapes[ j ].getShape();
-                        pos = 'afterEnd';
+                        me.getPositioningElement().insertAdjacentHTML( 'beforeBegin', markup.join( '' ) );
+
+                        me._renderedShapes = queue;
+                        me._shapeRenderQueue = 0;
                     }
-                    ref.insertAdjacentHTML( pos, queue[ i ].getMarkup() );
-                    renderedShapes.splice( j < 0 ? 0 : j, 0, queue[ i ] );
                 }
+            } else {
+                me.updateBoxStyles();
             }
-            // This is the first render, so build up a single markup string and insert it all at once
-            else {
-                queue.sort( me.shapeSorter );
-                markup = [ '<css3pie id="_pie' + PIE.Util.getUID( me ) + '" style="direction:ltr;position:absolute;">' ];
-                for( i = 0, len = queue.length; i < len; i++ ) {
-                    markup.push( queue[ i ].getMarkup() );
-                }
-                markup.push( '</css3pie>' );
-
-                me.getPositioningElement().insertAdjacentHTML( 'beforeBegin', markup.join( '' ) );
-
-                me._renderedShapes = queue;
-            }
-            me._shapeRenderQueue = 0;
+        } else {
+            me.destroy();
         }
     },
 

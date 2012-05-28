@@ -5,10 +5,6 @@
  */
 PIE.IE9RootRenderer = PIE.RendererBase.newRenderer( {
 
-    updatePos: PIE.emptyFn,
-    updateRendering: PIE.emptyFn,
-    updateVisibility: PIE.emptyFn,
-
     outerCommasRE: /^,+|,+$/g,
     innerCommasRE: /,+/g,
 
@@ -19,7 +15,7 @@ PIE.IE9RootRenderer = PIE.RendererBase.newRenderer( {
         bgLayers[zIndex] = bg || undef;
     },
 
-    finishUpdate: function() {
+    updateRendering: function() {
         var me = this,
             bgLayers = me._bgLayers,
             bg;

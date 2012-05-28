@@ -6,25 +6,23 @@
 PIE.VisibilityStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
 
     getCss: PIE.StyleInfoBase.cacheWhenLocked( function() {
-        var cs = this.targetElement.currentStyle;
-        return cs.visibility + '|' + cs.display;
-    } ),
-
-    parseCss: function() {
         var el = this.targetElement,
             rs = el.runtimeStyle,
             cs = el.currentStyle,
             rsVis = rs.visibility,
-            csVis;
-
+            ret;
         rs.visibility = '';
-        csVis = cs.visibility;
+        ret = cs.visibility + '|' + cs.display;
         rs.visibility = rsVis;
+        return ret;
+    } ),
 
+    parseCss: function() {
+        var info = this.getCss().split('|');
         return {
-            visible: csVis !== 'hidden',
-            displayed: cs.display !== 'none'
-        }
+            visible: info[0] !== 'hidden',
+            displayed: info[1] !== 'none'
+        };
     },
 
     /**

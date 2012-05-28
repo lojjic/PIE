@@ -137,7 +137,7 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
             // will have been created asynchronously after the main element's update has finished; we'll
             // therefore need to force the root renderer to sync to the final background once finished.
             if( isAsync ) {
-                me.parent.finishUpdate();
+                me.parent.updateRendering();
             }
         }, me );
 
