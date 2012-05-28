@@ -361,15 +361,20 @@ PIE.Observable.prototype = {
  * Simple heartbeat timer - this is a brute-force workaround for syncing issues caused by IE not
  * always firing the onmove and onresize events when elements are moved or resized. We check a few
  * times every second to make sure the elements have the correct position and size. See Element.js
- * which adds heartbeat listeners based on the custom -pie-poll flag, which defaults to true in IE8
+ * which adds heartbeat listeners based on the custom -pie-poll flag, which defaults to true in IE8-9
  * and false elsewhere.
  */
 
 PIE.Heartbeat = new PIE.Observable();
 PIE.Heartbeat.run = function() {
-    var me = this;
+    var me = this,
+        interval;
     if( !me.running ) {
-        setInterval( function() { me.fire() }, 250 );
+        interval = doc.documentElement.currentStyle.getAttribute( PIE.CSS_PREFIX + 'poll-interval' ) || 250;
+        (function beat() {
+            me.fire();
+            setTimeout(beat, interval);
+        })();
         me.running = 1;
     }
 };
@@ -825,55 +830,18 @@ PIE.Color = (function() {
     Color.rgbOrRgbaRE = /\s*rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(,\s*(\d+|\d*\.\d+))?\s*\)\s*/;
     Color.hslOrHslaRE = /\s*hsla?\(\s*(\d*\.?\d+)\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*(,\s*(\d+|\d*\.\d+))?\s*\)\s*/;
 
-    Color.names = {
-        "aliceblue":"F0F8FF", "antiquewhite":"FAEBD7", "aqua":"0FF",
-        "aquamarine":"7FFFD4", "azure":"F0FFFF", "beige":"F5F5DC",
-        "bisque":"FFE4C4", "black":"000", "blanchedalmond":"FFEBCD",
-        "blue":"00F", "blueviolet":"8A2BE2", "brown":"A52A2A",
-        "burlywood":"DEB887", "cadetblue":"5F9EA0", "chartreuse":"7FFF00",
-        "chocolate":"D2691E", "coral":"FF7F50", "cornflowerblue":"6495ED",
-        "cornsilk":"FFF8DC", "crimson":"DC143C", "cyan":"0FF",
-        "darkblue":"00008B", "darkcyan":"008B8B", "darkgoldenrod":"B8860B",
-        "darkgray":"A9A9A9", "darkgreen":"006400", "darkkhaki":"BDB76B",
-        "darkmagenta":"8B008B", "darkolivegreen":"556B2F", "darkorange":"FF8C00",
-        "darkorchid":"9932CC", "darkred":"8B0000", "darksalmon":"E9967A",
-        "darkseagreen":"8FBC8F", "darkslateblue":"483D8B", "darkslategray":"2F4F4F",
-        "darkturquoise":"00CED1", "darkviolet":"9400D3", "deeppink":"FF1493",
-        "deepskyblue":"00BFFF", "dimgray":"696969", "dodgerblue":"1E90FF",
-        "firebrick":"B22222", "floralwhite":"FFFAF0", "forestgreen":"228B22",
-        "fuchsia":"F0F", "gainsboro":"DCDCDC", "ghostwhite":"F8F8FF",
-        "gold":"FFD700", "goldenrod":"DAA520", "gray":"808080",
-        "green":"008000", "greenyellow":"ADFF2F", "honeydew":"F0FFF0",
-        "hotpink":"FF69B4", "indianred":"CD5C5C", "indigo":"4B0082",
-        "ivory":"FFFFF0", "khaki":"F0E68C", "lavender":"E6E6FA",
-        "lavenderblush":"FFF0F5", "lawngreen":"7CFC00", "lemonchiffon":"FFFACD",
-        "lightblue":"ADD8E6", "lightcoral":"F08080", "lightcyan":"E0FFFF",
-        "lightgoldenrodyellow":"FAFAD2", "lightgreen":"90EE90", "lightgrey":"D3D3D3",
-        "lightpink":"FFB6C1", "lightsalmon":"FFA07A", "lightseagreen":"20B2AA",
-        "lightskyblue":"87CEFA", "lightslategray":"789", "lightsteelblue":"B0C4DE",
-        "lightyellow":"FFFFE0", "lime":"0F0", "limegreen":"32CD32",
-        "linen":"FAF0E6", "magenta":"F0F", "maroon":"800000",
-        "mediumauqamarine":"66CDAA", "mediumblue":"0000CD", "mediumorchid":"BA55D3",
-        "mediumpurple":"9370D8", "mediumseagreen":"3CB371", "mediumslateblue":"7B68EE",
-        "mediumspringgreen":"00FA9A", "mediumturquoise":"48D1CC", "mediumvioletred":"C71585",
-        "midnightblue":"191970", "mintcream":"F5FFFA", "mistyrose":"FFE4E1",
-        "moccasin":"FFE4B5", "navajowhite":"FFDEAD", "navy":"000080",
-        "oldlace":"FDF5E6", "olive":"808000", "olivedrab":"688E23",
-        "orange":"FFA500", "orangered":"FF4500", "orchid":"DA70D6",
-        "palegoldenrod":"EEE8AA", "palegreen":"98FB98", "paleturquoise":"AFEEEE",
-        "palevioletred":"D87093", "papayawhip":"FFEFD5", "peachpuff":"FFDAB9",
-        "peru":"CD853F", "pink":"FFC0CB", "plum":"DDA0DD",
-        "powderblue":"B0E0E6", "purple":"800080", "red":"F00",
-        "rosybrown":"BC8F8F", "royalblue":"4169E1", "saddlebrown":"8B4513",
-        "salmon":"FA8072", "sandybrown":"F4A460", "seagreen":"2E8B57",
-        "seashell":"FFF5EE", "sienna":"A0522D", "silver":"C0C0C0",
-        "skyblue":"87CEEB", "slateblue":"6A5ACD", "slategray":"708090",
-        "snow":"FFFAFA", "springgreen":"00FF7F", "steelblue":"4682B4",
-        "tan":"D2B48C", "teal":"008080", "thistle":"D8BFD8",
-        "tomato":"FF6347", "turquoise":"40E0D0", "violet":"EE82EE",
-        "wheat":"F5DEB3", "white":"FFF", "whitesmoke":"F5F5F5",
-        "yellow":"FF0", "yellowgreen":"9ACD32"
-    };
+    /**
+     * Hash of color keyword names to their corresponding hex values. Encoded for
+     * small size and expanded into a hash on startup.
+     */
+    Color.names = {};
+
+    var names = 'aliceblue|9ehhb|antiquewhite|9sgk7|aqua|1ekf|aquamarine|4zsno|azure|9eiv3|beige|9lhp8|bisque|9zg04|black|0|blanchedalmond|9zhe5|blue|73|blueviolet|5e31e|brown|6g016|burlywood|8ouiv|cadetblue|3qba8|chartreuse|4zshs|chocolate|87k0u|coral|9yvyo|cornflowerblue|3xael|cornsilk|9zjz0|crimson|8l4xo|cyan|1ekf|darkblue|3v|darkcyan|rkb|darkgoldenrod|776yz|darkgray|6mbhl|darkgreen|jr4|darkkhaki|7ehkb|darkmagenta|5f91n|darkolivegreen|3bzfz|darkorange|9yygw|darkorchid|5z6x8|darkred|5f8xs|darksalmon|9441m|darkseagreen|5lwgf|darkslateblue|2th1n|darkslategray|1ugcv|darkturquoise|14up|darkviolet|5rw7n|deeppink|9yavn|deepskyblue|11xb|dimgray|442g9|dodgerblue|16xof|firebrick|6y7tu|floralwhite|9zkds|forestgreen|1cisi|fuchsia|9y70f|gainsboro|8m8kc|ghostwhite|9pq0v|gold|9zda8|goldenrod|8j4f4|gray|50i2o|green|pa8|greenyellow|6senj|honeydew|9eiuo|hotpink|9yrp0|indianred|80gnw|indigo|2xcoy|ivory|9zldc|khaki|9edu4|lavender|90c8q|lavenderblush|9ziet|lawngreen|4vk74|lemonchiffon|9zkct|lightblue|6s73a|lightcoral|9dtog|lightcyan|8s1rz|lightgoldenrodyellow|9sjiq|lightgreen|5nkwg|lightgrey|89jo3|lightpink|9z6wx|lightsalmon|9z2ii|lightseagreen|19xgq|lightskyblue|5arju|lightslategray|4nwk9|lightsteelblue|6wau6|lightyellow|9zlcw|lime|1edc|limegreen|1zcxe|linen|9shk6|magenta|9y70f|maroon|4zsow|mediumauqamarine|40eju|mediumblue|5p|mediumorchid|79qkz|mediumpurple|5r3rs|mediumseagreen|2d9ip|mediumslateblue|4tcku|mediumspringgreen|1di2|mediumturquoise|2uabw|mediumvioletred|7rn9h|midnightblue|z980|mintcream|9ljp6|mistyrose|9zg0x|moccasin|9zfzp|navajowhite|9zest|navy|3k|oldlace|9wq92|olive|50hz4|olivedrab|42v4z|orange|9z3eo|orangered|9ykg0|orchid|8iu3a|palegoldenrod|9bl4a|palegreen|5yw0o|paleturquoise|6v4ku|palevioletred|8g0wj|papayawhip|9zi6t|peachpuff|9ze0p|peru|80oqn|pink|9z8wb|plum|8nba5|powderblue|6wgdi|purple|4zssg|red|9y6tc|rosybrown|7cv4f|royalblue|2jvtt|saddlebrown|5fmkz|salmon|9rvci|sandybrown|9jn1c|seagreen|1tdnb|seashell|9zje6|sienna|6973h|silver|7ir40|skyblue|5arjf|slateblue|45e4t|slategray|4e100|snow|9zke2|springgreen|1egv|steelblue|2r1kk|tan|87yx8|teal|pds|thistle|8ggk8|tomato|9yqfb|turquoise|2j4r4|violet|9b10u|wheat|9ld4j|white|9zldr|whitesmoke|9lhpx|yellow|9zl6o|yellowgreen|61fzm'.split('|'),
+        i = 0, len = names.length, val;
+    for(; i < len; i += 2) {
+        val = parseInt(names[i + 1], 36).toString(16);
+        Color.names[names[i]] = '#' + ('000000' + val).substr(val.length);
+    }
 
     Color.prototype = {
         /**
@@ -898,7 +866,7 @@ PIE.Color = (function() {
                 }
                 else {
                     if( Color.names.hasOwnProperty( vLower = color.toLowerCase() ) ) {
-                        color = '#' + Color.names[vLower];
+                        color = Color.names[vLower];
                     }
                     alpha = ( color === 'transparent' ? 0 : 1 );
                 }
@@ -1251,6 +1219,17 @@ PIE.BoundsInfo.prototype = {
 
     _locked: 0,
 
+    /**
+     * Determines if the element's position has changed since the last update.
+     * TODO this does a simple getBoundingClientRect comparison for detecting the
+     * changes in position, which may not always be accurate; it's possible that
+     * an element will actually move relative to its positioning parent, but its position
+     * relative to the viewport will stay the same. Need to come up with a better way to
+     * track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
+     * but that is a more expensive operation since it performs DOM walking, and we want this
+     * check to be as fast as possible. Perhaps introduce a -pie-* flag to trigger the slower
+     * but more accurate method?
+     */
     positionChanged: function() {
         var last = this._lastBounds,
             bounds;
@@ -2154,10 +2133,6 @@ PIE.RendererBase = {
  */
 PIE.IE9RootRenderer = PIE.RendererBase.newRenderer( {
 
-    updatePos: PIE.emptyFn,
-    updateRendering: PIE.emptyFn,
-    updateVisibility: PIE.emptyFn,
-
     outerCommasRE: /^,+|,+$/g,
     innerCommasRE: /,+/g,
 
@@ -2168,7 +2143,7 @@ PIE.IE9RootRenderer = PIE.RendererBase.newRenderer( {
         bgLayers[zIndex] = bg || undef;
     },
 
-    finishUpdate: function() {
+    updateRendering: function() {
         var me = this,
             bgLayers = me._bgLayers,
             bg;
@@ -2449,7 +2424,7 @@ PIE.IE9BorderImageRenderer = PIE.RendererBase.newRenderer( {
             // will have been created asynchronously after the main element's update has finished; we'll
             // therefore need to force the root renderer to sync to the final background once finished.
             if( isAsync ) {
-                me.parent.finishUpdate();
+                me.parent.updateRendering();
             }
         }, me );
 
@@ -2563,7 +2538,7 @@ PIE.Element = (function() {
 
     function Element( el ) {
         var me = this,
-            renderers,
+            childRenderers,
             rootRenderer,
             boundsInfo = new PIE.BoundsInfo( el ),
             styleInfos,
@@ -2589,8 +2564,7 @@ PIE.Element = (function() {
                     cs = el.currentStyle,
                     lazy = cs.getAttribute( lazyInitCssProp ) === 'true',
                     trackActive = cs.getAttribute( trackActiveCssProp ) !== 'false',
-                    trackHover = cs.getAttribute( trackHoverCssProp ) !== 'false',
-                    childRenderers;
+                    trackHover = cs.getAttribute( trackHoverCssProp ) !== 'false';
 
                 // Polling for size/position changes: default to on in IE8, off otherwise, overridable by -pie-poll
                 poll = cs.getAttribute( pollCssProp );
@@ -2670,7 +2644,6 @@ PIE.Element = (function() {
                         }
                         rootRenderer.childRenderers = childRenderers; // circular reference, can't pass in constructor; TODO is there a cleaner way?
                     }
-                    renderers = [ rootRenderer ].concat( childRenderers );
 
                     // Add property change listeners to ancestors if requested
                     initAncestorEventListeners();
@@ -2739,28 +2712,18 @@ PIE.Element = (function() {
                 if( initialized ) {
                     lockAll();
 
-                    var i, len = renderers.length,
+                    var i = 0, len = childRenderers.length,
                         sizeChanged = boundsInfo.sizeChanged();
-
-                    for( i = 0; i < len; i++ ) {
-                        renderers[i].prepareUpdate();
+                    for( ; i < len; i++ ) {
+                        childRenderers[i].prepareUpdate();
                     }
                     for( i = 0; i < len; i++ ) {
-                        if( force || sizeChanged || ( isPropChange && renderers[i].needsUpdate() ) ) {
-                            renderers[i].updateRendering();
+                        if( force || sizeChanged || ( isPropChange && childRenderers[i].needsUpdate() ) ) {
+                            childRenderers[i].updateRendering();
                         }
                     }
-                    rootRenderer.finishUpdate();
-
-                    if( force || ( ( !isPropChange || rootRenderer.isPositioned ) && boundsInfo.positionChanged() ) ) {
-                        /* TODO just using getBoundingClientRect (used internally by BoundsInfo) for detecting
-                           position changes may not always be accurate; it's possible that
-                           an element will actually move relative to its positioning parent, but its position
-                           relative to the viewport will stay the same. Need to come up with a better way to
-                           track movement. The most accurate would be the same logic used in RootRenderer.updatePos()
-                           but that is a more expensive operation since it does some DOM walking, and we want this
-                           check to be as fast as possible. */
-                        rootRenderer.updatePos();
+                    if( force || sizeChanged || isPropChange || boundsInfo.positionChanged() ) {
+                        rootRenderer.updateRendering();
                     }
 
                     unlockAll();
@@ -2775,14 +2738,12 @@ PIE.Element = (function() {
          * Handle property changes to trigger update when appropriate.
          */
         function propChanged() {
-            var e = event;
-
             // Some elements like <table> fire onpropertychange events for old-school background properties
             // ('background', 'bgColor') when runtimeStyle background properties are changed, which
             // results in an infinite loop; therefore we filter out those property names. Also, 'display'
             // is ignored because size calculations don't work correctly immediately when its onpropertychange
             // event fires, and because it will trigger an onresize event anyway.
-            if( !( e && e.propertyName in ignorePropertyNames ) ) {
+            if( initialized && !( event && event.propertyName in ignorePropertyNames ) ) {
                 update( 1 );
             }
         }
@@ -2851,7 +2812,7 @@ PIE.Element = (function() {
          */
         function ancestorPropChanged() {
             var name = event.propertyName;
-            if( name === 'className' || name === 'id' ) {
+            if( name === 'className' || name === 'id' || name.indexOf( 'style.' ) === 0 ) {
                 propChanged();
             }
         }
@@ -2909,12 +2870,13 @@ PIE.Element = (function() {
                 destroyed = 1;
 
                 // destroy any active renderers
-                if( renderers ) {
-                    for( i = 0, len = renderers.length; i < len; i++ ) {
-                        renderers[i].finalized = 1;
-                        renderers[i].destroy();
+                if( childRenderers ) {
+                    for( i = 0, len = childRenderers.length; i < len; i++ ) {
+                        childRenderers[i].finalized = 1;
+                        childRenderers[i].destroy();
                     }
                 }
+                rootRenderer.destroy();
 
                 // Remove from list of polled elements in IE8
                 if( poll ) {
@@ -2924,7 +2886,7 @@ PIE.Element = (function() {
                 PIE.OnResize.unobserve( update );
 
                 // Kill references
-                renderers = boundsInfo = styleInfos = styleInfosArr = el = null;
+                childRenderers = rootRenderer = boundsInfo = styleInfos = styleInfosArr = el = null;
                 me.el = me = 0;
             }
         }
