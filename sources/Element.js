@@ -150,7 +150,7 @@ PIE.Element = (function() {
                         childRenderers = [
                             new PIE.BoxShadowOutsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
                             new PIE.BackgroundRenderer( el, boundsInfo, styleInfos, rootRenderer ),
-                            //new PIE.BoxShadowInsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
+                            new PIE.BoxShadowInsetRenderer( el, boundsInfo, styleInfos, rootRenderer ),
                             new PIE.BorderRenderer( el, boundsInfo, styleInfos, rootRenderer ),
                             new PIE.BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
                         ];
