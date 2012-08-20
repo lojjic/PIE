@@ -13,6 +13,8 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
     originAndClipIdents: { 'padding-box':1, 'border-box':1, 'content-box':1 },
     positionIdents: { 'top':1, 'right':1, 'bottom':1, 'left':1, 'center':1 },
     sizeIdents: { 'contain':1, 'cover':1 },
+    tbIdents: { 'top': 1, 'bottom': 1 },
+    lrIdents: { 'left': 1, 'right': 1 },
     propertyNames: {
         CLIP: 'backgroundClip',
         COLOR: 'backgroundColor',
@@ -48,7 +50,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
      *         },
      *         {
      *             imgType: 'linear-gradient',
-     *             gradientStart: <PIE.BgPosition>,
+     *             gradientTo: [<'top' | 'bottom'>, <'left' | 'right'>?],
      *             angle: <PIE.Angle>,
      *             stops: [
      *                 { color: <PIE.Color>, offset: <PIE.Length> },
@@ -71,7 +73,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
             tokType, tokVal,
             beginCharIndex = 0,
             positionIdents = this.positionIdents,
-            gradient, stop, width, height,
+            gradient, stop, width, height, gradientTo, len, tbIdents, lrIdents,
             props = { bgImages: [] };
 
         function isBgPosToken( token ) {
@@ -112,7 +114,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                         // Color stop - must start with color
                         if( tokType & type_color ) {
                             // if we already have an angle/position, make sure that the previous token was a comma
-                            if( gradient.angle || gradient.gradientStart ) {
+                            if( gradient.angle || gradient.gradientTo ) {
                                 token = tokenizer.prev();
                                 if( token.tokenType !== type_operator ) {
                                     break; //fail
@@ -132,16 +134,28 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
                             }
                         }
                         // Angle - can only appear in first spot
-                        else if( tokType & tok_type.ANGLE && !gradient.angle && !stop.color && !gradient.stops.length ) {
+                        else if( tokType & tok_type.ANGLE && !gradient.angle && !gradient.gradientTo && !stop.color && !gradient.stops.length ) {
                             gradient.angle = new PIE.Angle( token.tokenValue );
                         }
-                        else if( isBgPosToken( token ) && !gradient.gradientStart && !stop.color && !gradient.stops.length ) {
-                            tokenizer.prev();
-                            gradient.gradientStart = new PIE.BgPosition(
-                                tokenizer.until( function( t ) {
-                                    return !isBgPosToken( t );
-                                }, false )
-                            );
+                        // "to <side-or-corner>" - can only appear in first spot
+                        else if( tokType & tok_type.IDENT && tokVal === 'to' && !gradient.gradientTo && !gradient.angle && !stop.color && !gradient.stops.length ) {
+                            tbIdents = this.tbIdents;
+                            lrIdents = this.lrIdents;
+
+                            gradientTo = tokenizer.until( function( t ) {
+                                return !(t && t.tokenType & tok_type.IDENT && ( t.tokenValue in tbIdents || t.tokenValue in lrIdents ));
+                            } );
+                            len = gradientTo.length;
+                            gradientTo = [ gradientTo[0] && gradientTo[0].tokenValue, gradientTo[1] && gradientTo[1].tokenValue ];
+
+                            // bail unless there are 1 or 2 values, or if the 2 values are from the same pair of sides
+                            if ( len < 1 || len > 2 || ( len > 1 && (
+                                ( gradientTo[0] in tbIdents && gradientTo[1] in tbIdents ) ||
+                                ( gradientTo[0] in lrIdents && gradientTo[1] in lrIdents )
+                            ) ) ) {
+                                break;
+                            }
+                            gradient.gradientTo = gradientTo;
                         }
                         else if( tokType & type_operator && tokVal === ',' ) {
                             if( stop.color ) {

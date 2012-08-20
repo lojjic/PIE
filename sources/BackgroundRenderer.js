@@ -260,46 +260,32 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             stops = info.stops,
             stopCount = stops.length,
             PI = Math.PI,
-            GradientUtil = PIE.GradientUtil,
-            perpendicularIntersect = GradientUtil.perpendicularIntersect,
-            distance = GradientUtil.distance,
-            metrics = GradientUtil.getGradientMetrics( el, w, h, info ),
+            metrics = PIE.GradientUtil.getGradientMetrics( el, w, h, info ),
             angle = metrics.angle,
-            startX = metrics.startX,
-            startY = metrics.startY,
-            startCornerX = metrics.startCornerX,
-            startCornerY = metrics.startCornerY,
-            endCornerX = metrics.endCornerX,
-            endCornerY = metrics.endCornerY,
-            deltaX = metrics.deltaX,
-            deltaY = metrics.deltaY,
             lineLength = metrics.lineLength,
-            vmlAngle, vmlGradientLength, vmlColors,
-            stopPx, vmlOffsetPct,
-            p, i, j, before, after;
+            vmlAngle, vmlColors,
+            stopPx, i, j, before, after;
 
         // In VML land, the angle of the rendered gradient depends on the aspect ratio of the shape's
         // bounding box; for example specifying a 45 deg angle actually results in a gradient
         // drawn diagonally from one corner to its opposite corner, which will only appear to the
-        // viewer as 45 degrees if the shape is equilateral.  We adjust for this by taking the x/y deltas
+        // viewer as 45 degrees if the shape is equilateral. We adjust for this by taking the x/y deltas
         // between the start and end points, multiply one of them by the shape's aspect ratio,
         // and get their arctangent, resulting in an appropriate VML angle. If the angle is perfectly
         // horizontal or vertical then we don't need to do this conversion.
-        vmlAngle = ( angle % 90 ) ? Math.atan2( deltaX * w / h, deltaY ) / PI * 180 : ( angle + 90 );
-
-        // VML angles are 180 degrees offset from CSS angles
-        vmlAngle += 180;
+        // VML angles go in the opposite direction from CSS angles.
+        vmlAngle = ( angle % 90 ) ?
+            Math.atan2( metrics.startY - metrics.endY, ( metrics.endX - metrics.startX ) * w / h ) / PI * 180 - 90 :
+            -angle;
+        while( vmlAngle < 0 ) {
+            vmlAngle += 360;
+        }
         vmlAngle = vmlAngle % 360;
 
         // Add all the stops to the VML 'colors' list, including the first and last stops.
         // For each, we find its pixel offset along the gradient-line; if the offset of a stop is less
-        // than that of its predecessor we increase it to be equal. We then map that pixel offset to a
-        // percentage along the VML gradient-line, which runs from shape corner to corner.
-        p = perpendicularIntersect( startCornerX, startCornerY, angle, endCornerX, endCornerY );
-        vmlGradientLength = distance( startCornerX, startCornerY, p[0], p[1] );
+        // than that of its predecessor we increase it to be equal.
         vmlColors = [];
-        p = perpendicularIntersect( startX, startY, angle, startCornerX, startCornerY );
-        vmlOffsetPct = distance( startX, startY, p[0], p[1] ) / vmlGradientLength * 100;
 
         // Find the pixel offsets along the CSS3 gradient-line for each stop.
         stopPx = [];
@@ -321,10 +307,10 @@ PIE.BackgroundRenderer = PIE.RendererBase.newRenderer( {
             stopPx[ i ] = Math.max( stopPx[ i ], stopPx[ i - 1 ] );
         }
 
-        // Convert to percentage along the VML gradient line and add to the VML 'colors' value
+        // Convert to percentage along the gradient line and add to the VML 'colors' value
         for( i = 0; i < stopCount; i++ ) {
             vmlColors.push(
-                ( vmlOffsetPct + ( stopPx[ i ] / vmlGradientLength * 100 ) ) + '% ' + stops[i].color.colorValue( el )
+                ( stopPx[ i ] / lineLength * 100 ) + '% ' + stops[i].color.colorValue( el )
             );
         }
 
