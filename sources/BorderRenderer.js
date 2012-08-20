@@ -57,14 +57,14 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
         var me = this,
             props = me.styleInfos.borderInfo.getProps(),
             bounds = me.boundsInfo.getBounds(),
-            shape, segmentsInfo, i, len;
+            shape, segmentsInfo, i, j, len;
 
         if( props ) {
             me.hideBorder();
 
             segmentsInfo = me.getBorderSegmentsInfo();
-            for( i = 0, len = segmentsInfo.length; i < len; i += 2) {
-                shape = me.getShape( 'border' + i, me.shapeZIndex );
+            for( i = j = 0, len = segmentsInfo.length; i < len; i += 2) {
+                shape = me.getShape( 'border' + j++, me.shapeZIndex );
                 shape.setSize( bounds.w, bounds.h );
                 shape.setAttrs(
                     'path', segmentsInfo[ i ]
@@ -75,7 +75,7 @@ PIE.BorderRenderer = PIE.RendererBase.newRenderer( {
             }
 
             // remove any previously-created border shapes which didn't get used above
-            while( me.deleteShape( 'border' + i++ ) ) {}
+            while( me.deleteShape( 'border' + j++ ) ) {}
         }
     },
 

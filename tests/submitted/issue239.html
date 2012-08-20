@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <style>
+        html {
+            -pie-load-path: "../../build" ;
+        }
+        div {
+            color:#FFF ;
+            padding-left:10px ;
+            font-size:24px ;
+            behavior: url(../../build/PIE.htc);
+        }
+        #test {
+            border:10px solid #000 ;
+            border-radius:100px 100px 100px 100px ;
+            -pie-background: linear-gradient(left, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
+            position:absolute ;
+            width:350px ;
+            height:350px ;
+            cursor:move ;
+        }
+    </style>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+</head>
+<body>
+<div id="test">
+    <input type="button" onclick="change_border() ;" value="Step 1: Change Border First" /><br />
+    <input type="button" onclick="change_size() ;" value="Step 2: Now Change Size (Randomized)" /><br /><br />
+    Drag me!
+</div>
+<script>
+    $("#test").draggable() ;
+
+    function change_border() {
+        $("#test").css("border","dashed 10px #000") ;
+    }
+
+    function change_size() {
+        $("#test").css("width",Math.random()*300+100) ;
+        $("#test").css("height",Math.random()*300+100) ;
+    }
+</script>
+</body>
+</html>
