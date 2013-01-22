@@ -9,9 +9,8 @@ var el = element,
 if ( !window[ 'PIE' ] && docMode < 10 ) {
     (function() {
         var queue = {},
-            baseUrls = $DefaultBaseUrls$,
-            protocol = doc.location.protocol,
-            baseUrl, tester, isIE6, i = 0;
+            styleSheetRE, checkStyleSheets,
+            baseUrl, tester, isIE6, script;
 
         // Create stub PIE object
         window[ 'PIE' ] = {
@@ -29,23 +28,38 @@ if ( !window[ 'PIE' ] && docMode < 10 ) {
         tester.innerHTML = '<!--[if IE 6]><i></i><![endif]-->';
         isIE6 = tester.getElementsByTagName('i')[0];
 
-        // Look for a custom -pie-load-path in the url or the css, or fall back to the CDN url
+        // Look for a custom pie-load-path parameter in the page's url...
         baseUrl = doc.location.href.match(/pie-load-path=([^&]+)/);
         if( baseUrl ) {
             baseUrl = decodeURIComponent(baseUrl[1]);
         }
+        // Otherwise look for a custom -pie-load-path property in the CSS for the html element...
         if( !baseUrl ) {
             baseUrl = doc.documentElement.currentStyle.getAttribute( ( isIE6 ? '' : '-' ) + 'pie-load-path' );
         }
-        if( baseUrl ) {
-            baseUrl = baseUrl.replace(/^("|')|("|')$/g, '');
-            baseUrls = [ baseUrl ];
+        // Otherwise look through the stylesheets for the location of the behavior file...
+        if( !baseUrl ) {
+            styleSheetRE = /BEHAVIOR: url\(([^\)]*PIE[^\)]*)/i;
+            checkStyleSheets = function( styleSheets ) {
+                var i = styleSheets.length,
+                    url, match;
+                while( i-- ) {
+                    match = styleSheets[ i ].cssText.match( styleSheetRE );
+                    url = match ?
+                        match[ 1 ].substring( 0, match[ 1 ].lastIndexOf( '/' )) :
+                        checkStyleSheets( styleSheets[ i ].imports );
+                    if( url ) {
+                        break;
+                    }
+                }
+                return url;
+            };
+            baseUrl = checkStyleSheets( doc.styleSheets );
         }
 
-        // Start loading JS file
-        function tryLoading( baseUrl ) {
-            var script = doc.createElement( 'script' );
-            script.async = true;
+        // If we found the base URL, try to load the appropriate JS file from it
+        if( baseUrl ) {
+            script = doc.createElement( 'script' );
             script.onreadystatechange = function() {
                 var PIE = window[ 'PIE' ],
                     rs = script.readyState,
@@ -59,21 +73,11 @@ if ( !window[ 'PIE' ] && docMode < 10 ) {
                         }
                         queue = 0;
                     }
-                    else if( baseUrls[ ++i ] ) {
-                        tryLoading( baseUrls[ i ] );
-                    }
                 }
             };
-
-            if ( protocol === 'https:' ) {
-                baseUrl = baseUrl.replace( /^http:/, protocol );
-            }
             script.src = baseUrl + '/PIE_IE' + ( docMode < 9 ? '678' : '9' ) + '$JSVariant$.js';
             ( doc.getElementsByTagName( 'head' )[0] || doc.body ).appendChild( script );
         }
-
-        tryLoading( baseUrls[ i ] );
-
     })();
 }
 
