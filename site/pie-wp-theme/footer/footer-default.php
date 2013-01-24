@@ -25,7 +25,9 @@ if (CFCT_DEBUG) { cfct_banner(__FILE__); }
                 <?php wp_nav_menu( array('menu' => 'Footer Menu', 'container' => null ) ); ?>
             </nav>
 
-            <p id="copyright">&copy;2010 Jason Johnston, <a href="http://327creative.com">327 Creative LLC</a>.</p>
+            <p id="copyright">&copy;2011 <a href="http://sencha.com">Sencha Inc.</a>. Part of Sencha 
+Labs. Created and maintained by 
+Jason Johnston.</p>
         </footer>
     </div>
 </div>
@@ -35,6 +37,7 @@ wp_footer();
 
 
 global $post;
+if ($post) {
 $page_js_files = get_post_meta($post->ID, 'page_js_file', false);
 foreach( $page_js_files as $file ) {
     ?>
@@ -45,7 +48,7 @@ $page_js = get_post_meta($post->ID, 'page_js', true);
 if( $page_js ) {
     echo "<script type='text/javascript'>$page_js</script>";
 }
-
+}
 ?>
 
 <!-- Proudly powered by <a href="http://wordpress.org/">WordPress</a> and <a href="http://carringtontheme.com">Carrington JAM</a> -->

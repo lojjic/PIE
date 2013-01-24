@@ -165,12 +165,14 @@ pre.long {
     font-family: 'MuseoSans500', sans-serif;
     behavior: url(/PIE.htc);
     -pie-background: none;
+    border-radius: 1px; /*force PIE rendering - avoids inconsistent positioning bug on hover*/
 }
 #mainNav .menu li a:hover {
-    background: #008ECF;
+    /*causes flicker before PIE re-renders: background: #008ECF;*/
     background: -webkit-gradient(linear,0 0,100% 0,from(#008ECF),to(#00AEEF));
     background: -moz-linear-gradient(left,#008ECF,#00AEEF);
     -pie-background: linear-gradient(left,#008ECF,#00AEEF);
+    border-radius: 0; /*undo above*/
 }
 #mainNav .menu li.current_page_item a,
 #mainNav .menu li.current-page-ancestor a,
@@ -286,6 +288,7 @@ nav#mainNav .outbound {
     color: #666;
     font-family: 'MuseoSans500', sans-serif;
     text-align: center;
+    font-size: 0.9em;
 }
 #footNav ul {
     margin: 0;
