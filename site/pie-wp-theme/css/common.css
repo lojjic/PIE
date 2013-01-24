@@ -91,7 +91,7 @@ pre.long {
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
-    behavior: url(/PIE.htc);
+    behavior: url(/pie/PIE.htc);
 }
 
 #pageHeader {
@@ -129,7 +129,7 @@ pre.long {
     -webkit-box-shadow: #777 0 0 10px;
     -moz-box-shadow: #777 0 0 10px;
     box-shadow: #777 0 0 10px;
-    behavior: url(/PIE.htc);
+    behavior: url(/pie/PIE.htc);
 }
 
 #mainNav {
@@ -163,7 +163,7 @@ pre.long {
     text-decoration: none;
     font-size: 15px;
     font-family: 'MuseoSans500', sans-serif;
-    behavior: url(/PIE.htc);
+    behavior: url(/pie/PIE.htc);
     -pie-background: none;
     border-radius: 1px; /*force PIE rendering - avoids inconsistent positioning bug on hover*/
 }
@@ -200,7 +200,7 @@ nav#mainNav .outbound {
     -webkit-box-shadow: #777 0 0 10px;
     -moz-box-shadow: #777 0 0 10px;
     box-shadow: #777 0 0 10px;
-    behavior: url(/PIE.htc);
+    behavior: url(/pie/PIE.htc);
     cursor: pointer;
     display: block;
     position: relative;
@@ -267,7 +267,7 @@ nav#mainNav .outbound {
     -webkit-box-shadow: #666 0 0 5px;
     -moz-box-shadow: #666 0 0 5px;
     box-shadow: #666 0 0 5px;
-    behavior: url(/PIE.htc);
+    behavior: url(/pie/PIE.htc);
 }
 #mainNav .social .rss a {
     background-position: 50% -79px;
