@@ -73,6 +73,19 @@ pre.long {
     width: 584px;
 }
 
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+th, td {
+    font-size: 1em;
+    vertical-align: top;
+    text-align: left;
+    padding: .1em .5em;
+    border: 1px solid #CCC;
+}
+
 
 
 /*
