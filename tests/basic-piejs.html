@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Basic CSS3 Demos</title>
+
+    <style type="text/css">
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            font-size: 16px;
+            background: #EEE;
+        }
+
+        .section {
+            border: 1px solid #CCC;
+            padding: 1em 2em 2em;
+            margin: 3em;
+            background: #FFF;
+            position: relative;
+        }
+
+        .section h2 {
+            border: 1px solid #CCC;
+            position: relative;
+            left: -3em;
+            top: -2em;
+            background: #FFF;
+            font-size: 1em;
+            padding: .25em 1em;
+            margin: 0;
+        }
+
+        .section code {
+            display: block;
+            white-space: pre;
+            margin-left: 250px;
+            min-height: 100px;
+            color: #999;
+            overflow: auto;
+        }
+        .section code strong {
+            color: #000;
+        }
+
+        .test {
+            width: 200px;
+            height: 100px;
+            line-height: 100px;
+            text-align: center;
+            border: 2px solid;
+            background: #FFF;
+            float: left;
+            position: relative;
+        }
+
+        #test1 {
+            border-color: #c00;
+            -webkit-border-radius: 1em;
+            -moz-border-radius: 1em;
+            border-radius: 1em;
+        }
+
+        #test2 {
+            border-color: #090;
+            -webkit-border-radius: 1em;
+            -moz-border-radius: 1em;
+            border-radius: 1em;
+            -webkit-box-shadow: #999 0 .25em .5em;
+            -moz-box-shadow: #999 0 .25em .5em;
+            box-shadow: #999 0 .25em .5em;
+        }
+
+        #test3 {
+            border-color: #00c;
+            -webkit-border-radius: 1em;
+            -moz-border-radius: 1em;
+            border-radius: 1em;
+            -webkit-box-shadow: #999 0 .25em .5em;
+            -moz-box-shadow: #999 0 .25em .5em;
+            box-shadow: #999 0 .25em .5em;
+            background: #9CF;
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #9CF), color-stop(100%, #03C));
+            background: -moz-linear-gradient(#9CF, #03C);
+            background: linear-gradient(#9CF, #03C);
+            -pie-background: linear-gradient(#9CF, #03C);
+        }
+
+        #test4 {
+            border-color: #F99;
+            -webkit-border-radius: 1em;
+            -moz-border-radius: 1em;
+            border-radius: 1em;
+            -webkit-box-shadow: #999 0 .25em .5em;
+            -moz-box-shadow: #999 0 .25em .5em;
+            box-shadow: #999 0 .25em .5em;
+            background: #FFF url(icon-ie.png) no-repeat 50% 0;
+            background: url(icon-ie.png) no-repeat 50% 0, url(icon-firefox.png) no-repeat 0 0, url(icon-chrome.png) no-repeat 100% 0, url(icon-safari.png) no-repeat 0 100%, url(icon-opera.png) no-repeat 100% 100% #FFF;
+            -pie-background: url(icon-ie.png) no-repeat 50% 0, url(icon-firefox.png) no-repeat 0 0, url(icon-chrome.png) no-repeat 100% 0, url(icon-safari.png) no-repeat 0 100%, url(icon-opera.png) no-repeat 100% 100% #FFF;
+        }
+
+        #test5 {
+            -webkit-border-image: url(border2.png) 15 stretch;
+            -moz-border-image: url(border2.png) 15 stretch;
+            border-image: url(border2.png) 15 fill stretch;
+            border-width: 15px;
+            width: 180px;
+            height: 80px;
+            line-height: 80px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+
+    <div class="section">
+        <h2>border-radius</h2>
+        <div class="test" id="test1">Cherry</div>
+<code><strong>border-radius: 1em;   /* Standard */
+-moz-border-radius: 1em;   /* Gecko */
+-webkit-border-radius: 1em;   /* WebKit */</strong></code>
+    </div>
+
+    <div class="section">
+        <h2>box-shadow</h2>
+        <div class="test" id="test2">Apple</div>
+<code>border-radius: 1em;
+-moz-border-radius: 1em;
+-webkit-border-radius: 1em;
+<strong>box-shadow: #999 0 .25em .5em;
+-webkit-box-shadow: #999 0 .25em .5em;
+-moz-box-shadow: #999 0 .25em .5em;</strong></code>
+    </div>
+
+    <div class="section">
+        <h2>linear-gradient</h2>
+        <div class="test" id="test3">Blueberry</div>
+<code>border-radius: 1em;
+-moz-border-radius: 1em;
+-webkit-border-radius: 1em;
+box-shadow: #999 0 .25em .5em;
+-webkit-box-shadow: #999 0 .25em .5em;
+-moz-box-shadow: #999 0 .25em .5em;
+<strong>background: #9CF;   /* Fallback */
+background: -webkit-gradient(linear, 0 0, 0 100%, from(#9CF), to(#03C));
+background: -moz-linear-gradient(#9CF, #03C);
+background: linear-gradient(#9CF, #03C);</strong></code>
+    </div>
+
+    <div class="section">
+        <h2>multiple background images</h2>
+        <div class="test" id="test4">Rhubarb</div>
+<code>border-radius: 1em;
+-moz-border-radius: 1em;
+-webkit-border-radius: 1em;
+box-shadow: #999 0 .25em .5em;
+-webkit-box-shadow: #999 0 .25em .5em;
+-moz-box-shadow: #999 0 .25em .5em;
+<strong>background: url(icon-ie.png) no-repeat 50% 0 #FFF;   /* Fallback */
+background: url(icon-ie.png) no-repeat 50% 0,
+            url(icon-firefox.png) no-repeat 0 0,
+            url(icon-chrome.png) no-repeat 100% 0,
+            url(icon-safari.png) no-repeat 0 100%,
+            url(icon-opera.png) no-repeat 100% 100% #FFF;</strong></code>
+    </div>
+
+    <div class="section">
+        <h2>border-image</h2>
+        <div class="test" id="test5">Pumpkin</div>
+<code><strong>border-image: url(border2.png) 15 fill stretch;
+-moz-border-image: url(border2.png) 15 stretch;
+-webkit-border-image: url(border2.png) 15 stretch;
+border-width: 15px;</strong></code>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
+    <!--[if lt IE 9]>
+        <script type="text/javascript" src="../build/PIE_IE678.js"></script>
+    <![endif]-->
+    <!--[if IE 9]>
+        <script type="text/javascript" src="../build/PIE_IE9.js"></script>
+    <![endif]-->
+    <script>
+       $(function() {
+           if (window.PIE) {
+               $('.test').each(function() {
+                   PIE.attach(this);
+               });
+           }
+       })
+   </script>
+
+</body>
+</html>

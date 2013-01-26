@@ -55,13 +55,19 @@ the recommended approach for most users:</p>
 
 <p>If you've decided the above advantages outweigh the disadvantages for you, here's how you go about using PIE.js.</p>
 
-<p><em>Note: this API is currently very simplistic, and will likely be enhanced in the future to make it easier
-to work with, for example allowing the use of CSS selectors to match a set of elements.</em></p>
-
 <ol>
     <li>Include the PIE.js script in your page, surrounded by a conditional comment to prevent it from being downloaded in other browsers:
         <pre><code>&lt;!--[if IE]>
 &lt;script type="text/javascript" src="path/to/PIE.js">&lt;/script>
+&lt;![endif]--></code></pre>
+
+        Note: The code above is for PIE.js 1.0; if you are using a PIE 2.0 beta build, then you will need to include
+        the appropriate JS file for the current IE version:
+        <pre><code>&lt;!--[if lt IE 9]>
+  &lt;script type="text/javascript" src="path/to/PIE_IE678.js">&lt;/script>
+&lt;![endif]-->
+&lt;!--[if IE 9]>
+  &lt;script type="text/javascript" src="path/to/PIE_IE9.js">&lt;/script>
 &lt;![endif]--></code></pre>
     </li>
 
