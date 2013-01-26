@@ -24,9 +24,8 @@ for help in the <a href="http://css3pie.com/forum">forums</a>.</p>
 
 <h2>Step 2: Upload it</h2>
 
-<p>Inside the unzipped directory, you will find a file named PIE.htc. This is the behavior file for IE,
-and is what does all the magic. Upload this file to the server where you're going to serve pages using
-CSS3. It doesn't matter where exactly, as long as you know where it is.</p>
+<p>Upload the contents of the unzipped package to a directory on your web server. It doesn't matter where
+exactly, as long as you know where it is.</p>
 
 <h2>Step 3: Write some CSS3</h2>
 
@@ -47,7 +46,7 @@ WebKit and Mozilla-based browsers.)</p>
 
 <p>In that same CSS rule, add the following style line:</p>
 
-<pre><code>behavior: url(path/to/PIE.htc);</code></pre>
+<pre><code>behavior: url(path/to/pie_files/PIE.htc);</code></pre>
 
 <p>Of course you will need to adjust the path to match where you uploaded PIE.htc in step 2. <em>Note: this
 path is relative to the HTML file being viewed, not the CSS file it is called from.</em></p>

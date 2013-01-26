@@ -38,12 +38,12 @@
     <li>Check out the source using Git:
         <pre><kbd>git clone git://github.com/lojjic/PIE.git
 cd PIE</kbd></pre>
-        If you want the 2.x unstable branch then you're done; if you want the 1.x stable branch then run:
+        If you want the 2.x beta branch (master) then you're done; if you want the 1.x stable branch then run:
         <pre><kbd>git checkout 1.x</kbd></pre>
         or:
     </li>
     <li>Download an archive of the source:<br>
-        <a href="http://github.com/lojjic/PIE/archives/master">http://github.com/lojjic/PIE/archives/master</a> (2.x unstable branch)<br>
+        <a href="http://github.com/lojjic/PIE/archives/master">http://github.com/lojjic/PIE/archives/master</a> (2.x beta branch)<br>
         <a href="http://github.com/lojjic/PIE/archives/1.x">http://github.com/lojjic/PIE/archives/1.x</a> (1.x stable branch)
     </li>
 </ol>
@@ -57,17 +57,21 @@ cd PIE</kbd></pre>
 <pre><kbd>ant</kbd></pre>
 
 <p>This will perform the build, creating a new directory named "build/". This directory will contain the following
-artifacts:</p>
+files:</p>
 
 <ul>
-    <li>PIE.htc - The fully compressed behavior file; this is the version which should be deployed in production
-    environments.</li>
-    <li>PIE_uncompressed.htc - An uncompressed version of the behavior; this is useful for debugging purposes but is
-    very large so it should not be deployed in production environments.</li>
-    <li>PIE.js - The compressed version of the alternate <a href="/documentation/pie-js/">JavaScript edition</a> of
-    PIE. PIE.htc is the recommended file for most users.</li>
-    <li>PIE_uncompressed.js - The uncompressed version of the JavaScript edition.</li>
+    <li>PIE.htc</li>
+    <li>PIE_IE678.js</li>
+    <li>PIE_IE9.js</li>
+    <li>PIE_uncompressed.htc</li>
+    <li>PIE_IE678_uncompressed.js</li>
+    <li>PIE_IE9_uncompressed.js</li>
 </ul>
+
+<p>To use these files, copy them together into a directory on your server, and reference PIE.htc (or
+PIE_uncompressed.htc for debugging) in a behavior property in your CSS. Or, if you want to use the
+PIE JS version then you can include the PIE_IEx.js files using script tags (see the
+<a href="/documentation/pie-js/">PIE JS</a> documentation for details.)</p>
 
 <!-- noformat off -->
 

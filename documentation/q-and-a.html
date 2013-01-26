@@ -42,12 +42,15 @@ target element, parses those properties, and renders them on the page.</p>
 
 
 <h2>How large is it?</h2>
-<p>The .htc behavior file is 40K. With gzip compression, it is 16K. (You do gzip your content, right?)</p>
+<p>In PIE 1.0, the .htc behavior file is 40K. With gzip compression, it is 16K. (You do gzip your content, right?)</p>
 <p>It's pretty easy to save at least as much as that by using CSS3 instead of all the extra images, markup, and CSS
 you'd have to use otherwise, so this is usually a net win in terms of total page weight. Also, it's important to
 note that the behavior file is only downloaded by IE, so in other browsers which support these CSS3 features natively,
 that's pure win.</p>
-<p>Improvements to file size, by making features optional, are planned in a future release.</p>
+<p>Starting with PIE 2.0, the .htc behavior file is a very small loader (2K) which then loads a secondary JS file
+containing the rendering logic for the user's IE version. See our blog post on
+<a href="http://css3pie.com/2013/01/25/pie-2-0s-new-loading-mechanism/">PIE 2's loading mechanism</a> to see the
+improvement in download sizes.</p>
 
 
 <h2>What are the goals of the project?</h2>
