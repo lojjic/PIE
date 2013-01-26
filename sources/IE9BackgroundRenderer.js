@@ -7,6 +7,8 @@
  */
 PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
 
+    drawingCanvas: doc.createElement( 'canvas' ),
+
     bgLayerZIndex: 1,
 
     needsUpdate: function() {
@@ -38,7 +40,7 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
                             me.targetElement, bgAreaSize.w, bgAreaSize.h, bgAreaSize.w, bgAreaSize.h
                         );
                         bg.push(
-                            'url(data:image/svg+xml,' + escape( me.getGradientSvg( img, bgSize.w, bgSize.h ) ) + ') ' +
+                            'url(' + me.getGradientImgData( img, bgSize.w, bgSize.h )  + ') ' +
                             me.bgPositionToString( img.bgPosition ) + ' / ' + bgSize.w + 'px ' + bgSize.h + 'px ' +
                             ( img.bgAttachment || '' ) + ' ' + ( img.bgOrigin || '' ) + ' ' + ( img.bgClip || '' )
                         );
@@ -62,25 +64,23 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
         }).join(' ') : '0 0';
     },
 
-    getGradientSvg: function( info, bgWidth, bgHeight ) {
-        var el = this.targetElement,
+    getGradientImgData: function( info, bgWidth, bgHeight ) {
+        var me = this,
+            el = me.targetElement,
             stopsInfo = info.stops,
             stopCount = stopsInfo.length,
             metrics = PIE.GradientUtil.getGradientMetrics( el, bgWidth, bgHeight, info ),
-            startX = metrics.startX,
-            startY = metrics.startY,
-            endX = metrics.endX,
-            endY = metrics.endY,
             lineLength = metrics.lineLength,
-            stopPx,
-            i, j, before, after,
-            svg;
+            canvas = me.drawingCanvas,
+            context = canvas.getContext( '2d' ),
+            gradient = context.createLinearGradient( metrics.startX, metrics.startY, metrics.endX, metrics.endY ),
+            stopPx = [],
+            i, j, before, after;
 
         // Find the pixel offsets along the CSS3 gradient-line for each stop.
-        stopPx = [];
         for( i = 0; i < stopCount; i++ ) {
             stopPx.push( stopsInfo[i].offset ? stopsInfo[i].offset.pixels( el, lineLength ) :
-                         i === 0 ? 0 : i === stopCount - 1 ? lineLength : null );
+                i === 0 ? 0 : i === stopCount - 1 ? lineLength : null );
         }
         // Fill in gaps with evenly-spaced offsets
         for( i = 1; i < stopCount; i++ ) {
@@ -94,30 +94,16 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
             }
         }
 
-        svg = [
-            '<svg width="' + bgWidth + '" height="' + bgHeight + '" xmlns="http://www.w3.org/2000/svg">' +
-                '<defs>' +
-                    '<linearGradient id="g" gradientUnits="userSpaceOnUse"' +
-                    ' x1="' + ( startX / bgWidth * 100 ) + '%" y1="' + ( startY / bgHeight * 100 ) + '%" x2="' + ( endX / bgWidth * 100 ) + '%" y2="' + ( endY / bgHeight * 100 ) + '%">'
-        ];
-
-        // Convert to percentage along the SVG gradient line and add to the stops list
+        // Convert stops to percentages along the gradient line and add a stop for each
         for( i = 0; i < stopCount; i++ ) {
-            svg.push(
-                '<stop offset="' + ( stopPx[ i ] / lineLength ) +
-                    '" stop-color="' + stopsInfo[i].color.colorValue( el ) +
-                    '" stop-opacity="' + stopsInfo[i].color.alpha() + '"/>'
-            );
+            gradient.addColorStop( stopPx[ i ] / lineLength, stopsInfo[ i ].color.val );
         }
 
-        svg.push(
-                    '</linearGradient>' +
-                '</defs>' +
-                '<rect width="100%" height="100%" fill="url(#g)"/>' +
-            '</svg>'
-        );
-
-        return svg.join( '' );
+        canvas.width = bgWidth;
+        canvas.height = bgHeight;
+        context.fillStyle = gradient;
+        context.fillRect( 0, 0, bgWidth, bgHeight );
+        return canvas.toDataURL();
     },
 
     destroy: function() {

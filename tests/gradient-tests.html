@@ -254,6 +254,23 @@
             -pie-background: linear-gradient(to right, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1));
         }
 
+        #transform > p {
+            background: linear-gradient(red, white, blue);
+            -pie-background: linear-gradient(red, white, blue);
+        }
+        #transform2 {
+            -ms-transform: rotate(30deg);
+            transform: rotate(30deg);
+        }
+        #transform3 {
+            -ms-transform: rotate(60deg);
+            transform: rotate(60deg);
+        }
+        #transform4 {
+            -ms-transform: rotate(90deg);
+            transform: rotate(90deg);
+        }
+
 
     </style>
 </head>
@@ -318,6 +335,14 @@
         <h1>Color-stop opacity</h1>
         <p id="opacity1">linear-gradient(to bottom, rgba(0, 0, 255, 1), rgba(0, 0, 255, 0.2))</p>
         <p id="opacity2">linear-gradient(to bottom, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 1))</p>
+    </div>
+
+    <div class="section" id="transform">
+        <h1>With transforms (IE9 only)</h1>
+        <p id="transform1">linear-gradient(red, white, blue)</p>
+        <p id="transform2">linear-gradient(red, white, blue)</p>
+        <p id="transform3">linear-gradient(red, white, blue)</p>
+        <p id="transform4">linear-gradient(red, white, blue)</p>
     </div>
 
 </body>
