@@ -26,6 +26,7 @@ and value types.</p>
     <li><a href="#rgba">RGBA Color Values</a></li>
     <li><a href="#custom">PIE Custom Properties</a>
         <ul>
+            <li><a href="#pie-load-path">-pie-load-path</a></li>
             <li><a href="#pie-watch-ancestors">-pie-watch-ancestors</a></li>
             <li><a href="#pie-png-fix">PNG alpha transparency and -pie-png-fix</a></li>
             <li><a href="#pie-lazy-init">Lazy Initialization (-pie-lazy-init)</a></li>
@@ -39,9 +40,9 @@ and value types.</p>
 
 <h2 id="border-radius">border-radius</h2>
 
-<p>PIE fully supports the border-radius property as defined in the CSS3
-Backgrounds and Borders module specification for IE 6-8. IE 9 and up support
-border-radius natively.</p>
+<p>PIE fully supports the <a href="http://www.w3.org/TR/css3-background/#the-border-radius">border-radius
+property syntax</a> as defined in the CSS3 Backgrounds and Borders module specification for IE 6-8. IE 9
+and up support border-radius natively so PIE does nothing.</p>
 
 <pre class="long">border-radius: [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} [ / [ &lt;length&gt; | &lt;percentage&gt; ]{1,4} ]?</pre>
 
@@ -62,7 +63,7 @@ to only use the standard unprefixed property when possible.</p>
 
 <h2 id="box-shadow">box-shadow</h2>
 
-<p>PIE supports the <a href="http://dev.w3.org/csswg/css3-background/#box-shadow">box-shadow property syntax</a>
+<p>PIE supports the <a href="http://www.w3.org/TR/css3-background/#the-box-shadow">box-shadow property syntax</a>
 as defined in the CSS3 Backgrounds &amp; Borders module, for IE 6-8. IE 9 and up support
 box-shadow natively so PIE does nothing.</p>
 
@@ -85,6 +86,9 @@ box-shadow.</p>
 
 <p>PIE does not currently support the 'inset' keyword, but support is
 planned in a future version (see <a href="http://github.com/lojjic/PIE/issues#issue/3">issue #3</a>.</p>
+
+<p>If you specify an rgba color in conjunction with a blur radius, the color will be rendered at full
+opacity in PIE 1.0. This is fixed as of PIE 2.0 beta.</p>
 
 <p>Notes on other browsers:</p>
 
@@ -109,8 +113,8 @@ the corners, sides, and center of the target element.</p>
     <li>It requires the 'fill' keyword to be present for the center area to be filled in. This is correct
         behavior according to the spec but other browsers don't require it and some even fail if 'fill' is
         present, so it's a bit tricky making it work consistently across browsers.</li>
-    <li>It seems there are on rare occasion rounding errors which cause 1px gaps between slices of the
-        image. I've seen these gaps occur in other browsers too, though.</li>
+    <li>In PIE 1.0, there are on rare occasion rounding errors which cause 1px gaps between slices of the
+        image. I've seen these gaps occur in other browsers too, though. This seems to be fixed as of PIE 2.0 beta.</li>
 </ol>
 
 
@@ -131,7 +135,7 @@ takes over in IE 6-8. It also takes over in IE 9 when there is a gradient presen
 -pie-background -- see the section on <a href="#gradients">gradients</a> below.)</p>
 
 <p>Only the single -pie-background shorthand value is recognized; longhand values (e.g.
--pie-background-origin) are ignored.</p>
+background-origin) are ignored.</p>
 
 <p>For backward-compatibility with browsers which do not support CSS3
 backgrounds, be sure to include appropriate fallbacks. For example:</p>
@@ -153,10 +157,11 @@ background shorthand will currently be ignored when rendering in IE 6-8:</p>
 <ul>
   <li>background-attachment (will always use 'scroll' even if 'fixed'
 or 'local' are specified)</li>
-  <li>background-size (will always use the image's intrinsic size)</li>
+  <li>background-size (will always use the image's intrinsic size) &mdash; this is supported as of PIE 2.0 beta</li>
   <li>background-repeat values of 'space' or 'round' (the other repeat
 values are supported)</li>
-  <li>background-origin (will always use 'padding-box')</li>
+  <li>background-origin (will always use 'padding-box') &mdash; this is supported as of PIE 2.0 beta</li>
+  <li>background-clip (will always use 'border-box') &mdash; this is supported as of PIE 2.0 beta</li>
   <li>background-position values with more than 2 parts</li>
 </ul>
 
@@ -176,8 +181,12 @@ rendered with correct alpha channel transparency in IE6. See the section below r
 
 <p>PIE currently supports <code>linear-gradient</code> image values when used in the
 -pie-background property, for IE 6-9. Uses of linear-gradient in any contexts other than the -pie-background
-are not supported. The supported syntax matches that of the current
-<a href="http://dev.w3.org/csswg/css3-images/#linear-gradients">CSS3 Image Values module</a> draft.</p>
+are not supported.</p>
+<p>The supported syntax matches that of the CSS3 Image Values module &mdash; PIE 1.0 uses the old
+<a href="http://www.w3.org/TR/2011/WD-css3-images-20110712/#linear-gradients">2011 working draft
+syntax</a>, whereas PIE 2.0 beta uses the <a href="http://www.w3.org/TR/css3-images/#linear-gradients">final
+syntax</a>. If you upgrade from PIE 1.0 to 2.0 beta, then you must make sure you update your CSS to the
+final syntax &mdash; e.g. use "to right" instead of "left", and adjust any angles to be clockwise from vertical.</p>
 
 <pre class="long">linear-gradient([&lt;bg-position&gt; || &lt;angle&gt;,]? &lt;color-stop&gt;, &lt;color-stop&gt;[, &lt;color-stop&gt;]*);</pre>
 
@@ -185,17 +194,17 @@ are not supported. The supported syntax matches that of the current
 properly in IE 9):</p>
 
 <ul>
-    <li>Currently all color stops are rendered fully opaque, even if
-    specifying an rgba color value. This is due to a limitation in VML's
-    linear gradient syntax which does not allow setting opacity for
-    individual color stops. (See <a href="http://github.com/lojjic/PIE/issues#issue/7">issue #7</a>)</li>
+    <li>In PIE 1.0, all color stops are rendered fully opaque in IE 6-8, even if
+    specifying an rgba color value. As of PIE 2.0 beta, rgba alpha is rendered
+    properly in IE 6-8, but only if the gradient has two color stops. (See
+    <a href="http://github.com/lojjic/PIE/issues#issue/7">issue #7</a>)</li>
 
     <li>Gradients containing color-stops which lie outside the bounding area
     of the element are not currently supported, due to limitations in VML's
     gradient rendering.</li>
 
     <li>The background-size/origin/repeat/position parameters are not supported
-    for gradients, so you cannot do things like
+    for gradients in IE 6-8, so you cannot do things like
     <a href="http://leaverou.me/2010/12/checkered-stripes-other-background-patterns-with-css3-gradients/">gradient pattern effects</a>.</li>
 </ul>
 
@@ -205,13 +214,8 @@ but it may turn out to be impossible to implement in IE 6-8 due to VML's strange
 
 <p>Notes on other browsers:</p>
 
-<p>Most other browsers require a vendor prefix on the linear-gradient name, e.g. -moz-linear-gradient for Firefox
-(supported in version 3.6+ only), -webkit-linear-gradient for recent WebKit browsers, -o-linear-gradient for Opera
-(supported in version 11.10+ only), and -ms-linear-gradient for IE10 (currently only in pre-release).</p>
-
-<p>In addition, WebKit browsers older than Chrome 10 and Safari 5.1 require a gradient syntax which is
-drastically different than that of the CSS3 spec. See the
-<a href="http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/Gradients/Gradients.html">Safari documentation</a> for their syntax</p>
+<p>Some other browsers require a vendor prefix on the linear-gradient name, e.g. -moz-linear-gradient for Firefox
+or -webkit-linear-gradient for WebKit browsers.</p>
 
 <p>Adding in PIE's required -pie-background property, you will need a set of styles similar to the following
 to get consistent linear gradient backgrounds across browsers:</p>
@@ -219,17 +223,17 @@ to get consistent linear gradient backgrounds across browsers:</p>
 <pre class="long"><code>#myElement {
     background: #CCC; /*fallback for non-CSS3 browsers*/
     background: -webkit-gradient(linear, 0 0, 0 100%, from(#CCC) to(#EEE)); /*old webkit*/
-    background: -webkit-linear-gradient(#CCC, #EEE); /*new webkit*/
-    background: -moz-linear-gradient(#CCC, #EEE); /*gecko*/
-    background: -ms-linear-gradient(#CCC, #EEE); /*IE10*/
-    background: -o-linear-gradient(#CCC, #EEE); /*opera 11.10+*/
-    background: linear-gradient(#CCC, #EEE); /*future CSS3 browsers*/
-    -pie-background: linear-gradient(#CCC, #EEE); /*PIE*/
+    background: -webkit-linear-gradient(top, #CCC, #EEE); /*newer webkit*/
+    background: -moz-linear-gradient(top, #CCC, #EEE); /*old gecko*/
+    background: -o-linear-gradient(top, #CCC, #EEE); /*opera 11.10+*/
+    background: linear-gradient(to bottom, #CCC, #EEE); /*firefox 16+, chrome 26+, IE10+, opera 12.10+, future browsers*/
+    -pie-background: linear-gradient(to bottom, #CCC, #EEE); /*ie 6-9 via PIE*/
     behavior: url(PIE.htc);
 }</code></pre>
 
 <p>For more detailed information on the current state of linear-gradient across browsers, see this
-<a href="http://www.webdirections.org/blog/css3-linear-gradients/">article by John Allsopp</a>.</p>
+<a href="http://www.webdirections.org/blog/css3-linear-gradients/">article by John Allsopp</a> and
+the <a href="https://developer.mozilla.org/en-US/docs/CSS/linear-gradient">MDN linear-gradient docs</a>.</p>
 
 
 <h2 id="rgba">RGBA Color Values</h2>
@@ -242,13 +246,34 @@ the opacity will be rendered correctly:</p>
 
 <ul>
     <li>The solid background-color as specified in the -pie-background property.</li>
-    <li>The color value of box-shadow, if the shadow has no blur.</li>
-    <li>Color stops in linear-gradient, for IE 9 only (will be rendered fully opaque in IE 6-8)</li>
+    <li>The color value of box-shadow. In PIE 1.0 this works only if the shadow has no blur, but
+    it works with blur as well in the PIE 2.0 beta.</li>
+    <li>Color stops in linear-gradient. In PIE 1.0 this works for IE 9 only (rgba colors will be
+    rendered fully opaque in IE 6-8.) In the PIE 2.0 beta it works for IE 6-8 as well, but only
+    if the gradient has only two color stops.</li>
 </ul>
 
 
 
 <h2 id="custom">PIE custom properties</h2>
+
+<h3 id="pie-load-path">-pie-load-path (applies to PIE 2.0 beta only)</h3>
+
+<p>As of PIE 2.0 beta, the PIE.htc behavior file is a very lightweight loader that loads in
+a secondary JS file containing the logic needed by the current IE version. By default, it loads
+that secondary JS file from the same server path as the PIE.htc behavior file itself.</p>
+
+<p>If you wish to override the location from which the JS files will be loaded, you can add
+the custom -pie-load-path property into your CSS for the &lt;html&gt; element:</p>
+
+<pre><code>html {
+    -pie-load-path: "http://any.server/path/to/pie-js-files/";
+}</code></pre>
+
+<p>This can be any path, on any server, and is not subject to the same-domain restriction of the
+HTC file. This can be useful, for example, if you want to host the JS files on a
+<abbr title="Content Delivery Network">CDN</abbr> to take advantage of geolocated caching
+for performance.</p>
 
 <h3 id="pie-watch-ancestors">-pie-watch-ancestors</h3>
 
