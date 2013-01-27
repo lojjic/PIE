@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>CSS3 PIE Demo: Buttons</title>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+
+    <!--[if lt IE 9]>
+        <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+<style type="text/css">
+
+body {
+    font-size: 12px;
+}
+
+#tests div {
+    padding: 1.5em;
+    margin: 1em 0;
+    behavior: url(/pie/PIE.htc);
+    position: relative;
+    background: #CCF;
+    overflow: hidden;
+}
+
+</style>
+
+</head>
+<body>
+
+
+<h1>PIE Demo: border-radius</h1>
+
+
+<!-- noformat on -->
+
+<p>This page demonstrates various aspects of PIE's <code>border-radius</code> rendering. Load this page in IE 6-8 to see it in action.</p>
+
+<div id="tests">
+    <h2>Uniform</h2>
+    <div>border-radius: 10px;</div>
+    <div>border-radius: 1em;</div>
+    <div>border-radius: 20%;</div>
+
+    <h2>Different per corner</h2>
+    <div>border-radius: 5px 10px 15px 20px;</div>
+    <div>border-radius: 0.5em 1em 1.5em 2em;</div>
+    <div>border-radius: 10% 20% 30% 40%;</div>
+
+    <h2>Single corner</h2>
+    <div>border-radius: 20px 0 0 0;</div>
+    <div>border-radius: 0 20px 0 0;</div>
+    <div>border-radius: 0 0 20px 0;</div>
+    <div>border-radius: 0 0 0 20px;</div>
+
+    <h2>X and Y</h2>
+    <div>border-radius: 30px / 10px;</div>
+    <div>border-radius: 3em / 1em;</div>
+    <div>border-radius: 20% / 50%;</div>
+    <div>border-radius: 5px 10px 15px 20px / 20px 15px 10px 5px;</div>
+
+    <h2>Uniform with border</h2>
+    <div>border-radius: 10px; border: 5px solid #000;</div>
+    <div>border-radius: 10px; border: 5px dotted #000;</div>
+    <div>border-radius: 10px; border: 5px dashed #000;</div>
+    <div>border-radius: 10px; border: 5px double #000;</div>
+    <div>border-radius: 10px; border: 5px groove #000;</div>
+    <div>border-radius: 10px; border: 5px ridge #000;</div>
+    <div>border-radius: 10px; border: 5px inset #000;</div>
+    <div>border-radius: 10px; border: 5px outset #000;</div>
+
+    <h2>Differing border widths</h2>
+    <div>border-radius: 10px; border: solid #000; border-width: 6px 9px 6px 3px;</div>
+    <div>border-radius: 10px; border: dotted #000; border-width: 6px 9px 6px 3px;</div>
+    <div>border-radius: 10px; border: dashed #000; border-width: 6px 9px 6px 3px;</div>
+    <div>border-radius: 10px; border: double #000; border-width: 6px 9px 6px 3px;</div>
+    <div>border-radius: 10px; border: groove #000; border-width: 6px 9px 6px 3px;</div>
+    <div>border-radius: 10px; border: ridge #000; border-width: 6px 9px 6px 3px;</div>
+    <div>border-radius: 10px; border: inset #000; border-width: 6px 9px 6px 3px;</div>
+    <div>border-radius: 10px; border: outset #000; border-width: 6px 9px 6px 3px;</div>
+
+    <h2>Border thicker than radius</h2>
+    <div>border-radius: 10px; border: 20px solid #000;</div>
+    <div>border-radius: 10px; border: 20px dotted #000;</div>
+    <div>border-radius: 10px; border: 20px dashed #000;</div>
+    <div>border-radius: 10px; border: 20px double #000;</div>
+    <div>border-radius: 10px; border: solid #000; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: dotted #000; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: dashed #000; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: double #000; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: groove #000; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: ridge #000; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: inset #000; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: outset #000; border-width: 3px 20px 9px 15px;</div>
+
+    <h2>Zero-width borders</h2>
+    <div>border-radius: 10px; border: 20px solid #000; border-top-width: 0;</div>
+    <div>border-radius: 10px; border: 20px dotted #000; border-right-width: 0;</div>
+    <div>border-radius: 10px; border: 20px dashed #000; border-bottom-width: 0;</div>
+    <div>border-radius: 10px; border: 20px double #000; border-left-width: 0;</div>
+    <div>border-radius: 10px; border: 20px groove #000; border-top-width: 0;</div>
+    <div>border-radius: 10px; border: 20px ridge #000; border-right-width: 0;</div>
+    <div>border-radius: 10px; border: 20px inset #000; border-bottom-width: 0;</div>
+    <div>border-radius: 10px; border: 20px outset #000; border-left-width: 0;</div>
+
+    <h2>Differing border colors</h2>
+    <div>border-radius: 10px; border: 20px solid; border-color: red green blue orange;</div>
+    <div>border-radius: 10px; border: 20px dotted; border-color: red green blue orange;</div>
+    <div>border-radius: 10px; border: 20px dashed; border-color: red green blue orange;</div>
+    <div>border-radius: 10px; border: 20px double; border-color: red green blue orange;</div>
+    <div>border-radius: 10px; border: 20px groove; border-color: red green blue orange;</div>
+    <div>border-radius: 10px; border: 20px ridge; border-color: red green blue orange;</div>
+    <div>border-radius: 10px; border: 20px inset; border-color: red green blue orange;</div>
+    <div>border-radius: 10px; border: 20px outset; border-color: red green blue orange;</div>
+
+    <h2>Differing border colors and styles</h2>
+    <div>border-radius: 10px; border: 20px; border-color: red green blue orange; border-style: solid dotted dashed double;</div>
+    <div>border-radius: 10px; border: 20px; border-color: red green blue orange; border-style: groove ridge inset outset;</div>
+
+    <h2>Differing border colors and widths</h2>
+    <div>border-radius: 10px; border: solid; border-color: red green blue orange; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: dotted; border-color: red green blue orange; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: dashed; border-color: red green blue orange; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: double; border-color: red green blue orange; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: groove; border-color: red green blue orange; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: ridge; border-color: red green blue orange; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: inset; border-color: red green blue orange; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border: outset; border-color: red green blue orange; border-width: 3px 20px 9px 15px;</div>
+
+    <h2>Differing border colors, styles, and widths</h2>
+    <div>border-radius: 10px; border-style: solid dotted dashed double; border-color: red green blue orange; border-width: 3px 20px 9px 15px;</div>
+    <div>border-radius: 10px; border-style: groove ridge inset outset; border-color: red green blue orange; border-width: 3px 20px 9px 15px;</div>
+
+    <h2>Arrow-ish</h2>
+    <div>width: 0; height: 0; padding: 0; background: none; border-radius: 5px; border: 20px solid transparent; border-top-color: blue;</div>
+    <div>width: 0; height: 0; padding: 0; background: none; border-radius: 5px; border: 20px solid transparent; border-right-color: blue;</div>
+    <div>width: 0; height: 0; padding: 0; background: none; border-radius: 5px; border: 20px solid transparent; border-bottom-color: blue;</div>
+    <div>width: 0; height: 0; padding: 0; background: none; border-radius: 5px; border: 20px solid transparent; border-left-color: blue;</div>
+</div>
+
+<!-- noformat off -->
+
+<script type="text/javascript">
+$(function() {
+    $('#tests > div').each(function() {
+        this.style.cssText += this.firstChild.nodeValue;
+    });
+});
+</script>
+
+</body>
+</html>
+

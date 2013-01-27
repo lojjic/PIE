@@ -183,8 +183,8 @@ th, td {
 #mainNav .menu li a:hover {
     /*causes flicker before PIE re-renders: background: #008ECF;*/
     background: -webkit-gradient(linear,0 0,100% 0,from(#008ECF),to(#00AEEF));
-    background: -moz-linear-gradient(left,#008ECF,#00AEEF);
-    -pie-background: linear-gradient(left,#008ECF,#00AEEF);
+    background: -moz-linear-gradient(to right,#008ECF,#00AEEF);
+    -pie-background: linear-gradient(to right,#008ECF,#00AEEF);
     border-radius: 0; /*undo above*/
 }
 #mainNav .menu li.current_page_item a,
