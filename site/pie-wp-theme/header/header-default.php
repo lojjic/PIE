@@ -87,8 +87,7 @@ src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
         <![if !(IE 8)]><nav id="mainNav"><![endif]>
             <?php wp_nav_menu( array('menu' => 'Main Menu', 'container' => null )); ?>
 
-            <p><a class="outbound" href="/download-latest"><strong>Download</strong> <span 
-class="version">Version 1.0.0</span></a></p>
+            <p><a class="outbound" href="/download"><strong>Download</strong></a></p>
 
             <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
                 <input type="hidden" name="cmd" value="_s-xclick">
