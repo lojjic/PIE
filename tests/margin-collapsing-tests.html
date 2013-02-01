@@ -6,23 +6,24 @@
     <title>CSS3 PIE Margin Test</title>
     
     <meta name="robots" content="noindex, nofollow" />
-    
+
+<!--
+    <script src="DD_roundies_0.0.2a.js"></script>
+    <script>
+        DD_roundies.addRule('#test, #test .inside, #test2 .inside, #control, #between .topmargin', 5);
+    </script>
+-->
+
     <style type="text/css" media="screen">
         .box {
-            -moz-border-radius: 5px; /* FF1+ */
-            -webkit-border-radius: 5px; /* Saf3+, Chrome */
-            -khtml-border-radius: 5px; /* Konqueror */
-            border-radius: 5px; /* Standard. IE9 */
-            
+            border-radius: 5px;
             margin: 20px 0;
             overflow: hidden;
         }
         .inside {
+            position: relative;
             background: #fff;
-            -moz-border-radius: 5px; /* FF1+ */
-            -webkit-border-radius: 5px; /* Saf3+, Chrome */
-            -khtml-border-radius: 5px; /* Konqueror */
-            border-radius: 5px; /* Standard. IE9 */
+            border-radius: 5px;
             margin: 20px;
         }
         
@@ -30,11 +31,11 @@
             behavior: url(../build/PIE.htc);
             background: red;
         }
-        
+
         #test .inside {
             behavior: url(../build/PIE.htc);
         }
-        
+
         #test2 {
             background: red;
             position: relative;
@@ -42,11 +43,20 @@
         #test2 .inside {
             behavior: url(../build/PIE.htc);
         }
-        
+
         #control {
             behavior: url(../build/PIE.htc);
-            background: green;
+            background: red;
         }
+
+        #between {
+            background: red;
+        }
+        #between .topmargin {
+            behavior: url(../build/PIE.htc);
+            margin-top: 20px;
+        }
+
         
     </style>
 </head>
@@ -73,5 +83,17 @@
             This box has PIE on the outside, but not on the inside.
         </div><!--/test2-->
     </div><!--/test-->
+
+    <div id="between" class="box">
+        <div class="inside">
+            These boxes should maintain their margin between.
+        </div>
+        <div class="inside topmargin">
+            These boxes should maintain their margin between.
+        </div>
+        <div class="inside topmargin">
+            These boxes should maintain their margin between.
+        </div>
+    </div>
 </body>
 </html>

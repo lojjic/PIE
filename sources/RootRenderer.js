@@ -53,21 +53,27 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
             boxPos = 'absolute';
         }
 
+        // IMPORTANT: in order to avoid triggering the hasLayout collapsing-top-margin bug in IE6/7,
+        // we *must* include background:none in the styles, and we *cannot* include a z-index during
+        // the initial render. The z-index can be set after insertion instead safely. For some reason
+        // that makes no logical sense whatsoever, this exact combination avoids the bug. Go figure.
+        // Special thanks to Drew Diller, who did this in DD_roundies (though who knows if it was
+        // done intentionally for this reason since it's not commented as such or if it was just a
+        // very lucky coincidence...)
         return 'direction:ltr;' +
-               'position:absolute;' +
                'behavior:none !important;' +
                'position:' + boxPos + ';' +
+               'background:none;' +
                'left:' + x + 'px;' +
                'top:' + y + 'px;' +
-               'z-index:' + ( tgtPos === 'static' ? -1 : tgtCS.zIndex ) + ';' +
-               'display:' + ( vis.visible && vis.displayed ? 'block' : 'none' );
+               ( vis.visible && vis.displayed ? '' : 'display:none;' );
     },
 
     updateBoxStyles: function() {
         var me = this,
             boxEl = me.getBoxEl();
         if( boxEl && ( me.boundsInfo.positionChanged() || me.styleInfos.visibilityInfo.changed() ) ) {
-            boxEl.style.cssText = me.getBoxCssText();
+            boxEl.style.cssText = me.getBoxCssText() + 'z-index:' + me.getBoxZIndex();
         }
     },
 
@@ -86,6 +92,14 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
             box = this._box = doc.getElementById( '_pie' + PIE.Util.getUID( this ) );
         }
         return box;
+    },
+
+    /**
+     * Determine the target z-index for the box el
+     */
+    getBoxZIndex: function() {
+        var cs = this.targetElement.currentStyle;
+        return cs.position === 'static' ? '-1' : cs.zIndex;
     },
 
     /**
@@ -134,6 +148,10 @@ PIE.RootRenderer = PIE.RendererBase.newRenderer( {
                         markup.push( '</css3pie>' );
 
                         me.getPositioningElement().insertAdjacentHTML( 'beforeBegin', markup.join( '' ) );
+
+                        // Can't include z-index in the initial styles to prevent top-margin collapsing
+                        // bug (see comment above in #getBoxCssText), so we set it here after insertion.
+                        me.getBoxEl().style.zIndex = me.getBoxZIndex();
 
                         me._renderedShapes = queue;
                         me._shapeRenderQueue = 0;
