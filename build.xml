@@ -204,6 +204,9 @@
 
         <!-- Commit and push -->
         <exec executable="git" dir="${build_dir}/temp-git-clone">
+            <arg line='add files/builds/${version}/*' />
+        </exec>
+        <exec executable="git" dir="${build_dir}/temp-git-clone">
             <arg line='commit -a -m "Update files for build ${version}"' />
         </exec>
         <exec executable="git" dir="${build_dir}/temp-git-clone">
