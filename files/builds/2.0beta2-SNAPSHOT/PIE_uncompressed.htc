@@ -71,6 +71,7 @@ if ( !window[ 'PIE' ] && docMode < 10 ) {
 
         // If we found the base URL, try to load the appropriate JS file from it
         if( baseUrl ) {
+            baseUrl = baseUrl.replace( /^['"]|['"]$/g, '' );
             script = doc.createElement( 'script' );
             script.onreadystatechange = function() {
                 var PIE = window[ 'PIE' ],
