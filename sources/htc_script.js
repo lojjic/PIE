@@ -46,7 +46,7 @@ if ( !window[ 'PIE' ] && docMode < 10 ) {
                 while( i-- ) {
                     match = styleSheets[ i ].cssText.match( styleSheetRE );
                     url = match ?
-                        match[ 1 ].substring( 0, match[ 1 ].lastIndexOf( '/' )) :
+                        ( match[ 1 ].replace( /[^\/]*$/, '' ) || '.' ) :
                         checkStyleSheets( styleSheets[ i ].imports );
                     if( url ) {
                         break;
@@ -59,7 +59,7 @@ if ( !window[ 'PIE' ] && docMode < 10 ) {
 
         // If we found the base URL, try to load the appropriate JS file from it
         if( baseUrl ) {
-            baseUrl = baseUrl.replace( /^['"]|['"]$/g, '' );
+            baseUrl = baseUrl.replace( /^['"]|\/?['"]?$/g, '' );
             script = doc.createElement( 'script' );
             script.onreadystatechange = function() {
                 var PIE = window[ 'PIE' ],
