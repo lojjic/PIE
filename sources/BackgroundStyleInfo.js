@@ -387,7 +387,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         if( bgOrigin !== 'border-box' ) {
             borders = borderInfo.getProps();
             if( borders && ( borders = borders.widths ) ) {
-                w -= borders[ 'l' ].pixels( el ) + borders[ 'l' ].pixels( el );
+                w -= borders[ 'l' ].pixels( el ) + borders[ 'r' ].pixels( el );
                 h -= borders[ 't' ].pixels( el ) + borders[ 'b' ].pixels( el );
             }
         }
@@ -395,7 +395,7 @@ PIE.BackgroundStyleInfo = PIE.StyleInfoBase.newStyleInfo( {
         if ( bgOrigin === 'content-box' ) {
             paddings = paddingInfo.getProps();
             if ( paddings ) {
-                w -= paddings[ 'l' ].pixels( el ) + paddings[ 'l' ].pixels( el );
+                w -= paddings[ 'l' ].pixels( el ) + paddings[ 'r' ].pixels( el );
                 h -= paddings[ 't' ].pixels( el ) + paddings[ 'b' ].pixels( el );
             }
         }
