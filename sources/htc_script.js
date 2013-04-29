@@ -92,12 +92,12 @@ function init() {
 }
 
 function cleanup() {
-    if ( doc.media !== 'print' ) {
+    try {
         var PIE = window[ 'PIE' ];
         if ( PIE ) {
             PIE[ 'detach' ]( el );
         }
-    }
+    } catch (e) {}
     el = 0;
 }
 
