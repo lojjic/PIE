@@ -77,6 +77,7 @@ PIE.Element = (function() {
                     bounds,
                     ieDocMode = PIE.ieDocMode,
                     cs = el.currentStyle,
+                    parent = el.parentNode,
                     lazy = cs.getAttribute( lazyInitCssProp ) === 'true',
                     trackActive = cs.getAttribute( trackActiveCssProp ) !== 'false',
                     trackHover = cs.getAttribute( trackHoverCssProp ) !== 'false';
@@ -91,6 +92,16 @@ PIE.Element = (function() {
                     initializing = 1;
                     el.runtimeStyle.zoom = 1;
                     initFirstChildPseudoClass();
+                    if(parent){
+                        if(cs.position === "static" && parent.currentStyle.position === "static"){
+                            //使用PIE时应给予对象不为static的position，这里检查一次，忘写了则自动加上
+                            el.runtimeStyle = "relative";
+                        }
+                        if(!doc.querySelector && parent === el.offsetParent){
+                            //IE6、7下有时出现背景错位，尝试用zoom：1的方式修复
+                            parent.runtimeStyle.zoom = 1;
+                        }
+                    }
                 }
 
                 boundsInfo.lock();
@@ -223,30 +234,32 @@ PIE.Element = (function() {
          * during page load, one will fire but the other won't.
          */
         function update( isPropChange, force ) {
-            if( !destroyed ) {
-                if( initialized ) {
-                    lockAll();
+            setTimeout(function(){
+                if( !destroyed ) {
+                    if( initialized ) {
+                        lockAll();
 
-                    var i = 0, len = childRenderers.length,
-                        sizeChanged = boundsInfo.sizeChanged();
-                    for( ; i < len; i++ ) {
-                        childRenderers[i].prepareUpdate();
-                    }
-                    for( i = 0; i < len; i++ ) {
-                        if( force || sizeChanged || ( isPropChange && childRenderers[i].needsUpdate() ) ) {
-                            childRenderers[i].updateRendering();
+                        var i = 0, len = childRenderers.length,
+                            sizeChanged = boundsInfo.sizeChanged();
+                        for( ; i < len; i++ ) {
+                            childRenderers[i].prepareUpdate();
                         }
-                    }
-                    if( force || sizeChanged || isPropChange || boundsInfo.positionChanged() ) {
-                        rootRenderer.updateRendering();
-                    }
+                        for( i = 0; i < len; i++ ) {
+                            if( force || sizeChanged || ( isPropChange && childRenderers[i].needsUpdate() ) ) {
+                                childRenderers[i].updateRendering();
+                            }
+                        }
+                        if( force || sizeChanged || isPropChange || boundsInfo.positionChanged() ) {
+                            rootRenderer.updateRendering();
+                        }
 
-                    unlockAll();
+                        unlockAll();
+                    }
+                    else if( !initializing ) {
+                        init();
+                    }
                 }
-                else if( !initializing ) {
-                    init();
-                }
-            }
+            }, 0 );
         }
 
         /**
