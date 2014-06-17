@@ -94,11 +94,9 @@ PIE.Element = (function() {
                     initFirstChildPseudoClass();
                     if( parent && ieDocMode < 9 ){
                         if(cs.position === "static" && parent.currentStyle.position === "static"){
-                            //使用PIE时应给予对象不为static的position，这里检查一次，忘写了则自动加上
-                            el.runtimeStyle = "relative";
+                            el.runtimeStyle.position = "relative";
                         }
                         if(!doc.querySelector && parent === el.offsetParent){
-                            //IE6、7下有时出现背景错位，尝试用zoom：1的方式修复
                             parent.runtimeStyle.zoom = 1;
                         }
                     }
