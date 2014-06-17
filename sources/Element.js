@@ -92,7 +92,7 @@ PIE.Element = (function() {
                     initializing = 1;
                     el.runtimeStyle.zoom = 1;
                     initFirstChildPseudoClass();
-                    if(parent){
+                    if( parent && ieDocMode < 9 ){
                         if(cs.position === "static" && parent.currentStyle.position === "static"){
                             //使用PIE时应给予对象不为static的position，这里检查一次，忘写了则自动加上
                             el.runtimeStyle = "relative";
