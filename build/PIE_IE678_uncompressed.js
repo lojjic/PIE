@@ -2302,7 +2302,11 @@ PIE.VmlShape = (function() {
             obj = this.getShape();
             if( obj ) {
                 if( objName ) {
-                    obj = obj[ objName ];
+                    try {
+                        obj = obj[ objName ];
+                    } catch(ex){
+                        return;
+                    }
                 }
                 for( i = 0; i < len; i += 2 ) {
                     name = args[ i ];
