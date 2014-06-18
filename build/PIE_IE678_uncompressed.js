@@ -4002,6 +4002,15 @@ PIE.Element = (function() {
         me.el = el;
 
         /**
+         * set filter gradient for this element.
+         */
+        function setFilterGradient(enabled){
+            try {
+                el["filters"]["DXImageTransform.Microsoft.Gradient"]["Enabled"] = enabled;
+            } catch(ex){}
+        }
+
+        /**
          * Initialize PIE for this element.
          */
         function init() {
@@ -4025,14 +4034,6 @@ PIE.Element = (function() {
                     initializing = 1;
                     el.runtimeStyle.zoom = 1;
                     initFirstChildPseudoClass();
-                    if( parent && ieDocMode < 9 ){
-                        if(cs.position === "static" && parent.currentStyle.position === "static"){
-                            el.runtimeStyle.position = "relative";
-                        }
-                        if(!doc.querySelector && parent === el.offsetParent){
-                            parent.runtimeStyle.zoom = 1;
-                        }
-                    }
                 }
 
                 boundsInfo.lock();
@@ -4069,6 +4070,15 @@ PIE.Element = (function() {
                             new PIE.IE9BorderImageRenderer( el, boundsInfo, styleInfos, rootRenderer )
                         ];
                     } else {
+
+                        if( parent ){
+                            if(cs.position === "static" && parent.currentStyle.position === "static"){
+                                el.runtimeStyle.position = "relative";
+                            }
+                            if(!doc.querySelector && parent === el.offsetParent){
+                                parent.runtimeStyle.zoom = 1;
+                            }
+                        }
 
                         styleInfos = {
                             backgroundInfo: new PIE.BackgroundStyleInfo( el ),
@@ -4165,6 +4175,9 @@ PIE.Element = (function() {
          * during page load, one will fire but the other won't.
          */
         function update( isPropChange, force ) {
+
+            setFilterGradient(false);
+
             setTimeout(function(){
                 if( !destroyed ) {
                     if( initialized ) {
@@ -4324,6 +4337,7 @@ PIE.Element = (function() {
             if( !destroyed ) {
                 var i, len;
 
+                setFilterGradient(true);
                 removeEventListeners();
 
                 destroyed = 1;
