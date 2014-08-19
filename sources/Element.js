@@ -223,30 +223,32 @@ PIE.Element = (function() {
          * during page load, one will fire but the other won't.
          */
         function update( isPropChange, force ) {
-            if( !destroyed ) {
-                if( initialized ) {
-                    lockAll();
+            setTimeout(function(){
+                if( !destroyed ) {
+                    if( initialized ) {
+                        lockAll();
 
-                    var i = 0, len = childRenderers.length,
-                        sizeChanged = boundsInfo.sizeChanged();
-                    for( ; i < len; i++ ) {
-                        childRenderers[i].prepareUpdate();
-                    }
-                    for( i = 0; i < len; i++ ) {
-                        if( force || sizeChanged || ( isPropChange && childRenderers[i].needsUpdate() ) ) {
-                            childRenderers[i].updateRendering();
+                        var i = 0, len = childRenderers.length,
+                            sizeChanged = boundsInfo.sizeChanged();
+                        for( ; i < len; i++ ) {
+                            childRenderers[i].prepareUpdate();
                         }
-                    }
-                    if( force || sizeChanged || isPropChange || boundsInfo.positionChanged() ) {
-                        rootRenderer.updateRendering();
-                    }
+                        for( i = 0; i < len; i++ ) {
+                            if( force || sizeChanged || ( isPropChange && childRenderers[i].needsUpdate() ) ) {
+                                childRenderers[i].updateRendering();
+                            }
+                        }
+                        if( force || sizeChanged || isPropChange || boundsInfo.positionChanged() ) {
+                            rootRenderer.updateRendering();
+                        }
 
-                    unlockAll();
+                        unlockAll();
+                    }
+                    else if( !initializing ) {
+                        init();
+                    }
                 }
-                else if( !initializing ) {
-                    init();
-                }
-            }
+            }, 0 );
         }
 
         /**
