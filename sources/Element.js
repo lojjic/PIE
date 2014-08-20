@@ -53,6 +53,7 @@ PIE.Element = (function() {
 
     function Element( el ) {
         var me = this,
+            ieDocMode = PIE.ieDocMode,
             childRenderers,
             rootRenderer,
             boundsInfo = new PIE.BoundsInfo( el ),
@@ -75,7 +76,6 @@ PIE.Element = (function() {
             if( !initialized ) {
                 var docEl,
                     bounds,
-                    ieDocMode = PIE.ieDocMode,
                     cs = el.currentStyle,
                     lazy = cs.getAttribute( lazyInitCssProp ) === 'true',
                     trackActive = cs.getAttribute( trackActiveCssProp ) !== 'false',
@@ -223,7 +223,7 @@ PIE.Element = (function() {
          * during page load, one will fire but the other won't.
          */
         function update( isPropChange, force ) {
-            setTimeout(function(){
+            function upFn(){
                 if( !destroyed ) {
                     if( initialized ) {
                         lockAll();
@@ -248,7 +248,12 @@ PIE.Element = (function() {
                         init();
                     }
                 }
-            }, 0 );
+            }
+            if (ieDocMode < 7) {
+                setTimeout(upFn, 0);
+            } else {
+                upFn();
+            }
         }
 
         /**
