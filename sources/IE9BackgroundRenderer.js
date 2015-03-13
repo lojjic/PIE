@@ -37,19 +37,19 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
                     if (img.imgType === 'linear-gradient' ) {
                         bgAreaSize = bgInfo.getBgAreaSize( bg.bgOrigin, me.boundsInfo, styleInfos.borderInfo, styleInfos.paddingInfo );
                         if (bgAreaSize.h > 0 && bgAreaSize.w > 0) {
-                        	bgSize = ( img.bgSize || PIE.BgSize.DEFAULT ).pixels(
-                        			me.targetElement, bgAreaSize.w, bgAreaSize.h, bgAreaSize.w, bgAreaSize.h
-                        	);
-                        	bg.push(
-                        			'url(' + me.getGradientImgData( img, bgSize.w, bgSize.h )  + ') ' +
-                        			me.bgPositionToString( img.bgPosition ) + ' / ' + bgSize.w + 'px ' + bgSize.h + 'px ' +
-                        			( img.bgAttachment || '' ) + ' ' + ( img.bgOrigin || '' ) + ' ' + ( img.bgClip || '' )
-                        	);
+                            bgSize = ( img.bgSize || PIE.BgSize.DEFAULT ).pixels(
+                                me.targetElement, bgAreaSize.w, bgAreaSize.h, bgAreaSize.w, bgAreaSize.h
+                            );
+                            bg.push(
+                                'url(' + me.getGradientImgData( img, bgSize.w, bgSize.h )  + ') ' +
+                                me.bgPositionToString( img.bgPosition ) + ' / ' + bgSize.w + 'px ' + bgSize.h + 'px ' +
+                                ( img.bgAttachment || '' ) + ' ' + ( img.bgOrigin || '' ) + ' ' + ( img.bgClip || '' )
+                            );
                         } else {
-                    		var elHtml = me.targetElement.outerHTML.length <= 100 ? me.targetElement.outerHTML
-                    				: me.targetElement.outerHTML.substring(0, 100) + " ... ";
-                    		console.warn("Cannot render linear-gradient [" + bgInfo._lastCss
-                    				+ "] for[" + elHtml + "] due to its empty area; its width: " + bgAreaSize.w + ", height: " + bgAreaSize.h);
+                            var elHtml = me.targetElement.outerHTML.length <= 100 ? me.targetElement.outerHTML
+                                : me.targetElement.outerHTML.substring(0, 100) + " ... ";
+                            console.warn("Cannot render linear-gradient [" + bgInfo._lastCss
+                                + "] for [" + elHtml + "] due to its empty area; its width: " + bgAreaSize.w + ", height: " + bgAreaSize.h);
                         }
                     } else {
                         bg.push( img.origString );
