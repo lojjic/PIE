@@ -36,14 +36,16 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
                 while( img = images[ i++ ] ) {
                     if (img.imgType === 'linear-gradient' ) {
                         bgAreaSize = bgInfo.getBgAreaSize( bg.bgOrigin, me.boundsInfo, styleInfos.borderInfo, styleInfos.paddingInfo );
-                        bgSize = ( img.bgSize || PIE.BgSize.DEFAULT ).pixels(
-                            me.targetElement, bgAreaSize.w, bgAreaSize.h, bgAreaSize.w, bgAreaSize.h
-                        );
-                        bg.push(
-                            'url(' + me.getGradientImgData( img, bgSize.w, bgSize.h )  + ') ' +
-                            me.bgPositionToString( img.bgPosition ) + ' / ' + bgSize.w + 'px ' + bgSize.h + 'px ' +
-                            ( img.bgAttachment || '' ) + ' ' + ( img.bgOrigin || '' ) + ' ' + ( img.bgClip || '' )
-                        );
+                        if (bgAreaSize.h > 0 && bgAreaSize.w > 0) {
+                            bgSize = ( img.bgSize || PIE.BgSize.DEFAULT ).pixels(
+                                me.targetElement, bgAreaSize.w, bgAreaSize.h, bgAreaSize.w, bgAreaSize.h
+                            );
+                            bg.push(
+                                'url(' + me.getGradientImgData( img, bgSize.w, bgSize.h )  + ') ' +
+                                me.bgPositionToString( img.bgPosition ) + ' / ' + bgSize.w + 'px ' + bgSize.h + 'px ' +
+                                ( img.bgAttachment || '' ) + ' ' + ( img.bgOrigin || '' ) + ' ' + ( img.bgClip || '' )
+                            );
+                        }
                     } else {
                         bg.push( img.origString );
                     }
