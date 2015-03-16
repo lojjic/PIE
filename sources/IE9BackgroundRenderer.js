@@ -45,11 +45,6 @@ PIE.IE9BackgroundRenderer = PIE.RendererBase.newRenderer( {
                                 me.bgPositionToString( img.bgPosition ) + ' / ' + bgSize.w + 'px ' + bgSize.h + 'px ' +
                                 ( img.bgAttachment || '' ) + ' ' + ( img.bgOrigin || '' ) + ' ' + ( img.bgClip || '' )
                             );
-                        } else {
-                            var elHtml = me.targetElement.outerHTML.length <= 100 ? me.targetElement.outerHTML
-                                : me.targetElement.outerHTML.substring(0, 100) + " ... ";
-                            console.warn("Cannot render linear-gradient [" + bgInfo._lastCss
-                                + "] for [" + elHtml + "] due to its empty area; its width: " + bgAreaSize.w + ", height: " + bgAreaSize.h);
                         }
                     } else {
                         bg.push( img.origString );
