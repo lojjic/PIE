@@ -348,7 +348,11 @@ PIE.Element = (function() {
 
 
         function addListener( targetEl, type, handler ) {
-            targetEl.attachEvent( type, handler );
+            if (targetEl.addEventListener) {
+                targetEl.addEventListener(type.substr(2), handler, false);
+            } else if (targetEl.attachEvent) {
+                targetEl.attachEvent(type, handler);
+            }
             eventListeners.push( [ targetEl, type, handler ] );
         }
 
