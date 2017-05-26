@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>PIE Documentation: Getting Started</title>
+
+</head>
+<body>
+
+<h1>Getting Started</h1>
+
+
+
+<!-- noformat on -->
+
+<p>The following instructions should get you up and running with PIE in most circumstances. If you run into
+problems along the way, consult our <a href="/documentation/known-issues/">known issues</a> page, or ask
+for help in the <a href="http://css3pie.com/forum">forums</a>.</p>
+
+<h2>Step 1: Download it</h2>
+
+<p><a href="/download-latest">Download the PIE distribution</a> and unzip it somewhere.</p>
+
+<h2>Step 2: Upload it</h2>
+
+<p>Upload the contents of the unzipped package to a directory on your web server. It doesn't matter where
+exactly, as long as you know where it is.</p>
+
+<h2>Step 3: Write some CSS3</h2>
+
+<p>Assuming you already have a HTML document, let's say you want to give one of its elements rounded corners.
+Create a CSS rule for that element and give it a border-radius style like so:</p>
+
+<pre><code>#myAwesomeElement {
+    border: 1px solid #999;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}</code></pre>
+
+<p>(Note the -webkit- and -moz- prefixed versions; these are necessary to make the rounded corners work in
+WebKit and Mozilla-based browsers.)</p>
+
+<h2>Step 4: Apply PIE</h2>
+
+<p>In that same CSS rule, add the following style line:</p>
+
+<pre><code>behavior: url(path/to/pie_files/PIE.htc);</code></pre>
+
+<p>Of course you will need to adjust the path to match where you uploaded PIE.htc in step 2. <em>Note: this
+path is relative to the HTML file being viewed, not the CSS file it is called from.</em></p>
+
+<h2>Step 5: View it in IE</h2>
+
+<p>If all went well, at this point you should be able to load the page in IE and see the CSS3 rounded corners
+rendered just like other browsers. Now you can play around with some of the other supported CSS3 decorations
+like box-shadow. See the documentation on <a href="/documentation/supported-css3-features/">supported CSS3
+features</a> to see exactly what PIE can do. Have fun!</p>
+
+<!-- noformat off -->
+
+
+</body>
+</html>
