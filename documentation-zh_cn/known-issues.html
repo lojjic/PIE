@@ -2,207 +2,200 @@
 <html>
 <head>
 
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type">
   <title>PIE Documentation: Known Issues</title>
 
 </head>
 <body>
 
-<h1>Known Issues</h1>
+<h1>已知 Issues</h1>
 
 
 
 <!-- noformat on -->
 
-<p>This document describes the most common general issues encountered when using PIE. For information regarding bugs
-and limitations in the implementations of specific features, see the detailed documentation of the
-<a href="/documentation/supported-css3-features/">supported CSS3 features</a>, and also
-our <a href="http://github.com/lojjic/PIE/issues">issue tracking system</a> where bug reports
-and feature requests are tracked.</p>
+<p>本文档描述了使用PIE时遇到的最常见的常见问题。 有关错误的信息
+    并在实现特定功能的限制，请参阅详细的文档
+    <a href="/documentation/supported-css3-features/">支持的CSS3功能</a>，以及
+    我们的<a href="http://github.com/lojjic/PIE/issues">问题跟踪系统</a>，中的错误报告
+    和追踪功能要求。</p>
 
 <ul>
-    <li><a href="#z-index">Disappearing backgrounds/borders/shadows (z-index issues)</a></li>
-    <li><a href="#relative-paths">Relative paths</a></li>
-    <li><a href="#shorthand">Shorthand only</a></li>
-    <li><a href="#hasLayout">Problems with hasLayout</a></li>
-    <li><a href="#spec-bugs">Deviations from CSS3 spec</a></li>
-    <li><a href="#content-type">Serving the correct Content-Type</a></li>
-    <li><a href="#x-domain">Same domain limitation</a></li>
-    <li><a href="#elements">Problems on certain elements</a></li>
-    <li><a href="#zoom">Browser zooming</a></li>
+    <li><a href="#z-index">消失的背景/边框/阴影 (z-index issues)</a></li>
+    <li><a href="#relative-paths">相对路径</a></li>
+    <li><a href="#shorthand">仅限速记</a></li>
+    <li><a href="#hasLayout">hasLayout的问题</a></li>
+    <li><a href="#spec-bugs">与CSS3规格的偏差</a></li>
+    <li><a href="#content-type">提供正确的内容类型</a></li>
+    <li><a href="#x-domain">同域限制</a></li>
+    <li><a href="#elements">某些元素的问题</a></li>
+    <li><a href="#zoom">浏览器缩放</a></li>
 </ul>
 
 
-<h2 id="z-index">Disappearing backgrounds/borders/shadows (z-index issues)</h2>
+<h2 id="z-index">消失的背景/边界/阴影（z-index问题）</h2>
 
-<p>First, a little background on how PIE renders CSS3 decorations: a single <code>&lt;css3-container/&gt;</code>
-element is created which holds all the VML objects. This container element is inserted as a previous sibling to the
-target element, and absolutely positioned at the same coordinates. If the target element is position:absolute or
-position:relative, then the css3-container element is given the same z-index as the target element, and since it
-is a previous sibling in the DOM tree it gets displayed behind, with no possibility of any other element sneaking
-in between.</p>
 
-<p>However, this does not work so well when the target element is position:static, because static elements do not
-participate in z-index stacking. The only way to make our position:absolute css3 element go behind it is to give
-it <code>z-index:-1</code>. Unfortunately, this has a bad side-effect: not only will the css3 element go behind the
-target element, it will also go <em>behind the background of any ancestor element(s) which are themselves position:static.</em>
-This leads to situations in which PIE creates the VML rendering correctly but it disappears behind a parent element's
-background.</p>
+<p>首先，关于PIE渲染CSS3属性的一点背景：单个&lt;css3-container &gt;
+创建包含所有VML对象的元素。 该容器元素作为之前的的兄弟元素插入
+目标元素，绝对位于相同的坐标。 如果目标元素是position:absolute或
+position:relative，那么css3-container元素被赋予与目标元素相同的z-index，因为它
+是DOM树中之前的兄弟元素，它会被显示在后面，并且在没有任何其他元素潜在的可能性
+之间。</p>
 
-<p>The only way I know of to work around this is to either:</p>
+<p>但是，当目标元素为position:static时，这不是很好，因为静态元素没有
+    参与z-index堆叠。 我们来使用位置的唯一的方式：绝对位置的css3元素背景是给予
+    它<code> z-index：-1 </code>。 不幸的是，这有一个不好的副作用：不仅css3元素会落后
+    目标元素，它也将在任意父级元素的背景<em>背后移动，这些元素本身就是position:static。</em>
+这导致PIE正确创建VML渲染的情况，但它会在父元素的后面隐藏
+背景</P>
+<p>我知道解决这个问题的唯一方法是：</p>
 <ol>
-    <li>make the target element position:relative, or</li>
-    <li>make the ancestor element position:relative and give it a z-index.</li>
+    <li>使用目标元素位置：relative或or</li>
+    <li>使祖级元素的位置：relative并给它一个z-index。</li>
 </ol>
 
-<p>Both of these workarounds can have potential unwanted side-effects in terms of child element positioning and
-z-index stacking. PIE could easily force one or the other itself, but:</p>
+<p>这两种解决方法都可能在子元素定位和z-index堆叠方面具有潜在的不必要的副作用
+    。 PIE可以很容易地强制一个或另一个本身，但是：</p>
 <ol>
-    <li>One or the other may be more appropriate depending on the particular situation, so the CSS author needs to
-    be able to control which one gets chosen.</li>
-    <li>Forcing position:relative outside of the CSS would put IE out of sync with other browsers, leading to
-    confusing inconsistencies.</li>
+    <li>一个或另一个可能更适合取决于具体情况，所以CSS作者需要
+             能够控制哪一个被选择。</li>
+    <li>强制位置：CSS之外的相对位置会使IE与其他浏览器不同步，导致
+             混乱不堪</li>
+
 </ol>
 
-<p>PIE therefore does neither, and it is up to the author to implement either workaround where necessary. In
-most cases simply adding position:relative to the target element is fine.</p>
+<p>因此，PIE既不做，也不需要作者在必要时实现解决方法。 在
+    大多数情况下简单地添加位置：相对于目标元素是很好的。</p>
 
 
 
 
-<h2 id="relative-paths">Relative paths</h2>
+<h2 id="relative-paths">相对路径</h2>
 
-<p>There are two main issues related to relative paths in CSS:</p>
+<p>CSS中的相对路径有两个主要问题：</p>
 
-<h3>The behavior URL</h3>
+<h3>行为URL</h3>
 
-<p>IE interprets the URL for the <code>behavior</code> property relative to the source HTML document, rather than
-relative to the CSS file like every other CSS property. This makes invoking the PIE behavior inconvenient, because
-the URL has to either be:</p>
+<p>IE解释相对于源HTML文档的<code>behavior</code>属性的URL，而不是
+    相对于CSS文件，像其他所有的CSS属性。 这使得调用PIE行为不方便，因为
+    网址必须是：</p>
 
 <ol>
-    <li>Absolute from the domain root &mdash; this makes the CSS not easily moveable between directories &mdash; or,</li>
-    <li>Relative to the HTML document &mdash; this makes the CSS not easily reusable between different HTML files.</li>
+    <li>绝对来自域root&mdash; 这使得CSS不容易在目录之间移动&mdash; 要么，</li>
+    <li>相对于HTML文档&mdash; 这使得CSS不容易在不同的HTML文件之间重新使用。</li>
 </ol>
 
-<h3>URLs in PIE-interpreted CSS properties</h3>
+<h3>PIE解释的CSS属性中的URL</h3>
 
-<p>PIE does not parse the CSS stylesheets (to do so would be unacceptably slow); it lets IE handle the parsing,
-selector querying, cascading, etc. and then simply asks it for the resulting property values. This means that when
-PIE gets a property value, it has no knowledge of the context from which that value originated.</p>
+<p>PIE不解析CSS样式表（这样做会令人难以接受）它让IE处理解析，
+    选择器查询，级联等，然后简单地询问结果属性值。这意味着什么时候
+    PIE获取属性值，它不知道该值起始的上下文。</p>
 
-<p>As a result, for properties which contain URL values (such as border-image or -pie-background), PIE cannot resolve
-those URLs relative to the CSS file in which they appear. It resolves them instead relative to the JavaScript
-execution context, which is the location of the source HTML document.</p>
-
-
-
-<h2 id="shorthand">Shorthand only</h2>
-
-<p>For all CSS properties which PIE parses, only the shorthand versions of those properties will be recognized.
-For example, while <code>border-radius</code> is supported, the individual longhand <code>border-top-left-radius</code>
-etc. properties are not.</p>
-
-<p>The reason for this is the same reason URLs are not resolved relative to the CSS file (see above): PIE does not
-have visibility into where each style property comes from. If there is both a shorthand and a longhand
-property present, PIE cannot determine the order in which the CSS author specified those properties, nor can it
-determine the specificity of the selector for each property. It cannot therefore make an informed decision about
-which property should take precedence.</p>
-
-<p>To avoid making dumb guesses, we have opted to only support shorthand properties. Shorthand was chosen over longhand
-to keep file size small and avoid tedious repetition.</p>
+<p>因此，对于包含URL值的属性（如border-image或-pie-background），PIE无法解析
+         那些相对于它们出现的CSS文件的URL。 它相对于JavaScript解决了它们
+    执行上下文，它是源HTML文档的位置。</p>
 
 
 
-<h2 id="hasLayout">Problems with hasLayout</h2>
+<h2 id="shorthand">仅限速记</h2>
 
-<p>In order to automatically detect element position and dimension changes, PIE has to force
-"<a href="http://www.satzansatz.de/cssd/onhavinglayout.html">hasLayout</a>" on the target element (in IE6 and IE7).
-It does so by applying the style <code>zoom:1;</code> to the element.</p>
+<p>对于PIE解析的所有CSS属性，只能识别这些属性的简写版本。
+    例如，当支持<code> border-radius </code>时，单个longhand <code> border-top-left-radius </code>
+    等等。属性不是。</p>
 
-<p>For the most part, doing this has no adverse effect on the rendering of the element. In fact, a lot of times it
-improves the rendering (hasLayout is often used as a hack to work around IE CSS bugs). However, in some cases this has
-<a href="http://www.satzansatz.de/cssd/onhavinglayout.html#rev">unwanted consequences</a> such as disappearing
-top margins.</p>
+<p>原因是与URL文件相关的URL不能解决的原因（见上文）：PIE没有
+    解析每个样式属性来自哪里。 如果有速记和长手的话
+    存在的属性，PIE无法确定CSS作者指定这些属性的顺序，也不能
+    确定选择器对每个属性的特异性。 因此，不能做出明智的决定
+    哪个属性应该优先。</p>
 
-
-
-<h2 id="spec-bugs">Deviations from CSS3 spec</h2>
-
-<p>For the properties it supports, PIE attempts to match the syntax parsing and rendering as specified by the current
-CSS3 spec document drafts. Any deviations should be considered defects. If you find a bug, please open a ticket in
-our <a href="http://github.com/lojjic/PIE/issues">issue tracking system</a>. You can find information about many of the known issues in the
-detailed documentation of <a href="/documentation/supported-css3-features">supported CSS3 properties and values</a>.</p>
-
-<p>Do keep in mind, however, that the CSS3 specs are still a moving target. Some properties, such as border-radius,
-have been around long enough, and have sufficient cross-browser implementation, such that it is unlikely further
-changes to the spec will occur. Other things, such as gradients, are relatively new to the specs and are more likely
-to change in future drafts.</p>
-
-<p>Fortunately, this threat of future change is not as much of a problem when using PIE as it is when writing
-for other browsers. The reason is that the CSS author, by deploying PIE, essentially has control over the user agent.
-You know that when you deploy a certain version of PIE, all IE users will experience the same parsing and rendering
-behavior. You don't have to worry that some users will be using an old version which has more bugs, or that users will
-have a newer version in the future which has different behavior you can't plan for. You can safely depend on the
-behavior of the exact PIE version you deploy, indefinitely into the future.</p>
-
-<p>But what happens when the spec changes and PIE hasn't yet been updated to support the new syntax or behavior? Or
-what about when there's a bug in PIE that makes it impossible to use the same CSS property for both PIE and other
-browsers? To handle both these cases, any of the supported CSS3 properties can be prefixed with <code>-pie-</code>
-and that will be used in preference to the standard property. So for instance you could specify a <code>box-shadow</code>
-value which would be used by other browsers, and then a <code>-pie-box-shadow</code> value which will be used only by
-PIE. This is recommended only as a final resort; it's always best to use the standard property if at all possible.</p>
+<p>为了避免愚蠢的猜测，我们选择只支持shorthand属性。 速记被长时间选中
+    保持文件大小小，避免繁琐的重复。</p>
 
 
 
-<h2 id="content-type">Serving the correct Content-Type</h2>
+<h2 id="hasLayout"> hasLayout问题</h2>
 
-<p>IE requires that HTC behaviors are served up with a content-type header of "text/x-component", otherwise it will
-simply ignore the behavior. Many web servers are preconfigured to serve the correct content-type, but others are not.</p>
+<p>为了自动检测元件位置和尺寸变化，PIE必须强制
+    目标元素（IE6和IE7）中的“<a href="http://www.satzansatz.de/cssd/onhavinglayout.html"> hasLayout </a>”。
+    通过将样式<code> zoom:1; </code>应用于元素来实现。</p>
 
-<p>If you have problems with the PIE behavior not being applied, check your server configuration and if possible
-update it to use the correct content-type. For Apache, you can do this in a .htaccess file:</p>
+<p>在大多数情况下，这样做对元素的呈现没有不利影响。 其实很多次
+改进渲染（hasLayout通常被用作一个hack来解决IE CSS bug）。 然而，在某些情况下，这样做
+<a href="http://www.satzansatz.de/cssd/onhavinglayout.html#rev">不必要的后果</a>，如隐藏顶部边距。</p>
+
+
+<h2 id="spec-bugs">与CSS3规格的偏差</h2>
+
+<p>对于其支持的属性，PIE会尝试匹配当前所指定的语法解析和渲染
+    CSS3规范文件草稿。 任何偏差都应被视为缺陷。 如果发现错误，请打开我们的<a href="http://github.com/lojjic/PIE/issues">问题跟踪系统</a>。 您可以找到有关许多已知问题的信息
+    <a href="/documentation/supported-css3-features">支持的CSS3属性和值</a>的详细文档。</p>
+<p>请记住，CSS3规格仍然是一个移动目标。 一些属性，如border-radius，
+已经足够长了，并且有足够的跨浏览器实现，这样就不太可能进一步
+将会发生规格变更。 其他的东西，比如gradients，对于这些规格来说都比较新鲜，而且更有可能
+以改变未来的草案。</p>
+
+<p>幸运的是，这种对未来变化的威胁在使用PIE时一样不会像写作一样
+对于其他浏览器 原因是CSS作者通过部署PIE本质上可以控制用户代理。
+您知道，当您部署某个版本的PIE时，所有IE用户将会遇到相同的解析和渲染
+行为。 您不必担心某些用户将使用具有更多错误或用户将使用的旧版本
+有一个较新的版本在未来有不同的行为，你不能计预测。但是你可以安全地依靠
+您将无限期地将来部署PIE版本的行为。</p>
+<p>但是，当规范更改和PIE尚未更新以支持新的语法或行为时会发生什么？ 要么
+    当PIE中有一个错误，使得不可能为PIE和其他类型使用相同的CSS属性
+    浏览器？ 为了处理这两种情况，任何支持的CSS3属性都可以前缀为<code> -pie - </code>
+    并且将优先于标准属性使用。 所以例如你可以指定一个<code> box-shadow </code>
+    值将被其他浏览器使用，然后是一个<code> -pie-box-shadow </code>值，它将仅被
+    采用。 这只是作为最后的手段推荐的; 如果有可能，最好使用标准属性。</p>
+
+
+<h2 id="content-type">提供正确的内容类型</h2>
+
+<p>IE要求使用“text/x-component”的内容类型标题提供HTC行为，否则将会
+    只是忽略行为。 许多Web服务器已预先配置，以提供正确的内容类型，但其他Web服务器不是。</p>
+
+<p>如果您没有应用PIE行为的问题，请检查您的服务器配置，如果可能的话
+    以使用正确的内容类型更新它。 对于Apache，您可以在.htaccess文件中执行此操作：</p>
 
 <pre><code>AddType text/x-component .htc</code></pre>
 
-<p>If for some reason you are unable to modify the server configuration (e.g. if you are on a shared host which does
-not allow custom .htaccess files), then you may also use a wrapper script. For instance, PIE includes in its
-distribution files a PHP script called PIE.php; this script simply serves up the PIE.htc file using the correct
-content-type header. To use it, simply make sure both PIE.php and PIE.htc are in the same directory, and then in your
-CSS point the behavior to the PHP file instead:</p>
+<p>如果由于某些原因您无法修改服务器配置（例如，如果您位于共享主机上）
+    不允许自定义.htaccess文件），那么您还可以使用包装器脚本。 例如，PIE包含在其中
+    分发文件一个称为PIE.php的PHP脚本; 该脚本只是使用正确的方式提供PIE.htc文件
+    内容类型头。 要使用它，只需确保PIE.php和PIE.htc都在同一个目录中，然后再在您的
+    CSS将行为指向PHP文件：</p>
 
 <pre><code>behavior: url(PIE.php);</code></pre>
 
-<p>Note that this issue is particularly a problem in IE 9, which seems more strict about the content-type
-than some other IE versions.</p>
+<p>请注意，这个问题在IE9中特别是一个问题，这对于内容类型来说似乎比一些其他IE版本更加严格。</p>
 
 
 
-<h2 id="x-domain">Same-domain limitation</h2>
+<h2 id="x-domain">同域限制</h2>
 
-<p>IE requires that the PIE.htc behavior file must be in the same domain as the HTML page which uses it. If you try
-to load the behavior from a different domain, you will get an "Access Denied" error.</p>
-<p>Note that the domain must be <em>exactly</em> the same; that means that http://www.foo.com is a different
-domain than http://foo.com.</p>
-<p>If this limitation is a dealbreaker for you, you may be able to use the alternate
-<a href="/documentation/pie-js/">PIE.js</a> approach to get around it.</p>
-
-
-<h2 id="elements">Problems on certain element types</h2>
-
-<p>PIE does not currently work when applied to the &lt;body> or &lt;html> elements. Try using a wrapper div
-around the body contents and applying your CSS3 styles and PIE.htc to it instead.</p>
-<p>Avoid using PIE on &lt;fieldset> elements, as it does not properly handle rendering of the &lt;legend>.</p>
-<p>Also, element types that cannot accept children (e.g. &lt;input> and &lt;img>) will fail or throw errors
-if you apply styles that use relative length units such as em or ex. Stick to using px units for these elements.</p>
+<p> IE要求PIE.htc行为文件必须在与使用它的HTML页面相同的域中。 如果你试试
+    要加载来自不同域的行为，您将收到“访问被拒绝”错误。</p>
+<p>请注意，域必须<em>完全相同;</em> 这意味着http://www.foo.com和
+    域名http://foo.com是不同的。</p>
+<p>如果这个限制是您解决不了的问题，您可能可以使用替代品
+    <a href="/documentation/pie-js/"> PIE.js </a>解决方法。</p>
 
 
-<h2 id="zoom">Browser Zooming</h2>
+<h2 id="elements">某些元素类型的问题</h2>
 
-<p>When the user uses the browser zoom function (available in IE7 and up), PIE does not currently scale any
-background images it manages to match. This can cause things to look broken at zoom levels other than 100%,
-if your background images are dependent on sizing (e.g. sprite images). This will be fixed in an upcoming
-release; see <a href="https://github.com/lojjic/PIE/issues/79">issue 79</a>.</p>
+<p>当应用于&lt; body>或&lt; html>元素时，PIEE当前不起作用。 尝试使用wrapper div
+    包裹body内容，并将CSS3样式和PIE.htc应用到其中。</p>
+<p>避免在&lt; fieldset>元素上使用PIE，因为它不能正确处理&lt; legend>的渲染。</p>
+<p>此外，不能接受子项的元素类型（例如&lt; input&gt;和&lt; img>）将失败或抛出错误
+    如果您应用使用相对长度单位（如em或ex）的样式。 坚持使用px单位的这些元素。</p>
+
+
+<h2 id="zoom">浏览器缩放</h2>
+<p>当用户使用浏览器缩放功能（IE7及以上版本）时，PIE目前不会缩放
+    背景图像它管理匹配。 这可能会导致在100％以外的缩放级别看起来破碎，
+    如果您的背景图像取决于尺寸（例如精灵图）。 这将在即将到来的时候解决
+    发布; 请参阅<a href="https://github.com/lojjic/PIE/issues/79">问题79 </a>。</p>
 
 
 <!-- noformat off -->
