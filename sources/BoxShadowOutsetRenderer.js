@@ -55,7 +55,7 @@ PIE.BoxShadowOutsetRenderer = PIE.RendererBase.newRenderer( {
             // Create the shape object
             shape = me.getShape( 'shadow' + i, me.shapeZIndex + ( .5 - i / 1000 ) );
 
-            if( blur ) {
+            if( (( w + h ) > 0 ) && blur ) {
                 totalW = ( spread + blur ) * 2 + w;
                 totalH = ( spread + blur ) * 2 + h;
                 focusX = totalW ? blur * 2 / totalW : 0;
