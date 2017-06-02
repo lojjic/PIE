@@ -49,7 +49,11 @@ PIE.Element = (function() {
         }, 0 );
     }
 
-
+    function setZoom(el) {
+        if (/^normal$/i.test(el.currentStyle.zoom)) {
+            el.runtimeStyle.zoom = 1;
+        }
+    }
 
     function Element( el ) {
         var me = this,
@@ -89,7 +93,10 @@ PIE.Element = (function() {
                 // after load, but make sure it only gets called the first time through to avoid recursive calls to init().
                 if( !initializing ) {
                     initializing = 1;
-                    el.runtimeStyle.zoom = 1;
+                    setZoom(el);
+                    if (ieDocMode < 8 && el.parentNode && el.parentNode === el.offsetParent) {
+                        setZoom(el.parentNode);
+                    }
                     initFirstChildPseudoClass();
                 }
 

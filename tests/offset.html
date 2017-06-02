@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<metahttp-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+	<title>Tests for offset</title>
+	<style type="text/css">
+	form li {
+		position: relative;
+	}
+	form input {
+		behavior: url(../build/PIE.htc);
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		background: #fff;
+	}
+	li:hover input {
+		margin: 5px;
+	}
+	</style>
+</head>
+<body>
+	<form>
+		<fieldset>
+			<legend>Your details</legend>
+			<ol>
+				<li>
+					<label for="fullname">Name *</label> 
+					<input type="text" id="fullname" name="fullname" placeholder="Full name" autofocus required>
+				</li>
+				<li>
+					<label for="email">Email *</label> 
+					<input type="email" id="email" name="email" placeholder="e.g. ryan@example.net" title="Please enter a valid email" required>
+				</li>
+				<li>
+					<label for="url">Website *</label> 
+					<input type="url" id="url" name="url" required>
+				</li>
+				<li>
+					<label for="tel">Phone *</label> 
+					<input type="tel" id="tel" name="tel" pattern="\d{10}" placeholder="Please enter a ten digit phone number" required>
+				</li>
+				<li>
+					<label for="date">Date *</label> 
+					<input type="date" id="date" name="date" required>
+				</li>
+				<li>
+					<label for="nickname">Nick name</label> 
+					<input type="text" id="nickname" name="nickname" pattern="\w{4,}" placeholder="A nickname that is atleast four characters">
+				</li>
+				<li>
+					<label for="password">Password</label> 
+					<input type="password" id="password" name="password" pattern="\w{4,}" placeholder="A password that is atleast four characters" required>
+				</li>
+				<li>
+					<label for="postcode">Post code *</label>
+					<input id="postcode" name="postcode" type="number" min="1001" step="2" max="8000" required>
+				</li>
+				<li>
+					<label for="other">Other</label> 
+					<input type="text" id="other" name="other" placeholder="Other information">
+				</li>
+				<li>
+					<label for="disabled">Other</label> 
+					<input type="text" id="disabled" name="disabled" required disabled placeholder="Other information">
+				</li>
+				<li>
+					<label for="gen">Generic</label> 
+					<input type="text" id="gen" name="gen" placeholder="Other information">
+				</li>
+				<li>
+					<label for="gen">Checkbox</label> 
+					<input type="checkbox" required id="chkbox" name="chkbox">
+				</li>
+				<li>
+					<label for="female">Female</label>
+					<input type="radio" id="female" name="gender" value="female" required>
+				</li>
+				<li>
+					<label for="male">Male</label>
+					<input type="radio" id="male" name="gender" value="male" required>
+				</li>
+				<li>
+					<label for="select">Select *</label>
+					<select id="select" name="select" required>
+						<option value="">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+					</select>
+				</li>
+				<li>
+					<label for="textarea">textarea *</label>
+					<textarea id="textarea" placeholder="textarea" required></textarea>
+				</li>
+				<li>
+					<input id="input_submit" type="submit" value="submit">
+					<input id="input_submit_novalidate" type="submit" value="formnovalidate" formnovalidate>
+					<button id="button_submit_novalidate" type="submit" formnovalidate>button tag</button>
+				</li>
+			</ol>
+		</fieldset>
+	</form>
+</body>
+</html>
