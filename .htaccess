@@ -1,0 +1,7 @@
+#######################
+# File Format Support #
+#######################
+
+### Add support for SVG and HTC
+AddType image/svg+xml svg svgz
+AddType text/x-component .htc
