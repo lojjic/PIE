@@ -10,13 +10,21 @@
         win[ 'PIE' ] = null;
     }
 
-    win.attachEvent( 'onunload', handleUnload );
+    if (win.addEventListener) {
+        win.addEventListener('unload', handleUnload, false);
+    } else if (win.attachEvent) {
+        win.attachEvent('onunload', handleUnload);
+    }
 
     /**
      * Attach an event which automatically gets detached onunload
      */
     PIE.OnUnload.attachManagedEvent = function( target, name, handler ) {
-        target.attachEvent( name, handler );
+        if (target.addEventListener) {
+            target.addEventListener(name.substr(2), handler, false);
+        } else if (target.attachEvent) {
+            target.attachEvent(name, handler);
+        }
         this.observe( function() {
             target.detachEvent( name, handler );
         } );
