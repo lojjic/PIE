@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>PIE 文档: 快速开始</title>
+
+        </head>
+<body>
+
+<h1>快速开始</h1>
+
+
+<!-- noformat on -->
+
+<p>在大多数情况下，以下介绍应该让您开始安装PIE。 如果你遇到了
+    一直遇到问题，请查阅我们的<a href="/documentation/known-issues/">已知问题</a>页面，或
+    寻求<a href="http://css3pie.com/forum">论坛</a>中的帮助。</p>
+<h2>Step 1: 下载它</h2>
+
+<p><a href="/download-latest">下载PIE发行版</a> 将它解压到某个地方.</p>
+
+<h2>Step 2: 将它上传</h2>
+
+<p>将解压缩的软件包的内容上传到Web服务器上的目录。 在哪里无关紧要
+    确切地说，只要你知道它在哪里。</p>
+
+<h2>Step 3: 写一些 CSS3样式</h2>
+
+<p>假设你已经有一个HTML文档，假设你想给它的一个元素使用圆角。
+    可以为该元素创建一个CSS样式，并给它一个border-radius样式，如下所示：</p>
+
+<pre><code>#myAwesomeElement {
+    border: 1px solid #999;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}</code></pre>
+
+<p>(注意-webkit-和-moz-前缀版本; 这些都是必要的，以使圆角可以在
+    基于WebKit和Mozilla的浏览器中起作用.)</p>
+
+<h2>Step 4: 应用 PIE</h2>
+
+<p>在同一个CSS规则中，添加以下样式行：</p>
+
+<pre><code>behavior: url(path/to/pie_files/PIE.htc);</code></pre>
+
+<p>当然，您需要调整路径，以匹配您在步骤2中上传PIE.htc的位置。<em>注意：此
+    路径是相对于正在查看的HTML文件，而不是相对于其调用的CSS文件。</em></p>
+
+<h2>Step 5: 在IE中查看</h2>
+
+<p>如果一切顺利，此时您应该可以在IE中加载该页面，并查看CSS3圆角
+    像其他浏览器一样渲染的一样。 现在你可以使用一些其他支持的CSS3属性
+    例如，box-shadow。 请参阅相关的<a href="/documentation/supported-css3-features/">支持的CSS3的文档功能
+    </a>来查看PIE可以做些。 愉快的玩耍吧！</p>
+
+<!-- noformat off -->
+
+
+</body>
+</html>

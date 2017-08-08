@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>PIE 文档: 关于 PIE</title>
+
+</head>
+<body>
+
+<h1>关于 PIE</h1>
+
+
+<!-- noformat on -->
+<p>CSS Level 3带来了一些非常强大的样式功能。 圆角，柔和的阴影，渐变
+    填充等等。 这些都是我们的设计师朋友喜欢使用的元素，因为它们使
+    站点更加具有吸引力，但实施起来总是很困难并且很耗时间，因为涉及复杂的精灵图，额外的非语义标记，
+    大型JavaScript库和其他可爱的hacks。</p>
+<p>CSS3承诺要消除所有这些影响！ 但是大家都知道，由于Internet Explorer缺乏对这些任意特性的支持，在可预见的未来， <strong>我们必须耐心的用同样旧的乏味的技巧来实现</strong>, 而不去使用CSS3。
+</p>
+
+<p><strong>那我们到底如何做?</strong></p>
+
+<p>PIE代表`Progressive Internet Explorer(渐进式的IE)。 它是IE附加的行为，当应用于元素时，允许IE来识别和显示一些CSS3属性。 试想一下，如果你愿意的话，下面的CSS：</p>
+
+<pre><code>#myElement {
+    background: #EEE;
+    padding: 2em;
+    -moz-border-radius: 1em;
+    -webkit-border-radius: 1em;
+    border-radius: 1em;
+}</code></pre>
+
+<p>这样，除了IE 6，7或者8，都显示一个方框以外。在现代任意主流浏览器中都有一个圆角框， 然而，我们将以下单个规则添加到该CSS中：</p>
+
+<pre><code>#myElement {
+    ...
+    behavior: url(PIE.htc);
+}</code></pre>
+
+<p>现在，完全相同的圆角出现在IE中！ 这就是它的一切。 是的，是真的，我的意思是。</p>
+
+<p>`PIE`目前对以下`CSS3`特性有全面或部分的支持：</p>
+
+<ul>
+    <li>border-radius</li>
+    <li>box-shadow</li>
+    <li>border-image</li>
+    <li>multiple background images</li>
+    <li>linear-gradient as background image</li>
+</ul>
+
+<p>此外，PIE增加了对IE9的 <i>border-image</i> 和<i>linear-gradient</i>的支持，IE 9已经支持其他自带的功能。</p>
+
+<p>其他的新特性还处在开发阶段.</p>
+
+<p><strong>想要了解更多信息?</strong> 请参看在线的 <a href="/demos">案例</a>, 参阅<a href="/documentation/">文档</a>,
+    并且可以 <a href="/download-latest">下载 PIE</a> 自己去尝试一下. 要确保你已经阅读了 <a
+            href="/documentation/known-issues/">已知的</a> 常见问题的解决方案界面 .</p>
+
+<p>PIE 毕竟是一个繁重而年轻的项目. 但是他已经节约了你 <em>大量</em> 的时间， and make
+    并且使你作为Web开发者的生涯更加简单、纯粹。. 赶快使用 CSS3 愉快的编码吧!</p>
+
+<!-- noformat off -->
+
+</body>
+</html>

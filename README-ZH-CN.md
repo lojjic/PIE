@@ -13,8 +13,7 @@
 
 
 `CSS3`承诺要消除所有这些影响！ 但是大家都知道，由于`Internet Explorer`缺乏对这些任意特性的支持
-，在可预见的未来，我们必须耐心的用同样旧的乏味的技巧来实现，而不去使用CSS3，
-。
+，在可预见的未来，我们必须耐心的用同样旧的乏味的技巧来实现，而不去使用CSS3。
 那我们到底如何做?
 
 
@@ -29,12 +28,7 @@
         border-radius: 1em;
     }
 ```
-
-
-This results in a box with nicely rounded corners in any of today's modern browsers, except of course for IE 6, 7, or
-8, which all display a square box.  However, add the following single rule to that CSS:
-这样就可以在现在的任何一种主流浏览器中都有一个圆角框，除了`IE 6，7`或者`8`
-，都显示一个方框以外。 但是，将以下单个规则添加到该CSS中：
+这样，除了`IE 6，7`或者`8`，都显示一个方框以外。在现代任意主流浏览器中都有一个圆角框， 然而，我们将以下单个规则添加到该CSS中：
 ```
     #myElement {
         ...
@@ -42,8 +36,6 @@ This results in a box with nicely rounded corners in any of today's modern brows
     }
 ```
 
-
-Now the exact same rounded corners appear in IE!  That's all there is to it.  No, really, I mean it.
 现在，完全相同的圆角出现在IE中！ 这就是它的一切。 是的，是真的，我的意思是。
 
 `PIE`目前对以下`CSS3`特性有全面或部分的支持：
@@ -61,6 +53,6 @@ Now the exact same rounded corners appear in IE!  That's all there is to it.  No
 我们正在开发其他功能，如`radial gradients`，`multiple box shadows`以及修复许多错误。 
 
 但它仍然是
-一个年轻的项目，并且还有很长的路要走，虽然它已经相当显着！ 
+一个年轻的项目，并且还有很长的路要走，虽然它的效果已经相当显著了！ 
 
-我们正在努力构建一个带有文档和示例的网站。 在此，对于贡献（代码，文档，测试）的开发者表示非常感谢！
+我们正在努力构建一个带有文档和示例的[网站](http://css3pie.com/)。 在此，对于贡献（代码，文档，测试）的开发者表示由衷的感谢！

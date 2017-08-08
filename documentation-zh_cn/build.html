@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>PIE 文档: 源码编译 PIE</title>
+
+</head>
+<body>
+
+<h1>源码编译 PIE </h1>
+
+
+
+<!-- noformat on -->
+
+<p>本文档介绍如何从最新的源代码构建PIE。 如果您想获得尚未将其发布到发行版中的功能或bug修复，这对你来说很有用。 如果您想自己修改代码来尝试修复bug或实现新功能，那么这里也是你必须读的。 如果按照我说的做了，请考虑将您的更改提交到主项目，以便我们都可以从中受益！</p>
+
+<h2 id="prereqs">准备条件</h2>
+
+<p>建立PIE是直截了当的。您需要安装以下工具：:</p>
+
+<ol>
+    <li><a href="http://git-scm.com/">Git</a>, 如果您要从Git存储库中检出源代码</li>
+    <li><a href="http://java.com">Java</a> 运行时, 版本 >=6 </li>
+    <li><a href="http://ant.apache.org">Ant</a>, 用于执行构建</li>
+</ol>
+
+<p>安装这些准备条件后，请执行以下步骤：</p>
+
+
+
+<h2 id="getsource">获取源码</h2>
+
+<p>你有两种方式获取源码:</p>
+
+<ol>
+    <li>使用Git检出源码:
+        <pre><kbd>git clone git://github.com/lojjic/PIE.git
+cd PIE</kbd></pre>
+        如果你想要2.x beta分支（master），那么你完成了; 如果你想要切换1.x稳定分支，然后运行：
+        <pre><kbd>git checkout 1.x</kbd></pre>
+        or:
+    </li>
+    <li>下载源的存档:<br>
+        <a href="http://github.com/lojjic/PIE/archives/master">http://github.com/lojjic/PIE/archives/master</a> (2.x beta 分支)<br>
+        <a href="http://github.com/lojjic/PIE/archives/1.x">http://github.com/lojjic/PIE/archives/1.x</a> (1.x 稳定版 分支)
+    </li>
+</ol>
+
+
+
+<h2 id="build">执行构建</h2>
+
+<p>从的本地副本的源代码根目录中，在终端中调用以下命令:</p>
+
+<pre><kbd>ant</kbd></pre>
+
+<p>T这将执行构建，创建一个名为“build/”的新目录。 此目录将包含以下文件内容
+    ：</p>
+
+<ul>
+    <li>PIE.htc</li>
+    <li>PIE_IE678.js</li>
+    <li>PIE_IE9.js</li>
+    <li>PIE_uncompressed.htc</li>
+    <li>PIE_IE678_uncompressed.js</li>
+    <li>PIE_IE9_uncompressed.js</li>
+</ul>
+
+<p>要使用这些文件，将它们复制到服务器上的目录中，并引用PIE.htc（或
+    PIE_uncompressed.htc进行调试）。 或者，如果你想使用
+    PIE JS版本，那么您可以使用脚本标签包含PIE_IEx.js文件（请参阅
+<a href="/documentation/pie-js/">PIE JS</a> 文档查询详情.)</p>
+
+<!-- noformat off -->
+
+
+</body>
+</html>
