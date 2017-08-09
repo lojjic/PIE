@@ -51,7 +51,7 @@ PIE.StyleInfoBase = {
         var el = this.targetElement,
             ctor = this.constructor,
             s = el.style,
-            cs = el.currentStyle,
+            cs = el.currentStyle || {getAttribute:{}},
             cssProp = this.cssProperty,
             styleProp = this.styleProperty,
             prefixedCssProp = ctor._prefixedCssProp || ( ctor._prefixedCssProp = PIE.CSS_PREFIX + cssProp ),
