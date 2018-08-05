@@ -1,6 +1,6 @@
 {
   "name": "css3pie",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "PIE makes Internet Explorer 6-9 capable of rendering several of the most useful CSS3 decoration features.",
   "main": "release/PIE.js",
   "directories": {
