@@ -1,0 +1,28 @@
+{
+  "name": "css3pie",
+  "version": "1.0.0",
+  "description": "PIE makes Internet Explorer 6-9 capable of rendering several of the most useful CSS3 decoration features.",
+  "main": "release/PIE.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markusguenther/PIE.git"
+  },
+  "keywords": [
+    "css3",
+    "internet",
+    "explorer",
+    "pie"
+  ],
+  "author": "Jason Johnston",
+  "license": "GPL-2.0-only",
+  "bugs": {
+    "url": "https://github.com/markusguenther/PIE/issues"
+  },
+  "homepage": "https://github.com/markusguenther/PIE#readme"
+}
